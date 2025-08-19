@@ -1,0 +1,576 @@
+2025-08-19 10:18:53,489 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:18:53,489 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:18:53,489 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:18:53,561 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:18:58,209 - lua_decoder - ERROR - 分析文件 test_cases/main.lua 时出错: unsupported operand type(s) for +: 'PosixPath' and 'str'
+2025-08-19 10:18:58,210 - lua_decoder - INFO - 依赖发现完成，共处理 1 个文件
+2025-08-19 10:18:58,210 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:19:05,203 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:19:05,205 - lua_decoder - INFO - 代码恢复完成，成功恢复 1 个文件
+2025-08-19 10:19:05,206 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:19:05,206 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:20:39,696 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:20:39,696 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:20:39,696 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:20:39,714 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:20:45,065 - lua_decoder - ERROR - 分析文件 test_cases/main.lua 时出错: unsupported operand type(s) for +: 'PosixPath' and 'str'
+2025-08-19 10:21:23,950 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:21:23,950 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:21:23,950 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:21:23,965 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:21:31,873 - lua_decoder - ERROR - 分析文件 test_cases/main.lua 时出错: unsupported operand type(s) for +: 'PosixPath' and 'str'
+2025-08-19 10:21:31,874 - lua_decoder - INFO - 依赖发现完成，共处理 1 个文件
+2025-08-19 10:21:31,874 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:21:37,816 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:21:37,821 - lua_decoder - INFO - 代码恢复完成，成功恢复 1 个文件
+2025-08-19 10:21:37,826 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:21:37,827 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:22:06,658 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:22:06,658 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:22:06,658 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:22:06,674 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:22:14,894 - lua_decoder - ERROR - 分析文件 test_cases/main.lua 时出错: unsupported operand type(s) for +: 'PosixPath' and 'str'
+2025-08-19 10:22:14,895 - lua_decoder - INFO - 依赖发现完成，共处理 1 个文件
+2025-08-19 10:22:14,895 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:22:20,614 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:22:20,617 - lua_decoder - INFO - 代码恢复完成，成功恢复 1 个文件
+2025-08-19 10:22:20,618 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:22:20,619 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:22:53,927 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:22:53,928 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:22:53,928 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:22:53,942 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:23:00,459 - lua_decoder - WARNING - 未找到依赖模块文件: luci.http
+2025-08-19 10:23:00,460 - lua_decoder - WARNING - 未找到依赖模块文件: nixio.fs
+2025-08-19 10:23:00,460 - lua_decoder - WARNING - 未找到依赖模块文件: luci.controller.api.xqnetwork
+2025-08-19 10:23:00,460 - lua_decoder - WARNING - 未找到依赖模块文件: luci.util
+2025-08-19 10:23:00,460 - lua_decoder - WARNING - 未找到依赖模块文件: luci.jsonc
+2025-08-19 10:23:00,462 - lua_decoder - INFO - 依赖发现完成，共处理 1 个文件
+2025-08-19 10:23:00,462 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:23:07,531 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:23:07,532 - lua_decoder - INFO - 代码恢复完成，成功恢复 1 个文件
+2025-08-19 10:23:07,532 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:23:07,532 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:23:23,535 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:23:23,535 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:23:23,535 - lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:23:23,535 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:23:23,548 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:23:28,464 - lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua
+2025-08-19 10:23:28,466 - lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua
+2025-08-19 10:23:28,467 - lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:23:28,470 - lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua
+2025-08-19 10:23:28,471 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:23:28,478 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua
+2025-08-19 10:23:32,970 - lua_decoder - ERROR - 分析文件 test_cases/lua/luci/http.lua 时出错: 'tuple' object does not support item assignment
+2025-08-19 10:23:32,974 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua
+2025-08-19 10:23:38,970 - lua_decoder - ERROR - 分析文件 test_cases/lua/nixio/fs.lua 时出错: 'tuple' object does not support item assignment
+2025-08-19 10:23:38,972 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:23:44,585 - lua_decoder - ERROR - 分析文件 test_cases/lua/luci/controller/api/xqnetwork.lua 时出错: 'tuple' object does not support item assignment
+2025-08-19 10:23:44,586 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua
+2025-08-19 10:23:52,622 - lua_decoder - ERROR - 分析文件 test_cases/lua/luci/util.lua 时出错: 'tuple' object does not support item assignment
+2025-08-19 10:23:52,624 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua
+2025-08-19 10:23:59,047 - lua_decoder - ERROR - 分析文件 test_cases/lua/luci/jsonc.lua 时出错: 'tuple' object does not support item assignment
+2025-08-19 10:23:59,051 - lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 10:23:59,052 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:24:05,743 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:24:05,745 - lua_decoder - INFO - 代码恢复完成，成功恢复 1 个文件
+2025-08-19 10:24:05,746 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:24:05,746 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:24:34,375 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:24:34,375 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:24:34,375 - lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:24:34,375 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:24:34,390 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:24:42,717 - lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua
+2025-08-19 10:24:42,719 - lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua
+2025-08-19 10:24:42,720 - lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:24:42,720 - lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua
+2025-08-19 10:24:42,720 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:24:42,722 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua
+2025-08-19 10:24:48,384 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua
+2025-08-19 10:24:53,384 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:25:00,188 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:25:00,191 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua
+2025-08-19 10:25:08,223 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua
+2025-08-19 10:25:15,231 - lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 10:25:15,231 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:25:23,112 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:25:35,831 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua 恢复完成，保存到 output/http.lua
+2025-08-19 10:25:51,078 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua 恢复完成，保存到 output/fs.lua
+2025-08-19 10:26:10,916 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua 恢复完成，保存到 output/xqnetwork.lua
+2025-08-19 10:26:35,542 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua 恢复完成，保存到 output/util.lua
+2025-08-19 10:27:13,763 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua 恢复完成，保存到 output/jsonc.lua
+2025-08-19 10:27:13,767 - lua_decoder - INFO - 代码恢复完成，成功恢复 6 个文件
+2025-08-19 10:27:13,768 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:27:13,768 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:28:33,513 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:28:33,513 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:28:33,513 - lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:28:33,513 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:28:33,531 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:28:43,529 - lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua
+2025-08-19 10:28:43,531 - lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua
+2025-08-19 10:28:43,532 - lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:28:43,534 - lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua
+2025-08-19 10:28:43,535 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:28:43,541 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua
+2025-08-19 10:28:47,901 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua
+2025-08-19 10:28:53,225 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:28:59,619 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:28:59,622 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua
+2025-08-19 10:29:06,813 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua
+2025-08-19 10:29:13,508 - lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 10:29:13,509 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:29:21,253 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:29:32,079 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua 恢复完成，保存到 output/http.lua
+2025-08-19 10:29:47,541 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua 恢复完成，保存到 output/fs.lua
+2025-08-19 10:30:15,980 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua 恢复完成，保存到 output/xqnetwork.lua
+2025-08-19 10:30:39,951 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua 恢复完成，保存到 output/util.lua
+2025-08-19 10:31:18,732 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua 恢复完成，保存到 output/jsonc.lua
+2025-08-19 10:31:18,734 - lua_decoder - INFO - 代码恢复完成，成功恢复 6 个文件
+2025-08-19 10:31:18,735 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:31:18,735 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:35:02,782 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:35:02,782 - lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:35:02,782 - lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:35:02,782 - lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:35:02,802 - lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:35:10,858 - lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua
+2025-08-19 10:35:10,859 - lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua
+2025-08-19 10:35:10,859 - lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:35:10,860 - lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua
+2025-08-19 10:35:10,861 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:35:10,863 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua
+2025-08-19 10:35:14,978 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua
+2025-08-19 10:35:21,272 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:35:27,072 - lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:35:27,073 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua
+2025-08-19 10:35:35,065 - lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua
+2025-08-19 10:35:39,497 - lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 10:35:39,498 - lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 10:35:48,433 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua 恢复完成，保存到 output/http.lua
+2025-08-19 10:36:02,711 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua 恢复完成，保存到 output/fs.lua
+2025-08-19 10:36:41,807 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua 恢复完成，保存到 output/util.lua
+2025-08-19 10:37:19,707 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua 恢复完成，保存到 output/jsonc.lua
+2025-08-19 10:37:36,903 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua 恢复完成，保存到 output/xqnetwork.lua
+2025-08-19 10:37:42,832 - lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua 恢复完成，保存到 output/main.lua
+2025-08-19 10:37:42,834 - lua_decoder - INFO - 代码恢复完成，成功恢复 6 个文件
+2025-08-19 10:37:42,835 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 10:37:42,835 - lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 10:44:14,130 - src.lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:44:14,130 - src.lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:44:14,130 - src.lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:44:14,130 - src.lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:44:14,147 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:44:22,968 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua
+2025-08-19 10:44:22,969 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua
+2025-08-19 10:44:22,971 - src.lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:44:22,972 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua
+2025-08-19 10:44:22,973 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:44:22,978 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua
+2025-08-19 10:44:29,218 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua
+2025-08-19 10:44:33,813 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 10:44:39,343 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua
+2025-08-19 10:44:39,344 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua
+2025-08-19 10:45:33,489 - src.lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 10:45:33,489 - src.lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 10:45:33,489 - src.lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 10:45:33,489 - src.lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua
+2025-08-19 10:45:33,504 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua
+2025-08-19 10:57:54,547 - lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 11:02:38,476 - src.lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 11:02:38,477 - src.lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 11:02:38,477 - src.lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 11:02:38,477 - src.lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua.unluac
+2025-08-19 11:02:38,494 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua.unluac
+2025-08-19 11:02:47,030 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua.unluac
+2025-08-19 11:02:47,032 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 11:02:47,033 - src.lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 11:02:47,034 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 11:02:47,035 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:02:47,038 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua.unluac
+2025-08-19 11:02:51,007 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 11:02:56,494 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 11:03:03,328 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:03:03,330 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua.unluac
+2025-08-19 11:03:11,208 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:03:17,271 - src.lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 11:03:17,271 - src.lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 11:03:23,366 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac 恢复完成，保存到 output/test_cases/main.lua.lua
+2025-08-19 11:03:32,079 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/http.lua.lua
+2025-08-19 11:03:54,360 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac 恢复完成，保存到 output/test_cases/lua/nixio/fs.lua.lua
+2025-08-19 11:04:10,303 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/controller/api/xqnetwork.lua.lua
+2025-08-19 11:04:43,693 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/util.lua.lua
+2025-08-19 11:05:22,172 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/jsonc.lua.lua
+2025-08-19 11:05:22,174 - src.lua_decoder - INFO - 代码恢复完成，成功恢复 6 个文件
+2025-08-19 11:05:22,175 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 11:05:22,176 - dependency_graph - INFO - 依赖关系JSON已导出到: output/dependencies.json
+2025-08-19 11:05:22,177 - src.lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 11:09:45,815 - src.lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 11:09:45,815 - src.lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 11:09:45,815 - src.lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 11:09:45,815 - src.lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/main.lua.unluac
+2025-08-19 11:09:45,832 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/main.lua.unluac
+2025-08-19 11:09:52,944 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua.unluac
+2025-08-19 11:09:52,947 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 11:09:52,948 - src.lua_decoder - INFO - 找到依赖模块文件: luci.controller.api.xqnetwork -> test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 11:09:52,950 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 11:09:52,952 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:09:52,956 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua.unluac
+2025-08-19 11:09:56,054 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 11:10:02,655 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 11:10:08,495 - src.lua_decoder - INFO - 找到依赖模块文件: luci.jsonc -> test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:10:08,515 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua.unluac
+2025-08-19 11:10:17,553 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/jsonc.lua.unluac
+2025-08-19 11:10:23,096 - src.lua_decoder - INFO - 依赖发现完成，共处理 6 个文件
+2025-08-19 11:10:23,096 - src.lua_decoder - INFO - 开始按依赖顺序恢复代码
+2025-08-19 11:10:28,956 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac 恢复完成，保存到 output/test_cases/main.lua
+2025-08-19 11:10:41,499 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/http.lua
+2025-08-19 11:10:55,648 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac 恢复完成，保存到 output/test_cases/lua/nixio/fs.lua
+2025-08-19 11:11:11,740 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/controller/api/xqnetwork.lua
+2025-08-19 11:11:46,558 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/util.lua
+2025-08-19 11:12:24,327 - src.lua_decoder - INFO - 文件 /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac 恢复完成，保存到 output/test_cases/lua/luci/jsonc.lua
+2025-08-19 11:12:24,329 - src.lua_decoder - INFO - 代码恢复完成，成功恢复 6 个文件
+2025-08-19 11:12:24,329 - dependency_graph - INFO - 依赖图已导出到: output/dependencies.dot
+2025-08-19 11:12:24,330 - dependency_graph - INFO - 依赖关系JSON已导出到: output/dependencies.json
+2025-08-19 11:12:24,330 - src.lua_decoder - INFO - 恢复报告已生成: output/restoration_report.txt
+2025-08-19 14:04:30,906 - src.lua_decoder - INFO - Lua解码器初始化完成
+2025-08-19 14:04:30,906 - src.lua_decoder - INFO - 开始运行Lua解码器
+2025-08-19 14:04:30,906 - src.lua_decoder - INFO - 添加Lua子目录到搜索路径: test_cases/lua
+2025-08-19 14:04:30,906 - src.lua_decoder - INFO - 开始递归发现依赖，起始文件: test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 14:04:30,949 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+2025-08-19 14:05:01,431 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:05:01,436 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQErrorUtil -> test_cases/lua/xiaoqiang/util/XQErrorUtil.lua.unluac
+2025-08-19 14:05:01,437 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:05:01,437 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:05:01,438 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http -> test_cases/lua/luci/http.lua.unluac
+2025-08-19 14:05:01,439 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:05:01,440 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:05:01,441 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDeviceUtil -> test_cases/lua/xiaoqiang/util/XQDeviceUtil.lua.unluac
+2025-08-19 14:05:01,442 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQAPModule -> test_cases/lua/xiaoqiang/module/XQAPModule.lua.unluac
+2025-08-19 14:05:01,443 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:05:01,444 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQMacBind -> test_cases/lua/xiaoqiang/module/XQMacBind.lua.unluac
+2025-08-19 14:05:01,444 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSecureUtil -> test_cases/lua/xiaoqiang/util/XQSecureUtil.lua.unluac
+2025-08-19 14:05:01,445 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQDMZModule -> test_cases/lua/xiaoqiang/module/XQDMZModule.lua.unluac
+2025-08-19 14:05:01,446 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQDDNS -> test_cases/lua/xiaoqiang/module/XQDDNS.lua.unluac
+2025-08-19 14:05:01,447 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQPreference -> test_cases/lua/xiaoqiang/XQPreference.lua.unluac
+2025-08-19 14:05:01,447 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQExtendWifi -> test_cases/lua/xiaoqiang/module/XQExtendWifi.lua.unluac
+2025-08-19 14:05:01,448 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQPushUtil -> test_cases/lua/xiaoqiang/util/XQPushUtil.lua.unluac
+2025-08-19 14:05:01,449 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQController -> test_cases/lua/xiaoqiang/util/XQController.lua.unluac
+2025-08-19 14:05:01,449 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:05:01,450 - src.lua_decoder - INFO - 找到依赖模块文件: luci.json -> test_cases/lua/luci/json.lua.unluac
+2025-08-19 14:05:01,451 - src.lua_decoder - INFO - 找到依赖模块文件: luci.cbi.datatypes -> test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:05:01,452 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ip -> test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:05:01,453 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:05:01,454 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:05:01,467 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:05:10,253 - src.lua_decoder - INFO - 找到依赖模块文件: posix -> test_cases/lua/posix.lua.unluac
+2025-08-19 14:05:10,256 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:05:10,259 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQErrorUtil.lua.unluac
+2025-08-19 14:05:14,268 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:05:25,599 - src.lua_decoder - WARNING - 未找到依赖模块文件: os
+2025-08-19 14:05:25,601 - src.lua_decoder - INFO - 找到依赖模块文件: uci -> test_cases/lua/uci.so
+2025-08-19 14:05:25,602 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:05:25,604 - src.lua_decoder - WARNING - 未找到依赖模块文件: table
+2025-08-19 14:05:25,615 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:06:04,173 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:06:04,175 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:06:04,177 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.network -> test_cases/lua/luci/model/network.lua.unluac
+2025-08-19 14:06:04,178 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:06:04,179 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:06:04,179 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:06:04,181 - src.lua_decoder - INFO - 找到依赖模块文件: iwinfo -> test_cases/lua/iwinfo.so
+2025-08-19 14:06:04,182 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQCountryCode -> test_cases/lua/xiaoqiang/XQCountryCode.lua.unluac
+2025-08-19 14:06:04,183 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDBUtil -> test_cases/lua/xiaoqiang/util/XQDBUtil.lua.unluac
+2025-08-19 14:06:04,184 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQEquipment -> test_cases/lua/xiaoqiang/XQEquipment.lua.unluac
+2025-08-19 14:06:04,185 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQPushUtil -> test_cases/lua/xiaoqiang/util/XQPushUtil.lua.unluac
+2025-08-19 14:06:04,185 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:06:04,186 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:06:04,186 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSecureUtil -> test_cases/lua/xiaoqiang/util/XQSecureUtil.lua.unluac
+2025-08-19 14:06:04,187 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:06:04,196 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http.lua.unluac
+2025-08-19 14:06:11,719 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ltn12 -> test_cases/lua/luci/ltn12.lua.unluac
+2025-08-19 14:06:11,721 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:06:11,722 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http.protocol -> test_cases/lua/luci/http/protocol.lua.unluac
+2025-08-19 14:06:11,723 - src.lua_decoder - INFO - 找到依赖模块文件: luci.json -> test_cases/lua/luci/json.lua.unluac
+2025-08-19 14:06:11,724 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:06:11,729 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:06:27,242 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:06:27,243 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:06:27,245 - src.lua_decoder - INFO - 找到依赖模块文件: luci.fs -> test_cases/lua/luci/fs.lua.unluac
+2025-08-19 14:06:27,246 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:06:27,248 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:06:27,249 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:06:27,250 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:06:27,252 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:06:27,253 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:06:27,254 - src.lua_decoder - INFO - 找到依赖模块文件: luci.cbi.datatypes -> test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:06:27,262 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:06:42,646 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:06:42,647 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:06:42,649 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:06:42,649 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:06:42,651 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:06:42,652 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.network -> test_cases/lua/luci/model/network.lua.unluac
+2025-08-19 14:06:42,653 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ip -> test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:06:42,654 - src.lua_decoder - INFO - 找到依赖模块文件: luci.cbi.datatypes -> test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:06:42,655 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:06:42,656 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:06:42,657 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:06:42,658 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQPreference -> test_cases/lua/xiaoqiang/XQPreference.lua.unluac
+2025-08-19 14:06:42,659 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQEvent -> test_cases/lua/xiaoqiang/XQEvent.lua.unluac
+2025-08-19 14:06:42,659 - src.lua_decoder - INFO - 找到依赖模块文件: ubus -> test_cases/lua/ubus.so
+2025-08-19 14:06:42,661 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:06:42,666 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQDeviceUtil.lua.unluac
+2025-08-19 14:06:59,732 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:06:59,734 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDBUtil -> test_cases/lua/xiaoqiang/util/XQDBUtil.lua.unluac
+2025-08-19 14:06:59,735 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:06:59,736 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:06:59,737 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:06:59,739 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:06:59,741 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQEquipment -> test_cases/lua/xiaoqiang/XQEquipment.lua.unluac
+2025-08-19 14:06:59,742 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQPushUtil -> test_cases/lua/xiaoqiang/util/XQPushUtil.lua.unluac
+2025-08-19 14:06:59,743 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:06:59,744 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:06:59,745 - src.lua_decoder - INFO - 找到依赖模块文件: luci.cbi.datatypes -> test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:06:59,746 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:06:59,748 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQParentControl -> test_cases/lua/xiaoqiang/module/XQParentControl.lua.unluac
+2025-08-19 14:06:59,758 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQAPModule.lua.unluac
+2025-08-19 14:07:08,414 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:07:08,415 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:07:08,416 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:07:08,417 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:07:08,419 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:07:08,420 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:07:08,421 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQMessageBox -> test_cases/lua/xiaoqiang/module/XQMessageBox.lua.unluac
+2025-08-19 14:07:08,422 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:07:08,423 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:07:08,429 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:07:46,762 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:07:46,765 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQPreference -> test_cases/lua/xiaoqiang/XQPreference.lua.unluac
+2025-08-19 14:07:46,766 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:07:46,768 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:07:46,769 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:07:46,770 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:07:46,771 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:07:46,772 - src.lua_decoder - INFO - 找到依赖模块文件: luci.fs -> test_cases/lua/luci/fs.lua.unluac
+2025-08-19 14:07:46,773 - src.lua_decoder - INFO - 找到依赖模块文件: ubus -> test_cases/lua/ubus.so
+2025-08-19 14:07:46,774 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:07:46,775 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSecureUtil -> test_cases/lua/xiaoqiang/util/XQSecureUtil.lua.unluac
+2025-08-19 14:07:46,776 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:07:46,777 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:07:46,777 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:07:46,778 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDownloadUtil -> test_cases/lua/xiaoqiang/util/XQDownloadUtil.lua.unluac
+2025-08-19 14:07:46,779 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:07:46,789 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQMacBind.lua.unluac
+2025-08-19 14:07:51,936 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:07:51,937 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ip -> test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:07:51,939 - src.lua_decoder - INFO - 找到依赖模块文件: luci.cbi.datatypes -> test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:07:51,940 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:07:51,940 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:07:51,945 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQSecureUtil.lua.unluac
+2025-08-19 14:07:58,803 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:07:58,804 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:07:58,806 - src.lua_decoder - INFO - 找到依赖模块文件: bit -> test_cases/lua/bit.lua.unluac
+2025-08-19 14:07:58,807 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.util -> test_cases/lua/nixio/util.lua.unluac
+2025-08-19 14:07:58,808 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:07:58,809 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sauth -> test_cases/lua/luci/sauth.lua.unluac
+2025-08-19 14:07:58,810 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:07:58,811 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http.protocol -> test_cases/lua/luci/http/protocol.lua.unluac
+2025-08-19 14:07:58,812 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:07:58,812 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:07:58,819 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQDMZModule.lua.unluac
+2025-08-19 14:08:06,999 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:07,001 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:08:07,002 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:08:07,003 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:08:07,004 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:08:07,005 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQPortForward -> test_cases/lua/xiaoqiang/module/XQPortForward.lua.unluac
+2025-08-19 14:08:07,010 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQDDNS.lua.unluac
+2025-08-19 14:08:14,317 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:14,319 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:08:14,320 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:08:14,321 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:08:14,323 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:08:14,328 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/XQPreference.lua.unluac
+2025-08-19 14:08:22,550 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:08:22,552 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQExtendWifi.lua.unluac
+2025-08-19 14:08:29,564 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:08:29,566 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.network -> test_cases/lua/luci/model/network.lua.unluac
+2025-08-19 14:08:29,568 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:29,570 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQHttpUtil -> test_cases/lua/xiaoqiang/util/XQHttpUtil.lua.unluac
+2025-08-19 14:08:29,571 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:08:29,572 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:08:29,573 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:08:29,574 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQNetUtil -> test_cases/lua/xiaoqiang/util/XQNetUtil.lua.unluac
+2025-08-19 14:08:29,575 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:08:29,581 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQPushUtil.lua.unluac
+2025-08-19 14:08:36,734 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:36,735 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:08:36,738 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQController.lua.unluac
+2025-08-19 14:08:41,188 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:41,190 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:08:49,117 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:08:49,119 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:08:49,121 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:08:49,123 - src.lua_decoder - WARNING - 未找到依赖模块文件: messageclient
+2025-08-19 14:08:49,124 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:08:49,125 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQQoSUtil -> test_cases/lua/xiaoqiang/util/XQQoSUtil.lua.unluac
+2025-08-19 14:08:49,126 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDeviceUtil -> test_cases/lua/xiaoqiang/util/XQDeviceUtil.lua.unluac
+2025-08-19 14:08:49,127 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQPredownload -> test_cases/lua/xiaoqiang/module/XQPredownload.lua.unluac
+2025-08-19 14:08:49,128 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:08:49,129 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQPushUtil -> test_cases/lua/xiaoqiang/util/XQPushUtil.lua.unluac
+2025-08-19 14:08:49,130 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQParentControl -> test_cases/lua/xiaoqiang/module/XQParentControl.lua.unluac
+2025-08-19 14:08:49,131 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDBUtil -> test_cases/lua/xiaoqiang/util/XQDBUtil.lua.unluac
+2025-08-19 14:08:49,139 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/json.lua.unluac
+2025-08-19 14:09:01,634 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:09:01,635 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/cbi/datatypes.lua.unluac
+2025-08-19 14:09:08,446 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:09:08,450 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:09:15,102 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:09:15,107 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:09:15,110 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:09:18,981 - src.lua_decoder - WARNING - 未找到依赖模块文件: table
+2025-08-19 14:09:18,983 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.util -> test_cases/lua/nixio/util.lua.unluac
+2025-08-19 14:09:18,985 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:09:28,218 - src.lua_decoder - WARNING - 未找到依赖模块文件: io
+2025-08-19 14:09:28,219 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:09:28,219 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ip -> test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:09:28,220 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:09:28,220 - src.lua_decoder - INFO - 找到依赖模块文件: ubus -> test_cases/lua/ubus.so
+2025-08-19 14:09:28,223 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/posix.lua.unluac
+2025-08-19 14:09:33,373 - src.lua_decoder - WARNING - 未找到依赖模块文件: posix.bit32
+2025-08-19 14:09:33,375 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:09:44,417 - src.lua_decoder - WARNING - 未找到依赖模块文件: io
+2025-08-19 14:09:44,418 - src.lua_decoder - WARNING - 未找到依赖模块文件: math
+2025-08-19 14:09:44,419 - src.lua_decoder - WARNING - 未找到依赖模块文件: table
+2025-08-19 14:09:44,420 - src.lua_decoder - WARNING - 未找到依赖模块文件: debug
+2025-08-19 14:09:44,421 - src.lua_decoder - INFO - 找到依赖模块文件: luci.debug -> test_cases/lua/luci/debug.lua.unluac
+2025-08-19 14:09:44,422 - src.lua_decoder - WARNING - 未找到依赖模块文件: string
+2025-08-19 14:09:44,422 - src.lua_decoder - WARNING - 未找到依赖模块文件: coroutine
+2025-08-19 14:09:44,423 - src.lua_decoder - INFO - 找到依赖模块文件: luci.template.parser -> test_cases/lua/luci/template/parser.so
+2025-08-19 14:09:44,427 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/uci.so
+2025-08-19 14:09:53,872 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:10:34,143 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/model/network.lua.unluac
+2025-08-19 14:10:45,196 - src.lua_decoder - INFO - 找到依赖模块文件: ubus -> test_cases/lua/ubus.so
+2025-08-19 14:10:45,198 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:10:45,199 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:10:45,200 - src.lua_decoder - INFO - 找到依赖模块文件: luci.ip -> test_cases/lua/luci/ip.lua.unluac
+2025-08-19 14:10:45,200 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:10:45,201 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:10:45,202 - src.lua_decoder - INFO - 找到依赖模块文件: luci.dispatcher -> test_cases/lua/luci/dispatcher.lua.unluac
+2025-08-19 14:10:45,202 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:10:45,203 - src.lua_decoder - INFO - 找到依赖模块文件: luci.i18n -> test_cases/lua/luci/i18n.lua.unluac
+2025-08-19 14:10:45,209 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/iwinfo.so
+2025-08-19 14:10:52,533 - src.lua_decoder - WARNING - 未找到依赖模块文件: iwinfo.qcawifi
+2025-08-19 14:10:52,535 - src.lua_decoder - WARNING - 未找到依赖模块文件: iwinfo.wext
+2025-08-19 14:10:52,538 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/XQCountryCode.lua.unluac
+2025-08-19 14:10:58,224 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:10:58,226 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:10:58,228 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQWifiUtil -> test_cases/lua/xiaoqiang/util/XQWifiUtil.lua.unluac
+2025-08-19 14:10:58,233 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQDBUtil.lua.unluac
+2025-08-19 14:11:04,938 - src.lua_decoder - INFO - 找到依赖模块文件: lsqlite3 -> test_cases/lua/lsqlite3.so
+2025-08-19 14:11:04,940 - src.lua_decoder - INFO - 找到依赖模块文件: socket -> test_cases/lua/socket.lua.unluac
+2025-08-19 14:11:04,941 - src.lua_decoder - INFO - 找到依赖模块文件: cjson -> test_cases/lua/cjson.so
+2025-08-19 14:11:04,941 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:11:04,942 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:11:04,946 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/XQEquipment.lua.unluac
+2025-08-19 14:11:08,514 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:11:08,519 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:11:18,680 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:11:18,682 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:11:18,683 - src.lua_decoder - INFO - 找到依赖模块文件: mime -> test_cases/lua/mime.lua.unluac
+2025-08-19 14:11:18,684 - src.lua_decoder - INFO - 找到依赖模块文件: sha1 -> test_cases/lua/sha1.lua.unluac
+2025-08-19 14:11:18,687 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/json.lua.unluac
+2025-08-19 14:11:21,951 - src.lua_decoder - WARNING - 未找到依赖模块文件: math
+2025-08-19 14:11:21,952 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/ltn12.lua.unluac
+2025-08-19 14:11:27,645 - src.lua_decoder - WARNING - 未找到依赖模块文件: string
+2025-08-19 14:11:27,649 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/http/protocol.lua.unluac
+2025-08-19 14:11:33,170 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:11:33,172 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio.so
+2025-08-19 14:11:43,645 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/fs.lua.unluac
+2025-08-19 14:11:53,512 - src.lua_decoder - WARNING - 未找到依赖模块文件: io
+2025-08-19 14:11:53,514 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:11:53,517 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/cjson.so
+2025-08-19 14:12:05,824 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/XQEvent.lua.unluac
+2025-08-19 14:12:10,424 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQDMZModule -> test_cases/lua/xiaoqiang/module/XQDMZModule.lua.unluac
+2025-08-19 14:12:10,426 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQGuestWifi -> test_cases/lua/xiaoqiang/module/XQGuestWifi.lua.unluac
+2025-08-19 14:12:10,428 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQPortForward -> test_cases/lua/xiaoqiang/module/XQPortForward.lua.unluac
+2025-08-19 14:12:10,429 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:12:10,433 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/ubus.so
+2025-08-19 14:12:17,756 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQParentControl.lua.unluac
+2025-08-19 14:12:26,670 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:12:26,672 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSynchrodata -> test_cases/lua/xiaoqiang/util/XQSynchrodata.lua.unluac
+2025-08-19 14:12:26,673 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDeviceUtil -> test_cases/lua/xiaoqiang/util/XQDeviceUtil.lua.unluac
+2025-08-19 14:12:26,677 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQMessageBox.lua.unluac
+2025-08-19 14:12:30,827 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:12:30,829 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQDownloadUtil.lua.unluac
+2025-08-19 14:12:37,412 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:12:37,414 - src.lua_decoder - INFO - 找到依赖模块文件: luci.fs -> test_cases/lua/luci/fs.lua.unluac
+2025-08-19 14:12:37,415 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:12:37,417 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:12:37,418 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:12:37,418 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:12:37,423 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/bit.lua.unluac
+2025-08-19 14:12:40,637 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:12:40,638 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/nixio/util.lua.unluac
+2025-08-19 14:12:46,800 - src.lua_decoder - WARNING - 未找到依赖模块文件: table
+2025-08-19 14:12:46,803 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:12:46,806 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/sauth.lua.unluac
+2025-08-19 14:12:50,405 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:12:50,406 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:12:50,408 - src.lua_decoder - INFO - 找到依赖模块文件: luci.config -> test_cases/lua/luci/config.lua.unluac
+2025-08-19 14:12:50,409 - src.lua_decoder - INFO - 找到依赖模块文件: nixio -> test_cases/lua/nixio.so
+2025-08-19 14:12:50,410 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.util -> test_cases/lua/nixio/util.lua.unluac
+2025-08-19 14:12:50,414 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQPortForward.lua.unluac
+2025-08-19 14:12:55,709 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:12:55,711 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:12:55,712 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:12:55,713 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQDMZModule -> test_cases/lua/xiaoqiang/module/XQDMZModule.lua.unluac
+2025-08-19 14:12:55,721 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQHttpUtil.lua.unluac
+2025-08-19 14:12:59,917 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:12:59,918 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:12:59,919 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:12:59,921 - src.lua_decoder - INFO - 找到依赖模块文件: socket.http -> test_cases/lua/socket/http.lua.unluac
+2025-08-19 14:12:59,922 - src.lua_decoder - INFO - 找到依赖模块文件: ssl.https -> test_cases/lua/ssl/https.lua.unluac
+2025-08-19 14:12:59,928 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQNetUtil.lua.unluac
+2025-08-19 14:13:11,049 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:13:11,052 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQConfigs -> test_cases/lua/xiaoqiang/common/XQConfigs.lua.unluac
+2025-08-19 14:13:11,053 - src.lua_decoder - INFO - 找到依赖模块文件: luci.http.protocol -> test_cases/lua/luci/http/protocol.lua.unluac
+2025-08-19 14:13:11,054 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQHttpUtil -> test_cases/lua/xiaoqiang/util/XQHttpUtil.lua.unluac
+2025-08-19 14:13:11,055 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:13:11,056 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQLanWanUtil -> test_cases/lua/xiaoqiang/util/XQLanWanUtil.lua.unluac
+2025-08-19 14:13:11,057 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:13:11,058 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQCryptoUtil -> test_cases/lua/xiaoqiang/util/XQCryptoUtil.lua.unluac
+2025-08-19 14:13:11,059 - src.lua_decoder - INFO - 找到依赖模块文件: json -> test_cases/lua/json.lua.unluac
+2025-08-19 14:13:11,060 - src.lua_decoder - INFO - 找到依赖模块文件: mime -> test_cases/lua/mime.lua.unluac
+2025-08-19 14:13:11,061 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.module.XQMessageBox -> test_cases/lua/xiaoqiang/module/XQMessageBox.lua.unluac
+2025-08-19 14:13:11,062 - src.lua_decoder - INFO - 找到依赖模块文件: xqcrypto -> test_cases/lua/xqcrypto.so
+2025-08-19 14:13:11,063 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:13:11,064 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQPreference -> test_cases/lua/xiaoqiang/XQPreference.lua.unluac
+2025-08-19 14:13:11,064 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQCountryCode -> test_cases/lua/xiaoqiang/XQCountryCode.lua.unluac
+2025-08-19 14:13:11,074 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/util/XQQoSUtil.lua.unluac
+2025-08-19 14:13:20,221 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:13:20,223 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:13:20,224 - src.lua_decoder - INFO - 找到依赖模块文件: miqos -> test_cases/lua/miqos.lua.unluac
+2025-08-19 14:13:20,225 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDeviceUtil -> test_cases/lua/xiaoqiang/util/XQDeviceUtil.lua.unluac
+2025-08-19 14:13:20,225 - src.lua_decoder - INFO - 找到依赖模块文件: xqcrypto -> test_cases/lua/xqcrypto.so
+2025-08-19 14:13:20,229 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/xiaoqiang/module/XQPredownload.lua.unluac
+2025-08-19 14:13:23,735 - src.lua_decoder - INFO - 找到依赖模块文件: luci.model.uci -> test_cases/lua/luci/model/uci.lua.unluac
+2025-08-19 14:13:23,736 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/debug.lua.unluac
+2025-08-19 14:13:26,231 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/template/parser.so
+2025-08-19 14:13:34,494 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/dispatcher.lua.unluac
+2025-08-19 14:13:45,195 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.fs -> test_cases/lua/nixio/fs.lua.unluac
+2025-08-19 14:13:45,197 - src.lua_decoder - INFO - 找到依赖模块文件: nixio.util -> test_cases/lua/nixio/util.lua.unluac
+2025-08-19 14:13:45,198 - src.lua_decoder - INFO - 找到依赖模块文件: luci.util -> test_cases/lua/luci/util.lua.unluac
+2025-08-19 14:13:45,199 - src.lua_decoder - INFO - 找到依赖模块文件: luci.i18n -> test_cases/lua/luci/i18n.lua.unluac
+2025-08-19 14:13:45,200 - src.lua_decoder - INFO - 找到依赖模块文件: luci.template -> test_cases/lua/luci/template.lua.unluac
+2025-08-19 14:13:45,200 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQLog -> test_cases/lua/xiaoqiang/XQLog.lua.unluac
+2025-08-19 14:13:45,201 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.common.XQFunction -> test_cases/lua/xiaoqiang/common/XQFunction.lua.unluac
+2025-08-19 14:13:45,202 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQSysUtil -> test_cases/lua/xiaoqiang/util/XQSysUtil.lua.unluac
+2025-08-19 14:13:45,203 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.util.XQDBUtil -> test_cases/lua/xiaoqiang/util/XQDBUtil.lua.unluac
+2025-08-19 14:13:45,204 - src.lua_decoder - INFO - 找到依赖模块文件: xiaoqiang.XQPushHelper -> test_cases/lua/xiaoqiang/XQPushHelper.lua.unluac
+2025-08-19 14:13:45,205 - src.lua_decoder - INFO - 找到依赖模块文件: luci.config -> test_cases/lua/luci/config.lua.unluac
+2025-08-19 14:13:45,206 - src.lua_decoder - INFO - 找到依赖模块文件: luci.sys -> test_cases/lua/luci/sys.lua.unluac
+2025-08-19 14:13:45,213 - src.lua_decoder - INFO - 开始分析文件依赖: test_cases/lua/luci/i18n.lua.unluac

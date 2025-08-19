@@ -1,0 +1,566 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQDownloadUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+PREF_DOWNLOAD_TYPE = "DOWNLOAD_TYPE"
+PREF_DOWNLOAD_FILE_PATH = "DOWNLOAD_FILE_PATH"
+function wgetCheckDownloadFilesize(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.isStrNil
+  L2_3 = A0_1
+  L1_2 = L1_2(L2_3)
+  if L1_2 then
+    L1_2 = nil
+    return L1_2
+  end
+  L1_2 = require
+  L2_3 = "luci.fs"
+  L1_2 = L1_2(L2_3)
+  L2_3 = require
+  L3_4 = "luci.sys"
+  L2_3 = L2_3(L3_4)
+  L3_4 = L2_3.uniqueid
+  L4_5 = 8
+  L3_4 = L3_4(L4_5)
+  L4_5 = _UPVALUE1_
+  L5_6 = L3_4
+  L4_5 = L4_5 .. L5_6
+  L5_6 = string
+  L5_6 = L5_6.format
+  L6_7 = _UPVALUE2_
+  L5_6 = L5_6(L6_7, A0_1, L4_5)
+  L6_7 = os
+  L6_7 = L6_7.execute
+  L6_7 = L6_7(L5_6)
+  if L6_7 then
+    L6_7 = string
+    L6_7 = L6_7.format
+    L6_7 = L6_7(_UPVALUE3_, L4_5)
+    L1_2.unlink(L4_5)
+    if tonumber(_UPVALUE4_.exec(L6_7)) then
+      return (tonumber(_UPVALUE4_.exec(L6_7)))
+    end
+  end
+  L6_7 = L1_2.unlink
+  L6_7(L4_5)
+  L6_7 = nil
+  return L6_7
+end
+function _checkResource(A0_8)
+  if _UPVALUE0_.isStrNil(A0_8) then
+    return false
+  end
+  if os.execute(_UPVALUE1_.DOWNLOAD_RESOURCE_CHECK .. A0_8) ~= 0 then
+    return false
+  end
+  return true
+end
+function _wgetDownload(A0_9)
+  local L1_10, L2_11, L3_12, L4_13, L5_14
+  L1_10 = _UPVALUE0_
+  L1_10 = L1_10.isStrNil
+  L2_11 = A0_9
+  L1_10 = L1_10(L2_11)
+  if L1_10 then
+    L1_10 = false
+    return L1_10
+  end
+  L1_10 = _checkResource
+  L2_11 = A0_9
+  L1_10 = L1_10(L2_11)
+  if not L1_10 then
+    L1_10 = _UPVALUE1_
+    L1_10 = L1_10.log
+    L2_11 = 6
+    L3_12 = "Wget --spider : Bad url "
+    L4_13 = A0_9
+    L3_12 = L3_12 .. L4_13
+    L1_10(L2_11, L3_12)
+    L1_10 = false
+    return L1_10
+  end
+  L1_10 = _UPVALUE2_
+  L1_10 = L1_10.set
+  L2_11 = PREF_DOWNLOAD_TYPE
+  L3_12 = 2
+  L1_10(L2_11, L3_12)
+  L1_10 = require
+  L2_11 = "xiaoqiang.util.XQSysUtil"
+  L1_10 = L1_10(L2_11)
+  L2_11 = require
+  L3_12 = "luci.fs"
+  L2_11 = L2_11(L3_12)
+  L3_12 = nil
+  L4_13 = _UPVALUE2_
+  L4_13 = L4_13.get
+  L5_14 = _UPVALUE3_
+  L5_14 = L5_14.PREF_ROM_FULLSIZE
+  L4_13 = L4_13(L5_14, nil)
+  if L4_13 then
+    L5_14 = tonumber
+    L5_14 = L5_14(L4_13)
+    L4_13 = L5_14
+    L5_14 = L1_10.checkTmpSpace
+    L5_14 = L5_14(L4_13)
+    if L5_14 then
+      L3_12 = _UPVALUE4_
+    else
+      L5_14 = false
+      return L5_14
+    end
+  else
+    L5_14 = false
+    return L5_14
+  end
+  L5_14 = _UPVALUE2_
+  L5_14 = L5_14.set
+  L5_14(PREF_DOWNLOAD_FILE_PATH, L3_12)
+  L5_14 = L2_11.access
+  L5_14 = L5_14(L3_12)
+  if L5_14 then
+    L5_14 = L2_11.unlink
+    L5_14(L3_12)
+  end
+  L5_14 = "wget -t3 -T30 '"
+  L5_14 = L5_14 .. A0_9 .. "' -O " .. L3_12
+  _UPVALUE5_.exec(L5_14)
+  return _UPVALUE6_.md5File(L3_12), L3_12
+end
+function _pauseDownload(A0_15)
+  local L1_16
+  L1_16 = _UPVALUE0_
+  L1_16 = L1_16.isStrNil
+  L1_16 = L1_16(A0_15)
+  if L1_16 then
+    L1_16 = _UPVALUE1_
+    L1_16 = L1_16.set
+    L1_16(_UPVALUE2_.PREF_PAUSED_IDS, "")
+    return
+  end
+  L1_16 = _UPVALUE1_
+  L1_16 = L1_16.set
+  L1_16(_UPVALUE2_.PREF_PAUSED_IDS, A0_15)
+  L1_16 = {}
+  L1_16.api = 505
+  L1_16.idList = A0_15
+  _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE3_.encode(L1_16))
+end
+function _resumeDownload(A0_17)
+  local L1_18
+  L1_18 = _UPVALUE0_
+  L1_18 = L1_18.isStrNil
+  L1_18 = L1_18(A0_17)
+  if L1_18 then
+    return
+  end
+  L1_18 = {}
+  L1_18.api = 506
+  L1_18.idList = A0_17
+  _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE1_.encode(L1_18))
+end
+function _deleteDownload(A0_19)
+  local L1_20
+  L1_20 = _UPVALUE0_
+  L1_20 = L1_20.isStrNil
+  L1_20 = L1_20(A0_19)
+  if L1_20 then
+    return
+  end
+  L1_20 = {}
+  L1_20.api = 507
+  L1_20.idList = A0_19
+  L1_20.deletefile = true
+  _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE1_.encode(L1_20))
+end
+function _xunleiDownload(A0_21, A1_22)
+  local L2_23, L3_24, L4_25, L5_26, L6_27, L7_28, L8_29, L9_30, L10_31, L11_32, L12_33, L13_34, L14_35, L15_36, L16_37
+  L2_23 = require
+  L3_24 = "luci.model.uci"
+  L2_23 = L2_23(L3_24)
+  L2_23 = L2_23.cursor
+  L2_23 = L2_23()
+  L4_25 = L2_23
+  L3_24 = L2_23.get
+  L5_26 = "misc"
+  L6_27 = "hardware"
+  L7_28 = "rom_down_path"
+  L3_24 = L3_24(L4_25, L5_26, L6_27, L7_28)
+  L4_25 = A1_22 or 1
+  L5_26 = _UPVALUE0_
+  L5_26 = L5_26.set
+  L6_27 = PREF_DOWNLOAD_TYPE
+  L7_28 = 1
+  L5_26(L6_27, L7_28)
+  L5_26 = {}
+  L5_26.api = 504
+  L5_26.url = A0_21
+  L5_26.type = 1
+  L5_26.redownload = 0
+  L5_26.hidden = true
+  L5_26.path = L3_24
+  L5_26.dupId = ""
+  L6_27 = {}
+  L7_28 = {}
+  if L4_25 == 1 then
+    L8_29 = _UPVALUE1_
+    L8_29 = L8_29.thrift_tunnel_to_datacenter
+    L9_30 = "{\"api\":503,\"hidden\":true}"
+    L8_29 = L8_29(L9_30)
+    if L8_29 then
+      L9_30 = L8_29.code
+      if L9_30 == 0 then
+        L9_30 = table
+        L9_30 = L9_30.foreach
+        L10_31 = L8_29.uncompletedList
+        L9_30(L10_31, L11_32)
+        L7_28 = L8_29.completedList
+      end
+    else
+      L9_30 = _UPVALUE2_
+      L9_30 = L9_30.log
+      L10_31 = 6
+      L9_30(L10_31, L11_32)
+      L9_30 = false
+      L10_31 = false
+      return L9_30, L10_31, L11_32
+    end
+  end
+  L8_29 = table
+  L8_29 = L8_29.concat
+  L9_30 = L6_27
+  L10_31 = ";"
+  L8_29 = L8_29(L9_30, L10_31)
+  L6_27 = L8_29
+  L8_29 = _pauseDownload
+  L9_30 = L6_27
+  L8_29(L9_30)
+  L8_29 = _UPVALUE1_
+  L8_29 = L8_29.thrift_tunnel_to_datacenter
+  L9_30 = _UPVALUE3_
+  L9_30 = L9_30.encode
+  L10_31 = L5_26
+  L16_37 = L9_30(L10_31)
+  L8_29 = L8_29(L9_30, L10_31, L11_32, L12_33, L13_34, L14_35, L15_36, L16_37, L9_30(L10_31))
+  if not L8_29 then
+    L9_30 = false
+    L10_31 = false
+    return L9_30, L10_31, L11_32
+  end
+  if L8_29 then
+    L9_30 = L8_29.code
+    if L9_30 ~= 2010 then
+      L9_30 = L8_29.code
+      if L9_30 ~= 0 then
+        L9_30 = _UPVALUE2_
+        L9_30 = L9_30.log
+        L10_31 = 6
+        L9_30(L10_31, L11_32)
+        L9_30 = false
+        L10_31 = false
+        return L9_30, L10_31, L11_32
+      end
+    end
+  end
+  L9_30 = L8_29.code
+  if L9_30 == 2010 then
+    L9_30 = require
+    L10_31 = "luci.fs"
+    L9_30 = L9_30(L10_31)
+    L10_31 = nil
+    for L14_35, L15_36 in L11_32(L12_33) do
+      L16_37 = L15_36.id
+      if L16_37 == L8_29.info.id then
+        L10_31 = L15_36.localFileName
+      end
+    end
+    if not L11_32 then
+      if L11_32 then
+        L8_29.code = 0
+        L11_32(L12_33, L13_34)
+      end
+    else
+      L11_32(L12_33, L13_34)
+      L5_26.dupId = L11_32
+      L5_26.redownload = 1
+      L16_37 = L12_33(L13_34)
+      L8_29 = L11_32
+    end
+  end
+  L9_30 = nil
+  if not L8_29 then
+    L10_31 = false
+    return L10_31, L11_32, L12_33
+  end
+  if L8_29 then
+    L10_31 = L8_29.code
+    if L10_31 ~= 0 then
+      L10_31 = false
+      return L10_31, L11_32, L12_33
+    end
+  else
+    L10_31 = L8_29.info
+    L9_30 = L10_31.id
+  end
+  L10_31 = _UPVALUE0_
+  L10_31 = L10_31.set
+  L10_31(L11_32, L12_33)
+  L10_31 = 0
+  while true do
+    L14_35 = os
+    L14_35 = L14_35.execute
+    L15_36 = "sleep 3"
+    L14_35(L15_36)
+    L14_35 = _UPVALUE1_
+    L14_35 = L14_35.thrift_tunnel_to_datacenter
+    L15_36 = "{\"api\":503,\"hidden\":true}"
+    L14_35 = L14_35(L15_36)
+    if L14_35 then
+      L15_36 = L14_35.code
+      if L15_36 == 0 then
+        L15_36 = L14_35.completedList
+        L16_37 = L14_35.uncompletedList
+        table.foreach(L16_37, function(A0_38, A1_39)
+          table.insert(_UPVALUE0_, A1_39)
+        end)
+        for _FORV_20_, _FORV_21_ in ipairs(L15_36) do
+          if L9_30 and _FORV_21_.id == L9_30 or not L9_30 and _FORV_21_.address == A0_21 then
+            if not L9_30 then
+              L9_30 = _FORV_21_.id
+              _UPVALUE0_.set(_UPVALUE4_.PREF_ROM_DOWNLOAD_ID, L9_30)
+            end
+            if L12_33 == _FORV_21_.fileDownloadedSize then
+              L10_31 = L10_31 + 1
+            else
+              L10_31 = 0
+            end
+            if _FORV_21_.datacenterErrorCode ~= 0 then
+              _resumeDownload(L6_27)
+              _deleteDownload(L9_30)
+              return false, nil, L12_33
+            elseif _FORV_21_.downloadStatus == 4 then
+              _resumeDownload(L6_27)
+              return _UPVALUE5_.md5File(_FORV_21_.localFileName), _FORV_21_.localFileName, _FORV_21_.fileDownloadedSize
+            elseif _FORV_21_.downloadStatus == 16 then
+              _resumeDownload(L6_27)
+              _deleteDownload(L9_30)
+              return false, nil, L12_33
+            elseif L10_31 > 60 then
+              _resumeDownload(L6_27)
+              _deleteDownload(L9_30)
+              _UPVALUE2_.log(6, "xunlei download timeout, will switch to wget")
+              return false, nil, _FORV_21_.fileDownloadedSize
+            end
+          end
+        end
+      end
+    end
+    if L11_32 > 60 then
+      L15_36 = _resumeDownload
+      L16_37 = L6_27
+      L15_36(L16_37)
+      L15_36 = _deleteDownload
+      L16_37 = L9_30
+      L15_36(L16_37)
+      L15_36 = _UPVALUE2_
+      L15_36 = L15_36.log
+      L16_37 = 6
+      L15_36(L16_37, "xunlei download error, will switch to wget")
+      L15_36 = false
+      L16_37 = nil
+      return L15_36, L16_37, L12_33
+    end
+  end
+end
+function syncDownload(A0_40, A1_41, A2_42)
+  local L3_43, L4_44, L5_45
+  L3_43 = _UPVALUE0_
+  L3_43 = L3_43.isStrNil
+  L4_44 = A0_40
+  L3_43 = L3_43(L4_44)
+  if L3_43 then
+    L3_43 = false
+    return L3_43
+  end
+  L3_43 = string
+  L3_43 = L3_43.find
+  L4_44 = A0_40
+  L5_45 = "[^%w:/?&%%.=#_-]"
+  L3_43 = L3_43(L4_44, L5_45)
+  if L3_43 then
+    L3_43 = false
+    return L3_43
+  end
+  if A2_42 == nil then
+    L3_43 = true
+  else
+    L3_43 = L3_43 or A2_42
+  end
+  L4_44 = _UPVALUE1_
+  L4_44 = L4_44.log
+  L5_45 = 6
+  L4_44(L5_45, "Xunlei download start...")
+  L4_44 = _xunleiDownload
+  L5_45 = A0_40
+  L5_45 = L4_44(L5_45, A1_41)
+  if L4_44 and L5_45 then
+    return L4_44, L5_45
+  end
+  if L3_43 and L4_44 == false and L4_44(L5_45, A1_41) and L4_44(L5_45, A1_41) == 0 then
+    _UPVALUE1_.log(6, "Xunlei download failed, start wget...")
+    L4_44, L5_45 = _wgetDownload(A0_40)
+    if L4_44 then
+      _UPVALUE1_.log(6, "Wget finished")
+      return L4_44, L5_45
+    else
+      _UPVALUE1_.log(6, "Wget failed")
+    end
+  end
+  return false
+end
+function _xunleiDownloadPercent(A0_46)
+  local L1_47, L2_48, L3_49, L4_50, L5_51, L6_52, L7_53, L8_54, L9_55
+  L1_47 = _UPVALUE0_
+  L1_47 = L1_47.thrift_tunnel_to_datacenter
+  L2_48 = "{\"api\":503,\"hidden\":true}"
+  L1_47 = L1_47(L2_48)
+  if L1_47 then
+    L2_48 = L1_47.code
+    if L2_48 == 0 then
+      L2_48 = L1_47.completedList
+      L3_49 = L1_47.uncompletedList
+      L4_50(L5_51, L6_52)
+      for L7_53, L8_54 in L4_50(L5_51) do
+        L9_55 = L8_54.id
+        if L9_55 == A0_46 then
+          L9_55 = L8_54.downloadStatus
+          if L9_55 == 4 then
+            L9_55 = 100
+            return L9_55
+          else
+            L9_55 = L8_54.downloadStatus
+            if L9_55 == 16 then
+              L9_55 = 0
+              return L9_55
+            else
+              L9_55 = L8_54.fileTotalSize
+              if L9_55 <= 0 then
+                L9_55 = 0
+                return L9_55
+              end
+              L9_55 = L8_54.fileDownloadedSize
+              L9_55 = 100 * L9_55
+              L9_55 = L9_55 / L8_54.fileTotalSize
+              if L9_55 > 100 then
+                return 100
+              else
+                return math.floor(L9_55)
+              end
+            end
+          end
+        end
+      end
+      return L4_50
+    end
+  else
+    L2_48 = 0
+    return L2_48
+  end
+end
+function _wgetDownloadPercent(A0_56)
+  local L1_57, L2_58, L3_59, L4_60, L5_61
+  L1_57 = _UPVALUE0_
+  L1_57 = L1_57.get
+  L2_58 = PREF_DOWNLOAD_FILE_PATH
+  L3_59 = nil
+  L1_57 = L1_57(L2_58, L3_59)
+  L2_58 = tonumber
+  L3_59 = _UPVALUE0_
+  L3_59 = L3_59.get
+  L4_60 = _UPVALUE1_
+  L4_60 = L4_60.PREF_ROM_FULLSIZE
+  L5_61 = nil
+  L5_61 = L3_59(L4_60, L5_61)
+  L2_58 = L2_58(L3_59, L4_60, L5_61, L3_59(L4_60, L5_61))
+  if L1_57 and L2_58 and L2_58 > 0 then
+    L3_59 = require
+    L4_60 = "luci.fs"
+    L3_59 = L3_59(L4_60)
+    L4_60 = require
+    L5_61 = "nixio.fs"
+    L4_60 = L4_60(L5_61)
+    L5_61 = nil
+    if L4_60.access(L1_57) then
+      L5_61 = math.modf(math.modf(L3_59.stat(L1_57).size) / L2_58 * 100)
+      if L5_61 < 1 and L5_61 > 0 then
+        L5_61 = 1
+      elseif L5_61 > 100 then
+        L5_61 = 100
+      end
+    end
+    return L5_61
+  end
+  L3_59 = 0
+  return L3_59
+end
+function downloadPercent(A0_62)
+  if tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) then
+    if tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) == 1 then
+      return _xunleiDownloadPercent(A0_62)
+    elseif tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) == 2 then
+      return _wgetDownloadPercent(A0_62)
+    end
+  end
+  return 0
+end
+function _cancelXunleiDownload(A0_63)
+  local L1_64
+  L1_64 = _resumeDownload
+  L1_64(_UPVALUE0_.get(_UPVALUE1_.PREF_PAUSED_IDS, ""))
+  L1_64 = _UPVALUE2_
+  L1_64 = L1_64.isStrNil
+  L1_64 = L1_64(A0_63)
+  if L1_64 then
+    L1_64 = false
+    return L1_64
+  else
+    L1_64 = {}
+    L1_64.api = 507
+    L1_64.idList = A0_63
+    L1_64.deletefile = true
+    if _UPVALUE2_.thrift_tunnel_to_datacenter(_UPVALUE3_.encode(L1_64)) and _UPVALUE2_.thrift_tunnel_to_datacenter(_UPVALUE3_.encode(L1_64)).code == 0 then
+      return true
+    else
+      return false
+    end
+  end
+end
+function _cancelWgetDownload(A0_65)
+  local L1_66, L2_67, L3_68, L4_69, L5_70
+  L5_70 = L2_67(L3_68)
+  for L4_69, L5_70 in L1_66(L2_67, L3_68, L4_69, L5_70, L2_67(L3_68)) do
+    if L5_70 then
+      os.execute("kill " .. _UPVALUE0_.trim(L5_70))
+    end
+  end
+  L4_69 = nil
+  if L2_67 then
+    L4_69 = L2_67
+    if L3_68 then
+      L4_69 = L2_67
+      L3_68(L4_69)
+    end
+  end
+  return L3_68
+end
+function cancelDownload(A0_71)
+  if tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) then
+    if tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) == 1 then
+      return _cancelXunleiDownload(A0_71)
+    elseif tonumber(_UPVALUE0_.get(PREF_DOWNLOAD_TYPE), nil) == 2 then
+      return _cancelWgetDownload(A0_71)
+    end
+  end
+  return false
+end

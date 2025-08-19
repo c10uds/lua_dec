@@ -1,0 +1,2250 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQDeviceUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("cjson")
+function getDeviceCompany(A0_1)
+  local L1_2
+  L1_2 = {}
+  L1_2.name = ""
+  L1_2.icon = ""
+  if _UPVALUE0_.isStrNil(A0_1) or string.len(A0_1) < 8 then
+    return L1_2
+  end
+  return _UPVALUE1_.identifyDevice(A0_1, nil)
+end
+function getDeviceInfoFromDB()
+  local L0_3, L1_4, L2_5
+  L0_3 = require
+  L1_4 = "xiaoqiang.util.XQDBUtil"
+  L0_3 = L0_3(L1_4)
+  L1_4 = {}
+  L2_5 = L0_3.fetchAllDeviceInfo
+  L2_5 = L2_5()
+  if #L2_5 > 0 then
+    for _FORV_6_, _FORV_7_ in ipairs(L2_5) do
+      L1_4[_FORV_7_.mac] = _FORV_7_
+    end
+  end
+  return L1_4
+end
+function getDeviceMacsFromDB()
+  local L0_6, L1_7, L2_8
+  L0_6 = require
+  L1_7 = "xiaoqiang.util.XQDBUtil"
+  L0_6 = L0_6(L1_7)
+  L1_7 = {}
+  L2_8 = L0_6.fetchAllDeviceInfo
+  L2_8 = L2_8()
+  if #L2_8 > 0 then
+    for _FORV_6_, _FORV_7_ in ipairs(L2_8) do
+      table.insert(L1_7, _FORV_7_.mac)
+    end
+  end
+  return L1_7
+end
+function getDeviceInfoFromConfig()
+  local L0_9
+  L0_9 = require
+  L0_9 = L0_9("luci.model.uci")
+  L0_9 = L0_9.cursor
+  L0_9 = L0_9()
+  L0_9:foreach("deviceinfo", "device", function(A0_10)
+    local L1_11
+    L1_11 = {}
+    L1_11.mac = _UPVALUE0_.macFormat(A0_10.mac)
+    L1_11.owner = A0_10.owner
+    L1_11.device = A0_10.device
+    _UPVALUE1_[L1_11.mac] = L1_11
+  end)
+  return {}
+end
+function fetchDeviceInfoFromConfig(A0_12)
+  local L1_13, L2_14
+  L1_13 = {}
+  L1_13.owner = ""
+  L1_13.device = ""
+  L2_14 = _UPVALUE0_
+  L2_14 = L2_14.isStrNil
+  L2_14 = L2_14(A0_12)
+  if L2_14 then
+    return L1_13
+  else
+    L2_14 = _UPVALUE0_
+    L2_14 = L2_14.macFormat
+    L2_14 = L2_14(A0_12)
+    A0_12 = L2_14
+  end
+  L2_14 = string
+  L2_14 = L2_14.lower
+  L2_14 = L2_14(A0_12:gsub(":", ""))
+  if require("luci.model.uci").cursor():get_all("deviceinfo", L2_14) then
+    L1_13.owner = require("luci.model.uci").cursor():get_all("deviceinfo", L2_14).owner or ""
+    L1_13.device = require("luci.model.uci").cursor():get_all("deviceinfo", L2_14).device or ""
+  end
+  return L1_13
+end
+function saveDeviceInfo(A0_15, A1_16, A2_17)
+  local L3_18, L4_19, L5_20, L6_21
+  L3_18 = _UPVALUE0_
+  L3_18 = L3_18.isStrNil
+  L4_19 = A0_15
+  L3_18 = L3_18(L4_19)
+  if L3_18 then
+    return
+  end
+  L3_18 = require
+  L4_19 = "luci.model.uci"
+  L3_18 = L3_18(L4_19)
+  L3_18 = L3_18.cursor
+  L3_18 = L3_18()
+  L4_19 = _UPVALUE0_
+  L4_19 = L4_19.macFormat
+  L5_20 = A0_15
+  L4_19 = L4_19(L5_20)
+  L5_20 = string
+  L5_20 = L5_20.lower
+  L6_21 = L4_19.gsub
+  L6_21 = L6_21(L4_19, ":", "")
+  L5_20 = L5_20(L6_21, L6_21(L4_19, ":", ""))
+  L6_21 = L3_18.get_all
+  L6_21 = L6_21(L3_18, "deviceinfo", L5_20)
+  if L6_21 then
+    if A1_16 then
+      L6_21 = L3_18.set
+      L6_21(L3_18, "deviceinfo", L5_20, "owner", A1_16)
+    end
+    if A2_17 then
+      L6_21 = L3_18.set
+      L6_21(L3_18, "deviceinfo", L5_20, "device", A2_17)
+    end
+  else
+    L6_21 = {}
+    L6_21.mac = L4_19
+    L6_21.owner = A1_16 or ""
+    L6_21.device = A2_17 or ""
+    L3_18:section("deviceinfo", "device", L5_20, L6_21)
+  end
+  L6_21 = L3_18.commit
+  L6_21(L3_18, "deviceinfo")
+end
+function saveDeviceName(A0_22, A1_23, A2_24, A3_25)
+  local L4_26, L5_27, L6_28
+  L4_26 = require
+  L5_27 = "xiaoqiang.util.XQDBUtil"
+  L4_26 = L4_26(L5_27)
+  L5_27 = require
+  L6_28 = "xiaoqiang.util.XQSynchrodata"
+  L5_27 = L5_27(L6_28)
+  L6_28 = _UPVALUE0_
+  L6_28 = L6_28.macFormat
+  L6_28 = L6_28(A0_22)
+  L5_27.syncDeviceInfo({
+    mac = L6_28,
+    nickname = A1_23,
+    owner = A2_24,
+    device = A3_25
+  })
+  if L4_26.updateDeviceNickname(L6_28, A1_23) == 0 then
+    saveDeviceInfo(L6_28, A2_24, A3_25)
+    return true
+  else
+    return false
+  end
+end
+function getDHCPList()
+  local L0_29, L1_30, L2_31, L3_32, L4_33, L5_34, L6_35, L7_36, L8_37, L9_38, L10_39, L11_40
+  L0_29 = require
+  L1_30 = "nixio.fs"
+  L0_29 = L0_29(L1_30)
+  L1_30 = require
+  L2_31 = "luci.model.uci"
+  L1_30 = L1_30(L2_31)
+  L2_31 = L1_30.cursor
+  L2_31 = L2_31()
+  L3_32 = {}
+  L4_33 = _UPVALUE0_
+  L4_33 = L4_33.DHCP_LEASE_FILEPATH
+  L5_34 = L2_31.foreach
+  function L9_38(A0_41)
+    if A0_41.leasefile and _UPVALUE0_.access(A0_41.leasefile) then
+      _UPVALUE1_ = A0_41.leasefile
+      return false
+    end
+  end
+  L5_34(L6_35, L7_36, L8_37, L9_38)
+  L5_34 = io
+  L5_34 = L5_34.open
+  L5_34 = L5_34(L6_35, L7_36)
+  if L5_34 then
+    for L9_38 in L6_35(L7_36) do
+      if L9_38 then
+        L11_40 = L9_38
+        L10_39 = L9_38.match
+        L11_40 = L10_39(L11_40, "^(%d+) (%S+) (%S+) (%S+)")
+        if L10_39 and L11_40 and L10_39(L11_40, "^(%d+) (%S+) (%S+) (%S+)") and "" then
+          L3_32[#L3_32 + 1] = {
+            mac = _UPVALUE1_.macFormat(L11_40),
+            ip = L10_39(L11_40, "^(%d+) (%S+) (%S+) (%S+)")
+          }
+        end
+      end
+    end
+    L6_35(L7_36)
+    return L3_32
+  else
+    return L6_35
+  end
+end
+function getDHCPDict()
+  local L0_42, L1_43
+  L0_42 = {}
+  L1_43 = getDHCPList
+  L1_43 = L1_43()
+  for _FORV_5_, _FORV_6_ in ipairs(L1_43) do
+    L0_42[_FORV_6_.mac] = _FORV_6_
+  end
+  return L0_42
+end
+function getDHCPIpDict()
+  local L0_44, L1_45
+  L0_44 = {}
+  L1_45 = getDHCPList
+  L1_45 = L1_45()
+  for _FORV_5_, _FORV_6_ in ipairs(L1_45) do
+    L0_44[_FORV_6_.ip] = _FORV_6_
+  end
+  return L0_44
+end
+function getMacfilterInfoList()
+  local L0_46, L1_47, L2_48, L3_49, L4_50, L5_51, L6_52, L7_53, L8_54, L9_55, L10_56, L11_57, L12_58
+  L0_46 = require
+  L1_47 = "luci.util"
+  L0_46 = L0_46(L1_47)
+  L1_47 = {}
+  L2_48 = L0_46.execi
+  L2_48 = L2_48(L3_49)
+  for L6_52 in L2_48, nil, nil do
+    L7_53 = L6_52
+    L8_54 = ";"
+    L6_52 = L7_53 .. L8_54
+    L8_54 = L6_52
+    L7_53 = L6_52.match
+    L9_55 = "mac=(%S-);"
+    L7_53 = L7_53(L8_54, L9_55)
+    L7_53 = L7_53 or ""
+    L9_55 = L6_52
+    L8_54 = L6_52.match
+    L10_56 = "wan=(%S-);"
+    L8_54 = L8_54(L9_55, L10_56)
+    L8_54 = L8_54 or ""
+    L10_56 = L6_52
+    L9_55 = L6_52.match
+    L11_57 = "lan=(%S-);"
+    L9_55 = L9_55(L10_56, L11_57)
+    L9_55 = L9_55 or ""
+    L11_57 = L6_52
+    L10_56 = L6_52.match
+    L12_58 = "admin=(%S-);"
+    L10_56 = L10_56(L11_57, L12_58)
+    L10_56 = L10_56 or ""
+    L12_58 = L6_52
+    L11_57 = L6_52.match
+    L11_57 = L11_57(L12_58, "pridisk=(%S-);")
+    L11_57 = L11_57 or ""
+    L12_58 = {}
+    if not _UPVALUE0_.isStrNil(L7_53) then
+      L12_58.mac = _UPVALUE0_.macFormat(L7_53)
+      L12_58.wan = string.upper(L8_54) == "YES" and true or false
+      L12_58.lan = string.upper(L9_55) == "YES" and true or false
+      L12_58.admin = string.upper(L10_56) == "YES" and true or false
+      L12_58.pridisk = string.upper(L11_57) == "YES" and true or false
+      table.insert(L1_47, L12_58)
+    end
+  end
+  return L1_47
+end
+function getMacfilterInfoDict()
+  local L0_59, L1_60
+  L0_59 = {}
+  L1_60 = getMacfilterInfoList
+  L1_60 = L1_60()
+  for _FORV_5_, _FORV_6_ in ipairs(L1_60) do
+    L0_59[_FORV_6_.mac] = _FORV_6_
+  end
+  return L0_59
+end
+function getDevicesName(A0_61)
+  local L1_62, L2_63, L3_64, L4_65, L5_66, L6_67, L7_68, L8_69, L9_70, L10_71, L11_72
+  L1_62 = {}
+  if A0_61 then
+    L2_63 = type
+    L3_64 = A0_61
+    L2_63 = L2_63(L3_64)
+    if L2_63 == "table" then
+      L2_63 = getDeviceInfoFromDB
+      L2_63 = L2_63()
+      L3_64 = getDHCPDict
+      L3_64 = L3_64()
+      for L7_68, L8_69 in L4_65(L5_66) do
+        L9_70 = _UPVALUE0_
+        L9_70 = L9_70.macFormat
+        L10_71 = L8_69
+        L9_70 = L9_70(L10_71)
+        L8_69 = L9_70
+        L9_70 = L2_63[L8_69]
+        L10_71 = L3_64[L8_69]
+        if L9_70 then
+          L11_72 = _UPVALUE0_
+          L11_72 = L11_72.isStrNil
+          L11_72 = L11_72(L9_70.nickname)
+          if not L11_72 then
+            L11_72 = L9_70.nickname
+            L1_62[L8_69] = L11_72
+          end
+        else
+          L11_72 = nil
+          if L10_71 and not _UPVALUE0_.isStrNil(L10_71.name) then
+            L11_72 = L10_71.name
+            L1_62[L8_69] = L10_71.name
+          end
+          if _UPVALUE0_.isStrNil(L1_62[L8_69]) then
+            if _UPVALUE1_.identifyDevice(L8_69, L11_72) and not _UPVALUE0_.isStrNil(_UPVALUE1_.identifyDevice(L8_69, L11_72).type.n) then
+              L1_62[L8_69] = _UPVALUE1_.identifyDevice(L8_69, L11_72).type.n
+            elseif _UPVALUE1_.identifyDevice(L8_69, L11_72) and not _UPVALUE0_.isStrNil(_UPVALUE1_.identifyDevice(L8_69, L11_72).name) then
+              L1_62[L8_69] = _UPVALUE1_.identifyDevice(L8_69, L11_72).name
+            else
+              L1_62[L8_69] = L8_69
+            end
+          else
+          end
+        end
+      end
+      return L1_62
+    end
+  else
+    L2_63 = nil
+    return L2_63
+  end
+end
+function getDevicesPermissions(A0_73)
+  local L1_74, L2_75, L3_76, L4_77, L5_78, L6_79, L7_80, L8_81, L9_82, L10_83, L11_84, L12_85, L13_86, L14_87, L15_88, L16_89, L17_90, L18_91, L19_92
+  L1_74 = require
+  L2_75 = "luci.util"
+  L1_74 = L1_74(L2_75)
+  L2_75 = require
+  L3_76 = "json"
+  L2_75 = L2_75(L3_76)
+  L3_76 = {}
+  L4_77 = {}
+  L5_78 = L1_74.execl
+  L6_79 = "/usr/sbin/sysapi macfilter get"
+  L5_78 = L5_78(L6_79)
+  L6_79 = {}
+  L7_80 = {}
+  if A0_73 then
+    if L8_81 == "table" then
+      L6_79 = A0_73
+    end
+  else
+    for L11_84, L12_85 in L8_81(L9_82) do
+      L14_87 = L12_85
+      L13_86 = L12_85.match
+      L15_88 = "mac=(%S-);"
+      L13_86 = L13_86(L14_87, L15_88)
+      L13_86 = L13_86 or ""
+      if L13_86 and L13_86 ~= "" then
+        L14_87 = table
+        L14_87 = L14_87.insert
+        L15_88 = L6_79
+        L16_89 = _UPVALUE0_
+        L16_89 = L16_89.macFormat
+        L17_90 = L13_86
+        L19_92 = L16_89(L17_90)
+        L14_87(L15_88, L16_89, L17_90, L18_91, L19_92, L16_89(L17_90))
+      end
+    end
+  end
+  L8_81.api = 70
+  L8_81.macs = L6_79
+  L19_92 = L10_83(L11_84)
+  if L9_82 then
+    if L10_83 == 0 then
+      for L13_86, L14_87 in L10_83(L11_84) do
+        L15_88 = L6_79[L13_86]
+        L7_80[L15_88] = L14_87
+      end
+    end
+  end
+  for L13_86, L14_87 in L10_83(L11_84) do
+    L15_88 = L14_87
+    L16_89 = ";"
+    L14_87 = L15_88 .. L16_89
+    L16_89 = L14_87
+    L15_88 = L14_87.match
+    L17_90 = "mac=(%S-);"
+    L15_88 = L15_88(L16_89, L17_90)
+    L15_88 = L15_88 or ""
+    L17_90 = L14_87
+    L16_89 = L14_87.match
+    L18_91 = "wan=(%S-);"
+    L16_89 = L16_89(L17_90, L18_91)
+    L16_89 = L16_89 or ""
+    L18_91 = L14_87
+    L17_90 = L14_87.match
+    L19_92 = "lan=(%S-);"
+    L17_90 = L17_90(L18_91, L19_92)
+    L17_90 = L17_90 or ""
+    L19_92 = L14_87
+    L18_91 = L14_87.match
+    L18_91 = L18_91(L19_92, "admin=(%S-);")
+    L18_91 = L18_91 or ""
+    L19_92 = L14_87.match
+    L19_92 = L19_92(L14_87, "pridisk=(%S-);")
+    L19_92 = L19_92 or ""
+    if L15_88 then
+      L15_88 = _UPVALUE0_.macFormat(L15_88)
+      ;({}).wan = string.upper(L16_89) == "YES" and 1 or 0
+      ;({}).lan = string.upper(L17_90) == "YES" and 1 or 0
+      ;({}).admin = string.upper(L18_91) == "YES" and 1 or 0
+      ;({}).pridisk = string.upper(L19_92) == "YES" and 1 or 0
+      if L7_80[L15_88] ~= nil then
+        ({}).lan = L7_80[L15_88] and 1 or 0
+      end
+      L3_76[L15_88] = {}
+    end
+  end
+  for L13_86, L14_87 in L10_83(L11_84) do
+    L15_88 = L3_76[L14_87]
+    if L15_88 then
+      L15_88 = L3_76[L14_87]
+      L4_77[L14_87] = L15_88
+    else
+      L15_88 = {}
+      L15_88.wan = 1
+      L16_89 = L7_80[L14_87]
+      if L16_89 then
+        L16_89 = 1
+      else
+        L16_89 = L16_89 or 0
+      end
+      L15_88.lan = L16_89
+      L15_88.admin = 1
+      L15_88.pridisk = 0
+      L4_77[L14_87] = L15_88
+    end
+  end
+  return L4_77
+end
+function getWanLanNetworkStatistics(A0_93)
+  local L1_94, L2_95, L3_96, L4_97, L5_98, L6_99, L7_100, L8_101, L9_102, L10_103, L11_104
+  L1_94 = require
+  L2_95 = "luci.util"
+  L1_94 = L1_94(L2_95)
+  L2_95 = ""
+  if A0_93 == "lan" then
+    L2_95 = "ubus call trafficd lan"
+  elseif A0_93 == "wan" then
+    L2_95 = "ubus call trafficd wan"
+  end
+  L3_96 = {}
+  L3_96.upload = "0"
+  L3_96.upspeed = "0"
+  L3_96.download = "0"
+  L3_96.downspeed = "0"
+  L3_96.devname = ""
+  L3_96.maxuploadspeed = "0"
+  L3_96.maxdownloadspeed = "0"
+  L4_97 = L1_94.exec
+  L5_98 = L2_95
+  L4_97 = L4_97(L5_98)
+  L5_98 = _UPVALUE0_
+  L5_98 = L5_98.isStrNil
+  L6_99 = L4_97
+  L5_98 = L5_98(L6_99)
+  if L5_98 then
+    return L3_96
+  end
+  L5_98 = _UPVALUE1_
+  L5_98 = L5_98.decode
+  L6_99 = L4_97
+  L5_98 = L5_98(L6_99)
+  if A0_93 == "wan" then
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.devname = L6_99
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.upload = L6_99
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.download = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.upspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.downspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.maxuploadspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.maxdownloadspeed = L6_99
+    L6_99 = L1_94.exec
+    L6_99 = L6_99(L7_100)
+    if not L7_100 then
+      historylist = L7_100
+      L6_99 = L7_100
+      for L10_103, L11_104 in L7_100(L8_101) do
+        if L11_104 then
+          table.insert(historylist, tostring(L11_104))
+        end
+      end
+      L3_96.history = L7_100
+    end
+  else
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.devname = L6_99
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.upload = L6_99
+    L6_99 = tostring
+    L6_99 = L6_99(L7_100)
+    L3_96.download = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.upspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.downspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.maxuploadspeed = L6_99
+    L6_99 = tostring
+    L11_104 = L7_100(L8_101)
+    L6_99 = L6_99(L7_100, L8_101, L9_102, L10_103, L11_104, L7_100(L8_101))
+    L3_96.maxdownloadspeed = L6_99
+  end
+  return L3_96
+end
+function skip_master_dev_from_trafficd(A0_105, A1_106)
+  local L2_107, L3_108, L4_109, L5_110, L6_111, L7_112
+  L2_107 = require
+  L3_108 = "luci.util"
+  L2_107 = L2_107(L3_108)
+  L3_108 = require
+  L4_109 = "xiaoqiang.util.XQLanWanUtil"
+  L3_108 = L3_108(L4_109)
+  L4_109 = {}
+  L5_110 = {}
+  L6_111 = {}
+  if A1_106 ~= nil then
+    for _FORV_10_, _FORV_11_ in L7_112(A1_106) do
+      L6_111[_FORV_11_] = 1
+    end
+  end
+  if A0_105 == nil then
+    if _UPVALUE0_.isStrNil(A0_105) then
+      return nil
+    else
+      L4_109 = json.decode(L7_112)
+    end
+  else
+    L4_109 = A0_105
+  end
+  if L7_112 == nil then
+    return nil
+  end
+  L6_111[L7_112] = 1
+  for _FORV_11_, _FORV_12_ in pairs(L4_109) do
+    if L6_111[_FORV_12_.ifname] ~= 1 then
+      L5_110[_FORV_11_] = _FORV_12_
+    end
+  end
+  return L5_110
+end
+function getDevNetStatisticsList()
+  local L0_113, L1_114, L2_115, L3_116, L4_117, L5_118, L6_119, L7_120, L8_121, L9_122, L10_123, L11_124, L12_125, L13_126, L14_127, L15_128, L16_129, L17_130, L18_131, L19_132, L20_133, L21_134, L22_135, L23_136, L24_137
+  L0_113 = require
+  L1_114 = "luci.util"
+  L0_113 = L0_113(L1_114)
+  L1_114 = {}
+  L2_115 = getDHCPDict
+  L2_115 = L2_115()
+  L3_116 = getDeviceInfoFromDB
+  L3_116 = L3_116()
+  L4_117 = L0_113.exec
+  L4_117 = L4_117(L5_118)
+  if L5_118 then
+    return L1_114
+  else
+    L4_117 = L5_118
+  end
+  for L8_121, L9_122 in L5_118(L6_119) do
+    if L9_122 then
+      L10_123 = {}
+      L11_124 = _UPVALUE0_
+      L11_124 = L11_124.macFormat
+      L12_125 = L8_121
+      L11_124 = L11_124(L12_125)
+      L12_125, L13_126, L14_127 = nil, nil, nil
+      L15_128 = L2_115[L11_124]
+      if L15_128 then
+        L15_128 = L2_115[L11_124]
+        L14_127 = L15_128.name
+      end
+      L15_128 = L3_116[L11_124]
+      if L15_128 then
+        L16_129 = _UPVALUE0_
+        L16_129 = L16_129.isStrNil
+        L17_130 = L14_127
+        L16_129 = L16_129(L17_130)
+        if L16_129 then
+          L14_127 = L15_128.oName
+        end
+        L13_126 = L15_128.nickname
+      end
+      L16_129 = _UPVALUE2_
+      L16_129 = L16_129.identifyDevice
+      L17_130 = L11_124
+      L18_131 = L14_127
+      L16_129 = L16_129(L17_130, L18_131)
+      L17_130 = L16_129.type
+      L18_131 = _UPVALUE0_
+      L18_131 = L18_131.isStrNil
+      L19_132 = L13_126
+      L18_131 = L18_131(L19_132)
+      if not L18_131 then
+        L12_125 = L13_126
+      end
+      L18_131 = _UPVALUE0_
+      L18_131 = L18_131.isStrNil
+      L19_132 = L12_125
+      L18_131 = L18_131(L19_132)
+      if L18_131 then
+        L18_131 = _UPVALUE0_
+        L18_131 = L18_131.isStrNil
+        L19_132 = L17_130.n
+        L18_131 = L18_131(L19_132)
+        if not L18_131 then
+          L12_125 = L17_130.n
+        end
+      end
+      L18_131 = _UPVALUE0_
+      L18_131 = L18_131.isStrNil
+      L19_132 = L12_125
+      L18_131 = L18_131(L19_132)
+      if L18_131 then
+        L18_131 = _UPVALUE0_
+        L18_131 = L18_131.isStrNil
+        L19_132 = L14_127
+        L18_131 = L18_131(L19_132)
+        if not L18_131 then
+          L12_125 = L14_127
+        end
+      end
+      L18_131 = _UPVALUE0_
+      L18_131 = L18_131.isStrNil
+      L19_132 = L12_125
+      L18_131 = L18_131(L19_132)
+      if L18_131 then
+        L18_131 = _UPVALUE0_
+        L18_131 = L18_131.isStrNil
+        L19_132 = L16_129.name
+        L18_131 = L18_131(L19_132)
+        if not L18_131 then
+          L12_125 = L16_129.name
+        end
+      end
+      L18_131 = _UPVALUE0_
+      L18_131 = L18_131.isStrNil
+      L19_132 = L12_125
+      L18_131 = L18_131(L19_132)
+      if L18_131 then
+        L12_125 = L11_124
+      end
+      L18_131 = 0
+      L19_132 = 0
+      L20_133 = 0
+      L21_134 = 0
+      L22_135 = 0
+      L23_136 = 0
+      L24_137 = L9_122.ip_list
+      if #L24_137 > 0 then
+        for _FORV_28_, _FORV_29_ in ipairs(L24_137) do
+          L18_131 = L18_131 + _FORV_29_.tx_bytes or 0
+          L20_133 = L20_133 + _FORV_29_.rx_bytes or 0
+          L19_132 = L19_132 + _FORV_29_.tx_rate or 0
+          L21_134 = L21_134 + _FORV_29_.rx_rate or 0
+          L22_135 = L22_135 + _FORV_29_.max_tx_rate or 0
+          L23_136 = L23_136 + _FORV_29_.max_rx_rate or 0
+        end
+      end
+      L10_123.mac = L11_124
+      L10_123.upload = tostring(L18_131)
+      L10_123.upspeed = tostring(math.floor(L19_132))
+      L10_123.download = tostring(L20_133)
+      L10_123.downspeed = tostring(math.floor(L21_134))
+      L10_123.online = tostring(L9_122.online_timer or 0)
+      L10_123.devname = L12_125
+      L10_123.isap = tonumber(L9_122.is_ap) or 0
+      L10_123.maxuploadspeed = tostring(math.floor(L22_135))
+      L10_123.maxdownloadspeed = tostring(math.floor(L23_136))
+      L1_114[#L1_114 + 1] = L10_123
+    end
+  end
+  return L1_114
+end
+function get2g5gDeviceCount()
+  local L0_138, L1_139, L2_140, L3_141, L4_142, L5_143, L6_144, L7_145, L8_146, L9_147, L10_148, L11_149, L12_150, L13_151
+  L0_138 = require
+  L1_139 = "luci.util"
+  L0_138 = L0_138(L1_139)
+  L1_139 = require
+  L2_140 = "xiaoqiang.util.XQDBUtil"
+  L1_139 = L1_139(L2_140)
+  L2_140 = require
+  L3_141 = "xiaoqiang.util.XQLanWanUtil"
+  L2_140 = L2_140(L3_141)
+  L3_141 = 0
+  L4_142 = 0
+  L5_143 = 0
+  L6_144 = L0_138.exec
+  L7_145 = "ubus call trafficd hw"
+  L6_144 = L6_144(L7_145)
+  L7_145 = require
+  L8_146 = "luci.model.uci"
+  L7_145 = L7_145(L8_146)
+  L7_145 = L7_145.cursor
+  L7_145 = L7_145()
+  L9_147 = L7_145
+  L8_146 = L7_145.get
+  L10_148 = "misc"
+  L11_149 = "wireless"
+  L12_150 = "ifname_2G"
+  L8_146 = L8_146(L9_147, L10_148, L11_149, L12_150)
+  L8_146 = L8_146 or ""
+  L10_148 = L7_145
+  L9_147 = L7_145.get
+  L11_149 = "misc"
+  L12_150 = "wireless"
+  L9_147 = L9_147(L10_148, L11_149, L12_150, L13_151)
+  L9_147 = L9_147 or ""
+  L10_148 = require
+  L11_149 = "xiaoqiang.common.XQFunction"
+  L10_148 = L10_148(L11_149)
+  L11_149 = L10_148.getNetMode
+  L11_149 = L11_149()
+  L12_150 = L10_148.isStrNil
+  L12_150 = L12_150(L13_151)
+  if not L12_150 and (L11_149 == "lanapmode" or L11_149 == "wifiapmode") then
+    L12_150 = tonumber
+    L12_150 = L12_150(L13_151, L13_151("iwinfo " .. L8_146 .. " assoc | grep stacount | awk '{print $2}'"))
+    L12_150 = L12_150 or 0
+    return L12_150, L13_151, L12_150 + L13_151
+  end
+  L12_150 = L10_148.isStrNil
+  L12_150 = L12_150(L13_151)
+  if L12_150 then
+    L12_150 = 0
+    return L12_150, L13_151
+  else
+    L12_150 = _UPVALUE0_
+    L12_150 = L12_150.decode
+    L12_150 = L12_150(L13_151)
+    L6_144 = L12_150
+  end
+  L12_150 = L2_140.getLanIp
+  L12_150 = L12_150()
+  if not L13_151 then
+    L12_150 = L13_151
+  else
+    L12_150 = nil
+  end
+  for _FORV_16_, _FORV_17_ in L13_151(L6_144) do
+    if _FORV_17_.ip_list then
+      for _FORV_22_, _FORV_23_ in ipairs(_FORV_17_.ip_list) do
+        if _FORV_17_.ifname ~= "wl1.2" and _FORV_17_.ifname ~= "wl3" and _FORV_17_.ifname ~= "wl14" and L12_150 and _FORV_23_.ip then
+          if _FORV_23_.ip:match("^" .. L12_150) or _FORV_23_.ip == "0.0.0.0" then
+          else
+          end
+        end
+        if not true then
+          if _FORV_17_.ifname:match(L9_147) and tonumber(_FORV_17_.assoc) == 1 then
+            L4_142 = L4_142 + 1
+          end
+          if _FORV_17_.ifname:match(L8_146) and tonumber(_FORV_17_.assoc) == 1 then
+            L3_141 = L3_141 + 1
+          end
+          if not _FORV_17_.ifname:match("wl") and tonumber(_FORV_17_.assoc) == 1 or _FORV_17_.ifname:match("wl") and tonumber(_FORV_17_.assoc) == 1 then
+            L5_143 = L5_143 + 1
+          end
+        end
+      end
+    end
+  end
+  return L13_151, L4_142, L5_143
+end
+function getDevNetStatisticsDict()
+  local L0_152, L1_153
+  L0_152 = {}
+  L1_153 = getDevNetStatisticsList
+  L1_153 = L1_153()
+  for _FORV_5_, _FORV_6_ in ipairs(L1_153) do
+    if _FORV_6_ then
+      L0_152[_FORV_6_.mac] = _FORV_6_
+    end
+  end
+  return L0_152
+end
+function getDeviceCount()
+  local L0_154, L1_155, L2_156, L3_157, L4_158, L5_159, L6_160, L7_161, L8_162, L9_163
+  L0_154 = require
+  L1_155 = "luci.util"
+  L0_154 = L0_154(L1_155)
+  L1_155 = require
+  L2_156 = "xiaoqiang.util.XQDBUtil"
+  L1_155 = L1_155(L2_156)
+  L2_156 = require
+  L3_157 = "xiaoqiang.util.XQLanWanUtil"
+  L2_156 = L2_156(L3_157)
+  L3_157 = 0
+  L4_158 = 0
+  L5_159 = 0
+  L6_160 = 0
+  L7_161 = L0_154.exec
+  L8_162 = "ubus call trafficd hw"
+  L7_161 = L7_161(L8_162)
+  L8_162 = _UPVALUE0_
+  L8_162 = L8_162.isStrNil
+  L8_162 = L8_162(L9_163)
+  if L8_162 then
+    L8_162 = 0
+    return L8_162, L9_163
+  else
+    L8_162 = _UPVALUE1_
+    L8_162 = L8_162.decode
+    L8_162 = L8_162(L9_163)
+    L7_161 = L8_162
+  end
+  L8_162 = L1_155.fetchAllDeviceInfo
+  L8_162 = L8_162()
+  if L8_162 then
+    for _FORV_12_, _FORV_13_ in L9_163(L8_162) do
+      if _FORV_13_ and not L7_161[_FORV_13_.mac] and (not _UPVALUE0_.isStrNil(_FORV_13_.oName) or not _UPVALUE0_.isStrNil(_FORV_13_.nickname)) then
+        L4_158 = L4_158 + 1
+        L6_160 = L6_160 + 1
+      end
+    end
+  end
+  if not _UPVALUE0_.isStrNil(L9_163) then
+  else
+  end
+  for _FORV_13_, _FORV_14_ in pairs(L7_161) do
+    if _FORV_14_.ip_list then
+      for _FORV_19_, _FORV_20_ in ipairs(_FORV_14_.ip_list) do
+        if _FORV_14_.ifname ~= "wl1.2" and _FORV_14_.ifname ~= "wl3" and _FORV_14_.ifname ~= "wl14" and L9_163 and _FORV_20_.ip then
+          if _FORV_20_.ip:match("^" .. L9_163) or _FORV_20_.ip == "0.0.0.0" then
+          else
+          end
+        end
+        if not true then
+          if (not _FORV_14_.ifname:match("wl") or _FORV_14_.is_ap == 8 or _FORV_14_.is_ap == 4 or _FORV_14_.ifname:match("wl") and tonumber(_FORV_14_.assoc) == 1) and _FORV_20_.ageing_timer <= 300 then
+            L3_157 = L3_157 + 1
+            if _FORV_14_.is_ap ~= 4 and _FORV_14_.is_ap ~= 8 then
+              L5_159 = L5_159 + 1
+            end
+          end
+          L4_158 = L4_158 + 1
+          if _FORV_14_.is_ap ~= 4 and _FORV_14_.is_ap ~= 8 then
+            L6_160 = L6_160 + 1
+          end
+        end
+      end
+    end
+  end
+  return L3_157, L4_158, L5_159, L6_160
+end
+function getConnectDeviceCount()
+  local L0_164, L1_165, L2_166, L3_167, L4_168, L5_169, L6_170, L7_171, L8_172
+  L0_164 = require
+  L1_165 = "luci.util"
+  L0_164 = L0_164(L1_165)
+  L1_165 = 0
+  L2_166 = L0_164.exec
+  L2_166 = L2_166(L3_167)
+  if L3_167 then
+    return L1_165
+  else
+    L2_166 = L3_167
+  end
+  for L6_170, L7_171 in L3_167(L4_168) do
+    if L7_171 then
+      L8_172 = L7_171.ip_list
+      if L8_172 then
+        L8_172 = L7_171.ip_list
+        L8_172 = #L8_172
+        if L8_172 > 0 then
+          L8_172 = L7_171.ifname
+          if not _UPVALUE0_.isStrNil(L8_172) and (tonumber(L7_171.assoc) == 1 or not L8_172:match("wl")) then
+            for _FORV_12_, _FORV_13_ in ipairs(L7_171.ip_list) do
+              if _FORV_13_.ageing_timer <= 300 and (_FORV_13_.tx_bytes ~= 0 or _FORV_13_.rx_bytes ~= 0) then
+                L1_165 = L1_165 + 1
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  return L1_165
+end
+function getSpecialDevCount()
+  local L0_173, L1_174, L2_175, L3_176, L4_177, L5_178, L6_179
+  L0_173 = require
+  L1_174 = "xiaoqiang.XQEquipment"
+  L0_173 = L0_173(L1_174)
+  L1_174 = {}
+  L1_174.mitv = 0
+  L1_174.mibox = 0
+  L2_175 = getDeviceInfoFromDB
+  L2_175 = L2_175()
+  for L6_179, _FORV_7_ in L3_176(L4_177) do
+    if _FORV_7_ and not _UPVALUE0_.isStrNil(_FORV_7_.oName) then
+      if _FORV_7_.oName:match("^mitv") then
+        L1_174.mitv = L1_174.mitv + 1
+      end
+      if _FORV_7_.oName:match("^mibox") then
+        L1_174.mibox = L1_174.mibox + 1
+      end
+    end
+  end
+  return L1_174
+end
+function getDeviceInfo(A0_180, A1_181)
+  local L2_182, L3_183, L4_184, L5_185, L6_186, L7_187, L8_188, L9_189, L10_190, L11_191, L12_192, L13_193, L14_194, L15_195, L16_196, L17_197
+  L2_182 = {}
+  L2_182.flag = 0
+  L2_182.name = ""
+  L2_182.mac = ""
+  L2_182.dhcpname = ""
+  L3_183 = {}
+  L3_183.c = 0
+  L3_183.p = 0
+  L3_183.n = ""
+  L2_182.type = L3_183
+  L3_183 = _UPVALUE0_
+  L3_183 = L3_183.isStrNil
+  L4_184 = A0_180
+  L3_183 = L3_183(L4_184)
+  if L3_183 then
+    return L2_182
+  else
+    L3_183 = _UPVALUE0_
+    L3_183 = L3_183.macFormat
+    L4_184 = A0_180
+    L3_183 = L3_183(L4_184)
+    A0_180 = L3_183
+  end
+  L3_183 = require
+  L4_184 = "xiaoqiang.XQEquipment"
+  L3_183 = L3_183(L4_184)
+  L4_184 = require
+  L5_185 = "xiaoqiang.util.XQDBUtil"
+  L4_184 = L4_184(L5_185)
+  L5_185 = getDHCPDict
+  L5_185 = L5_185()
+  L5_185 = L5_185[A0_180]
+  L6_186 = L4_184.fetchDeviceInfo
+  L7_187 = A0_180
+  L6_186 = L6_186(L7_187)
+  L7_187, L8_188, L9_189, L10_190 = nil, nil, nil, nil
+  if L5_185 then
+    L11_191 = L5_185.name
+    if L11_191 then
+      L8_188 = L5_185.name
+    end
+  end
+  if L6_186 then
+    L11_191 = _UPVALUE0_
+    L11_191 = L11_191.isStrNil
+    L12_192 = L6_186.mac
+    L11_191 = L11_191(L12_192)
+    if not L11_191 then
+      L2_182.flag = 1
+    end
+    L11_191 = _UPVALUE0_
+    L11_191 = L11_191.isStrNil
+    L12_192 = L6_186.nickname
+    L11_191 = L11_191(L12_192)
+    if not L11_191 then
+      L9_189 = L6_186.nickname
+      L7_187 = L9_189
+    end
+    L11_191 = _UPVALUE0_
+    L11_191 = L11_191.isStrNil
+    L12_192 = L6_186.oName
+    L11_191 = L11_191(L12_192)
+    if not L11_191 then
+      L11_191 = _UPVALUE0_
+      L11_191 = L11_191.isStrNil
+      L12_192 = L8_188
+      L11_191 = L11_191(L12_192)
+      if L11_191 then
+        L8_188 = L6_186.oName
+      end
+    end
+  end
+  L11_191 = L3_183.identifyDevice
+  L12_192 = A0_180
+  L13_193 = L8_188
+  L11_191 = L11_191(L12_192, L13_193)
+  L12_192 = L11_191.type
+  L13_193 = _UPVALUE0_
+  L13_193 = L13_193.isStrNil
+  L14_194 = L7_187
+  L13_193 = L13_193(L14_194)
+  if L13_193 then
+    L13_193 = _UPVALUE0_
+    L13_193 = L13_193.isStrNil
+    L14_194 = L12_192.n
+    L13_193 = L13_193(L14_194)
+    if not L13_193 then
+      L7_187 = L12_192.n
+    end
+  end
+  L13_193 = _UPVALUE0_
+  L13_193 = L13_193.isStrNil
+  L14_194 = L7_187
+  L13_193 = L13_193(L14_194)
+  if L13_193 then
+    L13_193 = _UPVALUE0_
+    L13_193 = L13_193.isStrNil
+    L14_194 = L8_188
+    L13_193 = L13_193(L14_194)
+    if not L13_193 then
+      L7_187 = L8_188
+    end
+  end
+  L13_193 = _UPVALUE0_
+  L13_193 = L13_193.isStrNil
+  L14_194 = L7_187
+  L13_193 = L13_193(L14_194)
+  if L13_193 then
+    L13_193 = _UPVALUE0_
+    L13_193 = L13_193.isStrNil
+    L14_194 = L11_191.name
+    L13_193 = L13_193(L14_194)
+    if not L13_193 then
+      L7_187 = L11_191.name
+    end
+  end
+  L13_193 = _UPVALUE0_
+  L13_193 = L13_193.isStrNil
+  L14_194 = L7_187
+  L13_193 = L13_193(L14_194)
+  if L13_193 then
+    L7_187 = A0_180
+  end
+  L13_193 = L12_192.c
+  if L13_193 == 3 then
+    L13_193 = _UPVALUE0_
+    L13_193 = L13_193.isStrNil
+    L14_194 = L9_189
+    L13_193 = L13_193(L14_194)
+    if L13_193 then
+      L7_187 = L12_192.n
+    end
+  end
+  L13_193 = fetchDeviceInfoFromConfig
+  L14_194 = A0_180
+  L13_193 = L13_193(L14_194)
+  L2_182.mac = A0_180
+  L2_182.name = L7_187
+  L14_194 = L13_193.owner
+  L14_194 = L14_194 or ""
+  L2_182.owner = L14_194
+  L14_194 = L13_193.device
+  L14_194 = L14_194 or ""
+  L2_182.device = L14_194
+  L14_194 = L8_188 or ""
+  L2_182.dhcpname = L14_194
+  L2_182.type = L12_192
+  if A1_181 then
+    L14_194 = require
+    L15_195 = "xiaoqiang.util.XQPushUtil"
+    L14_194 = L14_194(L15_195)
+    L15_195 = getMacfilterInfoDict
+    L15_195 = L15_195()
+    L16_196 = nil
+    L17_197 = {}
+    L17_197.api = 70
+    L17_197.macs = {A0_180}
+    if _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE1_.encode(L17_197)) and _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE1_.encode(L17_197)).code == 0 then
+      L16_196 = _UPVALUE0_.thrift_tunnel_to_datacenter(_UPVALUE1_.encode(L17_197)).canAccessAllDisk[1]
+    end
+    if L15_195[A0_180] then
+      ({}).wan = L15_195[A0_180].wan and 1 or 0
+      ;({}).lan = L15_195[A0_180].lan and 1 or 0
+      ;({}).admin = L15_195[A0_180].admin and 1 or 0
+      ;({}).pridisk = L15_195[A0_180].pridisk and 1 or 0
+    else
+      ({}).wan = 1
+      ;({}).lan = 1
+      ;({}).admin = 1
+      ;({}).pridisk = 0
+    end
+    if L16_196 ~= nil then
+      ({}).lan = L16_196 and 1 or 0
+    end
+    if L14_194.notifyDict()[A0_180:gsub(":", "")] then
+    end
+    L2_182.authority, L2_182.times, L2_182.push = {}, L14_194.getAuthenFailedTimes(A0_180) or 0, 1
+  end
+  return L2_182
+end
+function getDeviceList(A0_198, A1_199)
+  local L2_200, L3_201, L4_202, L5_203, L6_204, L7_205, L8_206, L9_207, L10_208, L11_209, L12_210, L13_211, L14_212, L15_213, L16_214, L17_215, L18_216, L19_217, L20_218, L21_219, L22_220, L23_221, L24_222, L25_223, L26_224, L27_225, L28_226, L29_227, L30_228, L31_229, L32_230, L33_231, L34_232, L35_233, L36_234, L37_235, L38_236, L39_237, L40_238, L41_239, L42_240, L43_241, L44_242, L45_243, L46_244, L47_245, L48_246, L49_247, L50_248, L51_249, L52_250, L53_251, L54_252, L55_253
+  L2_200 = require
+  L3_201 = "luci.cbi.datatypes"
+  L2_200 = L2_200(L3_201)
+  L3_201 = require
+  L4_202 = "xiaoqiang.util.XQDBUtil"
+  L3_201 = L3_201(L4_202)
+  L4_202 = require
+  L5_203 = "xiaoqiang.XQEquipment"
+  L4_202 = L4_202(L5_203)
+  L5_203 = require
+  L6_204 = "xiaoqiang.util.XQPushUtil"
+  L5_203 = L5_203(L6_204)
+  L6_204 = require
+  L7_205 = "xiaoqiang.util.XQLanWanUtil"
+  L6_204 = L6_204(L7_205)
+  L7_205 = require
+  L8_206 = "luci.util"
+  L7_205 = L7_205(L8_206)
+  L8_206 = {}
+  L9_207 = "ubus call trafficd hw"
+  L10_208 = L7_205.exec
+  L11_209 = L9_207
+  L10_208 = L10_208(L11_209)
+  L11_209 = _UPVALUE0_
+  L11_209 = L11_209.isStrNil
+  L12_210 = L10_208
+  L11_209 = L11_209(L12_210)
+  if L11_209 then
+    return L8_206
+  else
+    L11_209 = _UPVALUE1_
+    L11_209 = L11_209.decode
+    L12_210 = L10_208
+    L11_209 = L11_209(L12_210)
+    L10_208 = L11_209
+  end
+  L11_209 = L6_204.getLanIp
+  L11_209 = L11_209()
+  L12_210 = _UPVALUE0_
+  L12_210 = L12_210.isStrNil
+  L13_211 = L11_209
+  L12_210 = L12_210(L13_211)
+  if not L12_210 then
+    L13_211 = L11_209
+    L12_210 = L11_209.gsub
+    L14_212 = ".%d+$"
+    L15_213 = ""
+    L12_210 = L12_210(L13_211, L14_212, L15_213)
+    L11_209 = L12_210
+  else
+    L11_209 = nil
+  end
+  L12_210 = getMacfilterInfoDict
+  L12_210 = L12_210()
+  L13_211 = getDHCPIpDict
+  L13_211 = L13_211()
+  L14_212 = getDeviceInfoFromDB
+  L14_212 = L14_212()
+  L15_213 = L5_203.notifyDict
+  L15_213 = L15_213()
+  L16_214 = L5_203.getAuthenFailedTimesDict
+  L16_214 = L16_214()
+  L17_215 = require
+  L18_216 = "xiaoqiang.util.XQWifiUtil"
+  L17_215 = L17_215(L18_216)
+  L18_216 = L17_215.getWiFiMacfilterModel
+  L18_216 = L18_216()
+  if L18_216 == 1 then
+    if L19_217 then
+      for L23_221, L24_222 in L20_218(L21_219) do
+        if not L25_223 then
+          L25_223.hw = L24_222
+          L25_223.ifname = "wl1"
+          L25_223.assoc = 0
+          L27_225 = {}
+          L27_225.ip = "0.0.0.0"
+          L27_225.hw = L24_222
+          L27_225.ageing_timer = 400
+          L27_225.rx_bytes = 0
+          L27_225.tx_bytes = 0
+          L27_225.rx_rate = 0
+          L27_225.tx_rate = 0
+          L27_225.max_rx_rate = 0
+          L27_225.max_tx_rate = 0
+          L25_223.ip_list = L26_224
+          L10_208[L24_222] = L25_223
+        end
+      end
+    end
+  end
+  if not A0_198 and L14_212 then
+    for L22_220, L23_221 in L19_217(L20_218) do
+      if not L24_222 then
+        if L24_222 then
+        elseif not L24_222 then
+          L24_222.hw = L22_220
+          L24_222.ifname = "wl1"
+          L24_222.assoc = 0
+          L26_224.ip = "0.0.0.0"
+          L26_224.hw = L22_220
+          L26_224.ageing_timer = 400
+          L26_224.rx_bytes = 0
+          L26_224.tx_bytes = 0
+          L26_224.rx_rate = 0
+          L26_224.tx_rate = 0
+          L26_224.max_rx_rate = 0
+          L26_224.max_tx_rate = 0
+          L24_222.ip_list = L25_223
+          L10_208[L22_220] = L24_222
+        end
+      end
+    end
+  end
+  L23_221 = "wireless"
+  L23_221 = "misc"
+  L23_221 = L19_217
+  L23_221 = L19_217.get
+  L27_225 = "iface_guest_5g_ifname"
+  L23_221 = L23_221(L24_222, L25_223, L26_224, L27_225)
+  L23_221 = L23_221 or ""
+  for L27_225, L28_226 in L24_222(L25_223) do
+    L29_227 = 1
+    L30_228 = L28_226.ifname
+    L31_229 = _UPVALUE0_
+    L31_229 = L31_229.isStrNil
+    L32_230 = L30_228
+    L31_229 = L31_229(L32_230)
+    if L31_229 and not A0_198 then
+      L29_227 = 0
+      L30_228 = "wl1"
+    end
+    L31_229 = _UPVALUE0_
+    L31_229 = L31_229.macFormat
+    L32_230 = L27_225
+    L31_229 = L31_229(L32_230)
+    L32_230, L33_231 = nil, nil
+    L35_233 = L30_228
+    L34_232 = L30_228.match
+    L36_234 = "eth"
+    L34_232 = L34_232(L35_233, L36_234)
+    if L34_232 then
+      L32_230 = "line"
+      L33_231 = 0
+    elseif L30_228 == "" then
+      L30_228 = "eth"
+      L32_230 = "line"
+      L33_231 = 0
+    elseif L30_228 == L21_219 then
+      L32_230 = "wifi"
+      L33_231 = 2
+    elseif L30_228 == L20_218 then
+      L32_230 = "wifi"
+      L33_231 = 1
+    elseif L30_228 == L22_220 or L30_228 == L23_221 then
+      L32_230 = "wifi"
+      L33_231 = 3
+    end
+    L34_232 = _UPVALUE0_
+    L34_232 = L34_232.isStrNil
+    L35_233 = L30_228
+    L34_232 = L34_232(L35_233)
+    if not L34_232 then
+      L34_232 = false
+      L35_233 = false
+      L36_234 = false
+      L34_232 = L37_235 > 1
+      for L40_238, L41_239 in L37_235(L38_236) do
+        L42_240 = tonumber
+        L43_241 = L28_226.assoc
+        L42_240 = L42_240(L43_241)
+        if L42_240 == 1 then
+          L36_234 = true
+        end
+      end
+      for L40_238, L41_239 in L37_235(L38_236) do
+        L42_240, L43_241, L44_242, L45_243 = nil, nil, nil, nil
+        L46_244 = L41_239.ip
+        L46_244 = L13_211[L46_244]
+        if L46_244 ~= nil then
+          L46_244 = L41_239.ip
+          L46_244 = L13_211[L46_244]
+          L43_241 = L46_244.name
+        end
+        L46_244 = 0
+        L47_245 = 0
+        L49_247 = L31_229
+        L48_246 = L31_229.gsub
+        L50_248 = ":"
+        L51_249 = ""
+        L48_246 = L48_246(L49_247, L50_248, L51_249)
+        L49_247 = L15_213[L48_246]
+        if L49_247 then
+          L46_244 = 1
+        end
+        L49_247 = tonumber
+        L50_248 = L16_214[L48_246]
+        L49_247 = L49_247(L50_248)
+        L47_245 = L49_247 or 0
+        L49_247 = L14_212[L31_229]
+        if L49_247 then
+          L50_248 = _UPVALUE0_
+          L50_248 = L50_248.isStrNil
+          L51_249 = L43_241
+          L50_248 = L50_248(L51_249)
+          if L50_248 then
+            L43_241 = L49_247.oName
+          end
+          L44_242 = L49_247.nickname
+        end
+        L50_248 = _UPVALUE0_
+        L50_248 = L50_248.isStrNil
+        L51_249 = L44_242
+        L50_248 = L50_248(L51_249)
+        if not L50_248 then
+          L42_240 = L44_242
+        end
+        if not L49_247 then
+          L50_248 = L3_201.saveDeviceInfo
+          L51_249 = L31_229
+          L52_250 = L43_241 or ""
+          L53_251 = ""
+          L54_252 = ""
+          L55_253 = ""
+          L50_248(L51_249, L52_250, L53_251, L54_252, L55_253)
+        end
+        L50_248 = L4_202.identifyDevice
+        L51_249 = L31_229
+        L52_250 = L43_241
+        L50_248 = L50_248(L51_249, L52_250)
+        L45_243 = L50_248
+        L50_248 = {}
+        L51_249 = L12_210[L31_229]
+        if L51_249 then
+          L51_249 = L12_210[L31_229]
+          L51_249 = L51_249.wan
+          if L51_249 then
+            L51_249 = 1
+          else
+            L51_249 = L51_249 or 0
+          end
+          L50_248.wan = L51_249
+          L51_249 = L12_210[L31_229]
+          L51_249 = L51_249.lan
+          if L51_249 then
+            L51_249 = 1
+          else
+            L51_249 = L51_249 or 0
+          end
+          L50_248.lan = L51_249
+          L51_249 = L12_210[L31_229]
+          L51_249 = L51_249.admin
+          if L51_249 then
+            L51_249 = 1
+          else
+            L51_249 = L51_249 or 0
+          end
+          L50_248.admin = L51_249
+          L51_249 = L12_210[L31_229]
+          L51_249 = L51_249.pridisk
+          if L51_249 then
+            L51_249 = 1
+          else
+            L51_249 = L51_249 or 0
+          end
+          L50_248.pridisk = L51_249
+        else
+          L50_248.wan = 1
+          L50_248.lan = 1
+          L50_248.admin = 1
+          L50_248.pridisk = 0
+        end
+        L51_249 = L45_243.type
+        L52_250 = _UPVALUE0_
+        L52_250 = L52_250.isStrNil
+        L53_251 = L42_240
+        L52_250 = L52_250(L53_251)
+        if L52_250 then
+          L52_250 = _UPVALUE0_
+          L52_250 = L52_250.isStrNil
+          L53_251 = L51_249.n
+          L52_250 = L52_250(L53_251)
+          if not L52_250 then
+            L42_240 = L51_249.n
+          end
+        end
+        L52_250 = _UPVALUE0_
+        L52_250 = L52_250.isStrNil
+        L53_251 = L42_240
+        L52_250 = L52_250(L53_251)
+        if L52_250 then
+          L52_250 = _UPVALUE0_
+          L52_250 = L52_250.isStrNil
+          L53_251 = L43_241
+          L52_250 = L52_250(L53_251)
+          if not L52_250 then
+            L42_240 = L43_241
+          end
+        end
+        L52_250 = _UPVALUE0_
+        L52_250 = L52_250.isStrNil
+        L53_251 = L42_240
+        L52_250 = L52_250(L53_251)
+        if L52_250 then
+          L52_250 = _UPVALUE0_
+          L52_250 = L52_250.isStrNil
+          L53_251 = L45_243.name
+          L52_250 = L52_250(L53_251)
+          if not L52_250 then
+            L42_240 = L45_243.name
+          end
+        end
+        L52_250 = _UPVALUE0_
+        L52_250 = L52_250.isStrNil
+        L53_251 = L42_240
+        L52_250 = L52_250(L53_251)
+        if L52_250 then
+          L42_240 = L31_229
+        end
+        L52_250 = L51_249.c
+        if L52_250 == 3 then
+          L52_250 = _UPVALUE0_
+          L52_250 = L52_250.isStrNil
+          L53_251 = L44_242
+          L52_250 = L52_250(L53_251)
+          if L52_250 then
+            L42_240 = L51_249.n
+          end
+        end
+        L52_250 = 0
+        L53_251 = false
+        if L30_228 ~= "wl1.2" and L30_228 ~= "wl3" and L30_228 ~= "wl14" and L11_209 then
+          L54_252 = L41_239.ip
+          if L54_252 then
+            L54_252 = L41_239.ip
+            L55_253 = L54_252
+            L54_252 = L54_252.match
+            L54_252 = L54_252(L55_253, "^" .. L11_209)
+            if not L54_252 then
+              L54_252 = L41_239.ip
+            else
+              if L54_252 == "0.0.0.0" then
+                L53_251 = false
+            end
+            else
+              L53_251 = true
+            end
+          end
+        end
+        L55_253 = L30_228
+        L54_252 = L30_228.match
+        L54_252 = L54_252(L55_253, "wl")
+        if L54_252 or not A1_199 then
+          L55_253 = L30_228
+          L54_252 = L30_228.match
+          L54_252 = L54_252(L55_253, "wl")
+        elseif L54_252 and not L53_251 then
+          L54_252 = tonumber
+          L55_253 = L28_226.assoc
+          L54_252 = L54_252(L55_253)
+          if L54_252 == 1 then
+            L52_250 = 1
+            if L29_227 == 0 then
+              L52_250 = 0
+            end
+          end
+          L54_252 = L28_226.parent
+          L54_252 = L54_252 or ""
+          L55_253 = _UPVALUE0_
+          L55_253 = L55_253.isStrNil
+          L55_253 = L55_253(L54_252)
+          if not L55_253 then
+            L32_230 = "ap"
+          end
+          L55_253 = {}
+          L55_253.ip = L41_239.ip
+          L55_253.mac = L31_229
+          L55_253.online = L52_250
+          L55_253.type = L32_230
+          L55_253.port = L33_231
+          L55_253.ctype = L51_249.c
+          L55_253.ptype = L51_249.p
+          L55_253.origin_name = L43_241 or ""
+          L55_253.name = L42_240
+          L55_253.push = L46_244
+          L55_253.company = L45_243
+          L55_253.times = L47_245
+          L55_253.authority = L50_248
+          L55_253.parent = L54_252
+          L55_253.isap = tonumber(L28_226.is_ap) or 0
+          L55_253.hostname = L28_226.hostname or ""
+          ;({}).dev = L30_228
+          ;({}).mac = L31_229
+          ;({}).ip = L41_239.ip
+          ;({}).upload = tostring(L41_239.tx_bytes or 0)
+          ;({}).upspeed = tostring(math.floor(L41_239.tx_rate or 0))
+          ;({}).download = tostring(L41_239.rx_bytes or 0)
+          ;({}).downspeed = tostring(math.floor(L41_239.rx_rate or 0))
+          ;({}).online = tostring(L28_226.online_timer or 0)
+          ;({}).maxuploadspeed = tostring(math.floor(L41_239.max_tx_rate or 0))
+          L55_253.statistics, ({}).maxdownloadspeed = {}, tostring(math.floor(L41_239.max_rx_rate or 0))
+          if A0_198 and L52_250 == 1 then
+            table.insert(L8_206, L55_253)
+          elseif not A0_198 then
+            if L34_232 and L36_234 and L52_250 == 1 then
+              table.insert(L8_206, L55_253)
+            elseif L34_232 and not L36_234 and L52_250 ~= 1 and not L35_233 then
+              table.insert(L8_206, L55_253)
+              L35_233 = true
+            elseif not L34_232 then
+              table.insert(L8_206, L55_253)
+            end
+          end
+        end
+      end
+    end
+  end
+  return L8_206
+end
+function devicelistForMAgent()
+  local L0_254, L1_255, L2_256, L3_257, L4_258, L5_259, L6_260, L7_261, L8_262, L9_263, L10_264, L11_265, L12_266, L13_267, L14_268, L15_269, L16_270, L17_271, L18_272, L19_273, L20_274, L21_275, L22_276, L23_277, L24_278, L25_279, L26_280, L27_281, L28_282, L29_283, L30_284, L31_285, L32_286, L33_287, L34_288, L35_289, L36_290, L37_291, L38_292, L39_293, L40_294, L41_295, L42_296, L43_297, L44_298
+  L0_254 = require
+  L1_255 = "luci.util"
+  L0_254 = L0_254(L1_255)
+  L1_255 = require
+  L2_256 = "xiaoqiang.util.XQPushUtil"
+  L1_255 = L1_255(L2_256)
+  L2_256 = require
+  L3_257 = "xiaoqiang.util.XQLanWanUtil"
+  L2_256 = L2_256(L3_257)
+  L3_257 = {}
+  L4_258 = "ubus call trafficd hw"
+  L5_259 = L0_254.exec
+  L6_260 = L4_258
+  L5_259 = L5_259(L6_260)
+  L6_260 = _UPVALUE0_
+  L6_260 = L6_260.isStrNil
+  L7_261 = L5_259
+  L6_260 = L6_260(L7_261)
+  if L6_260 then
+    return L3_257
+  else
+    L6_260 = _UPVALUE1_
+    L6_260 = L6_260.decode
+    L7_261 = L5_259
+    L6_260 = L6_260(L7_261)
+    L5_259 = L6_260
+  end
+  L6_260 = L2_256.getLanIp
+  L6_260 = L6_260()
+  L7_261 = _UPVALUE0_
+  L7_261 = L7_261.isStrNil
+  L8_262 = L6_260
+  L7_261 = L7_261(L8_262)
+  if not L7_261 then
+    L8_262 = L6_260
+    L7_261 = L6_260.gsub
+    L9_263 = ".%d+$"
+    L10_264 = ""
+    L7_261 = L7_261(L8_262, L9_263, L10_264)
+    L6_260 = L7_261
+  else
+    L6_260 = nil
+  end
+  L7_261 = getMacfilterInfoDict
+  L7_261 = L7_261()
+  L8_262 = getDHCPIpDict
+  L8_262 = L8_262()
+  L9_263 = getDeviceInfoFromDB
+  L9_263 = L9_263()
+  L10_264 = L1_255.notifyDict
+  L10_264 = L10_264()
+  L11_265 = L1_255.getAuthenFailedTimesDict
+  L11_265 = L11_265()
+  L12_266 = {}
+  L13_267 = {}
+  L14_268 = 1
+  for L18_272, L19_273 in L15_269(L16_270) do
+    L13_267[L14_268] = L18_272
+    L14_268 = L14_268 + 1
+  end
+  for L18_272, L19_273 in L15_269(L16_270) do
+    L20_274 = _UPVALUE2_
+    L20_274 = L20_274.macaddr
+    L21_275 = L18_272
+    L20_274 = L20_274(L21_275)
+    if L20_274 then
+      L20_274 = L5_259[L18_272]
+      if not L20_274 then
+        L20_274 = table
+        L20_274 = L20_274.insert
+        L21_275 = L13_267
+        L20_274(L21_275, L22_276)
+      end
+    end
+  end
+  L15_269.api = 70
+  L15_269.macs = L13_267
+  L44_298 = L17_271(L18_272)
+  if L16_270 then
+    if L17_271 == 0 then
+      L14_268 = 1
+      for L20_274, L21_275 in L17_271(L18_272) do
+        L12_266[L22_276] = L21_275
+        L14_268 = L14_268 + 1
+      end
+    end
+  end
+  L20_274 = "misc"
+  L21_275 = "wireless"
+  L20_274 = L17_271
+  L21_275 = "misc"
+  L21_275 = L17_271
+  L20_274 = L17_271.get
+  L20_274 = L20_274(L21_275, L22_276, L23_277, L24_278)
+  L20_274 = L20_274 or ""
+  L21_275 = L17_271.get
+  L25_279 = "iface_guest_5g_ifname"
+  L21_275 = L21_275(L22_276, L23_277, L24_278, L25_279)
+  L21_275 = L21_275 or ""
+  for L25_279, L26_280 in L22_276(L23_277) do
+    L27_281 = L26_280.ifname
+    L28_282 = _UPVALUE0_
+    L28_282 = L28_282.isStrNil
+    L29_283 = L27_281
+    L28_282 = L28_282(L29_283)
+    if not L28_282 then
+      L28_282 = _UPVALUE0_
+      L28_282 = L28_282.macFormat
+      L29_283 = L25_279
+      L28_282 = L28_282(L29_283)
+      L29_283, L30_284 = nil, nil
+      L31_285 = L26_280.parent
+      L31_285 = L31_285 or ""
+      L33_287 = L27_281
+      L32_286 = L27_281.match
+      L34_288 = "eth"
+      L32_286 = L32_286(L33_287, L34_288)
+      if L32_286 then
+        L29_283 = "line"
+        L30_284 = 0
+      elseif L27_281 == L19_273 then
+        L29_283 = "wifi"
+        L30_284 = 2
+      elseif L27_281 == L18_272 then
+        L29_283 = "wifi"
+        L30_284 = 1
+      elseif L27_281 == L20_274 or L27_281 == L21_275 then
+        L29_283 = "wifi"
+        L30_284 = 3
+      end
+      L32_286 = _UPVALUE0_
+      L32_286 = L32_286.isStrNil
+      L33_287 = L31_285
+      L32_286 = L32_286(L33_287)
+      if not L32_286 then
+        L29_283 = "ap"
+        L30_284 = 4
+      end
+      L32_286, L33_287 = nil, nil
+      L34_288 = L9_263[L28_282]
+      if L34_288 then
+        L35_289 = L34_288.oName
+        L32_286 = L35_289 or ""
+        L35_289 = L34_288.nickname
+        L33_287 = L35_289 or ""
+      end
+      L35_289 = 0
+      L36_290 = 0
+      L38_292 = L28_282
+      L37_291 = L28_282.gsub
+      L37_291 = L37_291(L38_292, L39_293, L40_294)
+      L38_292 = L10_264[L37_291]
+      if L38_292 then
+        L35_289 = 1
+      end
+      L38_292 = tonumber
+      L38_292 = L38_292(L39_293)
+      L36_290 = L38_292 or 0
+      L38_292 = {}
+      if L39_293 then
+        if L39_293 then
+        else
+        end
+        L38_292.wan = L39_293
+        if L39_293 then
+        else
+        end
+        L38_292.lan = L39_293
+        if L39_293 then
+        else
+        end
+        L38_292.admin = L39_293
+        if L39_293 then
+        else
+        end
+        L38_292.pridisk = L39_293
+      else
+        L38_292.wan = 1
+        L38_292.lan = 1
+        L38_292.admin = 1
+        L38_292.pridisk = 0
+      end
+      if L39_293 ~= nil then
+        if L39_293 then
+        else
+        end
+        L38_292.lan = L39_293
+      end
+      for L42_296, L43_297 in L39_293(L40_294) do
+        if L27_281 ~= "wl1.2" and L27_281 ~= "wl3" and L27_281 ~= "wl14" and L6_260 then
+          L44_298 = L43_297.ip
+          if L44_298 then
+            L44_298 = L43_297.ip
+            L44_298 = L44_298.match
+            L44_298 = L44_298(L44_298, "^" .. L6_260)
+            if L44_298 then
+              L44_298 = false
+              ignor = L44_298
+            else
+              L44_298 = true
+              ignor = L44_298
+            end
+          end
+        end
+        L44_298 = L27_281.match
+        L44_298 = L44_298(L27_281, "wl")
+        if L44_298 then
+          L44_298 = L27_281.match
+          L44_298 = L44_298(L27_281, "wl")
+          if L44_298 then
+            L44_298 = tonumber
+            L44_298 = L44_298(L26_280.assoc)
+          end
+        elseif L44_298 == 1 then
+          L44_298 = L43_297.ageing_timer
+          if L44_298 <= 300 then
+            L44_298 = ignor
+            if not L44_298 then
+              L44_298 = L43_297.ip
+              L44_298 = L8_262[L44_298]
+              if L44_298 then
+                L44_298 = _UPVALUE0_
+                L44_298 = L44_298.isStrNil
+                L44_298 = L44_298(L8_262[L43_297.ip].name)
+                if L44_298 then
+                  L44_298 = L43_297.ip
+                  L44_298 = L8_262[L44_298]
+                  L32_286 = L44_298.name
+                end
+              end
+              L44_298 = {}
+              L44_298.ip = L43_297.ip
+              L44_298.mac = L28_282
+              L44_298.dhcp = L32_286
+              L44_298.data = {
+                nickname = L33_287,
+                type = L29_283,
+                port = L30_284,
+                push = L35_289,
+                times = L36_290,
+                authority = L38_292,
+                parent = L31_285,
+                isap = tonumber(L26_280.is_ap) or 0,
+                hostname = L26_280.hostname or "",
+                statistics = {
+                  upload = tostring(L43_297.tx_bytes or 0),
+                  upspeed = tostring(math.floor(L43_297.tx_rate or 0)),
+                  download = tostring(L43_297.rx_bytes or 0),
+                  downspeed = tostring(math.floor(L43_297.rx_rate or 0)),
+                  online = tostring(L26_280.online_timer or 0),
+                  maxuploadspeed = tostring(math.floor(L43_297.max_tx_rate or 0)),
+                  maxdownloadspeed = tostring(math.floor(L43_297.max_rx_rate or 0))
+                }
+              }
+              table.insert(L3_257, L44_298)
+            end
+          end
+        end
+      end
+    end
+  end
+  return L3_257
+end
+function getDeviceListV2(A0_299, A1_300)
+  local L2_301, L3_302, L4_303, L5_304, L6_305, L7_306, L8_307, L9_308, L10_309, L11_310, L12_311, L13_312, L14_313, L15_314, L16_315, L17_316, L18_317, L19_318, L20_319, L21_320, L22_321, L23_322, L24_323, L25_324, L26_325, L27_326, L28_327, L29_328, L30_329, L31_330, L32_331, L33_332, L34_333, L35_334, L36_335, L37_336, L38_337, L39_338, L40_339, L41_340, L42_341, L43_342, L44_343, L45_344, L46_345
+  L2_301 = require
+  L3_302 = "luci.util"
+  L2_301 = L2_301(L3_302)
+  L3_302 = require
+  L4_303 = "xiaoqiang.util.XQDBUtil"
+  L3_302 = L3_302(L4_303)
+  L4_303 = require
+  L5_304 = "xiaoqiang.XQEquipment"
+  L4_303 = L4_303(L5_304)
+  L5_304 = require
+  L6_305 = "xiaoqiang.util.XQPushUtil"
+  L5_304 = L5_304(L6_305)
+  L6_305 = require
+  L7_306 = "xiaoqiang.util.XQLanWanUtil"
+  L6_305 = L6_305(L7_306)
+  L7_306 = require
+  L8_307 = "xiaoqiang.util.XQWifiUtil"
+  L7_306 = L7_306(L8_307)
+  L8_307 = {}
+  L9_308 = "ubus call trafficd hw"
+  L10_309 = L2_301.exec
+  L11_310 = L9_308
+  L10_309 = L10_309(L11_310)
+  L11_310 = _UPVALUE0_
+  L11_310 = L11_310.isStrNil
+  L12_311 = L10_309
+  L11_310 = L11_310(L12_311)
+  if L11_310 then
+    return L8_307
+  else
+    L11_310 = _UPVALUE1_
+    L11_310 = L11_310.decode
+    L12_311 = L10_309
+    L11_310 = L11_310(L12_311)
+    L10_309 = L11_310
+  end
+  L11_310 = L6_305.getLanIp
+  L11_310 = L11_310()
+  L12_311 = _UPVALUE0_
+  L12_311 = L12_311.isStrNil
+  L13_312 = L11_310
+  L12_311 = L12_311(L13_312)
+  if not L12_311 then
+    L13_312 = L11_310
+    L12_311 = L11_310.gsub
+    L14_313 = ".%d+$"
+    L15_314 = ""
+    L12_311 = L12_311(L13_312, L14_313, L15_314)
+    L11_310 = L12_311
+  else
+    L11_310 = nil
+  end
+  L12_311 = getMacfilterInfoDict
+  L12_311 = L12_311()
+  L13_312 = getDHCPDict
+  L13_312 = L13_312()
+  L14_313 = getDeviceInfoFromDB
+  L14_313 = L14_313()
+  L15_314 = L5_304.notifyDict
+  L15_314 = L15_314()
+  L16_315 = L5_304.getAuthenFailedTimesDict
+  L16_315 = L16_315()
+  if not A0_299 and L14_313 then
+    for L20_319, L21_320 in L17_316(L18_317) do
+      L22_321 = L10_309[L20_319]
+      if not L22_321 then
+        L22_321 = _UPVALUE0_
+        L22_321 = L22_321.isStrNil
+        L23_322 = L21_320.oName
+        L22_321 = L22_321(L23_322)
+        if L22_321 then
+          L22_321 = _UPVALUE0_
+          L22_321 = L22_321.isStrNil
+          L23_322 = L21_320.nickname
+          L22_321 = L22_321(L23_322)
+        elseif not L22_321 then
+          L22_321 = {}
+          L22_321.hw = L20_319
+          L22_321.ifname = "wl1"
+          L22_321.assoc = 0
+          L23_322 = {L24_323}
+          L24_323 = {}
+          L24_323.ip = "0.0.0.0"
+          L24_323.hw = L20_319
+          L24_323.ageing_timer = 400
+          L24_323.rx_bytes = 0
+          L24_323.tx_bytes = 0
+          L24_323.rx_rate = 0
+          L24_323.tx_rate = 0
+          L24_323.max_rx_rate = 0
+          L24_323.max_tx_rate = 0
+          L22_321.ip_list = L23_322
+          L10_309[L20_319] = L22_321
+        end
+      end
+    end
+  end
+  for L20_319, L21_320 in L17_316(L18_317) do
+    L22_321 = _UPVALUE0_
+    L22_321 = L22_321.macFormat
+    L23_322 = L20_319
+    L22_321 = L22_321(L23_322)
+    L23_322 = L21_320.ifname
+    L24_323 = 0
+    L26_325 = L23_322
+    L25_324 = L23_322.match
+    L25_324 = L25_324(L26_325, L27_326)
+    if L25_324 then
+      L24_323 = 0
+    elseif L23_322 == "wl0" then
+      L24_323 = 2
+    elseif L23_322 == "wl1" then
+      L24_323 = 1
+    elseif L23_322 == "wl1.2" then
+      L24_323 = 3
+    elseif L23_322 == "wl3" then
+      L24_323 = 3
+    elseif L23_322 == "wl14" then
+      L24_323 = 3
+    elseif L23_322 == "" then
+      L24_323 = 0
+    end
+    if not A1_300 and L24_323 ~= 0 or A1_300 then
+      L25_324 = {}
+      L26_325 = false
+      for L30_329, L31_330 in L27_326(L28_327) do
+        L32_331 = tonumber
+        L33_332 = L21_320.assoc
+        L32_331 = L32_331(L33_332)
+        if L32_331 == 1 then
+          L26_325 = true
+          break
+        end
+      end
+      L25_324.mac = L22_321
+      if L26_325 then
+      else
+      end
+      L25_324.online = L27_326
+      L25_324.type = L24_323
+      L25_324.isap = L27_326
+      L25_324.parent = L27_326
+      L30_329 = nil
+      L31_330 = L13_312[L22_321]
+      if L31_330 ~= nil then
+        L31_330 = L13_312[L22_321]
+      end
+      L31_330 = L14_313[L22_321]
+      if L31_330 then
+        L32_331 = _UPVALUE0_
+        L32_331 = L32_331.isStrNil
+        L33_332 = L28_327
+        L32_331 = L32_331(L33_332)
+        if L32_331 then
+        end
+      end
+      L32_331 = _UPVALUE0_
+      L32_331 = L32_331.isStrNil
+      L33_332 = L29_328
+      L32_331 = L32_331(L33_332)
+      if not L32_331 then
+      end
+      if not L31_330 then
+        L32_331 = L3_302.saveDeviceInfo
+        L33_332 = L22_321
+        L34_333 = L28_327 or ""
+        L35_334 = ""
+        L36_335 = ""
+        L37_336 = ""
+        L32_331(L33_332, L34_333, L35_334, L36_335, L37_336)
+      end
+      L32_331 = L4_303.identifyDevice
+      L33_332 = L22_321
+      L34_333 = L28_327
+      L32_331 = L32_331(L33_332, L34_333)
+      L30_329 = L32_331
+      L32_331 = L30_329.type
+      L33_332 = _UPVALUE0_
+      L33_332 = L33_332.isStrNil
+      L34_333 = L27_326
+      L33_332 = L33_332(L34_333)
+      if L33_332 then
+        L33_332 = _UPVALUE0_
+        L33_332 = L33_332.isStrNil
+        L34_333 = L32_331.n
+        L33_332 = L33_332(L34_333)
+        if not L33_332 then
+        end
+      end
+      L33_332 = _UPVALUE0_
+      L33_332 = L33_332.isStrNil
+      L34_333 = L27_326
+      L33_332 = L33_332(L34_333)
+      if L33_332 then
+        L33_332 = _UPVALUE0_
+        L33_332 = L33_332.isStrNil
+        L34_333 = L28_327
+        L33_332 = L33_332(L34_333)
+        if not L33_332 then
+        end
+      end
+      L33_332 = _UPVALUE0_
+      L33_332 = L33_332.isStrNil
+      L34_333 = L27_326
+      L33_332 = L33_332(L34_333)
+      if L33_332 then
+        L33_332 = _UPVALUE0_
+        L33_332 = L33_332.isStrNil
+        L34_333 = L30_329.name
+        L33_332 = L33_332(L34_333)
+        if not L33_332 then
+        end
+      end
+      L33_332 = _UPVALUE0_
+      L33_332 = L33_332.isStrNil
+      L34_333 = L27_326
+      L33_332 = L33_332(L34_333)
+      if L33_332 then
+      end
+      L33_332 = L32_331.c
+      if L33_332 == 3 then
+        L33_332 = _UPVALUE0_
+        L33_332 = L33_332.isStrNil
+        L34_333 = L29_328
+        L33_332 = L33_332(L34_333)
+        if L33_332 then
+        end
+      end
+      L33_332 = L27_326 or ""
+      L25_324.name = L33_332
+      L33_332 = L28_327 or ""
+      L25_324.oname = L33_332
+      L33_332 = L30_329.icon
+      L33_332 = L33_332 or ""
+      L25_324.icon = L33_332
+      L33_332 = 0
+      L34_333 = 0
+      L36_335 = L22_321
+      L35_334 = L22_321.gsub
+      L37_336 = ":"
+      L38_337 = ""
+      L35_334 = L35_334(L36_335, L37_336, L38_337)
+      L36_335 = L15_314[L35_334]
+      if L36_335 then
+        L33_332 = 1
+      end
+      L36_335 = tonumber
+      L37_336 = L16_315[L35_334]
+      L36_335 = L36_335(L37_336)
+      L34_333 = L36_335 or 0
+      L25_324.push = L33_332
+      L25_324.times = L34_333
+      L36_335 = {}
+      L37_336 = L12_311[L22_321]
+      if L37_336 then
+        L37_336 = L12_311[L22_321]
+        L37_336 = L37_336.wan
+        if L37_336 then
+          L37_336 = 1
+        else
+          L37_336 = L37_336 or 0
+        end
+        L36_335.wan = L37_336
+        L37_336 = L12_311[L22_321]
+        L37_336 = L37_336.lan
+        if L37_336 then
+          L37_336 = 1
+        else
+          L37_336 = L37_336 or 0
+        end
+        L36_335.lan = L37_336
+        L37_336 = L12_311[L22_321]
+        L37_336 = L37_336.admin
+        if L37_336 then
+          L37_336 = 1
+        else
+          L37_336 = L37_336 or 0
+        end
+        L36_335.admin = L37_336
+        L37_336 = L12_311[L22_321]
+        L37_336 = L37_336.pridisk
+        if L37_336 then
+          L37_336 = 1
+        else
+          L37_336 = L37_336 or 0
+        end
+        L36_335.pridisk = L37_336
+      else
+        L36_335.wan = 1
+        L36_335.lan = 1
+        L36_335.admin = 1
+        L36_335.pridisk = 0
+      end
+      L25_324.authority = L36_335
+      L37_336 = {}
+      L38_337 = {}
+      for L42_341, L43_342 in L39_338(L40_339) do
+        L44_343 = false
+        if L23_322 ~= "wl1.2" and L23_322 ~= "wl3" and L23_322 ~= "wl14" and L11_310 then
+          L45_344 = L43_342.ip
+          if L45_344 then
+            L45_344 = L43_342.ip
+            L46_345 = L45_344
+            L45_344 = L45_344.match
+            L45_344 = L45_344(L46_345, "^" .. L11_310)
+            if not L45_344 then
+              L45_344 = L43_342.ip
+            else
+              if L45_344 == "0.0.0.0" then
+                L44_343 = false
+            end
+            else
+              L44_343 = true
+            end
+          end
+        end
+        if not L44_343 then
+          L45_344 = 0
+          L46_345 = tonumber
+          L46_345 = L46_345(L21_320.assoc)
+          if L46_345 == 1 then
+            L45_344 = 1
+          end
+          L46_345 = {}
+          L46_345.ip = L43_342.ip
+          L46_345.active = L45_344
+          L46_345.upspeed = tostring(math.floor(L43_342.tx_rate or 0))
+          L46_345.downspeed = tostring(math.floor(L43_342.rx_rate or 0))
+          L46_345.online = tostring(L21_320.online_timer or 0)
+          if L45_344 == 1 or not A0_299 then
+            table.insert(L37_336, L46_345)
+            if not L38_337.online then
+              L38_337.online = L46_345.online
+            end
+            L38_337.upspeed = tostring(tonumber(L38_337.upspeed or 0) + tonumber(L46_345.upspeed))
+            L38_337.downspeed = tostring(tonumber(L38_337.downspeed or 0) + tonumber(L46_345.downspeed))
+          end
+        end
+      end
+      L25_324.ip = L37_336
+      L25_324.statistics = L38_337
+      if L26_325 and A0_299 or not A0_299 then
+        L39_338(L40_339, L41_340)
+      end
+    end
+  end
+  return L8_307
+end
+function devicesInfo()
+  local L0_346, L1_347, L2_348, L3_349, L4_350, L5_351, L6_352, L7_353, L8_354, L9_355, L10_356, L11_357, L12_358, L13_359, L14_360, L15_361, L16_362, L17_363, L18_364, L19_365, L20_366, L21_367, L22_368, L23_369
+  L0_346 = require
+  L1_347 = "luci.cbi.datatypes"
+  L0_346 = L0_346(L1_347)
+  L1_347 = require
+  L2_348 = "xiaoqiang.util.XQWifiUtil"
+  L1_347 = L1_347(L2_348)
+  L2_348 = require
+  L3_349 = "xiaoqiang.util.XQPushUtil"
+  L2_348 = L2_348(L3_349)
+  L3_349 = require
+  L4_350 = "xiaoqiang.module.XQParentControl"
+  L3_349 = L3_349(L4_350)
+  L4_350 = {}
+  L5_351 = {}
+  L6_352 = {}
+  L7_353 = {}
+  L8_354 = L2_348.notifyDict
+  L8_354 = L8_354()
+  L9_355 = getDeviceInfoFromDB
+  L9_355 = L9_355()
+  L10_356 = getMacfilterInfoDict
+  L10_356 = L10_356()
+  L11_357 = getDeviceInfoFromConfig
+  L11_357 = L11_357()
+  L12_358 = L1_347.getWiFiMacfilterModel
+  L12_358 = L12_358()
+  L13_359 = {}
+  if L12_358 == 1 then
+    if L14_360 then
+      for L18_364, L19_365 in L15_361(L16_362) do
+        L13_359[L19_365] = 1
+      end
+    end
+  end
+  for L17_363, L18_364 in L14_360(L15_361) do
+    L19_365 = L0_346.macaddr
+    L19_365 = L19_365(L20_366)
+    if L19_365 then
+      L19_365 = {}
+      L19_365.nickname = L20_366
+      L4_350[L17_363] = L19_365
+      L6_352[L17_363] = 1
+      L19_365 = table
+      L19_365 = L19_365.insert
+      L19_365(L20_366, L21_367)
+    end
+  end
+  L14_360.api = 70
+  L14_360.macs = L5_351
+  L23_369 = L16_362(L17_363)
+  if L15_361 then
+    if L16_362 == 0 then
+      L7_353 = L15_361.canAccessAllDisk
+    end
+  end
+  L18_364 = L6_352
+  L18_364 = L3_349.get_urlfilter_info
+  L19_365 = L6_352
+  L18_364 = L18_364(L19_365)
+  L19_365 = {}
+  for L23_369, _FORV_24_ in L20_366(L21_367) do
+    if L8_354[L23_369] then
+      _FORV_24_.push = 1
+    else
+      _FORV_24_.push = 0
+    end
+    _FORV_24_.pcontrol = L16_362[L23_369]
+    _FORV_24_.netacctl = L17_363[L23_369]
+    _FORV_24_.urlfilter = L18_364[L23_369]
+    if L10_356[L23_369] then
+      _FORV_24_.wan = L10_356[L23_369].wan and 1 or 0
+      _FORV_24_.lan = L10_356[L23_369].lan and 1 or 0
+      _FORV_24_.admin = L10_356[L23_369].admin and 1 or 0
+      _FORV_24_.pridisk = L10_356[L23_369].pridisk and 1 or 0
+    else
+      _FORV_24_.wan = 1
+      _FORV_24_.lan = 1
+      _FORV_24_.admin = 1
+      _FORV_24_.pridisk = 0
+    end
+    if L13_359[L23_369] == 1 then
+      _FORV_24_.limited = 1
+    else
+      _FORV_24_.limited = 0
+    end
+    if L11_357[L23_369] then
+      _FORV_24_.owner = L11_357[L23_369].owner or ""
+      _FORV_24_.device = L11_357[L23_369].device or ""
+    else
+      _FORV_24_.owner = ""
+      _FORV_24_.device = ""
+    end
+    if L7_353[L23_369] ~= nil then
+      _FORV_24_.lan = L7_353[L23_369] and 1 or 0
+    end
+    L19_365["device/" .. L23_369] = _FORV_24_
+  end
+  return L19_365
+end

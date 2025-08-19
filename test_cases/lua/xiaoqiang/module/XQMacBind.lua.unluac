@@ -1,0 +1,311 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQMacBind", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function _checkIP(A0_1)
+  if _UPVALUE0_.isStrNil(A0_1) then
+    return false
+  end
+  if require("luci.ip").iptonl(A0_1) >= require("luci.ip").iptonl("1.0.0.0") and require("luci.ip").iptonl(A0_1) <= require("luci.ip").iptonl("126.0.0.0") or require("luci.ip").iptonl(A0_1) >= require("luci.ip").iptonl("128.0.0.0") and require("luci.ip").iptonl(A0_1) <= require("luci.ip").iptonl("223.255.255.255") then
+    return true
+  else
+    return false
+  end
+end
+function _checkMac(A0_2)
+  if _UPVALUE0_.isStrNil(A0_2) then
+    return false
+  end
+  if require("luci.cbi.datatypes").macaddr(A0_2) and A0_2 ~= "ff:ff:ff:ff:ff:ff" and A0_2 ~= "00:00:00:00:00:00" then
+    return true
+  else
+    return false
+  end
+end
+function _parseMac(A0_3)
+  if A0_3 then
+    return string.lower(string.gsub(A0_3, "[:-]", ""))
+  else
+    return nil
+  end
+end
+function _parseDhcpLeases()
+  local L0_4, L1_5, L2_6, L3_7, L4_8, L5_9, L6_10, L7_11, L8_12, L9_13, L10_14
+  L0_4 = require
+  L1_5 = "nixio.fs"
+  L0_4 = L0_4(L1_5)
+  L1_5 = require
+  L2_6 = "luci.model.uci"
+  L1_5 = L1_5(L2_6)
+  L1_5 = L1_5.cursor
+  L1_5 = L1_5()
+  L2_6 = {}
+  L3_7 = _UPVALUE0_
+  L3_7 = L3_7.DHCP_LEASE_FILEPATH
+  L4_8 = L1_5.foreach
+  function L8_12(A0_15)
+    if A0_15.leasefile and _UPVALUE0_.access(A0_15.leasefile) then
+      _UPVALUE1_ = A0_15.leasefile
+      return false
+    end
+  end
+  L4_8(L5_9, L6_10, L7_11, L8_12)
+  L4_8 = io
+  L4_8 = L4_8.open
+  L4_8 = L4_8(L5_9, L6_10)
+  if L4_8 then
+    for L8_12 in L5_9(L6_10) do
+      if L8_12 then
+        L10_14 = L8_12
+        L9_13 = L8_12.match
+        L10_14 = L9_13(L10_14, "^(%d+) (%S+) (%S+) (%S+)")
+        if L9_13 and L10_14 and L9_13(L10_14, "^(%d+) (%S+) (%S+) (%S+)") and "" then
+          L2_6[L9_13(L10_14, "^(%d+) (%S+) (%S+) (%S+)")] = {
+            mac = string.lower(_UPVALUE1_.macFormat(L10_14)),
+            ip = L9_13(L10_14, "^(%d+) (%S+) (%S+) (%S+)")
+          }
+        end
+      end
+    end
+    L5_9(L6_10)
+  end
+  return L2_6
+end
+function hookLanIPChangeEvent(A0_16)
+  if _UPVALUE0_.isStrNil(A0_16) then
+    return
+  end
+  _UPVALUE1_:foreach("macbind", "host", function(A0_17)
+    local L1_18
+    L1_18 = A0_17.ip
+    L1_18 = _UPVALUE0_ .. "." .. L1_18:match(".(%d+)$")
+    _UPVALUE1_:set("macbind", A0_17[".name"], "ip", L1_18)
+  end)
+  _UPVALUE1_:foreach("dhcp", "host", function(A0_19)
+    local L1_20
+    L1_20 = A0_19.ip
+    L1_20 = _UPVALUE0_ .. "." .. L1_20:match(".(%d+)$")
+    _UPVALUE1_:set("dhcp", A0_19[".name"], "ip", L1_20)
+  end)
+  _UPVALUE1_:commit("dhcp")
+  _UPVALUE1_:commit("macbind")
+end
+function macBindInfo()
+  local L0_21
+  L0_21 = {}
+  _UPVALUE0_:foreach("dhcp", "host", function(A0_22)
+    local L1_23, L2_24, L3_25, L4_26, L5_27, L6_28
+    L1_23 = {}
+    L1_23.name = ""
+    L2_24 = A0_22.mac
+    L1_23.mac = L2_24
+    L2_24 = A0_22.ip
+    L1_23.ip = L2_24
+    L1_23.tag = 2
+    L2_24 = string
+    L2_24 = L2_24.upper
+    L3_25 = A0_22.mac
+    L2_24 = L2_24(L3_25)
+    L3_25 = ""
+    L4_26 = _UPVALUE0_
+    L4_26 = L4_26.fetchDeviceInfo
+    L5_27 = L2_24
+    L4_26 = L4_26(L5_27)
+    if L4_26 then
+      L5_27 = L4_26.oName
+      L6_28 = L4_26.nickname
+      if not _UPVALUE1_.isStrNil(L6_28) then
+        L3_25 = L6_28
+      else
+        if _UPVALUE1_.isStrNil(L3_25) and not _UPVALUE1_.isStrNil(_UPVALUE2_.identifyDevice(L2_24, L5_27).type.n) then
+          L3_25 = _UPVALUE2_.identifyDevice(L2_24, L5_27).type.n
+        end
+        if _UPVALUE1_.isStrNil(L3_25) and not _UPVALUE1_.isStrNil(L5_27) then
+          L3_25 = L5_27
+        end
+        if _UPVALUE1_.isStrNil(L3_25) and not _UPVALUE1_.isStrNil(_UPVALUE2_.identifyDevice(L2_24, L5_27).name) then
+          L3_25 = _UPVALUE2_.identifyDevice(L2_24, L5_27).name
+        end
+        if _UPVALUE1_.isStrNil(L3_25) then
+          L3_25 = L2_24
+        end
+        if _UPVALUE2_.identifyDevice(L2_24, L5_27).type.c == 3 and _UPVALUE1_.isStrNil(L6_28) then
+          L3_25 = _UPVALUE2_.identifyDevice(L2_24, L5_27).type.n
+        end
+      end
+      L1_23.name = L3_25
+    end
+    L5_27 = _UPVALUE3_
+    L6_28 = A0_22.mac
+    L5_27[L6_28] = L1_23
+  end)
+  return L0_21
+end
+function addBind(A0_29, A1_30, A2_31)
+  local L3_32, L4_33, L5_34, L6_35
+  L3_32 = _checkIP
+  L4_33 = A1_30
+  L3_32 = L3_32(L4_33)
+  if L3_32 then
+    L3_32 = _checkMac
+    L4_33 = A0_29
+    L3_32 = L3_32(L4_33)
+    if L3_32 then
+      L3_32 = _parseDhcpLeases
+      L3_32 = L3_32()
+      L4_33 = string
+      L4_33 = L4_33.lower
+      L5_34 = _UPVALUE0_
+      L5_34 = L5_34.macFormat
+      L6_35 = A0_29
+      L6_35 = L5_34(L6_35)
+      L4_33 = L4_33(L5_34, L6_35, L5_34(L6_35))
+      A0_29 = L4_33
+      L4_33 = L3_32[A1_30]
+      if L4_33 then
+        L5_34 = L4_33.mac
+        if L5_34 ~= A0_29 then
+          L5_34 = os
+          L5_34 = L5_34.execute
+          L6_35 = "arping -f -q -c 2 -w 2 -I br-lan "
+          L6_35 = L6_35 .. A1_30
+          L5_34 = L5_34(L6_35)
+          if L5_34 == 0 then
+            L5_34 = 1
+            return L5_34
+          end
+        end
+      end
+      L5_34 = _parseMac
+      L6_35 = A0_29
+      L5_34 = L5_34(L6_35)
+      L6_35 = {}
+      L6_35.name = L5_34
+      L6_35.mac = A0_29
+      L6_35.ip = A1_30
+      _UPVALUE1_.saveDeviceInfo(string.upper(A0_29), A2_31, A2_31, "", "")
+      _UPVALUE2_:section("macbind", "host", L5_34, L6_35)
+      _UPVALUE2_:section("dhcp", "host", L5_34, L6_35)
+      _UPVALUE2_:commit("macbind")
+      _UPVALUE2_:commit("dhcp")
+    end
+  else
+    L3_32 = 2
+    return L3_32
+  end
+  L3_32 = 0
+  return L3_32
+end
+function addBinds(A0_36)
+  local L1_37, L2_38, L3_39, L4_40, L5_41, L6_42, L7_43, L8_44, L9_45, L10_46, L11_47, L12_48, L13_49
+  L1_37 = type
+  L2_38 = A0_36
+  L1_37 = L1_37(L2_38)
+  if L1_37 ~= "table" then
+    L1_37 = 0
+    return L1_37
+  end
+  L1_37 = {}
+  L2_38 = _parseDhcpLeases
+  L2_38 = L2_38()
+  for L6_42, L7_43 in L3_39(L4_40) do
+    L8_44 = string
+    L8_44 = L8_44.lower
+    L9_45 = _UPVALUE0_
+    L9_45 = L9_45.macFormat
+    L10_46 = L7_43.mac
+    L13_49 = L9_45(L10_46)
+    L8_44 = L8_44(L9_45, L10_46, L11_47, L12_48, L13_49, L9_45(L10_46))
+    L9_45 = L7_43.ip
+    L10_46 = _checkIP
+    L11_47 = L9_45
+    L10_46 = L10_46(L11_47)
+    if L10_46 then
+      L10_46 = _checkMac
+      L11_47 = L8_44
+      L10_46 = L10_46(L11_47)
+    elseif not L10_46 then
+      L10_46 = 2
+      return L10_46
+    end
+    L10_46 = L1_37[L9_45]
+    if L10_46 ~= 1 then
+      L1_37[L9_45] = 1
+      L10_46 = L7_43.name
+      L11_47 = L2_38[L9_45]
+      if L11_47 then
+        L12_48 = L11_47.mac
+        if L12_48 ~= L8_44 then
+          L12_48 = os
+          L12_48 = L12_48.execute
+          L13_49 = "arping -f -q -c 2 -w 2 -I br-lan "
+          L13_49 = L13_49 .. L9_45
+          L12_48 = L12_48(L13_49)
+          if L12_48 == 0 then
+            L12_48 = 1
+            return L12_48
+          end
+        end
+      end
+      L12_48 = _parseMac
+      L13_49 = L8_44
+      L12_48 = L12_48(L13_49)
+      L13_49 = {}
+      L13_49.name = L12_48
+      L13_49.mac = L8_44
+      L13_49.ip = L9_45
+      _UPVALUE1_.saveDeviceInfo(string.upper(L8_44), L10_46, L10_46, "", "")
+      _UPVALUE2_:section("macbind", "host", L12_48, L13_49)
+      _UPVALUE2_:section("dhcp", "host", L12_48, L13_49)
+    else
+      L10_46 = 3
+      return L10_46
+    end
+  end
+  L3_39(L4_40, L5_41)
+  L3_39(L4_40, L5_41)
+  return L3_39
+end
+function removeBind(A0_50)
+  local L1_51
+  L1_51 = _checkMac
+  L1_51 = L1_51(A0_50)
+  if L1_51 then
+    L1_51 = _parseMac
+    L1_51 = L1_51(A0_50)
+    _UPVALUE0_:delete("dhcp", L1_51)
+    _UPVALUE0_:commit("dhcp")
+    return true
+  else
+    L1_51 = false
+    return L1_51
+  end
+end
+function removeBinds(A0_52)
+  local L1_53, L2_54, L3_55, L4_56, L5_57, L6_58
+  if L1_53 ~= "table" then
+    return L1_53
+  end
+  for L4_56, L5_57 in L1_53(L2_54) do
+    L6_58 = _checkMac
+    L6_58 = L6_58(L5_57)
+    if L6_58 then
+      L6_58 = _parseMac
+      L6_58 = L6_58(L5_57)
+      _UPVALUE0_:delete("dhcp", L6_58)
+    else
+      L6_58 = false
+      return L6_58
+    end
+  end
+  L1_53(L2_54, L3_55)
+  return L1_53
+end
+function unbindAll()
+  _UPVALUE0_:delete_all("dhcp", "host")
+  _UPVALUE0_:commit("dhcp")
+end
+function reload()
+  os.execute("killall -s 10 noflushd ; /etc/init.d/dnsmasq restart")
+end

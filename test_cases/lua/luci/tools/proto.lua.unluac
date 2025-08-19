@@ -1,0 +1,30 @@
+module("luci.tools.proto", package.seeall)
+function opt_macaddr(A0_0, A1_1, ...)
+  local L3_3, L4_4
+  L3_3 = luci
+  L3_3 = L3_3.cbi
+  L3_3 = L3_3.Value
+  L4_4 = A0_0.taboption
+  L4_4 = L4_4(A0_0, "advanced", L3_3, "macaddr", ...)
+  L4_4.placeholder = A1_1 and A1_1:mac()
+  L4_4.datatype = "macaddr"
+  function L4_4.cfgvalue(A0_5, A1_6)
+    if _UPVALUE0_ and _UPVALUE0_:get_wifinet() then
+      return (_UPVALUE0_ and _UPVALUE0_:get_wifinet()):get("macaddr")
+    else
+      return _UPVALUE1_.cfgvalue(A0_5, A1_6)
+    end
+  end
+  function L4_4.write(A0_7, A1_8, A2_9)
+    if _UPVALUE0_ and _UPVALUE0_:get_wifinet() then
+      (_UPVALUE0_ and _UPVALUE0_:get_wifinet()):set("macaddr", A2_9)
+    elseif A2_9 then
+      _UPVALUE1_.write(A0_7, A1_8, A2_9)
+    else
+      _UPVALUE1_.remove(A0_7, A1_8)
+    end
+  end
+  function L4_4.remove(A0_10, A1_11)
+    A0_10:write(A1_11, nil)
+  end
+end

@@ -1,0 +1,145 @@
+local L0_0
+L0_0 = module
+L0_0("luci.tools.webadmin", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.model.uci")
+require("luci.sys")
+require("luci.ip")
+function byte_format(A0_1)
+  for _FORV_5_ = 1, 5 do
+    if A0_1 > 1024 and _FORV_5_ < 5 then
+      A0_1 = A0_1 / 1024
+    else
+      return string.format("%.2f %s", A0_1, ({
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+      })[_FORV_5_])
+    end
+  end
+end
+function date_format(A0_2)
+  local L1_3, L2_4, L3_5, L4_6
+  L1_3 = {
+    L2_4,
+    L3_5,
+    L4_6
+  }
+  L2_4 = "min"
+  L3_5 = "h"
+  L4_6 = "d"
+  L2_4 = 0
+  L3_5 = 0
+  L4_6 = 0
+  A0_2 = math.floor(A0_2)
+  if A0_2 > 60 then
+    L2_4 = math.floor(A0_2 / 60)
+    A0_2 = A0_2 % 60
+  end
+  if L2_4 > 60 then
+    L3_5 = math.floor(L2_4 / 60)
+    L2_4 = L2_4 % 60
+  end
+  if L3_5 > 24 then
+    L4_6 = math.floor(L3_5 / 24)
+    L3_5 = L3_5 % 24
+  end
+  if L4_6 > 0 then
+    return string.format("%.0fd %02.0fh %02.0fmin %02.0fs", L4_6, L3_5, L2_4, A0_2)
+  else
+    return string.format("%02.0fh %02.0fmin %02.0fs", L3_5, L2_4, A0_2)
+  end
+end
+function network_get_addresses(A0_7)
+  local L1_8, L2_9, L3_10, L4_11, L5_12
+  L1_8 = _UPVALUE0_
+  L1_8 = L1_8.cursor_state
+  L1_8 = L1_8()
+  L3_10 = L1_8
+  L2_9 = L1_8.load
+  L4_11 = "network"
+  L2_9(L3_10, L4_11)
+  L2_9 = {}
+  L4_11 = L1_8
+  L3_10 = L1_8.get
+  L5_12 = "network"
+  L3_10 = L3_10(L4_11, L5_12, A0_7, "ipaddr")
+  L5_12 = L1_8
+  L4_11 = L1_8.get
+  L4_11 = L4_11(L5_12, "network", A0_7, "netmask")
+  L5_12 = L1_8.get
+  L5_12 = L5_12(L1_8, "network", A0_7, "ip6addr")
+  if L3_10 and #L3_10 > 0 then
+    if L4_11 and #L4_11 == 0 then
+      L4_11 = nil
+    end
+    L3_10 = luci.ip.IPv4(L3_10, L4_11)
+    if L3_10 then
+      table.insert(L2_9, L3_10:string())
+    end
+  end
+  if L5_12 then
+    table.insert(L2_9, L5_12)
+  end
+  L1_8:foreach("network", "alias", function(A0_13)
+    if A0_13.interface == _UPVALUE0_ then
+      if A0_13.ipaddr and A0_13.netmask and luci.ip.IPv4(A0_13.ipaddr, A0_13.netmask) then
+        table.insert(_UPVALUE1_, luci.ip.IPv4(A0_13.ipaddr, A0_13.netmask):string())
+      end
+      if A0_13.ip6addr then
+        table.insert(_UPVALUE1_, A0_13.ip6addr)
+      end
+    end
+  end)
+  return L2_9
+end
+function cbi_add_networks(A0_14)
+  _UPVALUE0_.cursor():foreach("network", "interface", function(A0_15)
+    if A0_15[".name"] ~= "loopback" then
+      _UPVALUE0_:value(A0_15[".name"])
+    end
+  end)
+  A0_14.titleref = luci.dispatcher.build_url("admin", "network", "network")
+end
+function cbi_add_knownips(A0_16)
+  local L1_17
+  for _FORV_4_, _FORV_5_ in L1_17(luci.sys.net.arptable()) do
+    A0_16:value(_FORV_5_["IP address"])
+  end
+end
+function network_get_zones(A0_18)
+  if not _UPVALUE0_.cursor_state():load("firewall") then
+    return nil
+  end
+  _UPVALUE0_.cursor_state():foreach("firewall", "zone", function(A0_19)
+    local L1_20
+    L1_20 = A0_19.network
+    L1_20 = L1_20 or A0_19.name
+    if luci.util.contains(luci.util.split(L1_20, " "), _UPVALUE0_) then
+      table.insert(_UPVALUE1_, A0_19.name)
+    end
+  end)
+  return {}
+end
+function firewall_find_zone(A0_21)
+  luci.model.uci.cursor():foreach("firewall", "zone", function(A0_22)
+    local L1_23
+    L1_23 = A0_22.name
+    if L1_23 == _UPVALUE0_ then
+      L1_23 = A0_22[".name"]
+      _UPVALUE1_ = L1_23
+    end
+  end)
+  return nil
+end
+function iface_get_network(A0_24)
+  _UPVALUE0_.cursor_state():load("network")
+  _UPVALUE0_.cursor_state():foreach("network", "interface", function(A0_25)
+    if _UPVALUE1_ == _UPVALUE0_:get("network", A0_25[".name"], "ifname") then
+      _UPVALUE2_ = A0_25[".name"]
+    end
+  end)
+  return nil
+end

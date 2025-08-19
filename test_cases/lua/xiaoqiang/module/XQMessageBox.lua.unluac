@@ -1,0 +1,57 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQMessageBox", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function addMessage(A0_1)
+  local L1_2
+  if A0_1 then
+    L1_2 = A0_1.type
+    L1_2 = L1_2 and A0_1.data
+  elseif not L1_2 then
+    return
+  end
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.getCache
+  L1_2 = L1_2(_UPVALUE1_)
+  A0_1.timestamp = os.time()
+  if not L1_2 then
+    L1_2 = {}
+    table.insert(L1_2, A0_1)
+  else
+    for _FORV_6_, _FORV_7_ in ipairs(L1_2) do
+      if A0_1.type == _FORV_7_.type then
+        _FORV_7_.data = A0_1.data
+        break
+      end
+    end
+    if not true then
+      table.insert(L1_2, A0_1)
+    end
+  end
+  _UPVALUE0_.saveCache(_UPVALUE1_, L1_2, _UPVALUE2_)
+end
+function getMessages()
+  return _UPVALUE0_.getCache(_UPVALUE1_) or {}
+end
+function removeMessage(A0_3)
+  local L1_4, L2_5, L3_6, L4_7, L5_8
+  if A0_3 then
+    L1_4 = tonumber
+    L1_4 = L1_4(L2_5)
+    if L1_4 then
+      L1_4 = _UPVALUE0_
+      L1_4 = L1_4.getCache
+      L1_4 = L1_4(L2_5)
+      if L1_4 then
+        for L5_8, _FORV_6_ in L2_5(L3_6) do
+          if _FORV_6_.type == tonumber(A0_3) then
+            table.remove(L1_4, L5_8)
+          end
+        end
+        L5_8 = _UPVALUE2_
+        L2_5(L3_6, L4_7, L5_8)
+      end
+    end
+  end
+end

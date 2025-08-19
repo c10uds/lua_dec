@@ -1,0 +1,467 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQDBUtil", package.seeall)
+L0_0 = pcall
+L0_0 = L0_0(require, "lsqlite3")
+DEBUG = 7
+INFO = 6
+NOTICE = 5
+WARN = 4
+ERROR = 3
+CRIT = 2
+function conf_saveDeviceInfo(A0_1, A1_2, A2_3, A3_4, A4_5)
+  local L5_6, L6_7
+  L5_6 = _UPVALUE0_
+  L5_6 = L5_6.macaddr
+  L6_7 = A0_1
+  L5_6 = L5_6(L6_7)
+  if not L5_6 then
+    L5_6 = false
+    return L5_6
+  end
+  L6_7 = A0_1
+  L5_6 = A0_1.gsub
+  L5_6 = L5_6(L6_7, ":", "")
+  L6_7 = "_INFO"
+  L5_6 = L5_6 .. L6_7
+  L6_7 = {}
+  L6_7.mac = A0_1
+  L6_7.oname = A1_2
+  L6_7.nickname = A2_3
+  L6_7.company = A3_4
+  _UPVALUE1_:section("devicelist", "deviceinfo", L5_6, L6_7)
+  return _UPVALUE1_:commit("devicelist")
+end
+function saveDeviceInfo(A0_8, A1_9, A2_10, A3_11, A4_12)
+  local L5_13, L6_14, L7_15, L8_16
+  L5_13 = _UPVALUE0_
+  if not L5_13 then
+    L5_13 = conf_saveDeviceInfo
+    L6_14 = A0_8
+    L7_15 = A1_9
+    return L5_13(L6_14, L7_15, L8_16, A3_11, A4_12)
+  end
+  L5_13 = _UPVALUE1_
+  L5_13 = L5_13.macaddr
+  L6_14 = A0_8
+  L5_13 = L5_13(L6_14)
+  if not L5_13 then
+    return
+  end
+  L5_13 = _UPVALUE2_
+  L5_13 = L5_13.open
+  L6_14 = _UPVALUE3_
+  L5_13 = L5_13(L6_14)
+  L6_14 = string
+  L6_14 = L6_14.format
+  L7_15 = "select * from DEVICE_INFO where MAC = '%s'"
+  L6_14 = L6_14(L7_15, L8_16)
+  L7_15 = false
+  for _FORV_11_ in L8_16(L5_13, L6_14) do
+    if _FORV_11_ then
+      L7_15 = true
+    end
+  end
+  if not L7_15 then
+  else
+  end
+  L5_13:exec(L8_16)
+  return L5_13:close()
+end
+function conf_updateDeviceNickname(A0_17, A1_18)
+  local L2_19
+  L2_19 = _UPVALUE0_
+  L2_19 = L2_19.macaddr
+  L2_19 = L2_19(A0_17)
+  if not L2_19 then
+    L2_19 = false
+    return L2_19
+  end
+  L2_19 = A0_17.gsub
+  L2_19 = L2_19(A0_17, ":", "")
+  L2_19 = L2_19 .. "_INFO"
+  if _UPVALUE1_:get_all("devicelist", L2_19) then
+    return _UPVALUE1_:set("devicelist", "key", "nickname", A1_18)
+  end
+  return false
+end
+function updateDeviceNickname(A0_20, A1_21)
+  local L2_22, L3_23
+  L2_22 = _UPVALUE0_
+  if not L2_22 then
+    L2_22 = conf_updateDeviceNickname
+    L3_23 = A0_20
+    return L2_22(L3_23, A1_21)
+  end
+  L2_22 = _UPVALUE1_
+  L2_22 = L2_22.macaddr
+  L3_23 = A0_20
+  L2_22 = L2_22(L3_23)
+  if not L2_22 then
+    return
+  end
+  L2_22 = _UPVALUE2_
+  L2_22 = L2_22.open
+  L3_23 = _UPVALUE3_
+  L2_22 = L2_22(L3_23)
+  L3_23 = string
+  L3_23 = L3_23.format
+  L3_23 = L3_23("update DEVICE_INFO set NICKNAME = '%s' where MAC = '%s'", A1_21, A0_20)
+  L2_22:exec(L3_23)
+  return L2_22:close()
+end
+function conf_fetchDeviceInfo(A0_24)
+  local L1_25
+  L1_25 = _UPVALUE0_
+  L1_25 = L1_25.macaddr
+  L1_25 = L1_25(A0_24)
+  if not L1_25 then
+    L1_25 = {}
+    return L1_25
+  end
+  L1_25 = A0_24.gsub
+  L1_25 = L1_25(A0_24, ":", "")
+  L1_25 = L1_25 .. "_INFO"
+  if _UPVALUE1_:get_all("devicelist", L1_25) then
+    return {
+      mac = _UPVALUE1_:get_all("devicelist", L1_25).mac or "",
+      oName = _UPVALUE1_:get_all("devicelist", L1_25).oname or "",
+      nickname = _UPVALUE1_:get_all("devicelist", L1_25).nickname or "",
+      company = _UPVALUE1_:get_all("devicelist", L1_25).company or "",
+      ownnerId = ""
+    }
+  end
+  return {}
+end
+function fetchDeviceInfo(A0_26)
+  local L1_27, L2_28, L3_29
+  L1_27 = _UPVALUE0_
+  if not L1_27 then
+    L1_27 = conf_fetchDeviceInfo
+    L2_28 = A0_26
+    return L1_27(L2_28)
+  end
+  L1_27 = _UPVALUE1_
+  L1_27 = L1_27.macaddr
+  L2_28 = A0_26
+  L1_27 = L1_27(L2_28)
+  if not L1_27 then
+    return
+  end
+  L1_27 = _UPVALUE2_
+  L1_27 = L1_27.open
+  L2_28 = _UPVALUE3_
+  L1_27 = L1_27(L2_28)
+  L2_28 = string
+  L2_28 = L2_28.format
+  L3_29 = "select * from DEVICE_INFO where MAC = '%s'"
+  L2_28 = L2_28(L3_29, A0_26)
+  L3_29 = {}
+  for _FORV_7_ in L1_27:rows(L2_28) do
+    if _FORV_7_ then
+      L3_29 = {
+        mac = _FORV_7_[1],
+        oName = _FORV_7_[2],
+        nickname = _FORV_7_[3],
+        company = _FORV_7_[4],
+        ownnerId = _FORV_7_[5]
+      }
+    end
+  end
+  L1_27:close()
+  return L3_29
+end
+function conf_fetchAllDeviceInfo()
+  local L0_30
+  L0_30 = {}
+  _UPVALUE0_:foreach("devicelist", "deviceinfo", function(A0_31)
+    table.insert(_UPVALUE0_, {
+      mac = A0_31.mac or "",
+      oName = A0_31.oname or "",
+      nickname = A0_31.nickname or "",
+      company = A0_31.company or "",
+      ownnerId = ""
+    })
+  end)
+  return L0_30
+end
+function fetchAllDeviceInfo()
+  local L0_32, L1_33, L2_34
+  L0_32 = _UPVALUE0_
+  if not L0_32 then
+    L0_32 = conf_fetchAllDeviceInfo
+    return L0_32()
+  end
+  L0_32 = _UPVALUE1_
+  L0_32 = L0_32.open
+  L1_33 = _UPVALUE2_
+  L0_32 = L0_32(L1_33)
+  L1_33 = string
+  L1_33 = L1_33.format
+  L2_34 = "select * from DEVICE_INFO"
+  L1_33 = L1_33(L2_34)
+  L2_34 = {}
+  for _FORV_6_ in L0_32:rows(L1_33) do
+    if _FORV_6_ and _UPVALUE3_.macaddr(_FORV_6_[1]) then
+      table.insert(L2_34, {
+        mac = _FORV_6_[1],
+        oName = _FORV_6_[2],
+        nickname = _FORV_6_[3],
+        company = _FORV_6_[4],
+        ownnerId = _FORV_6_[5]
+      })
+    end
+  end
+  L0_32:close()
+  return L2_34
+end
+function sql_exec(A0_35, A1_36)
+  local L2_37, L3_38, L4_39, L5_40, L6_41
+  L2_37 = require
+  L3_38 = "socket"
+  L2_37 = L2_37(L3_38)
+  L3_38 = nil
+  if A0_35 == nil then
+    L4_39 = false
+    return L4_39
+  end
+  L4_39 = nil
+  if A1_36 ~= nil then
+    L4_39 = A1_36
+  else
+    L5_40 = _UPVALUE0_
+    L5_40 = L5_40.open
+    L6_41 = _UPVALUE1_
+    L5_40 = L5_40(L6_41)
+    L4_39 = L5_40
+  end
+  L6_41 = L4_39
+  L5_40 = L4_39.exec
+  L5_40 = L5_40(L6_41, A0_35)
+  L6_41 = _UPVALUE0_
+  L6_41 = L6_41.OK
+  if L5_40 ~= L6_41 then
+    L6_41 = 0
+    repeat
+      L2_37.select(nil, nil, -1.5423487136675799E-180)
+      L5_40 = L4_39:exec(A0_35)
+      L6_41 = L6_41 + 1
+    until L5_40 == _UPVALUE0_.OK or L6_41 >= 3
+    if L5_40 ~= _UPVALUE0_.OK then
+      _UPVALUE2_.log(ERROR, string.format("SQLite cmd retry[%d] exec failed[%s] resson[%s]", L6_41, A0_35, L4_39:errmsg()))
+      L3_38 = false
+    else
+      _UPVALUE2_.log(INFO, string.format("SQLite cmd retry[%d] exec success", L6_41))
+      L3_38 = true
+    end
+  else
+    L6_41 = _UPVALUE2_
+    L6_41 = L6_41.log
+    L6_41(INFO, string.format("SQLite cmd[%s] exec success", A0_35))
+    L3_38 = true
+  end
+  if not A1_36 then
+    L6_41 = L4_39.close
+    L6_41(L4_39)
+  end
+  return L3_38
+end
+function table_is_exist(A0_42, A1_43)
+  local L2_44, L3_45, L4_46, L5_47
+  if A1_43 then
+    L3_45 = A1_43
+  else
+    L4_46 = _UPVALUE0_
+    L4_46 = L4_46.open
+    L5_47 = _UPVALUE1_
+    L4_46 = L4_46(L5_47)
+    L3_45 = L4_46
+  end
+  L4_46 = string
+  L4_46 = L4_46.format
+  L5_47 = "select name from sqlite_master where name = '%s'"
+  L4_46 = L4_46(L5_47, A0_42)
+  L5_47 = {}
+  for _FORV_9_ in L3_45:rows(L4_46) do
+    L5_47 = _FORV_9_
+  end
+  if next(L5_47) == nil then
+    _UPVALUE2_.log(ERROR, "[vip push]can not found table named " .. A0_42)
+    L2_44 = false
+  else
+    _UPVALUE2_.log(ERROR, "[vip push]found table named " .. A0_42)
+    L2_44 = true
+  end
+  if not A1_43 then
+    L3_45:close()
+  end
+  return L2_44
+end
+function table_dump(A0_48, A1_49)
+  local L2_50, L3_51, L4_52, L5_53, L6_54, L7_55, L8_56, L9_57
+  if A1_49 then
+    L2_50 = A1_49
+  else
+    L3_51 = _UPVALUE0_
+    L3_51 = L3_51.open
+    L4_52 = _UPVALUE1_
+    L3_51 = L3_51(L4_52)
+    L2_50 = L3_51
+  end
+  L3_51 = string
+  L3_51 = L3_51.format
+  L4_52 = "select * from '%s'"
+  L5_53 = A0_48
+  L3_51 = L3_51(L4_52, L5_53)
+  L4_52 = require
+  L5_53 = "cjson"
+  L4_52 = L4_52(L5_53)
+  L5_53 = {}
+  for L9_57 in L6_54(L7_55, L8_56) do
+    _UPVALUE2_.log(DEBUG, L4_52.encode(L9_57))
+  end
+  if not A1_49 then
+    L6_54(L7_55)
+  end
+end
+function table_create(A0_58)
+  local L1_59, L2_60, L3_61
+  if A0_58 then
+    L1_59 = A0_58
+  else
+    L3_61 = _UPVALUE0_
+    L3_61 = L3_61.open
+    L3_61 = L3_61(_UPVALUE1_)
+    L1_59 = L3_61
+  end
+  L3_61 = string
+  L3_61 = L3_61.format
+  L3_61 = L3_61("CREATE TABLE DEVICE_PUSH_INFO (MAC TEXT PRIMARY KEY NOT NULL,STATUS TEXT,TIME INTEGER,ACTION TEXT,PUSHTIME INTEGER,LAST_ACTION TEXT,NAME TEXT);")
+  if sql_exec(L3_61, L1_59) == false then
+    _UPVALUE2_.log(ERROR, "[vip push]create table for DEVICE_PUSH_INFO error")
+    L2_60 = false
+  else
+    L2_60 = true
+  end
+  if not A0_58 then
+    L1_59:close()
+  end
+  return L2_60
+end
+function set_pending_status(A0_62, A1_63, A2_64, A3_65)
+  local L4_66, L5_67, L6_68, L7_69
+  if A3_65 then
+    L4_66 = A3_65
+  else
+    L5_67 = SQLite
+    L5_67 = L5_67.open
+    L6_68 = _UPVALUE0_
+    L5_67 = L5_67(L6_68)
+    L4_66 = L5_67
+  end
+  L5_67 = string
+  L5_67 = L5_67.upper
+  L6_68 = A2_64
+  L5_67 = L5_67(L6_68)
+  A2_64 = L5_67
+  L5_67 = string
+  L5_67 = L5_67.format
+  L6_68 = "select * from DEVICE_PUSH_INFO where MAC = '%s'"
+  L5_67 = L5_67(L6_68, L7_69)
+  L6_68 = false
+  for _FORV_10_ in L7_69(L4_66, L5_67) do
+    if _FORV_10_ then
+      L6_68 = true
+    end
+  end
+  L7_69(DEBUG, "[vip push]exist is :" .. json.encode(L6_68))
+  if nil == name then
+    if not L6_68 then
+    else
+    end
+  elseif not L6_68 then
+  else
+  end
+  if not A3_65 then
+    L4_66:close()
+  end
+  return (sql_exec(L7_69))
+end
+function set_pending_status_with_name(A0_70, A1_71, A2_72, A3_73)
+  local L4_74, L5_75, L6_76, L7_77
+  if A3_73 then
+    L4_74 = A3_73
+  else
+    L5_75 = SQLite
+    L5_75 = L5_75.open
+    L6_76 = _UPVALUE0_
+    L5_75 = L5_75(L6_76)
+    L4_74 = L5_75
+  end
+  L5_75 = string
+  L5_75 = L5_75.upper
+  L6_76 = A0_70
+  L5_75 = L5_75(L6_76)
+  A0_70 = L5_75
+  L5_75 = string
+  L5_75 = L5_75.format
+  L6_76 = "select * from DEVICE_PUSH_INFO where MAC = '%s'"
+  L5_75 = L5_75(L6_76, L7_77)
+  L6_76 = false
+  for _FORV_10_ in L7_77(L4_74, L5_75) do
+    if _FORV_10_ then
+      L6_76 = true
+    end
+  end
+  L7_77(DEBUG, "[vip push]exist is :" .. json.encode(L6_76))
+  if not L6_76 then
+  else
+  end
+  if not A3_73 then
+    L4_74:close()
+  end
+  return (sql_exec(L7_77))
+end
+function call_push_action_up()
+  if tonumber(require("luci.util").exec("ps | grep -v grep | grep vip_device_push_act.lua 2>&1 > /dev/null; echo $?")) == 1 then
+    _UPVALUE0_.log(6, "can not found processon 'vip_device_push_act.lua' call it up")
+    require("xiaoqiang.common.XQFunction").forkExec("vip_device_push_act.lua")
+  else
+    _UPVALUE0_.log(4, "vip_device_push_act.lua exist")
+  end
+end
+function vip_device_pre_push(A0_78, A1_79, A2_80)
+  local L3_81
+  if A0_78 == nil or A2_80 == nil then
+    L3_81 = nil
+    return L3_81
+  end
+  L3_81 = _UPVALUE0_
+  L3_81 = L3_81.open
+  L3_81 = L3_81(_UPVALUE1_)
+  if L3_81 == nil then
+    _UPVALUE2_.log(ERROR, "[vip push]open db failed")
+  end
+  if not table_is_exist("DEVICE_PUSH_INFO", L3_81) then
+    _UPVALUE2_.log(NOTICE, "[vip push]can't found table named 'DEIVCE_PUSH_INFO'")
+    if not table_create(L3_81) then
+      _UPVALUE2_.log(ERROR, "[vip push]create table error")
+      L3_81:close()
+      return false
+    end
+  end
+  if A1_79 == nil then
+    if not set_pending_status(A0_78, A2_80, L3_81) then
+      _UPVALUE2_.log(ERROR, "[vip push]set mac[" .. string.upper(A0_78) .. "] status[pending] error")
+    else
+      _UPVALUE2_.log(DEBUG, "[vip push]set mac[" .. string.upper(A0_78) .. "] status[pending] success,call vip_device_push_act.lua")
+      call_push_action_up()
+    end
+  elseif not set_pending_status_with_name(A0_78, A1_79, A2_80, L3_81) then
+    _UPVALUE2_.log(ERROR, "[vip push]set mac[" .. string.upper(A0_78) .. "] status[pending] error")
+  else
+    _UPVALUE2_.log(DEBUG, "[vip push]set mac[" .. string.upper(A0_78) .. "] status[pending] success,call vip_device_push_act.lua")
+    call_push_action_up()
+  end
+  L3_81:close()
+end

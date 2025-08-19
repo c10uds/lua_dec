@@ -1,0 +1,462 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.xqpassport", package.seeall)
+function L0_0()
+  node("api", "xqpassport").target = firstchild()
+  node("api", "xqpassport").title = ""
+  node("api", "xqpassport").order = 400
+  node("api", "xqpassport").sysauth = "admin"
+  node("api", "xqpassport").sysauth_authenticator = "jsonauth"
+  node("api", "xqpassport").index = true
+  entry({"api", "xqpassport"}, firstchild(), "", 400)
+  entry({
+    "api",
+    "xqpassport",
+    "login"
+  }, call("passportLogin"), "", 401, 1)
+  entry({
+    "api",
+    "xqpassport",
+    "userInfo"
+  }, call("getUserInfo"), "", 402)
+  entry({
+    "api",
+    "xqpassport",
+    "rigister"
+  }, call("routerRegister"), "", 405, 1)
+  entry({
+    "api",
+    "xqpassport",
+    "binded"
+  }, call("getBindInfo"), "", 406, 1)
+  entry({
+    "api",
+    "xqpassport",
+    "plugin_list"
+  }, call("pluginList"), "", 407)
+  entry({
+    "api",
+    "xqpassport",
+    "plugin_enable"
+  }, call("pluginEnable"), "", 408)
+  entry({
+    "api",
+    "xqpassport",
+    "plugin_disable"
+  }, call("pluginDisable"), "", 409)
+  entry({
+    "api",
+    "xqpassport",
+    "plugin_detail"
+  }, call("pluginDetail"), "", 410)
+  entry({
+    "api",
+    "xqpassport",
+    "unbound"
+  }, call("unboundRouter"), "", 411)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function getBindInfo()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8
+  L0_1 = require
+  L1_2 = "xiaoqiang.util.XQNetUtil"
+  L0_1 = L0_1(L1_2)
+  L1_2 = require
+  L2_3 = "xiaoqiang.util.XQSysUtil"
+  L1_2 = L1_2(L2_3)
+  L2_3 = _UPVALUE0_
+  L2_3 = L2_3.formvalue
+  L3_4 = "uuid"
+  L2_3 = L2_3(L3_4)
+  L2_3 = L2_3 or ""
+  L3_4 = tonumber
+  L4_5 = _UPVALUE0_
+  L4_5 = L4_5.formvalue
+  L5_6 = "force"
+  L4_5 = L4_5(L5_6)
+  L4_5 = L4_5 or "0"
+  L3_4 = L3_4(L4_5)
+  L4_5 = {}
+  L5_6 = 0
+  L6_7 = L1_2.getPassportBindInfo
+  L6_7 = L6_7()
+  if L6_7 then
+    L4_5.bind = 1
+    L7_8 = L1_2.getBindUserInfo
+    L7_8 = L7_8()
+    if L7_8 == nil or L3_4 ~= 0 then
+      L7_8 = L0_1.getUserInfo(L2_3)
+    end
+    if L7_8 then
+      if L7_8.miliaoNick and L7_8.miliaoNick ~= "" then
+        L7_8.aliasNick = L7_8.miliaoNick
+      end
+      L4_5.info = L7_8
+    else
+      L7_8 = {}
+      L7_8.aliasNick = L6_7
+      L7_8.miliaoIcon = ""
+      L7_8.miliaoIconOrig = ""
+      L7_8.miliaoNick = ""
+      L7_8.userId = L6_7
+      L4_5.info = L7_8
+    end
+  else
+    L4_5.bind = 0
+  end
+  L7_8 = L1_2.getRouterName
+  L7_8 = L7_8()
+  L4_5.routerName = L7_8
+  if L5_6 ~= 0 then
+    L7_8 = _UPVALUE1_
+    L7_8 = L7_8.getErrorMessage
+    L7_8 = L7_8(L5_6)
+    L4_5.msg = L7_8
+  end
+  L4_5.code = L5_6
+  L7_8 = _UPVALUE0_
+  L7_8 = L7_8.write_json
+  L7_8(L4_5)
+end
+function unboundRouter()
+  local L0_9, L1_10, L2_11, L3_12, L4_13, L5_14, L6_15
+  L0_9 = require
+  L1_10 = "xiaoqiang.util.XQNetUtil"
+  L0_9 = L0_9(L1_10)
+  L1_10 = require
+  L2_11 = "xiaoqiang.util.XQDBUtil"
+  L1_10 = L1_10(L2_11)
+  L2_11 = require
+  L3_12 = "xiaoqiang.util.XQSysUtil"
+  L2_11 = L2_11(L3_12)
+  L3_12 = {}
+  L4_13 = 0
+  L5_14 = _UPVALUE0_
+  L5_14 = L5_14.formvalue
+  L6_15 = "uuid"
+  L5_14 = L5_14(L6_15)
+  L6_15 = _UPVALUE0_
+  L6_15 = L6_15.formvalue
+  L6_15 = L6_15("password")
+  if L5_14 == nil or L5_14 == "" then
+    L5_14 = L2_11.getBindUUID()
+  end
+  if L6_15 ~= nil then
+    if L0_9.xiaomiLogin(L5_14, L6_15) and L0_9.xiaomiLogin(L5_14, L6_15).code == 0 then
+      if L2_11.getPassportBindInfo() then
+        if L0_9.dismissAccount(nil, L5_14) and (tonumber(L0_9.dismissAccount(nil, L5_14).code) == 0 or tonumber(L0_9.dismissAccount(nil, L5_14).code) == 3001 or tonumber(L0_9.dismissAccount(nil, L5_14).code) == 3002) then
+          L2_11.setPassportBound(false, L5_14)
+        else
+          L4_13 = 1550
+        end
+      end
+    else
+      L4_13 = 1556
+    end
+  else
+    L4_13 = 1557
+  end
+  if L4_13 ~= 0 then
+    L3_12.msg = _UPVALUE1_.getErrorMessage(L4_13)
+  else
+    _UPVALUE0_.header("Set-Cookie", "psp=admin|||2|||0;path=/;")
+  end
+  L3_12.code = L4_13
+  _UPVALUE0_.write_json(L3_12)
+end
+function passportLogin()
+  local L0_16, L1_17, L2_18, L3_19, L4_20, L5_21, L6_22, L7_23, L8_24, L9_25, L10_26
+  L0_16 = require
+  L1_17 = "xiaoqiang.util.XQNetUtil"
+  L0_16 = L0_16(L1_17)
+  L1_17 = require
+  L2_18 = "xiaoqiang.util.XQDBUtil"
+  L1_17 = L1_17(L2_18)
+  L2_18 = require
+  L3_19 = "xiaoqiang.util.XQSysUtil"
+  L2_18 = L2_18(L3_19)
+  L3_19 = {}
+  L4_20 = 0
+  L5_21 = _UPVALUE0_
+  L5_21 = L5_21.formvalue
+  L6_22 = "uuid"
+  L5_21 = L5_21(L6_22)
+  L6_22 = _UPVALUE0_
+  L6_22 = L6_22.formvalue
+  L7_23 = "password"
+  L6_22 = L6_22(L7_23)
+  L7_23 = _UPVALUE0_
+  L7_23 = L7_23.formvalue
+  L8_24 = "encrypt"
+  L7_23 = L7_23(L8_24)
+  L8_24 = L0_16.xiaomiLogin
+  L9_25 = L5_21
+  L10_26 = L6_22
+  L8_24 = L8_24(L9_25, L10_26)
+  if L8_24 then
+    L9_25 = L8_24.code
+    if L9_25 == 0 then
+      L9_25 = L2_18.getPassportBindInfo
+      L9_25 = L9_25()
+      if L9_25 then
+        L10_26 = L8_24.uuid
+        if L10_26 == L9_25 then
+          L10_26 = L0_16.getAdminList
+          L10_26 = L10_26()
+          if L10_26 and type(L10_26) == "table" then
+            if tonumber(L10_26.code) == 0 then
+              L4_20 = 0
+              _UPVALUE0_.header("Set-Cookie", "psp=" .. L8_24.uuid .. "|||" .. 1 .. "|||" .. L8_24.token .. ";path=/;")
+            elseif tonumber(L10_26.code) == 401 then
+              L4_20 = 1551
+            else
+              L4_20 = 1549
+              L2_18.setPassportBound(false, L8_24.uuid)
+              _UPVALUE0_.header("Set-Cookie", "psp=admin|||2|||0;path=/;")
+            end
+          else
+            L4_20 = 1551
+            if L10_26 and L10_26.msg then
+              L3_19.errorDetail = L10_26.msg
+            end
+          end
+        else
+          L4_20 = 1548
+        end
+      else
+        L10_26 = L2_18.setBindUUID
+        L10_26(L8_24.uuid)
+      end
+      L10_26 = L8_24.token
+      L3_19.token = L10_26
+      L10_26 = L8_24.uuid
+      L3_19.uuid = L10_26
+    end
+  elseif L8_24 then
+    L9_25 = L8_24.code
+    if L9_25 ~= 0 then
+      L9_25 = L8_24.code
+      if L9_25 == 1 then
+        L4_20 = 1564
+      else
+        L9_25 = L8_24.code
+        if L9_25 == 2 then
+          L4_20 = 1565
+        else
+          L4_20 = 1566
+        end
+      end
+    end
+  else
+    L4_20 = 1538
+  end
+  if L4_20 ~= 0 then
+    L9_25 = require
+    L10_26 = "xiaoqiang.common.XQFunction"
+    L9_25 = L9_25(L10_26)
+    L10_26 = L9_25.forkExec
+    L10_26("/usr/sbin/ntpsetclock 99999 log >/dev/null 2>&1")
+    L10_26 = _UPVALUE1_
+    L10_26 = L10_26.getErrorMessage
+    L10_26 = L10_26(L4_20)
+    L3_19.msg = L10_26
+  end
+  L3_19.code = L4_20
+  L9_25 = _UPVALUE0_
+  L9_25 = L9_25.write_json
+  L10_26 = L3_19
+  L9_25(L10_26)
+end
+function routerAdminList()
+  local L0_27, L1_28, L2_29, L3_30, L4_31
+  L0_27 = require
+  L1_28 = "xiaoqiang.util.XQNetUtil"
+  L0_27 = L0_27(L1_28)
+  L1_28 = require
+  L2_29 = "xiaoqiang.util.XQSysUtil"
+  L1_28 = L1_28(L2_29)
+  L2_29 = {}
+  L3_30 = 0
+  L4_31 = _UPVALUE0_
+  L4_31 = L4_31.formvalue
+  L4_31 = L4_31("uuid")
+  L4_31 = L4_31 or ""
+  if not L1_28.getPassportBindInfo() then
+    L3_30 = 1542
+  elseif L0_27.getAdminList(L4_31) and tonumber(L0_27.getAdminList(L4_31).code) == 0 then
+    L2_29.list = L0_27.getAdminList(L4_31).adminList
+  elseif L0_27.getAdminList(L4_31) and tonumber(L0_27.getAdminList(L4_31).code) == 401 then
+    L3_30 = 1581
+  else
+    L3_30 = 1543
+  end
+  if L3_30 ~= 0 then
+    L2_29.msg = _UPVALUE1_.getErrorMessage(L3_30)
+  end
+  L2_29.code = L3_30
+  _UPVALUE0_.write_json(L2_29)
+end
+function routerRegister()
+  local L0_32, L1_33, L2_34, L3_35, L4_36, L5_37
+  L0_32 = require
+  L1_33 = "xiaoqiang.util.XQSysUtil"
+  L0_32 = L0_32(L1_33)
+  L1_33 = require
+  L2_34 = "xiaoqiang.util.XQNetUtil"
+  L1_33 = L1_33(L2_34)
+  L2_34 = require
+  L3_35 = "xiaoqiang.util.XQDBUtil"
+  L2_34 = L2_34(L3_35)
+  L3_35 = {}
+  L4_36 = 0
+  L5_37 = _UPVALUE0_
+  L5_37 = L5_37.formvalue
+  L5_37 = L5_37("uuid")
+  if L1_33.routerRegister(L5_37) and tonumber(L1_33.routerRegister(L5_37).code) == 0 then
+    L3_35.deviceID = L1_33.routerRegister(L5_37).id
+    L0_32.setPassportBound(true, L1_33.getPassport(L5_37).uuid)
+  else
+    L0_32.setPassportBound(false, nil)
+    L4_36 = 1541
+  end
+  if L4_36 ~= 0 then
+    require("xiaoqiang.common.XQFunction").forkExec("/usr/sbin/ntpsetclock 99999 log >/dev/null 2>&1")
+    L3_35.msg = _UPVALUE1_.getErrorMessage(L4_36)
+  else
+    _UPVALUE0_.header("Set-Cookie", "psp=" .. L5_37 .. "|||" .. 1 .. "|||" .. L1_33.getPassport(L5_37).token .. ";path=/;")
+  end
+  L3_35.code = L4_36
+  _UPVALUE0_.write_json(L3_35)
+end
+function getUserInfo()
+  local L0_38, L1_39, L2_40, L3_41
+  L0_38 = require
+  L1_39 = "xiaoqiang.util.XQNetUtil"
+  L0_38 = L0_38(L1_39)
+  L1_39 = {}
+  L2_40 = 0
+  L3_41 = _UPVALUE0_
+  L3_41 = L3_41.formvalue
+  L3_41 = L3_41("uuid")
+  L3_41 = L3_41 or ""
+  if L0_38.getUserInfo(L3_41) then
+    L1_39.userInfo = L0_38.getUserInfo(L3_41)
+  else
+    L2_40 = 1539
+  end
+  if L2_40 ~= 0 then
+    L1_39.msg = _UPVALUE1_.getErrorMessage(L2_40)
+  end
+  L1_39.code = L2_40
+  _UPVALUE0_.write_json(L1_39)
+end
+function pluginList()
+  local L0_42, L1_43, L2_44
+  L0_42 = require
+  L1_43 = "xiaoqiang.util.XQNetUtil"
+  L0_42 = L0_42(L1_43)
+  L1_43 = {}
+  L2_44 = _UPVALUE0_
+  L2_44 = L2_44.formvalue
+  L2_44 = L2_44("uuid")
+  L2_44 = L2_44 or ""
+  if L0_42.pluginList(L2_44) and tonumber(L0_42.pluginList(L2_44).code) == 0 then
+    L1_43.list, L1_43.code = L0_42.pluginList(L2_44), 0
+  elseif L0_42.pluginList(L2_44) and tonumber(L0_42.pluginList(L2_44).code) == 401 then
+    L1_43.code = 1581
+  elseif L0_42.pluginList(L2_44) and tonumber(L0_42.pluginList(L2_44).code) == 3001 then
+    L1_43.code = 1580
+  else
+    L1_43.code = 1544
+  end
+  if L1_43.code ~= 0 then
+    L1_43.msg = _UPVALUE1_.getErrorMessage(L1_43.code)
+  end
+  _UPVALUE0_.write_json(L1_43)
+end
+function pluginEnable()
+  local L0_45, L1_46, L2_47, L3_48
+  L0_45 = require
+  L1_46 = "xiaoqiang.util.XQNetUtil"
+  L0_45 = L0_45(L1_46)
+  L1_46 = {}
+  L2_47 = _UPVALUE0_
+  L2_47 = L2_47.formvalue
+  L3_48 = "uuid"
+  L2_47 = L2_47(L3_48)
+  L2_47 = L2_47 or ""
+  L3_48 = _UPVALUE0_
+  L3_48 = L3_48.formvalue
+  L3_48 = L3_48("pluginId")
+  if L0_45.pluginEnable(L2_47, L3_48) and tonumber(L0_45.pluginEnable(L2_47, L3_48).code) == 0 then
+    L1_46.code = 0
+  elseif L0_45.pluginEnable(L2_47, L3_48) and tonumber(L0_45.pluginEnable(L2_47, L3_48).code) == 401 then
+    L1_46.code = 1581
+  elseif L0_45.pluginEnable(L2_47, L3_48) and tonumber(L0_45.pluginEnable(L2_47, L3_48).code) == 3001 then
+    L1_46.code = 1580
+  else
+    L1_46.code = 1545
+  end
+  if L1_46.code ~= 0 then
+    L1_46.msg = _UPVALUE1_.getErrorMessage(L1_46.code)
+  end
+  _UPVALUE0_.write_json(L1_46)
+end
+function pluginDisable()
+  local L0_49, L1_50, L2_51, L3_52
+  L0_49 = require
+  L1_50 = "xiaoqiang.util.XQNetUtil"
+  L0_49 = L0_49(L1_50)
+  L1_50 = {}
+  L2_51 = _UPVALUE0_
+  L2_51 = L2_51.formvalue
+  L3_52 = "uuid"
+  L2_51 = L2_51(L3_52)
+  L2_51 = L2_51 or ""
+  L3_52 = _UPVALUE0_
+  L3_52 = L3_52.formvalue
+  L3_52 = L3_52("pluginId")
+  if L0_49.pluginDisable(L2_51, L3_52) and tonumber(L0_49.pluginDisable(L2_51, L3_52).code) == 0 then
+    L1_50.code = 0
+  elseif L0_49.pluginDisable(L2_51, L3_52) and tonumber(L0_49.pluginDisable(L2_51, L3_52).code) == 401 then
+    L1_50.code = 1581
+  elseif L0_49.pluginDisable(L2_51, L3_52) and tonumber(L0_49.pluginDisable(L2_51, L3_52).code) == 3001 then
+    L1_50.code = 1580
+  else
+    L1_50.code = 1546
+  end
+  if L1_50.code ~= 0 then
+    L1_50.msg = _UPVALUE1_.getErrorMessage(L1_50.code)
+  end
+  _UPVALUE0_.write_json(L1_50)
+end
+function pluginDetail()
+  local L0_53, L1_54, L2_55, L3_56
+  L0_53 = require
+  L1_54 = "xiaoqiang.util.XQNetUtil"
+  L0_53 = L0_53(L1_54)
+  L1_54 = {}
+  L2_55 = _UPVALUE0_
+  L2_55 = L2_55.formvalue
+  L3_56 = "uuid"
+  L2_55 = L2_55(L3_56)
+  L2_55 = L2_55 or ""
+  L3_56 = _UPVALUE0_
+  L3_56 = L3_56.formvalue
+  L3_56 = L3_56("pluginId")
+  if L0_53.pluginDetail(L2_55, L3_56) and tonumber(L0_53.pluginDetail(L2_55, L3_56).code) == 0 then
+    L1_54.detail, L1_54.code = L0_53.pluginDetail(L2_55, L3_56), 0
+  elseif L0_53.pluginDetail(L2_55, L3_56) and tonumber(L0_53.pluginDetail(L2_55, L3_56).code) == 401 then
+    L1_54.code = 1581
+  elseif L0_53.pluginDetail(L2_55, L3_56) and tonumber(L0_53.pluginDetail(L2_55, L3_56).code) == 3001 then
+    L1_54.code = 1580
+  else
+    L1_54.code = 1547
+  end
+  if L1_54.code ~= 0 then
+    L1_54.msg = _UPVALUE1_.getErrorMessage(L1_54.code)
+  end
+  _UPVALUE0_.write_json(L1_54)
+end

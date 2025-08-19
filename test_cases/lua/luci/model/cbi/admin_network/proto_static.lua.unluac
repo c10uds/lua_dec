@@ -1,0 +1,40 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14
+L2_2 = ...
+L4_4 = L2_2
+L3_3 = L2_2.get_interface
+L3_3 = L3_3(L4_4)
+L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L4_4 = L1_1:taboption("general", Value, "ipaddr", translate("IPv4 address"))
+L4_4.datatype = "ip4addr"
+L5_5 = L1_1:taboption("general", Value, "netmask", translate("IPv4 netmask"))
+L5_5.datatype = "ip4addr"
+L5_5:value("255.255.255.0")
+L5_5:value("255.255.0.0")
+L5_5:value("255.0.0.0")
+L6_6 = L1_1:taboption("general", Value, "gateway", translate("IPv4 gateway"))
+L6_6.datatype = "ip4addr"
+L7_7 = L1_1:taboption("general", Value, "broadcast", translate("IPv4 broadcast"))
+L7_7.datatype = "ip4addr"
+L8_8 = L1_1:taboption("general", DynamicList, "dns", translate("Use custom DNS servers"))
+L8_8.datatype = "ipaddr"
+L8_8.cast = "string"
+if luci.model.network:has_ipv6() then
+  L9_9 = s:taboption("general", Flag, "accept_ra", translate("Accept router advertisements"))
+  L9_9.default = L9_9.disabled
+  L10_10 = s:taboption("general", Flag, "send_rs", translate("Send router solicitations"))
+  L10_10.default = L10_10.enabled
+  L10_10:depends("accept_ra", "")
+  L11_11 = L1_1:taboption("general", Value, "ip6addr", translate("IPv6 address"))
+  L11_11.datatype = "ip6addr"
+  L11_11:depends("accept_ra", "")
+  L12_12 = L1_1:taboption("general", Value, "ip6gw", translate("IPv6 gateway"))
+  L12_12.datatype = "ip6addr"
+  L12_12:depends("accept_ra", "")
+end
+luci.tools.proto.opt_macaddr(L1_1, L3_3, translate("Override MAC address"))
+L13_13 = L1_1:taboption("advanced", Value, "mtu", translate("Override MTU"))
+L13_13.placeholder = "1500"
+L13_13.datatype = "max(1500)"
+L14_14 = L1_1:taboption("advanced", Value, "metric", translate("Use gateway metric"))
+L14_14.placeholder = "0"
+L14_14.datatype = "uinteger"

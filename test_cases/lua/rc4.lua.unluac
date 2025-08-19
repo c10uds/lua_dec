@@ -1,0 +1,12 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("string")
+module("rc4")
+function new(A0_1, A1_2)
+  if A1_2 then
+  end
+  ;({}).encrypt = function(A0_3)
+    return (_UPVALUE0_(A0_3, _UPVALUE1_))
+  end
+  return {}
+end

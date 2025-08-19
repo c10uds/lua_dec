@@ -1,0 +1,1 @@
+module("luci.store", require("luci.util").threadlocal)

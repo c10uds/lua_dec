@@ -1,0 +1,108 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("slaxml")
+module("slaxdom")
+function L0_0.dom(A0_1, A1_2, A2_3)
+  local L3_4, L4_5, L5_6, L6_7, L7_8, L8_9
+  if not A2_3 then
+    L3_4 = {}
+    A2_3 = L3_4
+  end
+  L3_4 = A2_3.simple
+  L3_4 = not L3_4
+  L4_5 = _UPVALUE0_
+  L4_5 = L4_5.insert
+  L5_6 = _UPVALUE0_
+  L5_6 = L5_6.remove
+  L6_7 = {}
+  L7_8 = {}
+  L7_8.type = "document"
+  L7_8.name = "#doc"
+  L8_9 = {}
+  L7_8.kids = L8_9
+  L8_9 = L7_8
+  _UPVALUE1_:parser({
+    startElement = function(A0_10, A1_11)
+      local L2_12
+      L2_12 = {}
+      L2_12.type = "element"
+      L2_12.name = A0_10
+      L2_12.kids = {}
+      L2_12.el = _UPVALUE0_ and {} or nil
+      L2_12.attr = {}
+      L2_12.nsURI = A1_11
+      L2_12.parent = _UPVALUE0_ and _UPVALUE1_ or nil
+      if _UPVALUE1_ == _UPVALUE2_ then
+        if _UPVALUE2_.root then
+          error(("Encountered element '%s' when the document already has a root '%s' element"):format(A0_10, _UPVALUE2_.root.name))
+        end
+        _UPVALUE2_.root = L2_12
+      end
+      _UPVALUE3_(_UPVALUE1_.kids, L2_12)
+      if _UPVALUE1_.el then
+        _UPVALUE3_(_UPVALUE1_.el, L2_12)
+      end
+      _UPVALUE1_ = L2_12
+      _UPVALUE3_(_UPVALUE4_, L2_12)
+    end,
+    attribute = function(A0_13, A1_14, A2_15)
+      local L3_16
+      L3_16 = _UPVALUE0_
+      if L3_16 then
+        L3_16 = _UPVALUE0_
+        L3_16 = L3_16.type
+      elseif L3_16 ~= "element" then
+        L3_16 = error
+        L3_16(("Encountered an attribute %s=%s but I wasn't inside an element"):format(A0_13, A1_14))
+      end
+      L3_16 = {}
+      L3_16.type = "attribute"
+      L3_16.name = A0_13
+      L3_16.nsURI = A2_15
+      L3_16.value = A1_14
+      L3_16.parent = _UPVALUE1_ and _UPVALUE0_ or nil
+      if _UPVALUE1_ then
+        _UPVALUE0_.attr[A0_13] = A1_14
+      end
+      _UPVALUE2_(_UPVALUE0_.attr, L3_16)
+    end,
+    closeElement = function(A0_17)
+      if _UPVALUE0_.name ~= A0_17 or _UPVALUE0_.type ~= "element" then
+        error(("Received a close element notification for '%s' but was inside a '%s' %s"):format(A0_17, _UPVALUE0_.name, _UPVALUE0_.type))
+      end
+      _UPVALUE1_(_UPVALUE2_)
+      _UPVALUE0_ = _UPVALUE2_[#_UPVALUE2_]
+    end,
+    text = function(A0_18)
+      if _UPVALUE0_.type ~= "document" then
+        if _UPVALUE0_.type ~= "element" then
+          error(("Received a text notification '%s' but was inside a %s"):format(A0_18, _UPVALUE0_.type))
+        end
+        _UPVALUE1_(_UPVALUE0_.kids, {
+          type = "text",
+          name = "#text",
+          value = A0_18,
+          parent = _UPVALUE2_ and _UPVALUE0_ or nil
+        })
+      end
+    end,
+    comment = function(A0_19)
+      _UPVALUE0_(_UPVALUE1_.kids, {
+        type = "comment",
+        name = "#comment",
+        value = A0_19,
+        parent = _UPVALUE2_ and _UPVALUE1_ or nil
+      })
+    end,
+    pi = function(A0_20, A1_21)
+      _UPVALUE0_(_UPVALUE1_.kids, {
+        type = "pi",
+        name = A0_20,
+        value = A1_21,
+        parent = _UPVALUE2_ and _UPVALUE1_ or nil
+      })
+    end
+  }):parse(A1_2, A2_3)
+  return L7_8
+end
+return L0_0

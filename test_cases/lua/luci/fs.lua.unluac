@@ -1,0 +1,75 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("io")
+module("luci.fs")
+access = require("nixio.fs").access
+function glob(...)
+  local L1_2, L2_3, L3_4
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.glob
+  L3_4 = ...
+  L3_4 = L1_2(L2_3, L3_4, ...)
+  if L1_2 then
+    return _UPVALUE1_.consume(L1_2)
+  else
+    return nil, L2_3, L3_4
+  end
+end
+function isfile(A0_5)
+  return _UPVALUE0_.stat(A0_5, "type") == "reg"
+end
+function isdirectory(A0_6)
+  return _UPVALUE0_.stat(A0_6, "type") == "dir"
+end
+readfile = require("nixio.fs").readfile
+writefile = require("nixio.fs").writefile
+copy = require("nixio.fs").datacopy
+rename = require("nixio.fs").move
+function mtime(A0_7)
+  return _UPVALUE0_.stat(A0_7, "mtime")
+end
+function utime(A0_8, A1_9, A2_10)
+  return _UPVALUE0_.utimes(A0_8, A2_10, A1_9)
+end
+basename = require("nixio.fs").basename
+dirname = require("nixio.fs").dirname
+function dir(...)
+  local L1_12, L2_13, L3_14
+  L1_12 = _UPVALUE0_
+  L1_12 = L1_12.dir
+  L3_14 = ...
+  L3_14 = L1_12(L2_13, L3_14, ...)
+  if L1_12 then
+    _UPVALUE1_.consume(L1_12)[#_UPVALUE1_.consume(L1_12) + 1] = "."
+    _UPVALUE1_.consume(L1_12)[#_UPVALUE1_.consume(L1_12) + 1] = ".."
+    return (_UPVALUE1_.consume(L1_12))
+  else
+    return nil, L2_13, L3_14
+  end
+end
+function mkdir(A0_15, A1_16)
+  if not A1_16 or not _UPVALUE0_.mkdirr(A0_15) then
+  end
+  return (_UPVALUE0_.mkdir(A0_15))
+end
+rmdir = require("nixio.fs").rmdir
+function stat(A0_17, A1_18)
+  local L2_19, L3_20, L4_21
+  L2_19 = _UPVALUE0_
+  L2_19 = L2_19.stat
+  L3_20 = A0_17
+  L4_21 = L2_19(L3_20)
+  if L2_19 then
+    L2_19.mode = L2_19.modestr
+    L2_19.type = _UPVALUE1_[L2_19.type] or "?"
+  end
+  return A1_18 and L2_19 and L2_19[A1_18] or L2_19, L3_20, L4_21
+end
+chmod = require("nixio.fs").chmod
+function link(A0_22, A1_23, A2_24)
+  if not A2_24 or not _UPVALUE0_.symlink(A0_22, A1_23) then
+  end
+  return (_UPVALUE0_.link(A0_22, A1_23))
+end
+unlink = require("nixio.fs").unlink
+readlink = require("nixio.fs").readlink

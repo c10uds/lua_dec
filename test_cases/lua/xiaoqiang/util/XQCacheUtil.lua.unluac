@@ -1,0 +1,112 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQCacheUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function saveCache(A0_1, A1_2, A2_3)
+  local L3_4, L4_5
+  L3_4 = _UPVALUE0_
+  L3_4 = L3_4.isStrNil
+  L4_5 = A0_1
+  L3_4 = L3_4(L4_5)
+  if L3_4 or not A1_2 or not A2_3 then
+    L3_4 = false
+    return L3_4
+  end
+  L3_4 = "/tmp/"
+  L4_5 = A0_1
+  L3_4 = L3_4 .. L4_5
+  L4_5 = {}
+  L4_5.data = A1_2
+  L4_5.atime = _UPVALUE1_.uptime()
+  L4_5.expire = tostring(A2_3)
+  _UPVALUE2_.open(L3_4, "w", 600):writeall(_UPVALUE3_.get_bytecode(L4_5))
+  _UPVALUE2_.open(L3_4, "w", 600):close()
+  return true
+end
+function getCache(A0_6)
+  local L1_7, L2_8, L3_9
+  L1_7 = _UPVALUE0_
+  L1_7 = L1_7.isStrNil
+  L2_8 = A0_6
+  L1_7 = L1_7(L2_8)
+  if L1_7 then
+    L1_7 = nil
+    return L1_7
+  end
+  L1_7 = "/tmp/"
+  L2_8 = A0_6
+  L1_7 = L1_7 .. L2_8
+  L2_8 = _UPVALUE1_
+  L2_8 = L2_8.access
+  L3_9 = L1_7
+  L2_8 = L2_8(L3_9)
+  if not L2_8 then
+    L2_8 = nil
+    return L2_8
+  end
+  L2_8 = _UPVALUE1_
+  L2_8 = L2_8.readfile
+  L3_9 = L1_7
+  L2_8 = L2_8(L3_9)
+  L3_9 = loadstring
+  L3_9 = L3_9(L2_8)
+  setfenv(L3_9, {})
+  if L3_9().atime and L3_9().expire and tonumber(L3_9().expire) > 0 and L3_9().atime + L3_9().expire < _UPVALUE2_.uptime() then
+    _UPVALUE1_.unlink(L1_7)
+    return nil
+  end
+  return L3_9().data
+end
+function getCacheData(A0_10)
+  local L1_11, L2_12, L3_13
+  L1_11 = _UPVALUE0_
+  L1_11 = L1_11.isStrNil
+  L2_12 = A0_10
+  L1_11 = L1_11(L2_12)
+  if L1_11 then
+    L1_11 = nil
+    return L1_11
+  end
+  L1_11 = "/tmp/"
+  L2_12 = A0_10
+  L1_11 = L1_11 .. L2_12
+  L2_12 = _UPVALUE1_
+  L2_12 = L2_12.access
+  L3_13 = L1_11
+  L2_12 = L2_12(L3_13)
+  if not L2_12 then
+    L2_12 = nil
+    return L2_12
+  end
+  L2_12 = _UPVALUE1_
+  L2_12 = L2_12.readfile
+  L3_13 = L1_11
+  L2_12 = L2_12(L3_13)
+  L3_13 = loadstring
+  L3_13 = L3_13(L2_12)
+  setfenv(L3_13, {})
+  if L3_13().atime and L3_13().expire and tonumber(L3_13().expire) > 0 and L3_13().atime + L3_13().expire < _UPVALUE2_.uptime() then
+    L3_13().data.active = 0
+    _UPVALUE1_.unlink(L1_11)
+  else
+    L3_13().data.active = 1
+  end
+  return L3_13().data
+end
+function rmCacheData(A0_14)
+  local L1_15
+  L1_15 = _UPVALUE0_
+  L1_15 = L1_15.isStrNil
+  L1_15 = L1_15(A0_14)
+  if L1_15 then
+    L1_15 = false
+    return L1_15
+  end
+  L1_15 = "/tmp/"
+  L1_15 = L1_15 .. A0_14
+  if _UPVALUE1_.access(L1_15) then
+    _UPVALUE1_.unlink(L1_15)
+  end
+  return true
+end

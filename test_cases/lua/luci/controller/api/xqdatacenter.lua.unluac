@@ -1,0 +1,575 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.xqdatacenter", package.seeall)
+function L0_0()
+  node("api", "xqdatacenter").target = firstchild()
+  node("api", "xqdatacenter").title = ""
+  node("api", "xqdatacenter").order = 300
+  node("api", "xqdatacenter").sysauth = "admin"
+  node("api", "xqdatacenter").sysauth_authenticator = "jsonauth"
+  node("api", "xqdatacenter").index = true
+  entry({
+    "api",
+    "xqdatacenter"
+  }, firstchild(), _(""), 300)
+  entry({
+    "api",
+    "xqdatacenter",
+    "request"
+  }, call("tunnelRequest"), _(""), 301)
+  entry({
+    "api",
+    "xqdatacenter",
+    "identify_device"
+  }, call("identifyDevice"), _(""), 302, 8)
+  entry({
+    "api",
+    "xqdatacenter",
+    "download"
+  }, call("download"), _(""), 303)
+  entry({
+    "api",
+    "xqdatacenter",
+    "upload"
+  }, call("upload"), _(""), 304, 16)
+  entry({
+    "api",
+    "xqdatacenter",
+    "thumb"
+  }, call("getThumb"), _(""), 305)
+  entry({
+    "api",
+    "xqdatacenter",
+    "device_id"
+  }, call("getDeviceId"), _(""), 306)
+  entry({
+    "api",
+    "xqdatacenter",
+    "check_file_exist"
+  }, call("checkFileExist"), _(""), 307)
+  entry({
+    "api",
+    "xqdatacenter",
+    "plugin_ssh"
+  }, call("pluginSSH"), _(""), 308)
+  entry({
+    "api",
+    "xqdatacenter",
+    "plugin_ssh_status"
+  }, call("pluginSSHStatus"), _(""), 309)
+  entry({
+    "api",
+    "xqdatacenter",
+    "fsys_probe"
+  }, call("fsysProbe"), _(""), 301)
+  entry({
+    "api",
+    "xqdatacenter",
+    "fsys_resume"
+  }, call("fsysResume"), _(""), 301)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function fsysProbe()
+  local L0_1
+  L0_1 = {}
+  L0_1.code = 0
+  L0_1.msg = ""
+  if tonumber(_UPVALUE0_.formvalue("type") or 3) == 1 then
+    require("xiaoqiang.module.XQDisk").disk_check()
+  elseif tonumber(_UPVALUE0_.formvalue("type") or 3) == 2 then
+    L0_1.status = require("xiaoqiang.module.XQDisk").get_diskstatus()
+  else
+    L0_1.code = 6
+    L0_1.msg = "ParameterError"
+  end
+  _UPVALUE0_.write_json(L0_1)
+end
+function fsysResume()
+  local L0_2
+  L0_2 = {}
+  L0_2.code = 0
+  L0_2.msg = ""
+  if tonumber(_UPVALUE0_.formvalue("type") or 3) == 1 then
+    require("xiaoqiang.module.XQDisk").disk_repair()
+  elseif tonumber(_UPVALUE0_.formvalue("type") or 3) == 2 then
+    L0_2.status = require("xiaoqiang.module.XQDisk").get_repairstatus()
+  else
+    L0_2.code = 6
+    L0_2.msg = "ParameterError"
+  end
+  _UPVALUE0_.write_json(L0_2)
+end
+function tunnelRequest()
+  local L0_3, L1_4, L2_5
+  L0_3 = require
+  L1_4 = "xiaoqiang.util.XQCryptoUtil"
+  L0_3 = L0_3(L1_4)
+  L1_4 = L0_3.binaryBase64Enc
+  L2_5 = _UPVALUE0_
+  L2_5 = L2_5.formvalue_unsafe
+  L2_5 = L2_5("payload")
+  L1_4 = L1_4(L2_5, L2_5("payload"))
+  L2_5 = _UPVALUE1_
+  L2_5 = L2_5.THRIFT_TUNNEL_TO_DATACENTER
+  L2_5 = L2_5 % L1_4
+  _UPVALUE0_.write(require("luci.util").exec(L2_5), nil, false, true)
+end
+function identifyDevice()
+  local L0_6
+  L0_6 = {}
+  L0_6.code = 0
+  L0_6.info = _UPVALUE0_.mattool_identify_device()
+  _UPVALUE1_.write_json(L0_6)
+end
+function getDeviceId()
+  local L0_7
+  L0_7 = {}
+  L0_7.code = 0
+  L0_7.deviceId = _UPVALUE0_.mattool_get_deviceid()
+  _UPVALUE1_.write_json(L0_7)
+end
+function download()
+  local L0_8, L1_9, L2_10, L3_11, L4_12, L5_13, L6_14, L7_15, L8_16, L9_17, L10_18, L11_19, L12_20
+  L0_8 = require
+  L1_9 = "nixio.fs"
+  L0_8 = L0_8(L1_9)
+  L1_9 = require
+  L2_10 = "luci.http.protocol.mime"
+  L1_9 = L1_9(L2_10)
+  L2_10 = require
+  L3_11 = "luci.ltn12"
+  L2_10 = L2_10(L3_11)
+  L3_11 = require
+  L4_12 = "xiaoqiang.XQLog"
+  L3_11 = L3_11(L4_12)
+  L4_12 = _UPVALUE0_
+  L4_12 = L4_12.formvalue
+  L5_13 = "path"
+  L4_12 = L4_12(L5_13)
+  L5_13 = _UPVALUE1_
+  L5_13 = L5_13.isStrNil
+  L6_14 = L4_12
+  L5_13 = L5_13(L6_14)
+  if L5_13 then
+    L5_13 = _UPVALUE0_
+    L5_13 = L5_13.status
+    L6_14 = 404
+    L7_15 = _
+    L8_16 = "no Such file"
+    L12_20 = L7_15(L8_16)
+    L5_13(L6_14, L7_15, L8_16, L9_17, L10_18, L11_19, L12_20, L7_15(L8_16))
+    return
+  end
+  L5_13 = "/userdisk/data/"
+  L6_14 = "/extdisks/"
+  L7_15 = "/userdisk/privacyData/"
+  L8_16 = "/userdisk/appdata/"
+  L9_17 = "/userdisk/.thumbnails/"
+  L10_18 = string
+  L10_18 = L10_18.sub
+  L11_19 = L4_12
+  L12_20 = 1
+  L10_18 = L10_18(L11_19, L12_20, string.len(L5_13))
+  if L10_18 ~= L5_13 then
+    L10_18 = string
+    L10_18 = L10_18.sub
+    L11_19 = L4_12
+    L12_20 = 1
+    L10_18 = L10_18(L11_19, L12_20, string.len(L6_14))
+    if L10_18 ~= L6_14 then
+      L10_18 = string
+      L10_18 = L10_18.sub
+      L11_19 = L4_12
+      L12_20 = 1
+      L10_18 = L10_18(L11_19, L12_20, string.len(L7_15))
+      if L10_18 ~= L7_15 then
+        L10_18 = string
+        L10_18 = L10_18.sub
+        L11_19 = L4_12
+        L12_20 = 1
+        L10_18 = L10_18(L11_19, L12_20, string.len(L8_16))
+        if L10_18 ~= L8_16 then
+          L10_18 = string
+          L10_18 = L10_18.sub
+          L11_19 = L4_12
+          L12_20 = 1
+          L10_18 = L10_18(L11_19, L12_20, string.len(L9_17))
+          if L10_18 ~= L9_17 then
+            L10_18 = _UPVALUE0_
+            L10_18 = L10_18.status
+            L11_19 = 403
+            L12_20 = _
+            L12_20 = L12_20("no permission")
+            L10_18(L11_19, L12_20, L12_20("no permission"))
+            return
+          end
+        end
+      end
+    end
+  end
+  L10_18 = L3_11.log
+  L11_19 = 7
+  L12_20 = "=============path = "
+  L12_20 = L12_20 .. L4_12
+  L10_18(L11_19, L12_20)
+  L10_18 = L0_8.stat
+  L11_19 = L4_12
+  L10_18 = L10_18(L11_19)
+  if not L10_18 then
+    L11_19 = _UPVALUE0_
+    L11_19 = L11_19.status
+    L12_20 = 404
+    L11_19(L12_20, _("no Such file"))
+    return
+  end
+  L11_19 = _UPVALUE0_
+  L11_19 = L11_19.header
+  L12_20 = "Accept-Ranges"
+  L11_19(L12_20, "bytes")
+  L11_19 = _UPVALUE0_
+  L11_19 = L11_19.header
+  L12_20 = "Content-Type"
+  L11_19(L12_20, L1_9.to_mime(L4_12))
+  L11_19 = _UPVALUE0_
+  L11_19 = L11_19.getenv
+  L12_20 = "HTTP_RANGE"
+  L11_19 = L11_19(L12_20)
+  if L11_19 then
+    L12_20 = _UPVALUE0_
+    L12_20 = L12_20.status
+    L12_20(206)
+    L12_20 = string
+    L12_20 = L12_20.gsub
+    L12_20 = L12_20(L11_19, "bytes=", "")
+    L11_19 = L12_20
+    L12_20 = string
+    L12_20 = L12_20.gsub
+    L12_20 = L12_20(L11_19, "-", "")
+    L11_19 = L12_20
+  else
+    L11_19 = 0
+  end
+  L12_20 = L3_11.log
+  L12_20(7, "=============range = " .. L11_19)
+  L12_20 = "bytes "
+  L12_20 = L12_20 .. L11_19 .. "-" .. L10_18.size - 1 .. "/" .. L10_18.size
+  L3_11.log(7, "=============contentRange = " .. L12_20)
+  _UPVALUE0_.header("Content-Length", L10_18.size - L11_19)
+  _UPVALUE0_.header("Content-Range", L12_20)
+  _UPVALUE0_.header("Content-Disposition", "attachment; filename=" .. L0_8.basename(L4_12))
+  if string.sub(L4_12, 1, string.len(L5_13)) == L5_13 then
+    _UPVALUE0_.header("X-Accel-Redirect", "/download-userdisk/" .. string.sub(L4_12, string.len(L5_13) + 1, string.len(L4_12)))
+  elseif string.sub(L4_12, 1, string.len(L6_14)) == L6_14 then
+    _UPVALUE0_.header("X-Accel-Redirect", "/download-extdisks/" .. string.sub(L4_12, string.len(L6_14) + 1, string.len(L4_12)))
+  elseif string.sub(L4_12, 1, string.len(L7_15)) == L7_15 then
+    _UPVALUE0_.header("X-Accel-Redirect", "/download-pridisk/" .. string.sub(L4_12, string.len(L7_15) + 1, string.len(L4_12)))
+  elseif string.sub(L4_12, 1, string.len(L8_16)) == L8_16 then
+    _UPVALUE0_.header("X-Accel-Redirect", "/download-userdisk-appdata/" .. string.sub(L4_12, string.len(L8_16) + 1, string.len(L4_12)))
+  elseif string.sub(L4_12, 1, string.len(L9_17)) == L9_17 then
+    _UPVALUE0_.header("X-Accel-Redirect", "/download-userdisk-thumbnails/" .. string.sub(L4_12, string.len(L9_17) + 1, string.len(L4_12)))
+  end
+end
+function upload()
+  local L0_21, L1_22, L2_23, L3_24, L4_25, L5_26, L6_27, L7_28, L8_29, L9_30, L10_31, L11_32, L12_33, L13_34, L14_35
+  L1_22 = require
+  L2_23 = "xiaoqiang.XQLog"
+  L1_22 = L1_22(L2_23)
+  L2_23 = require
+  L3_24 = "luci.fs"
+  L2_23 = L2_23(L3_24)
+  L3_24 = "/userdisk/upload.tmp"
+  L4_25 = L2_23.isfile
+  L5_26 = L3_24
+  L4_25 = L4_25(L5_26)
+  if L4_25 then
+    L4_25 = L2_23.unlink
+    L5_26 = L3_24
+    L4_25(L5_26)
+  end
+  L4_25 = nil
+  L5_26 = _UPVALUE0_
+  L5_26 = L5_26.setfilehandler
+  function L6_27(A0_36, A1_37, A2_38)
+    if not _UPVALUE0_ and A0_36 and A0_36.name == "file" then
+      _UPVALUE0_ = io.open(_UPVALUE1_, "w")
+      _UPVALUE2_ = A0_36.file
+      _UPVALUE2_ = string.gsub(_UPVALUE2_, "+", " ")
+      _UPVALUE2_ = string.gsub(_UPVALUE2_, "%%(%x%x)", function(A0_39)
+        return string.char(tonumber(A0_39, 16))
+      end)
+      _UPVALUE2_ = _UPVALUE2_.gsub(_UPVALUE2_, "\r\n", "\n")
+    end
+    if A1_37 then
+      _UPVALUE0_:write(A1_37)
+    end
+    if A2_38 then
+      _UPVALUE0_:close()
+    end
+  end
+  L5_26(L6_27)
+  L5_26 = _UPVALUE0_
+  L5_26 = L5_26.formvalue
+  L6_27 = "target"
+  L5_26 = L5_26(L6_27)
+  L6_27 = string
+  L6_27 = L6_27.match
+  L7_28 = L5_26
+  L8_29 = "/$"
+  L6_27 = L6_27(L7_28, L8_29)
+  if L6_27 == nil then
+    L6_27 = L5_26
+    L7_28 = "/"
+    L5_26 = L6_27 .. L7_28
+  end
+  L6_27 = L2_23.mkdir
+  L7_28 = L5_26
+  L8_29 = true
+  L6_27(L7_28, L8_29)
+  L6_27 = L4_25
+  L7_28 = L2_23.isfile
+  L8_29 = L5_26
+  L9_30 = L6_27
+  L8_29 = L8_29 .. L9_30
+  L7_28 = L7_28(L8_29)
+  if L7_28 then
+    L7_28 = L6_27
+    L9_30 = L7_28
+    L8_29 = L7_28.match
+    L8_29 = L8_29(L9_30, L10_31)
+    if L8_29 then
+      L9_30 = L7_28.sub
+      L9_30 = L9_30(L10_31, L11_32, L12_33)
+      L7_28 = L9_30
+    end
+    L9_30 = L6_27.match
+    L9_30 = L9_30(L10_31, L11_32)
+    for L13_34 = 1, 100 do
+      L14_35 = L7_28
+      L14_35 = L14_35 .. "(" .. L13_34 .. ")"
+      if L9_30 then
+        L14_35 = L14_35 .. "." .. L9_30
+      end
+      if not L2_23.isfile(L5_26 .. L14_35) then
+        L6_27 = L14_35
+        break
+      end
+    end
+  end
+  L7_28 = L5_26
+  L8_29 = L6_27
+  L7_28 = L7_28 .. L8_29
+  L8_29 = L1_22.log
+  L9_30 = 7
+  L8_29(L9_30, L10_31)
+  L8_29 = L2_23.rename
+  L9_30 = L3_24
+  L8_29(L9_30, L10_31)
+  L8_29 = {}
+  L8_29.code = 0
+  L9_30 = _UPVALUE0_
+  L9_30 = L9_30.write_json
+  L9_30(L10_31)
+end
+function getThumb()
+  local L0_40, L1_41, L2_42, L3_43, L4_44, L5_45, L6_46, L7_47, L8_48
+  L0_40 = require
+  L1_41 = "luci.util"
+  L0_40 = L0_40(L1_41)
+  L1_41 = require
+  L2_42 = "nixio.fs"
+  L1_41 = L1_41(L2_42)
+  L2_42 = require
+  L3_43 = "luci.http.protocol.mime"
+  L2_42 = L2_42(L3_43)
+  L3_43 = require
+  L4_44 = "luci.ltn12"
+  L3_43 = L3_43(L4_44)
+  L4_44 = require
+  L5_45 = "xiaoqiang.XQLog"
+  L4_44 = L4_44(L5_45)
+  L5_45 = _UPVALUE0_
+  L5_45 = L5_45.formvalue
+  L6_46 = "filePath"
+  L5_45 = L5_45(L6_46)
+  L6_46 = L4_44.log
+  L7_47 = 7
+  L8_48 = "realPath = "
+  L6_46(L7_47, L8_48, L5_45)
+  if L5_45 == nil then
+    L6_46 = _UPVALUE0_
+    L6_46 = L6_46.status
+    L7_47 = 404
+    L8_48 = _
+    L8_48 = L8_48("no Such file")
+    L6_46(L7_47, L8_48, L8_48("no Such file"))
+    return
+  end
+  L6_46 = "{\"api\":10, \"files\":[\""
+  L7_47 = L5_45
+  L8_48 = "\"]}"
+  L6_46 = L6_46 .. L7_47 .. L8_48
+  L7_47 = _UPVALUE1_
+  L7_47 = L7_47.thrift_tunnel_to_datacenter
+  L8_48 = L6_46
+  L7_47 = L7_47(L8_48)
+  if L7_47 then
+    L8_48 = L7_47.code
+    if L8_48 == 0 then
+      L8_48 = L7_47.thumbnails
+      L8_48 = L8_48[1]
+      _UPVALUE0_.header("Content-Type", L2_42.to_mime(L8_48))
+      _UPVALUE0_.header("Content-Length", L1_41.stat(L8_48).size)
+      L3_43.pump.all(L3_43.source.file(io.open(L8_48, "r")), _UPVALUE0_.write)
+    end
+  else
+    L8_48 = _UPVALUE0_
+    L8_48 = L8_48.status
+    L8_48(404, _("no Such thumb file"))
+  end
+end
+function checkFileExist()
+  local L0_49, L1_50, L2_51, L3_52
+  L0_49 = require
+  L1_50 = "nixio.fs"
+  L0_49 = L0_49(L1_50)
+  L1_50 = true
+  L2_51 = _UPVALUE0_
+  L2_51 = L2_51.formvalue
+  L3_52 = "filePath"
+  L2_51 = L2_51(L3_52)
+  L3_52 = _UPVALUE1_
+  L3_52 = L3_52.isStrNil
+  L3_52 = L3_52(L2_51)
+  if L3_52 then
+    L1_50 = false
+  else
+    L3_52 = L0_49.stat
+    L3_52 = L3_52(L2_51)
+    if not L3_52 then
+      L1_50 = false
+    end
+  end
+  L3_52 = {}
+  L3_52.code = 0
+  L3_52.exist = L1_50
+  _UPVALUE0_.write_json(L3_52)
+end
+function pluginSSH()
+  local L0_53, L1_54, L2_55, L3_56, L4_57, L5_58, L6_59, L7_60
+  L0_53 = require
+  L1_54 = "luci.util"
+  L0_53 = L0_53(L1_54)
+  L1_54 = require
+  L2_55 = "xiaoqiang.XQLog"
+  L1_54 = L1_54(L2_55)
+  L2_55 = 0
+  L3_56 = {}
+  L4_57 = _UPVALUE0_
+  L4_57 = L4_57.formvalue
+  L5_58 = "pluginID"
+  L4_57 = L4_57(L5_58)
+  L5_58 = _UPVALUE0_
+  L5_58 = L5_58.formvalue
+  L6_59 = "capability"
+  L5_58 = L5_58(L6_59)
+  L6_59 = tonumber
+  L7_60 = _UPVALUE0_
+  L7_60 = L7_60.formvalue
+  L7_60 = L7_60("open")
+  L7_60 = L7_60 or 0
+  L6_59 = L6_59(L7_60)
+  L7_60 = L1_54.check
+  L7_60(0, L1_54.KEY_FUNC_PLUGIN, 1)
+  if L6_59 and L6_59 == 1 then
+    if L4_57 and L5_58 then
+      L7_60 = {}
+      L7_60.api = 611
+      L7_60.pluginID = L4_57
+      L7_60.capability = L0_53.split(L5_58, ",")
+      if _UPVALUE1_.thrift_tunnel_to_datacenter(_UPVALUE2_.encode(L7_60)) and _UPVALUE1_.thrift_tunnel_to_datacenter(_UPVALUE2_.encode(L7_60)).code ~= 0 then
+        L2_55 = 1595
+      end
+    else
+      L2_55 = 1537
+    end
+  else
+    L7_60 = {}
+    L7_60.api = 613
+    if _UPVALUE1_.thrift_tunnel_to_datacenter(_UPVALUE2_.encode(L7_60)) and _UPVALUE1_.thrift_tunnel_to_datacenter(_UPVALUE2_.encode(L7_60)).code == 0 then
+      L2_55 = 0
+    else
+      L2_55 = 1601
+    end
+  end
+  if L2_55 ~= 0 then
+    L7_60 = _UPVALUE3_
+    L7_60 = L7_60.getErrorMessage
+    L7_60 = L7_60(L2_55)
+    L3_56.msg = L7_60
+  end
+  L3_56.code = L2_55
+  L7_60 = _UPVALUE0_
+  L7_60 = L7_60.write_json
+  L7_60(L3_56)
+end
+function pluginSSHStatus()
+  local L0_61, L1_62, L2_63, L3_64, L4_65, L5_66, L6_67, L7_68, L8_69, L9_70, L10_71
+  L0_61 = 0
+  L1_62 = {}
+  L2_63 = _UPVALUE0_
+  L2_63 = L2_63.thrift_tunnel_to_datacenter
+  L3_64 = "{\"api\":612}"
+  L2_63 = L2_63(L3_64)
+  L3_64 = _UPVALUE0_
+  L3_64 = L3_64.thrift_tunnel_to_datacenter
+  L4_65 = "{\"api\":621}"
+  L3_64 = L3_64(L4_65)
+  if L2_63 then
+    L4_65 = L2_63.code
+    if L4_65 == 0 and L3_64 then
+      L4_65 = L2_63.code
+      if L4_65 == 0 then
+        L4_65 = {}
+        L5_66 = L2_63.status
+        if L5_66 == 1 then
+          L5_66 = 1
+        else
+          L5_66 = L5_66 or 0
+        end
+        L1_62.enable = L5_66
+        L5_66 = {}
+        if L6_67 == 1 then
+          L1_62.pluginID = L7_68
+          L5_66 = L6_67.capability
+        end
+        for L9_70, L10_71 in L6_67(L7_68) do
+          L10_71.enable = 0
+          for _FORV_14_, _FORV_15_ in ipairs(L5_66) do
+            if L10_71.key == _FORV_15_ then
+              L10_71.enable = 1
+              break
+            end
+          end
+          table.insert(L4_65, L10_71)
+        end
+        L1_62.capability = L4_65
+      end
+    end
+  else
+    L0_61 = 1600
+  end
+  if L0_61 ~= 0 then
+    L4_65 = _UPVALUE1_
+    L4_65 = L4_65.getErrorMessage
+    L5_66 = L0_61
+    L4_65 = L4_65(L5_66)
+    L1_62.msg = L4_65
+  end
+  L1_62.code = L0_61
+  L4_65 = _UPVALUE2_
+  L4_65 = L4_65.write_json
+  L5_66 = L1_62
+  L4_65(L5_66)
+end

@@ -1,0 +1,14 @@
+local L0_0, L1_1, L2_2
+L0_0 = pcall
+L1_1 = dofile
+L2_2 = _G
+module("luci.version")
+if L0_0(L1_1, "/etc/openwrt_release") and L2_2.DISTRIB_DESCRIPTION then
+  distname = ""
+  distversion = L2_2.DISTRIB_DESCRIPTION
+else
+  distname = "OpenWrt Firmware"
+  distversion = "Development Snapshot"
+end
+luciname = "LuCI 0.11.1 Release"
+luciversion = "0.11.1"

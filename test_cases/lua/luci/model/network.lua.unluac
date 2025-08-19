@@ -1,0 +1,2048 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20, L21_21, L22_22, L23_23, L24_24, L25_25, L26_26, L27_27, L28_28, L29_29
+L0_0 = type
+L1_1 = next
+L2_2 = pairs
+L3_3 = ipairs
+L4_4 = loadfile
+L5_5 = table
+L6_6 = tonumber
+L7_7 = tostring
+L8_8 = math
+L9_9 = require
+L10_10 = L9_9
+L11_11 = "ubus"
+L10_10 = L10_10(L11_11)
+L11_11 = L9_9
+L12_12 = "nixio"
+L11_11 = L11_11(L12_12)
+L12_12 = L9_9
+L13_13 = "nixio.fs"
+L12_12 = L12_12(L13_13)
+L13_13 = L9_9
+L14_14 = "luci.ip"
+L13_13 = L13_13(L14_14)
+L14_14 = L9_9
+L15_15 = "luci.sys"
+L14_14 = L14_14(L15_15)
+L15_15 = L9_9
+L16_16 = "luci.util"
+L15_15 = L15_15(L16_16)
+L16_16 = L9_9
+L17_17 = "luci.dispatcher"
+L16_16 = L16_16(L17_17)
+L17_17 = L9_9
+L18_18 = "luci.model.uci"
+L17_17 = L17_17(L18_18)
+L18_18 = L9_9
+L19_19 = "luci.i18n"
+L18_18 = L18_18(L19_19)
+L19_19 = module
+L20_20 = "luci.model.network"
+L19_19(L20_20)
+L19_19 = {}
+IFACE_PATTERNS_VIRTUAL = L19_19
+L19_19 = {
+  L20_20,
+  L21_21,
+  L22_22,
+  L23_23,
+  L24_24,
+  L25_25,
+  L26_26,
+  L27_27,
+  L28_28
+}
+L20_20 = "^wmaster%d"
+L21_21 = "^wifi%d"
+L22_22 = "^hwsim%d"
+L23_23 = "^imq%d"
+L24_24 = "^ifb%d"
+L25_25 = "^mon%.wlan%d"
+L26_26 = "^sit%d"
+L27_27 = "^gre%d"
+L28_28 = "^lo$"
+IFACE_PATTERNS_IGNORE = L19_19
+L19_19 = {
+  L20_20,
+  L21_21,
+  L22_22,
+  L23_23
+}
+L20_20 = "^wlan%d"
+L21_21 = "^wl%d"
+L22_22 = "^ath%d"
+L23_23 = "^%w+%.network%d"
+IFACE_PATTERNS_WIRELESS = L19_19
+L19_19 = L15_15.class
+L19_19 = L19_19()
+protocol = L19_19
+L19_19 = {}
+L20_20, L21_21, L22_22, L23_23, L24_24, L25_25, L26_26, L27_27, L28_28 = nil, nil, nil, nil, nil, nil, nil, nil, nil
+function L29_29(A0_30, A1_31, A2_32, A3_33)
+  local L4_34, L5_35
+  L4_34 = _UPVALUE0_
+  L5_35 = L4_34
+  L4_34 = L4_34.get
+  L4_34 = L4_34(L5_35, A0_30, A1_31, A2_32)
+  if L4_34 then
+    L5_35 = {}
+    if _UPVALUE1_(L4_34) == "string" then
+      for _FORV_9_ in L4_34:gmatch("%S+") do
+        if _FORV_9_ ~= A3_33 then
+          L5_35[#L5_35 + 1] = _FORV_9_
+        end
+      end
+      if #L5_35 > 0 then
+        _UPVALUE0_:set(A0_30, A1_31, A2_32, _UPVALUE2_.concat(L5_35, " "))
+      else
+        _UPVALUE0_:delete(A0_30, A1_31, A2_32)
+      end
+    elseif _UPVALUE1_(L4_34) == "table" then
+      for _FORV_9_, _FORV_10_ in _UPVALUE3_(L4_34) do
+        if _FORV_10_ ~= A3_33 then
+          L5_35[#L5_35 + 1] = _FORV_10_
+        end
+      end
+      if #L5_35 > 0 then
+        _UPVALUE0_:set(A0_30, A1_31, A2_32, L5_35)
+      else
+        _UPVALUE0_:delete(A0_30, A1_31, A2_32)
+      end
+    end
+  end
+end
+_filter = L29_29
+function L29_29(A0_36, A1_37, A2_38, A3_39)
+  local L4_40, L5_41
+  L4_40 = _UPVALUE0_
+  L5_41 = L4_40
+  L4_40 = L4_40.get
+  L4_40 = L4_40(L5_41, A0_36, A1_37, A2_38)
+  L4_40 = L4_40 or ""
+  L5_41 = _UPVALUE1_
+  L5_41 = L5_41(L4_40)
+  if L5_41 == "string" then
+    L5_41 = {}
+    for _FORV_9_ in L4_40:gmatch("%S+") do
+      if _FORV_9_ ~= A3_39 then
+        L5_41[#L5_41 + 1] = _FORV_9_
+      end
+    end
+    L5_41[#L5_41 + 1] = A3_39
+    _UPVALUE0_:set(A0_36, A1_37, A2_38, _UPVALUE2_.concat(L5_41, " "))
+  else
+    L5_41 = _UPVALUE1_
+    L5_41 = L5_41(L4_40)
+    if L5_41 == "table" then
+      L5_41 = {}
+      for _FORV_9_, _FORV_10_ in _UPVALUE3_(L4_40) do
+        if _FORV_10_ ~= A3_39 then
+          L5_41[#L5_41 + 1] = _FORV_10_
+        end
+      end
+      L5_41[#L5_41 + 1] = A3_39
+      _UPVALUE0_:set(A0_36, A1_37, A2_38, L5_41)
+    end
+  end
+end
+_append = L29_29
+function L29_29(A0_42, A1_43)
+  local L2_44
+  if A0_42 then
+    L2_44 = #A0_42
+  else
+    if L2_44 == 0 then
+      L2_44 = A1_43 and L2_44 > 0 and A1_43
+      return L2_44
+  end
+  else
+    return A0_42
+  end
+end
+_stror = L29_29
+function L29_29(A0_45, A1_46, A2_47)
+  return _UPVALUE0_:get(A0_45, A1_46, A2_47)
+end
+_get = L29_29
+function L29_29(A0_48, A1_49, A2_50, A3_51)
+  if A3_51 ~= nil then
+    if _UPVALUE0_(A3_51) == "boolean" then
+      A3_51 = A3_51 and "1" or "0"
+    end
+    return _UPVALUE1_:set(A0_48, A1_49, A2_50, A3_51)
+  else
+    return _UPVALUE1_:delete(A0_48, A1_49, A2_50)
+  end
+end
+_set = L29_29
+function L29_29(A0_52)
+  local L1_53, L2_54, L3_55, L4_56, L5_57, L6_58, L7_59
+  for L6_58, L7_59 in L3_55(L4_56) do
+    if A0_52:match(L7_59) then
+      return true
+    end
+  end
+  return L3_55
+end
+_wifi_iface = L29_29
+function L29_29(A0_60)
+  local L1_61, L2_62
+  L2_62 = A0_60
+  L1_61 = A0_60.match
+  L2_62 = L1_61(L2_62, "^(%w+)%.network(%d+)$")
+  if L1_61 and L2_62 then
+    L2_62 = _UPVALUE0_(L2_62)
+    _UPVALUE1_:foreach("wireless", "wifi-iface", function(A0_63)
+      local L1_64, L2_65
+      L1_64 = A0_63.device
+      L2_65 = _UPVALUE0_
+      if L1_64 == L2_65 then
+        L1_64 = _UPVALUE1_
+        L1_64 = L1_64 + 1
+        _UPVALUE1_ = L1_64
+        L1_64 = _UPVALUE1_
+        L2_65 = _UPVALUE2_
+        if L1_64 == L2_65 then
+          L1_64 = A0_63[".name"]
+          _UPVALUE3_ = L1_64
+          L1_64 = false
+          return L1_64
+        end
+      end
+    end)
+    return nil
+  elseif _wifi_iface(A0_60) then
+    _UPVALUE2_:foreach("wireless", "wifi-iface", function(A0_66)
+      local L1_67
+      L1_67 = A0_66.ifname
+      if L1_67 == _UPVALUE0_ then
+        L1_67 = A0_66[".name"]
+        _UPVALUE1_ = L1_67
+        L1_67 = false
+        return L1_67
+      end
+    end)
+    return nil
+  end
+end
+_wifi_lookup = L29_29
+function L29_29(A0_68)
+  local L1_69, L2_70, L3_71, L4_72, L5_73, L6_74, L7_75
+  for L6_74, L7_75 in L3_71(L4_72) do
+    if A0_68:match(L7_75) then
+      return true
+    end
+  end
+  return L3_71
+end
+_iface_virtual = L29_29
+function L29_29(A0_76)
+  local L1_77, L2_78, L3_79, L4_80, L5_81, L6_82, L7_83
+  for L6_82, L7_83 in L3_79(L4_80) do
+    if A0_76:match(L7_83) then
+      return true
+    end
+  end
+  return L3_79(L4_80)
+end
+_iface_ignore = L29_29
+function L29_29(A0_84)
+  local L1_85, L2_86, L3_87, L4_88, L5_89, L6_90, L7_91, L8_92
+  L1_85 = A0_84 or _UPVALUE0_
+  _UPVALUE0_ = L1_85
+  L1_85 = _UPVALUE0_
+  L2_86 = L1_85
+  L1_85 = L1_85.substate
+  L1_85 = L1_85(L2_86)
+  _UPVALUE2_ = L1_85
+  L1_85 = {}
+  _UPVALUE3_ = L1_85
+  L1_85 = {}
+  _UPVALUE4_ = L1_85
+  L1_85 = {}
+  _UPVALUE5_ = L1_85
+  L1_85 = {}
+  _UPVALUE6_ = L1_85
+  L1_85 = _UPVALUE8_
+  L1_85 = L1_85.connect
+  L1_85 = L1_85()
+  _UPVALUE7_ = L1_85
+  L1_85 = {}
+  _UPVALUE9_ = L1_85
+  L1_85 = {}
+  _UPVALUE10_ = L1_85
+  L1_85, L2_86 = nil, nil
+  L8_92 = L4_88()
+  for L6_90, L7_91 in L3_87(L4_88, L5_89, L6_90, L7_91, L8_92, L4_88()) do
+    L8_92 = L7_91.name
+    L8_92 = L8_92.match
+    L8_92 = L8_92(L8_92, "[^:]+")
+    if _iface_virtual(L8_92) then
+      _UPVALUE6_[L8_92] = true
+    end
+    if _UPVALUE6_[L8_92] or not _iface_ignore(L8_92) then
+      _UPVALUE3_[L8_92] = _UPVALUE3_[L8_92] or {
+        idx = L7_91.ifindex or L6_90,
+        name = L8_92,
+        rawname = L7_91.name,
+        flags = {},
+        ipaddrs = {},
+        ip6addrs = {}
+      }
+      if L8_92:match("^([^%.]+)%.") then
+        _UPVALUE5_[L8_92] = true
+        _UPVALUE5_[L8_92:match("^([^%.]+)%.")] = true
+      end
+      if L7_91.family == "packet" then
+        _UPVALUE3_[L8_92].flags = L7_91.flags
+        _UPVALUE3_[L8_92].stats = L7_91.data
+        _UPVALUE3_[L8_92].macaddr = L7_91.addr
+      elseif L7_91.family == "inet" then
+        _UPVALUE3_[L8_92].ipaddrs[#_UPVALUE3_[L8_92].ipaddrs + 1] = _UPVALUE13_.IPv4(L7_91.addr, L7_91.netmask)
+      elseif L7_91.family == "inet6" then
+        _UPVALUE3_[L8_92].ip6addrs[#_UPVALUE3_[L8_92].ip6addrs + 1] = _UPVALUE13_.IPv6(L7_91.addr, L7_91.netmask)
+      end
+    end
+  end
+  for L8_92 in L5_89(L6_90) do
+    if not L8_92:match("STP") then
+      if #_UPVALUE14_.split(L8_92, "%s+", nil, true) == 4 then
+        if L3_87.ifnames[1] then
+          L3_87.ifnames[1].bridge = L3_87
+        end
+        _UPVALUE4_[_UPVALUE14_.split(L8_92, "%s+", nil, true)[1]] = L3_87
+      elseif L3_87 then
+        L3_87.ifnames[#L3_87.ifnames + 1] = _UPVALUE3_[_UPVALUE14_.split(L8_92, "%s+", nil, true)[2]]
+        L3_87.ifnames[#L3_87.ifnames].bridge = L3_87
+      end
+    end
+  end
+  return L5_89
+end
+init = L29_29
+function L29_29(A0_93, ...)
+  local L2_95, L3_96, L4_97
+  L2_95 = _UPVALUE0_
+  L3_96 = L2_95
+  L2_95 = L2_95.save
+  L4_97 = ...
+  L2_95(L3_96, L4_97)
+  L2_95 = _UPVALUE0_
+  L3_96 = L2_95
+  L2_95 = L2_95.load
+  L4_97 = ...
+  L2_95(L3_96, L4_97)
+end
+save = L29_29
+function L29_29(A0_98, ...)
+  local L2_100, L3_101, L4_102
+  L2_100 = _UPVALUE0_
+  L3_101 = L2_100
+  L2_100 = L2_100.commit
+  L4_102 = ...
+  L2_100(L3_101, L4_102)
+  L2_100 = _UPVALUE0_
+  L3_101 = L2_100
+  L2_100 = L2_100.load
+  L4_102 = ...
+  L2_100(L3_101, L4_102)
+end
+commit = L29_29
+function L29_29(A0_103, A1_104)
+  if _UPVALUE0_.instanceof(A1_104, interface) then
+    return A1_104:name()
+  elseif _UPVALUE0_.instanceof(A1_104, protocol) then
+    return A1_104:ifname()
+  elseif _UPVALUE1_(A1_104) == "string" then
+    return A1_104:match("^[^:]+")
+  end
+end
+ifnameof = L29_29
+function L29_29(A0_105, A1_106, A2_107)
+  local L3_108
+  L3_108 = _UPVALUE0_
+  L3_108 = L3_108[A1_106]
+  if L3_108 then
+    return L3_108(A2_107 or "__dummy__")
+  end
+end
+get_protocol = L29_29
+function L29_29(A0_109)
+  local L1_110, L2_111, L3_112, L4_113, L5_114, L6_115, L7_116, L8_117
+  L1_110 = {}
+  L2_111, L3_112 = nil, nil
+  for L7_116, L8_117 in L4_113(L5_114) do
+    L1_110[#L1_110 + 1] = L8_117("__dummy__")
+  end
+  return L1_110
+end
+get_protocols = L29_29
+function L29_29(A0_118, A1_119)
+  _UPVALUE0_.class(protocol).__init__ = function(A0_120, A1_121)
+    A0_120.sid = A1_121
+  end
+  _UPVALUE0_.class(protocol).proto = function(A0_122)
+    local L1_123
+    L1_123 = _UPVALUE0_
+    return L1_123
+  end
+  _UPVALUE1_[#_UPVALUE1_ + 1] = _UPVALUE0_.class(protocol)
+  _UPVALUE1_[A1_119] = _UPVALUE0_.class(protocol)
+  return (_UPVALUE0_.class(protocol))
+end
+register_protocol = L29_29
+function L29_29(A0_124, A1_125)
+  local L3_126
+  L3_126 = IFACE_PATTERNS_VIRTUAL
+  L3_126[#IFACE_PATTERNS_VIRTUAL + 1] = A1_125
+end
+register_pattern_virtual = L29_29
+function L29_29(A0_127)
+  return _UPVALUE0_.access("/proc/net/ipv6_route")
+end
+has_ipv6 = L29_29
+function L29_29(A0_128, A1_129, A2_130)
+  local L3_131, L4_132, L5_133, L6_134, L7_135, L8_136, L9_137, L10_138
+  L4_132 = A0_128
+  L3_131 = A0_128.get_network
+  L5_133 = A1_129
+  L3_131 = L3_131(L4_132, L5_133)
+  if A1_129 then
+    L4_132 = #A1_129
+    if L4_132 > 0 then
+      L5_133 = A1_129
+      L4_132 = A1_129.match
+      L4_132 = L4_132(L5_133, L6_134)
+      if L4_132 and not L3_131 then
+        L4_132 = _UPVALUE0_
+        L5_133 = L4_132
+        L4_132 = L4_132.section
+        L9_137 = A2_130
+        L4_132 = L4_132(L5_133, L6_134, L7_135, L8_136, L9_137)
+        if L4_132 then
+          L4_132 = network
+          L5_133 = A1_129
+          return L4_132(L5_133)
+        end
+      end
+    end
+  elseif L3_131 then
+    L5_133 = L3_131
+    L4_132 = L3_131.is_empty
+    L4_132 = L4_132(L5_133)
+    if L4_132 then
+      if A2_130 then
+        L4_132, L5_133 = nil, nil
+        for L9_137, L10_138 in L6_134(L7_135) do
+          L3_131:set(L9_137, L10_138)
+        end
+      end
+      return L3_131
+    end
+  end
+end
+add_network = L29_29
+function L29_29(A0_139, A1_140)
+  if A1_140 and _UPVALUE0_:get("network", A1_140) == "interface" then
+    return network(A1_140)
+  end
+end
+get_network = L29_29
+function L29_29(A0_141)
+  local L1_142, L2_143
+  L1_142 = {}
+  L2_143 = {}
+  _UPVALUE0_:foreach("network", "interface", function(A0_144)
+    _UPVALUE0_[A0_144[".name"]] = network(A0_144[".name"])
+  end)
+  for _FORV_7_ in _UPVALUE1_.kspairs(L2_143) do
+    L1_142[#L1_142 + 1] = L2_143[_FORV_7_]
+  end
+  return L1_142
+end
+get_networks = L29_29
+function L29_29(A0_145, A1_146)
+  if _UPVALUE0_:delete("network", A1_146) then
+    _UPVALUE0_:delete_all("network", "alias", function(A0_147)
+      return A0_147.interface == _UPVALUE0_
+    end)
+    _UPVALUE0_:delete_all("network", "route", function(A0_148)
+      return A0_148.interface == _UPVALUE0_
+    end)
+    _UPVALUE0_:delete_all("network", "route6", function(A0_149)
+      return A0_149.interface == _UPVALUE0_
+    end)
+    _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_150)
+      local L1_151, L2_152
+      L2_152 = {}
+      for _FORV_6_ in _UPVALUE0_.imatch(A0_150.network) do
+        if _FORV_6_ ~= _UPVALUE1_ then
+          L2_152[#L2_152 + 1] = _FORV_6_
+        end
+      end
+      if #L2_152 > 0 then
+        _UPVALUE2_:set("wireless", A0_150[".name"], "network", _UPVALUE3_.concat(L2_152, " "))
+      else
+        _UPVALUE2_:delete("wireless", A0_150[".name"], "network")
+      end
+    end)
+  end
+  return (_UPVALUE0_:delete("network", A1_146))
+end
+del_network = L29_29
+function L29_29(A0_153, A1_154, A2_155)
+  local L3_156
+  if A2_155 and #A2_155 > 0 and A2_155:match("^[a-zA-Z0-9_]+$") and not A0_153:get_network(A2_155) then
+    L3_156 = _UPVALUE0_:section("network", "interface", A2_155, _UPVALUE0_:get_all("network", A1_154))
+    if L3_156 then
+      _UPVALUE0_:foreach("network", "alias", function(A0_157)
+        if A0_157.interface == _UPVALUE0_ then
+          _UPVALUE1_:set("network", A0_157[".name"], "interface", _UPVALUE2_)
+        end
+      end)
+      _UPVALUE0_:foreach("network", "route", function(A0_158)
+        if A0_158.interface == _UPVALUE0_ then
+          _UPVALUE1_:set("network", A0_158[".name"], "interface", _UPVALUE2_)
+        end
+      end)
+      _UPVALUE0_:foreach("network", "route6", function(A0_159)
+        if A0_159.interface == _UPVALUE0_ then
+          _UPVALUE1_:set("network", A0_159[".name"], "interface", _UPVALUE2_)
+        end
+      end)
+      _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_160)
+        local L1_161, L2_162
+        L2_162 = {}
+        for _FORV_6_ in _UPVALUE0_.imatch(A0_160.network) do
+          if _FORV_6_ == _UPVALUE1_ then
+            L2_162[#L2_162 + 1] = _UPVALUE2_
+          else
+            L2_162[#L2_162 + 1] = _FORV_6_
+          end
+        end
+        if #L2_162 > 0 then
+          _UPVALUE3_:set("wireless", A0_160[".name"], "network", _UPVALUE4_.concat(L2_162, " "))
+        end
+      end)
+      _UPVALUE0_:delete("network", A1_154)
+    end
+  end
+  return L3_156 or false
+end
+rename_network = L29_29
+function L29_29(A0_163, A1_164)
+  if _UPVALUE0_[A1_164] or _wifi_iface(A1_164) then
+    return interface(A1_164)
+  else
+    _UPVALUE1_:foreach("wireless", "wifi-iface", function(A0_165)
+      if A0_165.device then
+        _UPVALUE0_[A0_165.device] = _UPVALUE0_[A0_165.device] and _UPVALUE0_[A0_165.device] + 1 or 1
+        if A0_165[".name"] == _UPVALUE1_ then
+          _UPVALUE2_ = interface("%s.network%d" % {
+            A0_165.device,
+            _UPVALUE0_[A0_165.device]
+          })
+          return false
+        end
+      end
+    end)
+    return nil
+  end
+end
+get_interface = L29_29
+function L29_29(A0_166)
+  local L1_167, L2_168, L3_169, L4_170, L5_171, L6_172, L7_173, L8_174, L9_175
+  L2_168 = {}
+  L3_169 = {}
+  L4_170 = {}
+  L5_171 = {}
+  L6_172(L7_173, L8_174, L9_175, function(A0_176)
+    local L1_177, L2_178, L3_179, L4_180
+    for L4_180 in L1_177(L2_178) do
+      if not _iface_ignore(L4_180) and not _wifi_iface(L4_180) then
+        _UPVALUE1_[L4_180] = true
+        _UPVALUE2_[L4_180] = interface(L4_180)
+      end
+    end
+  end)
+  for L9_175 in L6_172(L7_173) do
+    if not L3_169[L9_175] and not _iface_ignore(L9_175) and not _wifi_iface(L9_175) then
+      L4_170[L9_175] = interface(L9_175)
+    end
+  end
+  L6_172(L7_173, L8_174, L9_175, function(A0_181)
+    local L1_182, L2_183, L3_184
+    L1_182 = A0_181.device
+    if not L1_182 then
+      return
+    end
+    L1_182 = _UPVALUE0_
+    L2_183 = A0_181.device
+    L1_182 = L1_182[L2_183]
+    if not L1_182 then
+      L2_183 = A0_181.device
+      L2_183 = L2_183.match
+      L2_183 = L2_183(L3_184, "^eth%d")
+      if not L2_183 then
+        L2_183 = nil
+        for _FORV_6_ in L3_184("swconfig dev %q help 2>/dev/null" % A0_181.device) do
+          L1_182 = L1_182 or _FORV_6_:match("^%w+: (%w+)")
+        end
+        if L1_182 then
+        elseif not L3_184 then
+          L1_182 = "eth0"
+        end
+      else
+        L1_182 = A0_181.device
+      end
+      L2_183 = _UPVALUE0_
+      L2_183[L3_184] = L1_182
+    end
+    L2_183 = _UPVALUE2_
+    L2_183 = L2_183(L3_184)
+    if L2_183 ~= nil and L2_183 >= 0 and L2_183 <= 4095 then
+      if not _UPVALUE3_[L3_184] then
+        _UPVALUE3_[L3_184] = true
+        _UPVALUE4_[L3_184] = interface(L3_184)
+      end
+    end
+  end)
+  for L9_175 in L6_172(L7_173) do
+    L2_168[#L2_168 + 1] = L4_170[L9_175]
+  end
+  L8_174(L9_175, "wireless", "wifi-iface", function(A0_185)
+    local L1_186
+    L1_186 = A0_185.device
+    if L1_186 then
+      L1_186 = _UPVALUE0_
+      L1_186[A0_185.device] = _UPVALUE0_[A0_185.device] and _UPVALUE0_[A0_185.device] + 1 or 1
+      L1_186 = {
+        A0_185.device,
+        _UPVALUE0_[A0_185.device]
+      }
+      L1_186 = "%s.network%d" % L1_186
+      _UPVALUE1_[L1_186] = interface(L1_186)
+    end
+  end)
+  for _FORV_11_ in L8_174(L9_175) do
+    L2_168[#L2_168 + 1] = L7_173[_FORV_11_]
+  end
+  return L2_168
+end
+get_interfaces = L29_29
+function L29_29(A0_187, A1_188)
+  return _iface_ignore(A1_188)
+end
+ignore_interface = L29_29
+function L29_29(A0_189, A1_190)
+  if _UPVALUE0_:get("wireless", A1_190) == "wifi-device" then
+    return wifidev(A1_190)
+  end
+end
+get_wifidev = L29_29
+function L29_29(A0_191)
+  local L1_192, L2_193, L3_194, L4_195, L5_196, L6_197, L7_198, L8_199
+  L1_192 = {}
+  L2_193 = {}
+  L3_194 = _UPVALUE0_
+  L3_194 = L3_194.foreach
+  function L7_198(A0_200)
+    local L2_201
+    L2_201 = _UPVALUE0_
+    L2_201[#_UPVALUE0_ + 1] = A0_200[".name"]
+  end
+  L3_194(L4_195, L5_196, L6_197, L7_198)
+  L3_194 = nil
+  for L7_198, L8_199 in L4_195(L5_196) do
+    L1_192[#L1_192 + 1] = wifidev(L8_199)
+  end
+  return L1_192
+end
+get_wifidevs = L29_29
+function L29_29(A0_202, A1_203)
+  local L2_204
+  L2_204 = _wifi_lookup
+  L2_204 = L2_204(A1_203)
+  if L2_204 then
+    return wifinet(L2_204)
+  end
+end
+get_wifinet = L29_29
+function L29_29(A0_205, A1_206, A2_207)
+  local L3_208
+  L3_208 = _UPVALUE0_
+  L3_208 = L3_208(A2_207)
+  if L3_208 == "table" then
+    L3_208 = A2_207.device
+    if L3_208 then
+      L3_208 = _UPVALUE1_
+      L3_208 = L3_208.get
+      L3_208 = L3_208(L3_208, "wireless", A2_207.device)
+      if L3_208 == "wifi-device" then
+        L3_208 = _UPVALUE1_
+        L3_208 = L3_208.section
+        L3_208 = L3_208(L3_208, "wireless", "wifi-iface", nil, A2_207)
+        return wifinet(L3_208)
+      end
+    end
+  end
+end
+add_wifinet = L29_29
+function L29_29(A0_209, A1_210)
+  local L2_211
+  L2_211 = _wifi_lookup
+  L2_211 = L2_211(A1_210)
+  if L2_211 then
+    _UPVALUE0_:delete("wireless", L2_211)
+    return true
+  end
+  return false
+end
+del_wifinet = L29_29
+function L29_29(A0_212, A1_213, A2_214)
+  local L3_215, L4_216, L5_217, L6_218, L7_219, L8_220, L9_221, L10_222, L11_223
+  L11_223 = L6_218(L7_219)
+  for L8_220, L9_221 in L5_217(L6_218, L7_219, L8_220, L9_221, L10_222, L11_223, L6_218(L7_219)) do
+    L11_223 = L9_221
+    L10_222 = L9_221.match
+    L10_222 = L10_222(L11_223, "^network%.interface%.(.+)")
+    if L10_222 then
+      L11_223 = _UPVALUE1_
+      L11_223 = L11_223.call
+      L11_223 = L11_223(L11_223, L9_221, "status", {})
+      if L11_223 and L11_223.route then
+        for _FORV_16_, _FORV_17_ in _UPVALUE0_(L11_223.route) do
+          if _FORV_17_.target == A1_213 and _FORV_17_.mask == A2_214 then
+            return L10_222, L11_223
+          end
+        end
+      end
+    end
+  end
+end
+get_status_by_route = L29_29
+function L29_29(A0_224, A1_225)
+  local L2_226, L3_227, L4_228, L5_229, L6_230, L7_231, L8_232, L9_233, L10_234
+  L10_234 = L5_229(L6_230)
+  for L7_231, L8_232 in L4_228(L5_229, L6_230, L7_231, L8_232, L9_233, L10_234, L5_229(L6_230)) do
+    L10_234 = L8_232
+    L9_233 = L8_232.match
+    L9_233 = L9_233(L10_234, "^network%.interface%.(.+)")
+    if L9_233 then
+      L10_234 = _UPVALUE1_
+      L10_234 = L10_234.call
+      L10_234 = L10_234(L10_234, L8_232, "status", {})
+      if L10_234 and L10_234["ipv4-address"] then
+        for _FORV_15_, _FORV_16_ in _UPVALUE0_(L10_234["ipv4-address"]) do
+          if _FORV_16_.address == A1_225 then
+            return L9_233, L10_234
+          end
+        end
+      end
+      if L10_234 and L10_234["ipv6-address"] then
+        for _FORV_15_, _FORV_16_ in _UPVALUE0_(L10_234["ipv6-address"]) do
+          if _FORV_16_.address == A1_225 then
+            return L9_233, L10_234
+          end
+        end
+      end
+    end
+  end
+end
+get_status_by_address = L29_29
+function L29_29(A0_235)
+  local L1_236
+  L1_236 = A0_235.get_status_by_route
+  L1_236 = L1_236(A0_235, "0.0.0.0", 0)
+  return L1_236 and network(L1_236)
+end
+get_wannet = L29_29
+function L29_29(A0_237)
+  return A0_237:get_status_by_route("0.0.0.0", 0) and interface(A0_237:get_status_by_route("0.0.0.0", 0).l3_device or A0_237:get_status_by_route("0.0.0.0", 0).device)
+end
+get_wandev = L29_29
+function L29_29(A0_238)
+  local L1_239
+  L1_239 = A0_238.get_status_by_route
+  L1_239 = L1_239(A0_238, "::", 0)
+  return L1_239 and network(L1_239)
+end
+get_wan6net = L29_29
+function L29_29(A0_240)
+  return A0_240:get_status_by_route("::", 0) and interface(A0_240:get_status_by_route("::", 0).l3_device or A0_240:get_status_by_route("::", 0).device)
+end
+get_wan6dev = L29_29
+function L29_29(A0_241, A1_242)
+  local L2_243, L3_244
+  if A0_241 then
+    L2_243 = A1_242 or L2_243(L3_244, "network", A0_241, "proto")
+    if L2_243 then
+      L3_244 = _UPVALUE1_
+      L3_244 = L3_244[L2_243]
+    else
+      L3_244 = L3_244 or protocol
+    end
+    return L3_244(A0_241)
+  end
+end
+network = L29_29
+L29_29 = protocol
+function L29_29.__init__(A0_245, A1_246)
+  A0_245.sid = A1_246
+end
+L29_29 = protocol
+function L29_29._get(A0_247, A1_248)
+  local L2_249
+  L2_249 = _UPVALUE0_
+  L2_249 = L2_249.get
+  L2_249 = L2_249(L2_249, "network", A0_247.sid, A1_248)
+  if _UPVALUE1_(L2_249) == "table" then
+    return _UPVALUE2_.concat(L2_249, " ")
+  end
+  return L2_249 or ""
+end
+L29_29 = protocol
+function L29_29._ubus(A0_250, A1_251)
+  local L2_252, L3_253
+  L2_252 = _UPVALUE0_
+  L3_253 = A0_250.sid
+  L2_252 = L2_252[L3_253]
+  if not L2_252 then
+    L2_252 = _UPVALUE0_
+    L3_253 = A0_250.sid
+    L2_252[L3_253] = _UPVALUE1_:call("network.interface.%s" % A0_250.sid, "status", {})
+  end
+  L2_252 = _UPVALUE0_
+  L3_253 = A0_250.sid
+  L2_252 = L2_252[L3_253]
+  if L2_252 and A1_251 then
+    L2_252 = _UPVALUE0_
+    L3_253 = A0_250.sid
+    L2_252 = L2_252[L3_253]
+    L2_252 = L2_252[A1_251]
+    return L2_252
+  end
+  L2_252 = _UPVALUE0_
+  L3_253 = A0_250.sid
+  L2_252 = L2_252[L3_253]
+  return L2_252
+end
+L29_29 = protocol
+function L29_29.get(A0_254, A1_255)
+  return _get("network", A0_254.sid, A1_255)
+end
+L29_29 = protocol
+function L29_29.set(A0_256, A1_257, A2_258)
+  return _set("network", A0_256.sid, A1_257, A2_258)
+end
+L29_29 = protocol
+function L29_29.ifname(A0_259)
+  local L1_260
+  if A0_259:is_floating() then
+    L1_260 = A0_259:_ubus("l3_device")
+  else
+    L1_260 = A0_259:_ubus("device")
+  end
+  if not L1_260 then
+    _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_261)
+      local L1_262
+      L1_262 = A0_261.device
+      if L1_262 then
+        L1_262 = _UPVALUE0_
+        L1_262[A0_261.device] = _UPVALUE0_[A0_261.device] and _UPVALUE0_[A0_261.device] + 1 or 1
+        L1_262 = nil
+        for _FORV_5_ in _UPVALUE1_.imatch(A0_261.network) do
+          if _FORV_5_ == _UPVALUE2_.sid then
+            _UPVALUE3_ = "%s.network%d" % {
+              A0_261.device,
+              _UPVALUE0_[A0_261.device]
+            }
+            return false
+          end
+        end
+      end
+    end)
+  end
+  return L1_260
+end
+L29_29 = protocol
+function L29_29.proto(A0_263)
+  local L1_264
+  L1_264 = "none"
+  return L1_264
+end
+L29_29 = protocol
+function L29_29.get_i18n(A0_265)
+  if A0_265:proto() == "none" then
+    return _UPVALUE0_.translate("Unmanaged")
+  elseif A0_265:proto() == "static" then
+    return _UPVALUE0_.translate("Static address")
+  elseif A0_265:proto() == "dhcp" then
+    return _UPVALUE0_.translate("DHCP client")
+  else
+    return _UPVALUE0_.translate("Unknown")
+  end
+end
+L29_29 = protocol
+function L29_29.type(A0_266)
+  return A0_266:_get("type")
+end
+L29_29 = protocol
+function L29_29.name(A0_267)
+  local L1_268
+  L1_268 = A0_267.sid
+  return L1_268
+end
+L29_29 = protocol
+function L29_29.uptime(A0_269)
+  return A0_269:_ubus("uptime") or 0
+end
+L29_29 = protocol
+function L29_29.expires(A0_270)
+  local L1_271
+  L1_271 = _UPVALUE0_
+  L1_271 = L1_271(_UPVALUE1_:get("network", A0_270.sid, "lease_acquired"))
+  if L1_271 and _UPVALUE0_(_UPVALUE1_:get("network", A0_270.sid, "lease_lifetime")) then
+    return _UPVALUE0_(_UPVALUE1_:get("network", A0_270.sid, "lease_lifetime")) - (_UPVALUE2_.sysinfo().uptime - L1_271) > 0 and _UPVALUE0_(_UPVALUE1_:get("network", A0_270.sid, "lease_lifetime")) - (_UPVALUE2_.sysinfo().uptime - L1_271) or 0
+  end
+  return 4294967295
+end
+L29_29 = protocol
+function L29_29.metric(A0_272)
+  return _UPVALUE0_(_UPVALUE1_:get("network", A0_272.sid, "metric")) or 0
+end
+L29_29 = protocol
+function L29_29.ipaddr(A0_273)
+  return A0_273:_ubus("ipv4-address") and #A0_273:_ubus("ipv4-address") > 0 and A0_273:_ubus("ipv4-address")[1].address
+end
+L29_29 = protocol
+function L29_29.netmask(A0_274)
+  return A0_274:_ubus("ipv4-address") and #A0_274:_ubus("ipv4-address") > 0 and _UPVALUE0_.IPv4("0.0.0.0/%d" % A0_274:_ubus("ipv4-address")[1].mask):mask():string()
+end
+L29_29 = protocol
+function L29_29.gwaddr(A0_275)
+  local L1_276, L2_277
+  for _FORV_6_, _FORV_7_ in _UPVALUE0_(A0_275:_ubus("route") or {}) do
+    if _FORV_7_.target == "0.0.0.0" and _FORV_7_.mask == 0 then
+      return _FORV_7_.nexthop
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.dnsaddrs(A0_278)
+  local L1_279, L2_280, L3_281
+  L1_279 = {}
+  L2_280, L3_281 = nil, nil
+  for _FORV_7_, _FORV_8_ in _UPVALUE0_(A0_278:_ubus("dns-server") or {}) do
+    if not _FORV_8_:match(":") then
+      L1_279[#L1_279 + 1] = _FORV_8_
+    end
+  end
+  return L1_279
+end
+L29_29 = protocol
+function L29_29.ip6addr(A0_282)
+  local L1_283
+  L1_283 = A0_282._ubus
+  L1_283 = L1_283(A0_282, "ipv6-address")
+  if L1_283 and #L1_283 > 0 then
+    return "%s/%d" % {
+      L1_283[1].address,
+      L1_283[1].mask
+    }
+  else
+    L1_283 = A0_282:_ubus("ipv6-prefix-assignment")
+    if L1_283 and #L1_283 > 0 then
+      return "%s/%d" % {
+        L1_283[1].address,
+        L1_283[1].mask
+      }
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.gw6addr(A0_284)
+  local L1_285, L2_286
+  for _FORV_6_, _FORV_7_ in _UPVALUE0_(A0_284:_ubus("route") or {}) do
+    if _FORV_7_.target == "::" and _FORV_7_.mask == 0 then
+      return _UPVALUE1_.IPv6(_FORV_7_.nexthop):string()
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.dns6addrs(A0_287)
+  local L1_288, L2_289, L3_290
+  L1_288 = {}
+  L2_289, L3_290 = nil, nil
+  for _FORV_7_, _FORV_8_ in _UPVALUE0_(A0_287:_ubus("dns-server") or {}) do
+    if _FORV_8_:match(":") then
+      L1_288[#L1_288 + 1] = _FORV_8_
+    end
+  end
+  return L1_288
+end
+L29_29 = protocol
+function L29_29.is_bridge(A0_291)
+  return not A0_291:is_virtual() and A0_291:type() == "bridge"
+end
+L29_29 = protocol
+function L29_29.opkg_package(A0_292)
+  local L1_293
+  return L1_293
+end
+L29_29 = protocol
+function L29_29.is_installed(A0_294)
+  local L1_295
+  L1_295 = true
+  return L1_295
+end
+L29_29 = protocol
+function L29_29.is_virtual(A0_296)
+  local L1_297
+  L1_297 = false
+  return L1_297
+end
+L29_29 = protocol
+function L29_29.is_floating(A0_298)
+  local L1_299
+  L1_299 = false
+  return L1_299
+end
+L29_29 = protocol
+function L29_29.is_empty(A0_300)
+  if A0_300:is_floating() then
+    return false
+  else
+    if (A0_300:_get("ifname") or ""):match("%S+") then
+    end
+    _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_301)
+      local L1_302
+      for _FORV_5_ in _UPVALUE0_.imatch(A0_301.network) do
+        if _FORV_5_ == _UPVALUE1_.sid then
+          _UPVALUE2_ = false
+          return false
+        end
+      end
+    end)
+    return false
+  end
+end
+L29_29 = protocol
+function L29_29.add_interface(A0_303, A1_304)
+  local L2_305
+  L2_305 = _M
+  L2_305 = L2_305.ifnameof
+  L2_305 = L2_305(L2_305, A1_304)
+  A1_304 = L2_305
+  if A1_304 then
+    L2_305 = A0_303.is_floating
+    L2_305 = L2_305(A0_303)
+    if not L2_305 then
+      L2_305 = _wifi_lookup
+      L2_305 = L2_305(A1_304)
+      if L2_305 then
+        _append("wireless", L2_305, "network", A0_303.sid)
+      else
+        _append("network", A0_303.sid, "ifname", A1_304)
+      end
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.del_interface(A0_306, A1_307)
+  local L2_308
+  L2_308 = _M
+  L2_308 = L2_308.ifnameof
+  L2_308 = L2_308(L2_308, A1_307)
+  A1_307 = L2_308
+  if A1_307 then
+    L2_308 = A0_306.is_floating
+    L2_308 = L2_308(A0_306)
+    if not L2_308 then
+      L2_308 = _wifi_lookup
+      L2_308 = L2_308(A1_307)
+      if L2_308 then
+        _filter("wireless", L2_308, "network", A0_306.sid)
+      end
+      _filter("network", A0_306.sid, "ifname", A1_307)
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.get_interface(A0_309)
+  local L1_310, L2_311, L3_312, L4_313, L5_314, L6_315
+  L2_311 = A0_309
+  L1_310 = A0_309.is_virtual
+  L1_310 = L1_310(L2_311)
+  if L1_310 then
+    L1_310 = _UPVALUE0_
+    L2_311 = A0_309.proto
+    L2_311 = L2_311(L3_312)
+    L2_311 = L2_311 .. L3_312 .. L4_313
+    L1_310[L2_311] = true
+    L1_310 = interface
+    L2_311 = A0_309.proto
+    L2_311 = L2_311(L3_312)
+    L2_311 = L2_311 .. L3_312 .. L4_313
+    return L1_310(L2_311, L3_312)
+  else
+    L2_311 = A0_309
+    L1_310 = A0_309.is_bridge
+    L1_310 = L1_310(L2_311)
+    if L1_310 then
+      L1_310 = _UPVALUE1_
+      L2_311 = "br-"
+      L2_311 = L2_311 .. L3_312
+      L1_310[L2_311] = true
+      L1_310 = interface
+      L2_311 = "br-"
+      L2_311 = L2_311 .. L3_312
+      return L1_310(L2_311, L3_312)
+    else
+      L1_310 = nil
+      L2_311 = {}
+      L6_315 = "network"
+      L6_315 = L4_313(L5_314, L6_315, A0_309.sid, "ifname")
+      for L6_315 in L3_312(L4_313, L5_314, L6_315, L4_313(L5_314, L6_315, A0_309.sid, "ifname")) do
+        L6_315 = L6_315:match("^[^:/]+")
+        return L6_315 and interface(L6_315, A0_309)
+      end
+      L1_310 = nil
+      L6_315 = "wifi-iface"
+      L3_312(L4_313, L5_314, L6_315, function(A0_316)
+        local L1_317
+        L1_317 = A0_316.device
+        if L1_317 then
+          L1_317 = _UPVALUE0_
+          L1_317[A0_316.device] = _UPVALUE0_[A0_316.device] and _UPVALUE0_[A0_316.device] + 1 or 1
+          L1_317 = nil
+          for _FORV_5_ in _UPVALUE1_.imatch(A0_316.network) do
+            if _FORV_5_ == _UPVALUE2_.sid then
+              _UPVALUE3_ = "%s.network%d" % {
+                A0_316.device,
+                _UPVALUE0_[A0_316.device]
+              }
+              return false
+            end
+          end
+        end
+      end)
+      L3_312 = L1_310 and L3_312(L4_313, L5_314)
+      return L3_312
+    end
+  end
+end
+L29_29 = protocol
+function L29_29.get_interfaces(A0_318)
+  local L1_319, L2_320, L3_321, L4_322, L5_323, L6_324, L7_325
+  L2_320 = A0_318
+  L1_319 = A0_318.is_bridge
+  L1_319 = L1_319(L2_320)
+  if not L1_319 then
+    L2_320 = A0_318
+    L1_319 = A0_318.is_virtual
+    L1_319 = L1_319(L2_320)
+    if L1_319 then
+      L2_320 = A0_318
+      L1_319 = A0_318.is_floating
+      L1_319 = L1_319(L2_320)
+    end
+  elseif not L1_319 then
+    L1_319 = {}
+    L2_320 = nil
+    L3_321 = {}
+    for L7_325 in L4_322(L5_323, L6_324, L7_325, L5_323(L6_324, L7_325)) do
+      L3_321[L7_325] = interface(L7_325, A0_318)
+    end
+    for L7_325 in L4_322(L5_323) do
+      L1_319[#L1_319 + 1] = L3_321[L7_325]
+    end
+    L6_324(L7_325, "wireless", "wifi-iface", function(A0_326)
+      local L1_327
+      L1_327 = A0_326.device
+      if L1_327 then
+        L1_327 = _UPVALUE0_
+        L1_327[A0_326.device] = _UPVALUE0_[A0_326.device] and _UPVALUE0_[A0_326.device] + 1 or 1
+        L1_327 = nil
+        for _FORV_5_ in _UPVALUE1_.imatch(A0_326.network) do
+          if _FORV_5_ == _UPVALUE2_.sid then
+            _UPVALUE3_ = "%s.network%d" % {
+              A0_326.device,
+              _UPVALUE0_[A0_326.device]
+            }
+            _UPVALUE4_[_UPVALUE3_] = interface(_UPVALUE3_, _UPVALUE2_)
+          end
+        end
+      end
+    end)
+    for _FORV_9_ in L6_324(L7_325) do
+      L1_319[#L1_319 + 1] = L5_323[_FORV_9_]
+    end
+    return L1_319
+  end
+end
+L29_29 = protocol
+function L29_29.contains_interface(A0_328, A1_329)
+  local L2_330, L3_331, L4_332, L5_333, L6_334
+  L2_330 = _M
+  L2_330 = L2_330.ifnameof
+  L2_330 = L2_330(L3_331, L4_332)
+  A1_329 = L2_330
+  if not A1_329 then
+    L2_330 = false
+    return L2_330
+  else
+    L2_330 = A0_328.is_virtual
+    L2_330 = L2_330(L3_331)
+    if L2_330 then
+      L2_330 = A0_328.proto
+      L2_330 = L2_330(L3_331)
+      L2_330 = L2_330 .. L3_331 .. L4_332
+      if L2_330 == A1_329 then
+        L2_330 = true
+        return L2_330
+      end
+    else
+      L2_330 = A0_328.is_bridge
+      L2_330 = L2_330(L3_331)
+      if L2_330 then
+        L2_330 = "br-"
+        L2_330 = L2_330 .. L3_331
+        if L2_330 == A1_329 then
+          L2_330 = true
+          return L2_330
+        end
+      else
+        L2_330 = nil
+        for L6_334 in L3_331(L4_332, L5_333, L6_334, L4_332(L5_333, L6_334)) do
+          if L6_334 == A1_329 then
+            return true
+          end
+        end
+        if L3_331 then
+          for _FORV_8_ in L5_333(L6_334, L6_334(L6_334, "wireless", L3_331, "network")) do
+            if _FORV_8_ == A0_328.sid then
+              return true
+            end
+          end
+        end
+      end
+    end
+  end
+  L2_330 = false
+  return L2_330
+end
+L29_29 = protocol
+function L29_29.adminlink(A0_335)
+  return _UPVALUE0_.build_url("admin", "network", "network", A0_335.sid)
+end
+L29_29 = protocol
+function L29_29.get_option_value(A0_336, A1_337)
+  return A0_336:_get(A1_337)
+end
+L29_29 = protocol
+function L29_29.status(A0_338)
+  if _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).proto == "pppoe" then
+    if _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).device == nil then
+      return "down"
+    end
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == nil then
+      return "connection"
+    end
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == 1 then
+      return "up"
+    end
+  elseif _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).proto == "3g" then
+    if _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).device ~= _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).ifname and _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == nil then
+      return "down"
+    end
+    if _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).device == _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).ifname and _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == nil then
+      return "connection"
+    end
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == 1 then
+      return "up"
+    end
+  elseif _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).proto == "static" then
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == nil then
+      return "down"
+    end
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == 1 then
+      return "up"
+    end
+  elseif _UPVALUE0_.cursor_state():get_all("network", A0_338.sid).proto == "dhcp" then
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == nil then
+      return "down"
+    end
+    if _UPVALUE1_(_UPVALUE0_.cursor_state():get_all("network", A0_338.sid).up) == 1 then
+      return "up"
+    end
+  end
+  return "unkown"
+end
+L29_29 = L15_15.class
+L29_29 = L29_29()
+interface = L29_29
+L29_29 = interface
+function L29_29.__init__(A0_339, A1_340, A2_341)
+  local L3_342
+  L3_342 = _wifi_lookup
+  L3_342 = L3_342(A1_340)
+  if L3_342 then
+    A0_339.wif = wifinet(L3_342)
+    A0_339.ifname = _UPVALUE0_:get("wireless", L3_342, "ifname")
+  end
+  A0_339.ifname = A0_339.ifname or A1_340
+  A0_339.dev = _UPVALUE1_[A0_339.ifname]
+  A0_339.network = A2_341
+end
+L29_29 = interface
+function L29_29._ubus(A0_343, A1_344)
+  local L2_345, L3_346
+  L2_345 = _UPVALUE0_
+  L3_346 = A0_343.ifname
+  L2_345 = L2_345[L3_346]
+  if not L2_345 then
+    L2_345 = _UPVALUE0_
+    L3_346 = A0_343.ifname
+    L2_345[L3_346] = _UPVALUE1_:call("network.device", "status", {
+      name = A0_343.ifname
+    })
+  end
+  L2_345 = _UPVALUE0_
+  L3_346 = A0_343.ifname
+  L2_345 = L2_345[L3_346]
+  if L2_345 and A1_344 then
+    L2_345 = _UPVALUE0_
+    L3_346 = A0_343.ifname
+    L2_345 = L2_345[L3_346]
+    L2_345 = L2_345[A1_344]
+    return L2_345
+  end
+  L2_345 = _UPVALUE0_
+  L3_346 = A0_343.ifname
+  L2_345 = L2_345[L3_346]
+  return L2_345
+end
+L29_29 = interface
+function L29_29.name(A0_347)
+  return A0_347.wif and A0_347.wif:ifname() or A0_347.ifname
+end
+L29_29 = interface
+function L29_29.mac(A0_348)
+  return (A0_348:_ubus("macaddr") or "00:00:00:00:00:00"):upper()
+end
+L29_29 = interface
+function L29_29.ipaddrs(A0_349)
+  local L1_350
+  L1_350 = A0_349.dev
+  if L1_350 then
+    L1_350 = A0_349.dev
+    L1_350 = L1_350.ipaddrs
+  else
+    L1_350 = L1_350 or {}
+  end
+  return L1_350
+end
+L29_29 = interface
+function L29_29.ip6addrs(A0_351)
+  local L1_352
+  L1_352 = A0_351.dev
+  if L1_352 then
+    L1_352 = A0_351.dev
+    L1_352 = L1_352.ip6addrs
+  else
+    L1_352 = L1_352 or {}
+  end
+  return L1_352
+end
+L29_29 = interface
+function L29_29.type(A0_353)
+  if A0_353.wif or _wifi_iface(A0_353.ifname) then
+    return "wifi"
+  elseif _UPVALUE0_[A0_353.ifname] then
+    return "bridge"
+  elseif _UPVALUE1_[A0_353.ifname] then
+    return "tunnel"
+  elseif A0_353.ifname:match("%.") then
+    return "vlan"
+  elseif _UPVALUE2_[A0_353.ifname] then
+    return "switch"
+  else
+    return "ethernet"
+  end
+end
+L29_29 = interface
+function L29_29.shortname(A0_354)
+  local L1_355
+  L1_355 = A0_354.wif
+  if L1_355 then
+    L1_355 = {
+      A0_354.wif:active_mode(),
+      A0_354.wif:active_ssid() or A0_354.wif:active_bssid()
+    }
+    L1_355 = "%s %q" % L1_355
+    return L1_355
+  else
+    L1_355 = A0_354.ifname
+    return L1_355
+  end
+end
+L29_29 = interface
+function L29_29.get_i18n(A0_356)
+  local L1_357
+  L1_357 = A0_356.wif
+  if L1_357 then
+    L1_357 = {
+      _UPVALUE0_.translate("Wireless Network"),
+      A0_356.wif:active_mode(),
+      A0_356.wif:active_ssid() or A0_356.wif:active_bssid()
+    }
+    L1_357 = "%s: %s %q" % L1_357
+    return L1_357
+  else
+    L1_357 = {
+      A0_356:get_type_i18n(),
+      A0_356:name()
+    }
+    L1_357 = "%s: %q" % L1_357
+    return L1_357
+  end
+end
+L29_29 = interface
+function L29_29.get_type_i18n(A0_358)
+  if A0_358:type() == "wifi" then
+    return _UPVALUE0_.translate("Wireless Adapter")
+  elseif A0_358:type() == "bridge" then
+    return _UPVALUE0_.translate("Bridge")
+  elseif A0_358:type() == "switch" then
+    return _UPVALUE0_.translate("Ethernet Switch")
+  elseif A0_358:type() == "vlan" then
+    return _UPVALUE0_.translate("VLAN Interface")
+  elseif A0_358:type() == "tunnel" then
+    return _UPVALUE0_.translate("Tunnel Interface")
+  else
+    return _UPVALUE0_.translate("Ethernet Adapter")
+  end
+end
+L29_29 = interface
+function L29_29.adminlink(A0_359)
+  if A0_359.wif then
+    return A0_359.wif:adminlink()
+  end
+end
+L29_29 = interface
+function L29_29.ports(A0_360)
+  local L1_361, L2_362, L3_363, L4_364, L5_365, L6_366, L7_367, L8_368, L9_369
+  L2_362 = A0_360
+  L1_361 = A0_360._ubus
+  L3_363 = "bridge-members"
+  L1_361 = L1_361(L2_362, L3_363)
+  if L1_361 then
+    L2_362, L3_363 = nil, nil
+    L4_364 = {}
+    for L8_368, L9_369 in L5_365(L6_366) do
+      L4_364[#L4_364 + 1] = interface(L9_369)
+    end
+  end
+end
+L29_29 = interface
+function L29_29.bridge_id(A0_370)
+  local L1_371
+  L1_371 = A0_370.br
+  if L1_371 then
+    L1_371 = A0_370.br
+    L1_371 = L1_371.id
+    return L1_371
+  else
+    L1_371 = nil
+    return L1_371
+  end
+end
+L29_29 = interface
+function L29_29.bridge_stp(A0_372)
+  local L1_373
+  L1_373 = A0_372.br
+  if L1_373 then
+    L1_373 = A0_372.br
+    L1_373 = L1_373.stp
+    return L1_373
+  else
+    L1_373 = false
+    return L1_373
+  end
+end
+L29_29 = interface
+function L29_29.is_up(A0_374)
+  if A0_374.wif then
+    return A0_374.wif:is_up()
+  else
+    return A0_374:_ubus("up") or false
+  end
+end
+L29_29 = interface
+function L29_29.is_bridge(A0_375)
+  return A0_375:type() == "bridge"
+end
+L29_29 = interface
+function L29_29.is_bridgeport(A0_376)
+  local L1_377
+  L1_377 = A0_376.dev
+  if L1_377 then
+    L1_377 = A0_376.dev
+    L1_377 = L1_377.bridge
+    L1_377 = L1_377 and true
+  else
+    L1_377 = L1_377 or false
+  end
+  return L1_377
+end
+L29_29 = interface
+function L29_29.tx_bytes(A0_378)
+  return A0_378:_ubus("statistics") and A0_378:_ubus("statistics").tx_bytes or 0
+end
+L29_29 = interface
+function L29_29.rx_bytes(A0_379)
+  return A0_379:_ubus("statistics") and A0_379:_ubus("statistics").rx_bytes or 0
+end
+L29_29 = interface
+function L29_29.tx_packets(A0_380)
+  return A0_380:_ubus("statistics") and A0_380:_ubus("statistics").tx_packets or 0
+end
+L29_29 = interface
+function L29_29.rx_packets(A0_381)
+  return A0_381:_ubus("statistics") and A0_381:_ubus("statistics").rx_packets or 0
+end
+L29_29 = interface
+function L29_29.get_network(A0_382)
+  return A0_382:get_networks()[1]
+end
+L29_29 = interface
+function L29_29.get_networks(A0_383)
+  local L1_384, L2_385, L3_386
+  L1_384 = A0_383.networks
+  if not L1_384 then
+    L1_384 = {}
+    L2_385, L3_386 = nil, nil
+    for _FORV_7_, _FORV_8_ in _UPVALUE0_(_M:get_networks()) do
+      if _FORV_8_:contains_interface(A0_383.ifname) or _FORV_8_:ifname() == A0_383.ifname then
+        L1_384[#L1_384 + 1] = _FORV_8_
+      end
+    end
+    _UPVALUE1_.sort(L1_384, function(A0_387, A1_388)
+      return A0_387.sid < A1_388.sid
+    end)
+    A0_383.networks = L1_384
+    return L1_384
+  else
+    L1_384 = A0_383.networks
+    return L1_384
+  end
+end
+L29_29 = interface
+function L29_29.get_wifinet(A0_389)
+  local L1_390
+  L1_390 = A0_389.wif
+  return L1_390
+end
+L29_29 = L15_15.class
+L29_29 = L29_29()
+wifidev = L29_29
+L29_29 = wifidev
+function L29_29.__init__(A0_391, A1_392)
+  A0_391.sid = A1_392
+  A0_391.iwinfo = A1_392 and _UPVALUE0_.wifi.getiwinfo(A1_392) or {}
+end
+L29_29 = wifidev
+function L29_29.get(A0_393, A1_394)
+  return _get("wireless", A0_393.sid, A1_394)
+end
+L29_29 = wifidev
+function L29_29.set(A0_395, A1_396, A2_397)
+  return _set("wireless", A0_395.sid, A1_396, A2_397)
+end
+L29_29 = wifidev
+function L29_29.name(A0_398)
+  local L1_399
+  L1_399 = A0_398.sid
+  return L1_399
+end
+L29_29 = wifidev
+function L29_29.hwmodes(A0_400)
+  local L1_401
+  L1_401 = A0_400.iwinfo
+  L1_401 = L1_401.hwmodelist
+  if L1_401 and _UPVALUE0_(L1_401) then
+    return L1_401
+  else
+    return {b = true, g = true}
+  end
+end
+L29_29 = wifidev
+function L29_29.get_i18n(A0_402)
+  local L1_403, L2_404
+  L1_403 = "Generic"
+  L2_404 = A0_402.iwinfo
+  L2_404 = L2_404.type
+  if L2_404 == "wl" then
+    L1_403 = "Broadcom"
+  else
+    L2_404 = A0_402.iwinfo
+    L2_404 = L2_404.type
+    if L2_404 == "madwifi" then
+      L1_403 = "Atheros"
+    end
+  end
+  L2_404 = ""
+  if A0_402:hwmodes().a then
+    L2_404 = L2_404 .. "a"
+  end
+  if A0_402:hwmodes().b then
+    L2_404 = L2_404 .. "b"
+  end
+  if A0_402:hwmodes().g then
+    L2_404 = L2_404 .. "g"
+  end
+  if A0_402:hwmodes().n then
+    L2_404 = L2_404 .. "n"
+  end
+  return "%s 802.11%s Wireless Controller (%s)" % {
+    L1_403,
+    L2_404,
+    A0_402:name()
+  }
+end
+L29_29 = wifidev
+function L29_29.is_up(A0_405)
+  _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_406)
+    local L1_407, L2_408
+    L1_407 = A0_406.device
+    L2_408 = _UPVALUE0_
+    L2_408 = L2_408.sid
+    if L1_407 == L2_408 then
+      L1_407 = A0_406.up
+      if L1_407 == "1" then
+        L1_407 = true
+        _UPVALUE1_ = L1_407
+        L1_407 = false
+        return L1_407
+      end
+    end
+  end)
+  return false
+end
+L29_29 = wifidev
+function L29_29.get_wifinet(A0_409, A1_410)
+  local L2_411
+  L2_411 = _UPVALUE0_
+  L2_411 = L2_411.get
+  L2_411 = L2_411(L2_411, "wireless", A1_410)
+  if L2_411 == "wifi-iface" then
+    L2_411 = wifinet
+    return L2_411(A1_410)
+  else
+    L2_411 = _wifi_lookup
+    L2_411 = L2_411(A1_410)
+    if L2_411 then
+      return wifinet(L2_411)
+    end
+  end
+end
+L29_29 = wifidev
+function L29_29.get_wifinets(A0_412)
+  _UPVALUE0_:foreach("wireless", "wifi-iface", function(A0_413)
+    local L1_414, L2_415
+    L1_414 = A0_413.device
+    L2_415 = _UPVALUE0_
+    L2_415 = L2_415.sid
+    if L1_414 == L2_415 then
+      L1_414 = _UPVALUE1_
+      L2_415 = _UPVALUE1_
+      L2_415 = #L2_415
+      L2_415 = L2_415 + 1
+      L1_414[L2_415] = wifinet(A0_413[".name"])
+    end
+  end)
+  return {}
+end
+L29_29 = wifidev
+function L29_29.add_wifinet(A0_416, A1_417)
+  local L2_418
+  if not A1_417 then
+    L2_418 = {}
+    A1_417 = L2_418
+  end
+  L2_418 = A0_416.sid
+  A1_417.device = L2_418
+  L2_418 = _UPVALUE0_
+  L2_418 = L2_418.section
+  L2_418 = L2_418(L2_418, "wireless", "wifi-iface", nil, A1_417)
+  if L2_418 then
+    return wifinet(L2_418, A1_417)
+  end
+end
+L29_29 = wifidev
+function L29_29.del_wifinet(A0_419, A1_420)
+  if _UPVALUE0_.instanceof(A1_420, wifinet) then
+    A1_420 = A1_420.sid
+  elseif _UPVALUE1_:get("wireless", A1_420) ~= "wifi-iface" then
+    A1_420 = _wifi_lookup(A1_420)
+  end
+  if A1_420 and _UPVALUE1_:get("wireless", A1_420, "device") == A0_419.sid then
+    _UPVALUE1_:delete("wireless", A1_420)
+    return true
+  end
+  return false
+end
+L29_29 = L15_15.class
+L29_29 = L29_29()
+wifinet = L29_29
+L29_29 = wifinet
+function L29_29.__init__(A0_421, A1_422, A2_423)
+  local L3_424, L4_425, L5_426
+  A0_421.sid = A1_422
+  L3_424 = {}
+  L4_425 = nil
+  L5_426 = _UPVALUE0_
+  L5_426 = L5_426.foreach
+  L5_426(L5_426, "wireless", "wifi-iface", function(A0_427)
+    local L1_428
+    L1_428 = A0_427.device
+    if L1_428 then
+      L1_428 = _UPVALUE0_
+      L1_428[A0_427.device] = _UPVALUE0_[A0_427.device] and _UPVALUE0_[A0_427.device] + 1 or 1
+      L1_428 = A0_427[".name"]
+      if L1_428 == _UPVALUE1_.sid then
+        L1_428 = {
+          A0_427.device,
+          _UPVALUE0_[A0_427.device]
+        }
+        L1_428 = "%s.network%d" % L1_428
+        _UPVALUE2_ = L1_428
+        L1_428 = false
+        return L1_428
+      end
+    end
+  end)
+  L5_426 = _UPVALUE1_
+  L5_426 = L5_426.get
+  L5_426 = L5_426(L5_426, "wireless", A0_421.sid, "ifname")
+  L5_426 = L5_426 or L4_425
+  A0_421.netid = L4_425
+  A0_421.wdev = L5_426
+  A0_421.iwinfo = L5_426 and _UPVALUE2_.wifi.getiwinfo(L5_426) or {}
+  A0_421.iwdata = A2_423 or _UPVALUE1_:get_all("wireless", A0_421.sid) or _UPVALUE0_:get_all("wireless", A0_421.sid) or {}
+end
+L29_29 = wifinet
+function L29_29.get(A0_429, A1_430)
+  return _get("wireless", A0_429.sid, A1_430)
+end
+L29_29 = wifinet
+function L29_29.set(A0_431, A1_432, A2_433)
+  return _set("wireless", A0_431.sid, A1_432, A2_433)
+end
+L29_29 = wifinet
+function L29_29.set_list(A0_434, A1_435, A2_436)
+  if A2_436 and _UPVALUE0_(A2_436) == "table" and #A2_436 > 0 then
+    return _UPVALUE1_:set_list("wireless", A0_434.sid, A1_435, A2_436)
+  else
+    return _UPVALUE1_:delete("wireless", A0_434.sid, A1_435)
+  end
+end
+L29_29 = wifinet
+function L29_29.mode(A0_437)
+  return _UPVALUE0_:get("wireless", A0_437.sid, "mode") or "ap"
+end
+L29_29 = wifinet
+function L29_29.disabled(A0_438)
+  return _UPVALUE0_:get("wireless", A0_438.sid, "disabled")
+end
+L29_29 = wifinet
+function L29_29.ssid(A0_439)
+  return _UPVALUE0_:get("wireless", A0_439.sid, "ssid")
+end
+L29_29 = wifinet
+function L29_29.bssid(A0_440)
+  return _UPVALUE0_:get("wireless", A0_440.sid, "bssid")
+end
+L29_29 = wifinet
+function L29_29.network(A0_441)
+  return _UPVALUE0_:get("wifinet", A0_441.sid, "network")
+end
+L29_29 = wifinet
+function L29_29.id(A0_442)
+  local L1_443
+  L1_443 = A0_442.netid
+  return L1_443
+end
+L29_29 = wifinet
+function L29_29.name(A0_444)
+  local L1_445
+  L1_445 = A0_444.sid
+  return L1_445
+end
+L29_29 = wifinet
+function L29_29.ifname(A0_446)
+  local L1_447
+  L1_447 = A0_446.iwinfo
+  L1_447 = L1_447.ifname
+  if not L1_447 or L1_447:match("^wifi%d") or L1_447:match("^radio%d") then
+    L1_447 = A0_446.wdev
+  end
+  return L1_447
+end
+L29_29 = wifinet
+function L29_29.get_device(A0_448)
+  if A0_448.iwdata.device then
+    return wifidev(A0_448.iwdata.device)
+  end
+end
+L29_29 = wifinet
+function L29_29.is_up(A0_449)
+  local L1_450
+  L1_450 = A0_449.iwdata
+  L1_450 = L1_450.up
+  L1_450 = L1_450 == "1"
+  return L1_450
+end
+L29_29 = wifinet
+function L29_29.active_mode(A0_451)
+  if (_stror(A0_451.iwinfo.mode, A0_451.iwdata.mode) or "ap") == "ap" then
+  elseif "Master" == "sta" then
+  elseif "Client" == "adhoc" then
+  elseif "Ad-Hoc" == "mesh" then
+  else
+  end
+  return "Monitor"
+end
+L29_29 = wifinet
+function L29_29.active_mode_i18n(A0_452)
+  return _UPVALUE0_.translate(A0_452:active_mode())
+end
+L29_29 = wifinet
+function L29_29.active_ssid(A0_453)
+  return _stror(A0_453.iwinfo.ssid, A0_453.iwdata.ssid)
+end
+L29_29 = wifinet
+function L29_29.active_bssid(A0_454)
+  return _stror(A0_454.iwinfo.bssid, A0_454.iwdata.bssid) or "00:00:00:00:00:00"
+end
+L29_29 = wifinet
+function L29_29.active_encryption(A0_455)
+  local L1_456
+  L1_456 = A0_455.iwinfo
+  if L1_456 then
+    L1_456 = A0_455.iwinfo
+    L1_456 = L1_456.encryption
+  end
+  return L1_456 and L1_456.description or "-"
+end
+L29_29 = wifinet
+function L29_29.assoclist(A0_457)
+  local L1_458
+  L1_458 = A0_457.iwinfo
+  L1_458 = L1_458.assoclist
+  L1_458 = L1_458 or {}
+  return L1_458
+end
+L29_29 = wifinet
+function L29_29.frequency(A0_459)
+  local L1_460, L2_461
+  L1_460 = A0_459.iwinfo
+  L1_460 = L1_460.frequency
+  if L1_460 and L1_460 > 0 then
+    L2_461 = L1_460 / 1000
+    L2_461 = "%.03f" % L2_461
+    return L2_461
+  end
+end
+L29_29 = wifinet
+function L29_29.bitrate(A0_462)
+  local L1_463
+  L1_463 = A0_462.iwinfo
+  L1_463 = L1_463.bitrate
+  if L1_463 and L1_463 > 0 then
+    return L1_463 / 1000
+  end
+end
+L29_29 = wifinet
+function L29_29.channel(A0_464)
+  local L1_465
+  L1_465 = A0_464.iwinfo
+  L1_465 = L1_465.channel
+  if not L1_465 then
+    L1_465 = _UPVALUE0_
+    L1_465 = L1_465(_UPVALUE1_:get("wireless", A0_464.iwdata.device, "channel"))
+  end
+  return L1_465
+end
+L29_29 = wifinet
+function L29_29.confchannel(A0_466)
+  local L1_467
+  L1_467 = _UPVALUE0_
+  return L1_467(_UPVALUE1_:get("wireless", A0_466.iwdata.device, "channel"))
+end
+L29_29 = wifinet
+function L29_29.bw(A0_468)
+  local L1_469
+  L1_469 = A0_468.iwinfo
+  L1_469 = L1_469.bw
+  if not L1_469 then
+    L1_469 = _UPVALUE0_
+    L1_469 = L1_469(_UPVALUE1_:get("wireless", A0_468.iwdata.device, "bw"))
+  end
+  return L1_469
+end
+L29_29 = wifinet
+function L29_29.confbw(A0_470)
+  local L1_471
+  L1_471 = _UPVALUE0_
+  return L1_471(_UPVALUE1_:get("wireless", A0_470.iwdata.device, "bw"))
+end
+L29_29 = wifinet
+function L29_29.txpwr(A0_472)
+  local L1_473
+  L1_473 = A0_472.iwinfo
+  L1_473 = L1_473.txpwr
+  if not L1_473 then
+    L1_473 = _UPVALUE0_
+    L1_473 = L1_473(_UPVALUE1_:get("wireless", A0_472.iwdata.device, "txpwr"))
+  end
+  return L1_473
+end
+L29_29 = wifinet
+function L29_29.signal(A0_474)
+  local L1_475
+  L1_475 = A0_474.iwinfo
+  L1_475 = L1_475.signal
+  L1_475 = L1_475 or 0
+  return L1_475
+end
+L29_29 = wifinet
+function L29_29.noise(A0_476)
+  local L1_477
+  L1_477 = A0_476.iwinfo
+  L1_477 = L1_477.noise
+  L1_477 = L1_477 or 0
+  return L1_477
+end
+L29_29 = wifinet
+function L29_29.country(A0_478)
+  local L1_479
+  L1_479 = A0_478.iwinfo
+  L1_479 = L1_479.country
+  L1_479 = L1_479 or "00"
+  return L1_479
+end
+L29_29 = wifinet
+function L29_29.scanlist(A0_480)
+  local L1_481
+  L1_481 = A0_480.iwinfo
+  L1_481 = L1_481.scanlist
+  L1_481 = L1_481 or ""
+  return L1_481
+end
+L29_29 = wifinet
+function L29_29.txpower(A0_482)
+  local L1_483
+  L1_483 = A0_482.iwinfo
+  L1_483 = L1_483.txpower
+  L1_483 = L1_483 or 0
+  return L1_483 + A0_482:txpower_offset()
+end
+L29_29 = wifinet
+function L29_29.txpower_offset(A0_484)
+  local L1_485
+  L1_485 = A0_484.iwinfo
+  L1_485 = L1_485.txpower_offset
+  L1_485 = L1_485 or 0
+  return L1_485
+end
+L29_29 = wifinet
+function L29_29.signal_level(A0_486, A1_487, A2_488)
+  if A0_486:active_bssid() ~= "00:00:00:00:00:00" then
+    if (A1_487 or A0_486:signal()) < 0 and (A2_488 or A0_486:noise()) < 0 then
+      return _UPVALUE0_.floor(4294967295 * ((A2_488 or A0_486:noise()) - (A1_487 or A0_486:signal())) / 5)
+    else
+      return 0
+    end
+  else
+    return 4294967295
+  end
+end
+L29_29 = wifinet
+function L29_29.signal_percent(A0_489)
+  local L1_490, L2_491
+  L1_490 = A0_489.iwinfo
+  L1_490 = L1_490.quality
+  L1_490 = L1_490 or 0
+  L2_491 = A0_489.iwinfo
+  L2_491 = L2_491.quality_max
+  L2_491 = L2_491 or 0
+  if L1_490 > 0 and L2_491 > 0 then
+    return _UPVALUE0_.floor(100 / L2_491 * L1_490)
+  else
+    return 0
+  end
+end
+L29_29 = wifinet
+function L29_29.shortname(A0_492)
+  return "%s %q" % {
+    _UPVALUE0_.translate(A0_492:active_mode()),
+    A0_492:active_ssid() or A0_492:active_bssid()
+  }
+end
+L29_29 = wifinet
+function L29_29.get_i18n(A0_493)
+  return "%s: %s %q (%s)" % {
+    _UPVALUE0_.translate("Wireless Network"),
+    _UPVALUE0_.translate(A0_493:active_mode()),
+    A0_493:active_ssid() or A0_493:active_bssid(),
+    A0_493:ifname()
+  }
+end
+L29_29 = wifinet
+function L29_29.adminlink(A0_494)
+  return _UPVALUE0_.build_url("admin", "network", "wireless", A0_494.netid)
+end
+L29_29 = wifinet
+function L29_29.get_network(A0_495)
+  return A0_495:get_networks()[1]
+end
+L29_29 = wifinet
+function L29_29.get_networks(A0_496)
+  local L1_497, L2_498, L3_499, L4_500, L5_501, L6_502
+  L1_497 = {}
+  L2_498 = nil
+  L6_502 = L4_500(L5_501)
+  for L6_502 in L3_499(L4_500, L5_501, L6_502, L4_500(L5_501)) do
+    if _UPVALUE2_:get("network", L6_502) == "interface" then
+      L1_497[#L1_497 + 1] = network(L6_502)
+    end
+  end
+  L3_499(L4_500, L5_501)
+  return L1_497
+end
+L29_29 = wifinet
+function L29_29.get_interface(A0_503)
+  local L1_504
+  L1_504 = interface
+  return L1_504(A0_503:ifname())
+end
+L29_29 = _M
+L29_29 = L29_29.register_protocol
+L29_29(L29_29, "static")
+L29_29 = _M
+L29_29 = L29_29.register_protocol
+L29_29(L29_29, "dhcp")
+L29_29 = _M
+L29_29 = L29_29.register_protocol
+L29_29(L29_29, "none")
+L29_29 = L12_12.dir
+L29_29 = L29_29(L15_15.libpath() .. "/model/network")
+if L29_29 then
+  for _FORV_34_ in L29_29, nil, nil do
+    if _FORV_34_:match("%.lua$") then
+      L9_9("luci.model.network." .. _FORV_34_:gsub("%.lua$", ""))
+    end
+  end
+end

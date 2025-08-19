@@ -1,0 +1,387 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("string")
+module("slaxml")
+;({
+  VERSION = "0.5.1",
+  _call = {
+    pi = function(A0_1, A1_2)
+      local L2_3
+      L2_3 = print
+      L2_3(_UPVALUE0_.format("<?%s %s?>", A0_1, A1_2))
+    end,
+    comment = function(A0_4)
+      local L1_5
+      L1_5 = print
+      L1_5(_UPVALUE0_.format("<!-- %s -->", A0_4))
+    end,
+    startElement = function(A0_6, A1_7)
+      local L2_8
+      L2_8 = print
+      L2_8(_UPVALUE0_.format("<%s%s>", A0_6, A1_7 and " (" .. A1_7 .. ")" or ""))
+    end,
+    attribute = function(A0_9, A1_10, A2_11)
+      local L3_12
+      L3_12 = print
+      L3_12(_UPVALUE0_.format("  %s=%q%s", A0_9, A1_10, A2_11 and " (" .. A2_11 .. ")" or ""))
+    end,
+    text = function(A0_13)
+      local L1_14
+      L1_14 = print
+      L1_14(_UPVALUE0_.format("  text: %q", A0_13))
+    end,
+    closeElement = function(A0_15, A1_16)
+      local L2_17
+      L2_17 = print
+      L2_17(_UPVALUE0_.format("</%s>", A0_15))
+    end
+  }
+}).parser = function(A0_18, A1_19)
+  local L2_20, L3_21
+  L2_20 = {}
+  L3_21 = A1_19 or A0_18._call
+  L2_20._call = L3_21
+  L3_21 = _UPVALUE0_
+  L3_21 = L3_21.parse
+  L2_20.parse = L3_21
+  return L2_20
+end
+;({
+  VERSION = "0.5.1",
+  _call = {
+    pi = function(A0_22, A1_23)
+      local L2_24
+      L2_24 = print
+      L2_24(_UPVALUE0_.format("<?%s %s?>", A0_22, A1_23))
+    end,
+    comment = function(A0_25)
+      local L1_26
+      L1_26 = print
+      L1_26(_UPVALUE0_.format("<!-- %s -->", A0_25))
+    end,
+    startElement = function(A0_27, A1_28)
+      local L2_29
+      L2_29 = print
+      L2_29(_UPVALUE0_.format("<%s%s>", A0_27, A1_28 and " (" .. A1_28 .. ")" or ""))
+    end,
+    attribute = function(A0_30, A1_31, A2_32)
+      local L3_33
+      L3_33 = print
+      L3_33(_UPVALUE0_.format("  %s=%q%s", A0_30, A1_31, A2_32 and " (" .. A2_32 .. ")" or ""))
+    end,
+    text = function(A0_34)
+      local L1_35
+      L1_35 = print
+      L1_35(_UPVALUE0_.format("  text: %q", A0_34))
+    end,
+    closeElement = function(A0_36, A1_37)
+      local L2_38
+      L2_38 = print
+      L2_38(_UPVALUE0_.format("</%s>", A0_36))
+    end
+  }
+}).parse = function(A0_39, A1_40, A2_41)
+  local L3_42, L4_43, L5_44, L6_45, L7_46, L8_47, L9_48, L10_49, L11_50, L12_51, L13_52, L14_53, L15_54, L16_55, L17_56, L18_57, L19_58, L20_59, L21_60, L22_61, L23_62, L24_63, L25_64, L26_65, L27_66, L28_67, L29_68, L30_69, L31_70, L32_71, L33_72, L34_73
+  if not A2_41 then
+    L3_42 = {}
+    L3_42.stripWhitespace = false
+    A2_41 = L3_42
+  end
+  L3_42 = _UPVALUE0_
+  L3_42 = L3_42.find
+  L4_43 = _UPVALUE0_
+  L4_43 = L4_43.sub
+  L5_44 = _UPVALUE0_
+  L5_44 = L5_44.gsub
+  L6_45 = _UPVALUE0_
+  L6_45 = L6_45.char
+  L7_46 = _UPVALUE1_
+  L7_46 = L7_46.insert
+  L8_47 = _UPVALUE1_
+  L8_47 = L8_47.remove
+  L9_48, L10_49, L11_50, L12_51, L13_52, L14_53, L15_54 = nil, nil, nil, nil, nil, nil, nil
+  L16_55 = 1
+  L17_56 = "text"
+  L18_57 = 1
+  L19_58 = {}
+  L20_59 = {}
+  L21_60 = nil
+  L22_61 = {}
+  L23_62 = {}
+  L23_62.lt = "<"
+  L23_62.gt = ">"
+  L23_62.amp = "&"
+  L23_62.quot = "\""
+  L23_62.apos = "'"
+  function L24_63(A0_74, A1_75, A2_76)
+    return _UPVALUE0_[A2_76] or A1_75 == "#" and _UPVALUE1_(A2_76) or A0_74
+  end
+  function L25_64(A0_77)
+    return _UPVALUE0_(A0_77, "(&(#?)([%d%a]+);)", _UPVALUE1_)
+  end
+  function L26_65()
+    local L0_78
+    L0_78 = _UPVALUE0_
+    if L0_78 > _UPVALUE1_ then
+      L0_78 = _UPVALUE2_
+      L0_78 = L0_78._call
+      L0_78 = L0_78.text
+      if L0_78 then
+        L0_78 = _UPVALUE3_
+        L0_78 = L0_78(_UPVALUE4_, _UPVALUE1_, _UPVALUE0_ - 1)
+        if _UPVALUE5_.stripWhitespace then
+          L0_78 = _UPVALUE6_(L0_78, "^%s+", "")
+          L0_78 = _UPVALUE6_(L0_78, "%s+$", "")
+          if #L0_78 == 0 then
+            L0_78 = nil
+          end
+        end
+        if L0_78 then
+          _UPVALUE2_._call.text(_UPVALUE7_(L0_78))
+        end
+      end
+    end
+  end
+  function L27_66()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_, _UPVALUE3_ = _UPVALUE4_(_UPVALUE5_, "^<%?([:%a_][:%w_.-]*) ?(.-)%?>", _UPVALUE6_)
+    if _UPVALUE0_ then
+      _UPVALUE7_()
+      if _UPVALUE8_._call.pi then
+        _UPVALUE8_._call.pi(_UPVALUE2_, _UPVALUE3_)
+      end
+      _UPVALUE6_ = _UPVALUE1_ + 1
+      _UPVALUE9_ = _UPVALUE6_
+      return true
+    end
+  end
+  function L28_67()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_ = _UPVALUE3_(_UPVALUE4_, "^<!%-%-(.-)%-%->", _UPVALUE5_)
+    if _UPVALUE0_ then
+      _UPVALUE6_()
+      if _UPVALUE7_._call.comment then
+        _UPVALUE7_._call.comment(_UPVALUE2_)
+      end
+      _UPVALUE5_ = _UPVALUE1_ + 1
+      _UPVALUE8_ = _UPVALUE5_
+      return true
+    end
+  end
+  function L29_68(A0_79)
+    for _FORV_4_ = #_UPVALUE0_, 1, 4294967295 do
+      if _UPVALUE0_[_FORV_4_][A0_79] then
+        return _UPVALUE0_[_FORV_4_][A0_79]
+      end
+    end
+    error(("Cannot find namespace for prefix %s"):format(A0_79))
+  end
+  function L30_69()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_ = _UPVALUE3_(_UPVALUE4_, "^<([%a_][%w_.-]*)", _UPVALUE5_)
+    if _UPVALUE0_ then
+      _UPVALUE6_[2] = nil
+      _UPVALUE7_()
+      _UPVALUE5_ = _UPVALUE1_ + 1
+      _UPVALUE0_, _UPVALUE1_, _UPVALUE8_ = _UPVALUE3_(_UPVALUE4_, "^:([%a_][%w_.-]*)", _UPVALUE5_)
+      if _UPVALUE0_ then
+        _UPVALUE6_[1] = _UPVALUE8_
+        _UPVALUE6_[2] = _UPVALUE9_(_UPVALUE2_)
+        _UPVALUE2_ = _UPVALUE8_
+        _UPVALUE5_ = _UPVALUE1_ + 1
+      else
+        _UPVALUE6_[1] = _UPVALUE2_
+        for _FORV_3_ = #_UPVALUE10_, 1, 4294967295 do
+          if _UPVALUE10_[_FORV_3_]["!"] then
+            _UPVALUE6_[2] = _UPVALUE10_[_FORV_3_]["!"]
+            break
+          end
+        end
+      end
+      _UPVALUE11_ = _FOR_
+      _UPVALUE12_(_UPVALUE10_, {})
+      return true
+    end
+  end
+  function L31_70()
+    local L0_80, L1_81
+    L0_80 = _UPVALUE3_
+    L1_81 = _UPVALUE4_
+    _UPVALUE2_, L0_80 = "^%s+([:%a_][:%w_.-]*)%s*=%s*", L0_80(L1_81, "^%s+([:%a_][:%w_.-]*)%s*=%s*", _UPVALUE5_)
+    _UPVALUE2_, L1_81 = "^%s+([:%a_][:%w_.-]*)%s*=%s*", L0_80(L1_81, "^%s+([:%a_][:%w_.-]*)%s*=%s*", _UPVALUE5_)
+    _UPVALUE1_ = L1_81
+    _UPVALUE0_ = L0_80
+    L0_80 = _UPVALUE0_
+    if L0_80 then
+      L0_80 = _UPVALUE1_
+      L0_80 = L0_80 + 1
+      _UPVALUE6_ = L0_80
+      L0_80 = _UPVALUE3_
+      L1_81 = _UPVALUE4_
+      _UPVALUE7_, L0_80 = "^\"([^<\"]*)\"", L0_80(L1_81, "^\"([^<\"]*)\"", _UPVALUE6_)
+      _UPVALUE7_, L1_81 = "^\"([^<\"]*)\"", L0_80(L1_81, "^\"([^<\"]*)\"", _UPVALUE6_)
+      _UPVALUE1_ = L1_81
+      _UPVALUE0_ = L0_80
+      L0_80 = _UPVALUE0_
+      if L0_80 then
+        L0_80 = _UPVALUE1_
+        L0_80 = L0_80 + 1
+        _UPVALUE5_ = L0_80
+        L0_80 = _UPVALUE8_
+        L1_81 = _UPVALUE7_
+        L0_80 = L0_80(L1_81)
+        _UPVALUE7_ = L0_80
+      else
+        L0_80 = _UPVALUE3_
+        L1_81 = _UPVALUE4_
+        _UPVALUE7_, L0_80 = "^'([^<']*)'", L0_80(L1_81, "^'([^<']*)'", _UPVALUE6_)
+        _UPVALUE7_, L1_81 = "^'([^<']*)'", L0_80(L1_81, "^'([^<']*)'", _UPVALUE6_)
+        _UPVALUE1_ = L1_81
+        _UPVALUE0_ = L0_80
+        L0_80 = _UPVALUE0_
+        if L0_80 then
+          L0_80 = _UPVALUE1_
+          L0_80 = L0_80 + 1
+          _UPVALUE5_ = L0_80
+          L0_80 = _UPVALUE8_
+          L1_81 = _UPVALUE7_
+          L0_80 = L0_80(L1_81)
+          _UPVALUE7_ = L0_80
+        end
+      end
+    end
+    L0_80 = _UPVALUE2_
+    if L0_80 then
+      L0_80 = _UPVALUE7_
+      if L0_80 then
+        L0_80 = {L1_81, _UPVALUE7_}
+        L1_81 = _UPVALUE2_
+        L1_81 = _UPVALUE9_
+        L1_81 = L1_81.match
+        L1_81 = L1_81(_UPVALUE2_, "^([^:]+):([^:]+)$")
+        if L1_81 then
+          if L1_81 == "xmlns" then
+            _UPVALUE10_[#_UPVALUE10_][L1_81(_UPVALUE2_, "^([^:]+):([^:]+)$")] = _UPVALUE7_
+          else
+            L0_80[1] = L1_81(_UPVALUE2_, "^([^:]+):([^:]+)$")
+            L0_80[3] = _UPVALUE11_(L1_81)
+          end
+        elseif _UPVALUE2_ == "xmlns" then
+          _UPVALUE10_[#_UPVALUE10_]["!"] = _UPVALUE7_
+          _UPVALUE12_[2] = _UPVALUE7_
+        end
+        _UPVALUE13_ = _UPVALUE13_ + 1
+        _UPVALUE14_[_UPVALUE13_] = L0_80
+        return true
+      end
+    end
+  end
+  function L32_71()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_ = _UPVALUE3_(_UPVALUE4_, "^<!%[CDATA%[(.-)%]%]>", _UPVALUE5_)
+    if _UPVALUE0_ then
+      _UPVALUE6_()
+      if _UPVALUE7_._call.text then
+        _UPVALUE7_._call.text(_UPVALUE2_)
+      end
+      _UPVALUE5_ = _UPVALUE1_ + 1
+      _UPVALUE8_ = _UPVALUE5_
+      return true
+    end
+  end
+  function L33_72()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_ = _UPVALUE3_(_UPVALUE4_, "^%s*(/?)>", _UPVALUE5_)
+    if _UPVALUE0_ then
+      _UPVALUE6_ = "text"
+      _UPVALUE5_ = _UPVALUE1_ + 1
+      _UPVALUE7_ = _UPVALUE5_
+      if _UPVALUE8_._call.startElement then
+        _UPVALUE8_._call.startElement(_UPVALUE9_.unpack(_UPVALUE10_))
+      end
+      if _UPVALUE8_._call.attribute then
+        for _FORV_3_ = 1, _UPVALUE11_ do
+          _UPVALUE8_._call.attribute(_UPVALUE9_.unpack(_UPVALUE12_[_FORV_3_]))
+        end
+      end
+      if _FOR_ == "/" then
+        _UPVALUE13_(_UPVALUE14_)
+        if _UPVALUE8_._call.closeElement then
+          _UPVALUE8_._call.closeElement(_UPVALUE9_.unpack(_UPVALUE10_))
+        end
+      end
+      return true
+    end
+  end
+  function L34_73()
+    _UPVALUE0_, _UPVALUE1_, _UPVALUE2_, _UPVALUE3_ = _UPVALUE4_(_UPVALUE5_, "^</([%a_][%w_.-]*)%s*>", _UPVALUE6_)
+    if _UPVALUE0_ then
+      _UPVALUE7_ = nil
+      for _FORV_3_ = #_UPVALUE8_, 1, 4294967295 do
+        if _UPVALUE8_[_FORV_3_]["!"] then
+          _UPVALUE7_ = _UPVALUE8_[_FORV_3_]["!"]
+          break
+        end
+      end
+    else
+      _UPVALUE0_, _UPVALUE1_, _UPVALUE3_, _UPVALUE2_ = _UPVALUE4_(_UPVALUE5_, "^</([%a_][%w_.-]*):([%a_][%w_.-]*)%s*>", _UPVALUE6_)
+      if _UPVALUE0_ then
+        _UPVALUE7_ = _UPVALUE9_(_UPVALUE3_)
+      end
+    end
+    if _UPVALUE0_ then
+      _UPVALUE10_()
+      if _UPVALUE11_._call.closeElement then
+        _UPVALUE11_._call.closeElement(_UPVALUE2_, _UPVALUE7_)
+      end
+      _UPVALUE6_ = _UPVALUE1_ + 1
+      _UPVALUE12_ = _UPVALUE6_
+      _UPVALUE13_(_UPVALUE8_)
+      return true
+    end
+  end
+  while L16_55 < #A1_40 do
+    if L17_56 == "text" then
+      if not L27_66() and not L28_67() and not L32_71() and not L34_73() then
+        if L30_69() then
+          L17_56 = "attributes"
+        else
+          L9_48, L10_49 = L3_42(A1_40, "^[^<]+", L16_55)
+          L16_55 = (L9_48 and L10_49 or L16_55) + 1
+        end
+      end
+    elseif L17_56 == "attributes" and not L31_70() and not L33_72() then
+      error("Was in an element and couldn't find attributes or the close.")
+    end
+  end
+end
+return {
+  VERSION = "0.5.1",
+  _call = {
+    pi = function(A0_82, A1_83)
+      local L2_84
+      L2_84 = print
+      L2_84(_UPVALUE0_.format("<?%s %s?>", A0_82, A1_83))
+    end,
+    comment = function(A0_85)
+      local L1_86
+      L1_86 = print
+      L1_86(_UPVALUE0_.format("<!-- %s -->", A0_85))
+    end,
+    startElement = function(A0_87, A1_88)
+      local L2_89
+      L2_89 = print
+      L2_89(_UPVALUE0_.format("<%s%s>", A0_87, A1_88 and " (" .. A1_88 .. ")" or ""))
+    end,
+    attribute = function(A0_90, A1_91, A2_92)
+      local L3_93
+      L3_93 = print
+      L3_93(_UPVALUE0_.format("  %s=%q%s", A0_90, A1_91, A2_92 and " (" .. A2_92 .. ")" or ""))
+    end,
+    text = function(A0_94)
+      local L1_95
+      L1_95 = print
+      L1_95(_UPVALUE0_.format("  text: %q", A0_94))
+    end,
+    closeElement = function(A0_96, A1_97)
+      local L2_98
+      L2_98 = print
+      L2_98(_UPVALUE0_.format("</%s>", A0_96))
+    end
+  }
+}

@@ -1,0 +1,88 @@
+module("luci.http.protocol.date", package.seeall)
+require("luci.sys.zoneinfo")
+MONTHS = {
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
+}
+function tz_offset(A0_0)
+  local L1_1, L2_2
+  L1_1 = type
+  L2_2 = A0_0
+  L1_1 = L1_1(L2_2)
+  if L1_1 == "string" then
+    L2_2 = A0_0
+    L1_1 = A0_0.match
+    L2_2 = L1_1(L2_2, "([%+%-])([0-9]+)")
+    if L1_1 == "+" then
+      L1_1 = 1
+    else
+      L1_1 = 4294967295
+    end
+    L2_2 = L2_2 and tonumber(L2_2)
+    if L1_1 and L2_2 then
+      return L1_1 * 60 * (math.floor(L2_2 / 100) * 60 + L2_2 % 100)
+    elseif luci.sys.zoneinfo.OFFSET[A0_0:lower()] then
+      return luci.sys.zoneinfo.OFFSET[A0_0:lower()]
+    end
+  end
+  L1_1 = 0
+  return L1_1
+end
+function to_unix(A0_3)
+  local L1_4, L2_5, L3_6, L4_7, L5_8, L6_9, L7_10, L8_11, L9_12
+  L2_5 = A0_3
+  L1_4 = A0_3.match
+  L3_6 = "([A-Z][a-z][a-z]), ([0-9]+) "
+  L4_7 = "([A-Z][a-z][a-z]) ([0-9]+) "
+  L5_8 = "([0-9]+):([0-9]+):([0-9]+) "
+  L6_9 = "([A-Z0-9%+%-]+)"
+  L3_6 = L3_6 .. L4_7 .. L5_8 .. L6_9
+  L8_11 = L1_4(L2_5, L3_6)
+  if L2_5 and L3_6 and L4_7 and L5_8 and L6_9 and L7_10 then
+    L9_12 = 1
+    for _FORV_13_ = 1, 12 do
+      if MONTHS[_FORV_13_] == L3_6 then
+        L9_12 = _FORV_13_
+        break
+      end
+    end
+    return tz_offset(L8_11) + os.time({
+      year = L4_7,
+      month = L9_12,
+      day = L2_5,
+      hour = L5_8,
+      min = L6_9,
+      sec = L7_10
+    })
+  end
+  L9_12 = 0
+  return L9_12
+end
+function to_http(A0_13)
+  return os.date("%a, %d %b %Y %H:%M:%S GMT", A0_13)
+end
+function compare(A0_14, A1_15)
+  if A0_14:match("[^0-9]") then
+    A0_14 = to_unix(A0_14)
+  end
+  if A1_15:match("[^0-9]") then
+    A1_15 = to_unix(A1_15)
+  end
+  if A0_14 == A1_15 then
+    return 0
+  elseif A0_14 < A1_15 then
+    return 4294967295
+  else
+    return 1
+  end
+end

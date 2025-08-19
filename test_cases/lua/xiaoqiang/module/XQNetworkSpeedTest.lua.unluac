@@ -1,0 +1,103 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQNetworkSpeedTest", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+function uploadSpeedTest()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7
+  L0_1 = "/usr/bin/upload_speedtest"
+  L1_2 = nil
+  L6_7 = L3_4(L4_5)
+  for L5_6, L6_7 in L2_3(L3_4, L4_5, L5_6, L6_7, L3_4(L4_5)) do
+    if not _UPVALUE1_.isStrNil(L6_7) and L6_7:match("^avg tx:") then
+      L1_2 = L6_7:match("^avg tx:(%S+)")
+      L1_2 = L1_2 and tonumber(string.format("%.2f", L1_2 / 8))
+      break
+    end
+  end
+  return L1_2
+end
+function downloadSpeedTest()
+  local L0_8, L1_9, L2_10, L3_11, L4_12, L5_13, L6_14
+  L0_8 = "/usr/bin/download_speedtest"
+  L1_9 = nil
+  L6_14 = L3_11(L4_12)
+  for L5_13, L6_14 in L2_10(L3_11, L4_12, L5_13, L6_14, L3_11(L4_12)) do
+    if not _UPVALUE1_.isStrNil(L6_14) and L6_14:match("^avg rx:") then
+      L1_9 = L6_14:match("^avg rx:(%S+)")
+      L1_9 = L1_9 and tonumber(string.format("%.2f", L1_9 / 8))
+      break
+    end
+  end
+  return L1_9
+end
+function saveSpeedTestResult(A0_15, A1_16)
+  if A0_15 and A1_16 and tonumber(A0_15) and tonumber(A1_16) then
+    require("xiaoqiang.XQPreference").set("UPLOAD_SPEED", tostring(A0_15))
+    require("xiaoqiang.XQPreference").set("DOWNLOAD_SPEED", tostring(A1_16))
+  end
+end
+function getSpeedTestResult()
+  local L0_17, L1_18, L2_19
+  L0_17 = require
+  L1_18 = "xiaoqiang.XQPreference"
+  L0_17 = L0_17(L1_18)
+  L1_18 = tonumber
+  L2_19 = L0_17.get
+  L2_19 = L2_19("UPLOAD_SPEED")
+  L1_18 = L1_18(L2_19, L2_19("UPLOAD_SPEED"))
+  L2_19 = tonumber
+  L2_19 = L2_19(L0_17.get("DOWNLOAD_SPEED"))
+  if L1_18 and L2_19 then
+    if L1_18 > 0 and L2_19 > 0 then
+      return L1_18, L2_19
+    elseif L1_18 == 0 or L2_19 == 0 then
+      return 0, 0
+    else
+      return nil, nil
+    end
+  else
+    return nil, nil
+  end
+end
+function speedTest()
+  local L0_20, L1_21, L2_22, L3_23, L4_24, L5_25, L6_26, L7_27, L8_28, L9_29
+  L0_20 = {}
+  L1_21 = "/usr/bin/speedtest"
+  L9_29 = L3_23(L4_24)
+  for L5_25, L6_26 in L2_22(L3_23, L4_24, L5_25, L6_26, L7_27, L8_28, L9_29, L3_23(L4_24)) do
+    L8_28 = L6_26
+    if not L7_27 then
+      L8_28 = L0_20
+      L9_29 = tonumber
+      L9_29 = L9_29(L6_26:match("rx:(%S+)"))
+      L7_27(L8_28, L9_29, L9_29(L6_26:match("rx:(%S+)")))
+    end
+  end
+  if L4_24 > 0 then
+    for L8_28, L9_29 in L5_25(L6_26) do
+    end
+  end
+  if L3_23 then
+    L9_29 = L6_26()
+    L8_28 = 6
+    L9_29 = L5_25(L6_26, L7_27, L8_28)
+    L4_24(L5_25, L6_26, L7_27, L8_28, L9_29, L5_25(L6_26, L7_27, L8_28))
+    L8_28 = 8
+    L9_29 = 11
+    L9_29 = L5_25(L6_26, L7_27)
+  end
+  return L4_24, L5_25
+end
+function asyncSpeedTest()
+  saveSpeedTestResult(0, 0)
+  _UPVALUE0_.forkExec("lua /usr/sbin/speed_test.lua")
+end
+function syncSpeedTest()
+  local L0_30, L1_31
+  L0_30 = uploadSpeedTest
+  L0_30 = L0_30()
+  L1_31 = downloadSpeedTest
+  L1_31 = L1_31()
+  return L0_30, L1_31
+end

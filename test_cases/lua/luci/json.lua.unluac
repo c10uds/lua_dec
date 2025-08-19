@@ -1,0 +1,555 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("luci.util")
+module("luci.json")
+function decode(A0_1, ...)
+  local L2_3
+  L2_3 = ActiveDecoder
+  L2_3 = L2_3(function()
+    local L0_4, L1_5
+    return L0_4
+  end, ...)
+  L2_3.chunk = A0_1
+  return _UPVALUE0_(L2_3.get, L2_3) and _UPVALUE0_(L2_3.get, L2_3) or nil
+end
+function encode(A0_6, ...)
+  local L2_8, L3_9, L4_10, L5_11
+  L2_8 = {}
+  L3_9 = Encoder
+  L4_10 = A0_6
+  L5_11 = 1
+  L3_9 = L3_9(L4_10, L5_11, ...)
+  L4_10 = L3_9
+  L3_9 = L3_9.source
+  L3_9 = L3_9(L4_10)
+  L4_10, L5_11 = nil, nil
+  repeat
+    L4_10, L5_11 = L3_9()
+    L2_8[#L2_8 + 1] = L4_10
+  until not L4_10
+  return not L5_11 and _UPVALUE0_.concat(L2_8) or nil
+end
+function null()
+  local L0_12, L1_13
+  L0_12 = null
+  return L0_12
+end
+Encoder = L0_0.class()
+function Encoder.__init__(A0_14, A1_15, A2_16, A3_17)
+  A0_14.data = A1_15
+  A0_14.buffersize = A2_16 or 512
+  A0_14.buffer = ""
+  A0_14.fastescape = A3_17
+  _UPVALUE0_(A0_14).__call = Encoder.source
+end
+function Encoder.source(A0_18)
+  return function()
+    local L0_19, L1_20
+    L0_19 = _UPVALUE0_
+    L0_19 = L0_19.resume
+    L1_20 = _UPVALUE1_
+    L1_20 = L0_19(L1_20, _UPVALUE2_, _UPVALUE2_.data, true)
+    if L0_19 then
+      return L1_20
+    else
+      return nil, L1_20
+    end
+  end
+end
+function Encoder.dispatch(A0_21, A1_22, A2_23)
+  local L3_24
+  L3_24 = A0_21.parsers
+  L3_24 = L3_24[_UPVALUE0_(A1_22)]
+  L3_24(A0_21, A1_22)
+  if A2_23 then
+    if #A0_21.buffer > 0 then
+      _UPVALUE1_.yield(A0_21.buffer)
+    end
+    _UPVALUE1_.yield()
+  end
+end
+function Encoder.put(A0_25, A1_26)
+  local L2_27, L3_28
+  L2_27 = A0_25.buffersize
+  if L2_27 < 2 then
+    L2_27 = _UPVALUE0_
+    L2_27 = L2_27.yield
+    L3_28 = A1_26
+    L2_27(L3_28)
+  else
+    L2_27 = A0_25.buffer
+    L2_27 = #L2_27
+    L3_28 = #A1_26
+    L2_27 = L2_27 + L3_28
+    L3_28 = A0_25.buffersize
+    if L2_27 > L3_28 then
+      L2_27 = 0
+      L3_28 = A0_25.buffersize
+      L3_28 = L3_28 - #A0_25.buffer
+      _UPVALUE0_.yield(A0_25.buffer .. A1_26:sub(L2_27 + 1, L3_28))
+      L2_27 = L3_28
+      while #A1_26 - L2_27 > A0_25.buffersize do
+        L3_28 = L2_27 + A0_25.buffersize
+        _UPVALUE0_.yield(A1_26:sub(L2_27 + 1, L3_28))
+        L2_27 = L3_28
+      end
+      A0_25.buffer = A1_26:sub(L2_27 + 1)
+    else
+      L2_27 = A0_25.buffer
+      L3_28 = A1_26
+      L2_27 = L2_27 .. L3_28
+      A0_25.buffer = L2_27
+    end
+  end
+end
+function Encoder.parse_nil(A0_29)
+  A0_29:put("null")
+end
+function Encoder.parse_bool(A0_30, A1_31)
+  A0_30:put(A1_31 and "true" or "false")
+end
+function Encoder.parse_number(A0_32, A1_33)
+  local L2_34, L3_35
+  L3_35 = A0_32
+  L2_34 = A0_32.put
+  L2_34(L3_35, _UPVALUE0_(A1_33))
+end
+function Encoder.parse_string(A0_36, A1_37)
+  if A0_36.fastescape then
+    A0_36:put("\"" .. A1_37:gsub("\\", "\\\\"):gsub("\"", "\\\"") .. "\"")
+  else
+    A0_36:put("\"" .. A1_37:gsub("[%c\\\"]", function(A0_38)
+      return "\\u00%02x" % A0_38:byte()
+    end) .. "\"")
+  end
+end
+function Encoder.parse_iter(A0_39, A1_40)
+  local L2_41, L3_42, L4_43, L5_44, L6_45, L7_46
+  L2_41 = null
+  if A1_40 == L2_41 then
+    L2_41 = A0_39.put
+    return L2_41(L3_42, L4_43)
+  end
+  L2_41 = _UPVALUE0_
+  L2_41 = L2_41(L3_42)
+  if L2_41 == "table" then
+    L2_41 = #A1_40
+    if L2_41 == 0 then
+      L2_41 = _UPVALUE1_
+      L2_41 = L2_41(L3_42)
+      if L2_41 then
+        L2_41 = A0_39.put
+        L2_41(L3_42, L4_43)
+        L2_41 = true
+        for L6_45, L7_46 in L3_42(L4_43) do
+          L2_41 = L2_41 or A0_39:put(",")
+          L2_41 = L2_41 and false
+          A0_39:parse_string(_UPVALUE3_(L6_45))
+          A0_39:put(":")
+          A0_39:dispatch(L7_46)
+        end
+        L3_42(L4_43, L5_44)
+      end
+    end
+  else
+    L2_41 = A0_39.put
+    L2_41(L3_42, L4_43)
+    L2_41 = true
+    if L3_42 == "table" then
+      for L6_45 = 1, #A1_40 do
+        if not L2_41 then
+          L7_46 = A0_39.put
+          L7_46 = L7_46(A0_39, ",")
+          L2_41 = L7_46
+        end
+        L2_41 = L2_41 and nil
+        L7_46 = A0_39.dispatch
+        L7_46(A0_39, A1_40[L6_45])
+      end
+    else
+      for L6_45 in A1_40, nil, nil do
+        if not L2_41 then
+          L7_46 = A0_39.put
+          L7_46 = L7_46(A0_39, ",")
+          L2_41 = L7_46
+        end
+        L2_41 = L2_41 and nil
+        L7_46 = A0_39.dispatch
+        L7_46(A0_39, L6_45)
+      end
+    end
+    L3_42(L4_43, L5_44)
+  end
+end
+Encoder.parsers = {
+  ["nil"] = Encoder.parse_nil,
+  ["table"] = Encoder.parse_iter,
+  ["number"] = Encoder.parse_number,
+  ["string"] = Encoder.parse_string,
+  ["boolean"] = Encoder.parse_bool,
+  ["function"] = Encoder.parse_iter
+}
+Decoder = L0_0.class()
+function Decoder.__init__(A0_47, A1_48)
+  A0_47.cnull = A1_48
+  _UPVALUE0_(A0_47).__call = Decoder.sink
+end
+function Decoder.sink(A0_49)
+  return function(...)
+    local L2_51, L3_52, L4_53
+    L2_51 = _UPVALUE0_
+    L2_51 = L2_51.resume
+    L3_52 = _UPVALUE1_
+    L4_53 = _UPVALUE2_
+    return L2_51(L3_52, L4_53, ...)
+  end
+end
+function Decoder.get(A0_54)
+  local L1_55
+  L1_55 = A0_54.data
+  return L1_55
+end
+function Decoder.dispatch(A0_56, A1_57, A2_58, A3_59)
+  local L4_60, L5_61, L6_62, L7_63, L8_64, L9_65
+  L6_62 = false
+  while A1_57 do
+    while A1_57 do
+      L7_63 = #A1_57
+      if L7_63 < 1 then
+        L8_64 = A0_56
+        L7_63 = A0_56.fetch
+        L7_63 = L7_63(L8_64)
+        A1_57 = L7_63
+      end
+    end
+    L7_63 = _UPVALUE0_
+    L8_64 = not A3_59 or A1_57
+    L9_65 = "Unexpected EOS"
+    L7_63(L8_64, L9_65)
+    if not A1_57 then
+      break
+    end
+    L8_64 = A1_57
+    L7_63 = A1_57.sub
+    L9_65 = 1
+    L7_63 = L7_63(L8_64, L9_65, 1)
+    L8_64 = A0_56.parsers
+    L8_64 = L8_64[L7_63]
+    if not L8_64 then
+      L9_65 = L7_63
+      L8_64 = L7_63.match
+      L8_64 = L8_64(L9_65, "%s")
+      if L8_64 then
+        L8_64 = A0_56.parse_space
+      elseif not L8_64 then
+        L9_65 = L7_63
+        L8_64 = L7_63.match
+        L8_64 = L8_64(L9_65, "[0-9-]")
+        if L8_64 then
+          L8_64 = A0_56.parse_number
+        elseif not L8_64 then
+          L8_64 = _UPVALUE1_
+          L9_65 = "Unexpected char '%s'" % L7_63
+          L8_64 = L8_64(L9_65)
+        end
+      end
+    end
+    L9_65 = L8_64
+    L4_60, L9_65 = A0_56, L9_65(A0_56, A1_57)
+    A1_57 = L9_65
+    L9_65 = A0_56.parse_space
+    if L8_64 ~= L9_65 then
+      L9_65 = _UPVALUE0_
+      L9_65(not L6_62, "Scope violation: Too many objects")
+      L5_61 = L4_60
+      L6_62 = true
+      if A3_59 then
+        L9_65 = A1_57
+        return L9_65, L5_61
+      end
+    end
+  end
+  L7_63 = _UPVALUE0_
+  L8_64 = not A2_58
+  L9_65 = A2_58
+  L7_63(L8_64, L9_65)
+  L7_63 = _UPVALUE0_
+  L8_64 = L6_62
+  L9_65 = "Unexpected EOS"
+  L7_63(L8_64, L9_65)
+  A0_56.data = L5_61
+end
+function Decoder.fetch(A0_66)
+  local L1_67, L2_68, L3_69
+  L1_67 = _UPVALUE0_
+  L1_67 = L1_67.yield
+  L3_69 = L1_67()
+  _UPVALUE1_(L2_68 or not L3_69, L3_69)
+  return L2_68
+end
+function Decoder.fetch_atleast(A0_70, A1_71, A2_72)
+  local L3_73
+  while true do
+    L3_73 = #A1_71
+    if A2_72 > L3_73 then
+      L3_73 = A0_70.fetch
+      L3_73 = L3_73(A0_70)
+      _UPVALUE0_(L3_73, "Unexpected EOS")
+      A1_71 = A1_71 .. L3_73
+    end
+  end
+  return A1_71
+end
+function Decoder.fetch_until(A0_74, A1_75, A2_76)
+  local L3_77, L4_78
+  L4_78 = A1_75
+  L3_77 = A1_75.find
+  L3_77 = L3_77(L4_78, A2_76)
+  while not L3_77 do
+    L4_78 = A0_74.fetch
+    L4_78 = L4_78(A0_74)
+    _UPVALUE0_(L4_78, "Unexpected EOS")
+    A1_75 = A1_75 .. L4_78
+    L3_77 = A1_75:find(A2_76)
+  end
+  L4_78 = A1_75
+  return L4_78, L3_77
+end
+function Decoder.parse_space(A0_79, A1_80)
+  local L2_81
+  L2_81 = A1_80.find
+  L2_81 = L2_81(A1_80, "[^%s]")
+  while not L2_81 do
+    A1_80 = A0_79:fetch()
+    if not A1_80 then
+      return nil
+    end
+    L2_81 = A1_80:find("[^%s]")
+  end
+  return A1_80:sub(L2_81)
+end
+function Decoder.parse_literal(A0_82, A1_83, A2_84, A3_85)
+  A1_83 = A0_82:fetch_atleast(A1_83, #A2_84)
+  _UPVALUE0_(A1_83:sub(1, #A2_84) == A2_84, "Invalid character sequence")
+  return A1_83:sub(#A2_84 + 1), A3_85
+end
+function Decoder.parse_null(A0_86, A1_87)
+  return A0_86:parse_literal(A1_87, "null", A0_86.cnull and null)
+end
+function Decoder.parse_true(A0_88, A1_89)
+  return A0_88:parse_literal(A1_89, "true", true)
+end
+function Decoder.parse_false(A0_90, A1_91)
+  return A0_90:parse_literal(A1_91, "false", false)
+end
+function Decoder.parse_number(A0_92, A1_93)
+  local L2_94, L3_95, L4_96
+  L3_95 = A0_92
+  L2_94 = A0_92.fetch_until
+  L4_96 = A1_93
+  L3_95 = L2_94(L3_95, L4_96, "[^0-9eE.+-]")
+  L4_96 = _UPVALUE0_
+  L4_96 = L4_96(L2_94:sub(1, L3_95 - 1))
+  _UPVALUE1_(L4_96, "Invalid number specification")
+  return L2_94:sub(L3_95), L4_96
+end
+function Decoder.parse_string(A0_97, A1_98)
+  local L2_99, L3_100, L4_101
+  L2_99 = ""
+  L3_100 = nil
+  L4_101 = _UPVALUE0_
+  L4_101(A1_98:sub(1, 1) == "\"", "Expected \"")
+  L4_101 = A1_98.sub
+  L4_101 = L4_101(A1_98, 2)
+  A1_98 = L4_101
+  while true do
+    L4_101 = A1_98.find
+    L4_101 = L4_101(A1_98, "[\\\"]")
+    if L4_101 then
+      L2_99 = L2_99 .. A1_98:sub(1, L4_101 - 1)
+      if A1_98:sub(L4_101, L4_101) == "\"" then
+        A1_98 = A1_98:sub(L4_101 + 1)
+        break
+      elseif A1_98:sub(L4_101, L4_101) == "\\" then
+        A1_98, L3_100 = A0_97:parse_escape(A1_98:sub(L4_101))
+        L2_99 = L2_99 .. L3_100
+      end
+    else
+      L2_99 = L2_99 .. A1_98
+      A1_98 = A0_97:fetch()
+      _UPVALUE0_(A1_98, "Unexpected EOS while parsing a string")
+    end
+  end
+  L4_101 = A1_98
+  return L4_101, L2_99
+end
+function Decoder.parse_escape(A0_102, A1_103)
+  local L2_104, L3_105, L4_106, L5_107
+  L2_104 = ""
+  L4_106 = A0_102
+  L3_105 = A0_102.fetch_atleast
+  L5_107 = A1_103.sub
+  L5_107 = L5_107(A1_103, 2)
+  L3_105 = L3_105(L4_106, L5_107, 1)
+  A1_103 = L3_105
+  L4_106 = A1_103
+  L3_105 = A1_103.sub
+  L5_107 = 1
+  L3_105 = L3_105(L4_106, L5_107, 1)
+  L5_107 = A1_103
+  L4_106 = A1_103.sub
+  L4_106 = L4_106(L5_107, 2)
+  A1_103 = L4_106
+  if L3_105 == "\"" then
+    L4_106 = A1_103
+    L5_107 = "\""
+    return L4_106, L5_107
+  elseif L3_105 == "\\" then
+    L4_106 = A1_103
+    L5_107 = "\\"
+    return L4_106, L5_107
+  elseif L3_105 == "u" then
+    L5_107 = A0_102
+    L4_106 = A0_102.fetch_atleast
+    L4_106 = L4_106(L5_107, A1_103, 4)
+    A1_103 = L4_106
+    L5_107 = A1_103
+    L4_106 = A1_103.sub
+    L4_106 = L4_106(L5_107, 1, 2)
+    L5_107 = A1_103.sub
+    L5_107 = L5_107(A1_103, 3, 4)
+    L4_106, L5_107 = _UPVALUE0_(L4_106, 16), _UPVALUE0_(L5_107, 16)
+    _UPVALUE1_(L4_106 and L5_107, "Invalid Unicode character")
+    return A1_103:sub(5), L4_106 == 0 and _UPVALUE2_.char(L5_107) or ""
+  elseif L3_105 == "/" then
+    L4_106 = A1_103
+    L5_107 = "/"
+    return L4_106, L5_107
+  elseif L3_105 == "b" then
+    L4_106 = A1_103
+    L5_107 = "\b"
+    return L4_106, L5_107
+  elseif L3_105 == "f" then
+    L4_106 = A1_103
+    L5_107 = "\f"
+    return L4_106, L5_107
+  elseif L3_105 == "n" then
+    L4_106 = A1_103
+    L5_107 = "\n"
+    return L4_106, L5_107
+  elseif L3_105 == "r" then
+    L4_106 = A1_103
+    L5_107 = "\r"
+    return L4_106, L5_107
+  elseif L3_105 == "t" then
+    L4_106 = A1_103
+    L5_107 = "\t"
+    return L4_106, L5_107
+  else
+    L4_106 = _UPVALUE3_
+    L5_107 = "Unexpected escaping sequence '\\%s'" % L3_105
+    L4_106(L5_107)
+  end
+end
+function Decoder.parse_array(A0_108, A1_109)
+  local L2_110, L3_111, L4_112, L5_113
+  L3_111 = A1_109
+  L2_110 = A1_109.sub
+  L4_112 = 2
+  L2_110 = L2_110(L3_111, L4_112)
+  A1_109 = L2_110
+  L2_110 = {}
+  L3_111 = 1
+  L5_113 = A0_108
+  L4_112 = A0_108.parse_delimiter
+  L5_113 = L4_112(L5_113, A1_109, "%]")
+  if L5_113 then
+    return L4_112, L2_110
+  end
+  repeat
+    L4_112, L5_113 = A0_108:dispatch(L4_112, nil, true)
+    _UPVALUE0_.insert(L2_110, L3_111, L5_113)
+    L3_111 = L3_111 + 1
+    L4_112, L5_113 = A0_108:parse_delimiter(L4_112, ",%]")
+    _UPVALUE1_(L5_113, "Delimiter expected")
+  until L5_113 == "]"
+  return L4_112, L2_110
+end
+function Decoder.parse_object(A0_114, A1_115)
+  local L2_116, L3_117, L4_118, L5_119
+  L3_117 = A1_115
+  L2_116 = A1_115.sub
+  L4_118 = 2
+  L2_116 = L2_116(L3_117, L4_118)
+  A1_115 = L2_116
+  L2_116 = {}
+  L3_117 = nil
+  L5_119 = A0_114
+  L4_118 = A0_114.parse_delimiter
+  L5_119 = L4_118(L5_119, A1_115, "}")
+  if L5_119 then
+    return L4_118, L2_116
+  end
+  repeat
+    L4_118 = A0_114:parse_space(L4_118)
+    _UPVALUE0_(L4_118, "Unexpected EOS")
+    L4_118, L3_117 = A0_114:parse_string(L4_118)
+    L4_118, L5_119 = A0_114:parse_delimiter(L4_118, ":")
+    _UPVALUE0_(L5_119, "Separator expected")
+    L4_118, L5_119 = A0_114:dispatch(L4_118, nil, true)
+    L2_116[L3_117] = L5_119
+    L4_118, L5_119 = A0_114:parse_delimiter(L4_118, ",}")
+    _UPVALUE0_(L5_119, "Delimiter expected")
+  until L5_119 == "}"
+  return L4_118, L2_116
+end
+function Decoder.parse_delimiter(A0_120, A1_121, A2_122)
+  local L3_123
+  while true do
+    L3_123 = A0_120.fetch_atleast
+    L3_123 = L3_123(A0_120, A1_121, 1)
+    A1_121 = L3_123
+    L3_123 = A1_121.sub
+    L3_123 = L3_123(A1_121, 1, 1)
+    if L3_123:match("%s") then
+      A1_121 = A0_120:parse_space(A1_121)
+      _UPVALUE0_(A1_121, "Unexpected EOS")
+    elseif L3_123:match("[%s]" % A2_122) then
+      return A1_121:sub(2), L3_123
+    else
+      return A1_121, nil
+    end
+  end
+end
+Decoder.parsers = {
+  ["\""] = Decoder.parse_string,
+  ["t"] = Decoder.parse_true,
+  ["f"] = Decoder.parse_false,
+  ["n"] = Decoder.parse_null,
+  ["["] = Decoder.parse_array,
+  ["{"] = Decoder.parse_object
+}
+ActiveDecoder = L0_0.class(Decoder)
+function ActiveDecoder.__init__(A0_124, A1_125, A2_126)
+  Decoder.__init__(A0_124, A2_126)
+  A0_124.source = A1_125
+  A0_124.chunk = nil
+  _UPVALUE0_(A0_124).__call = A0_124.get
+end
+function ActiveDecoder.get(A0_127)
+  local L1_128, L2_129, L3_130
+  if not A0_127.chunk then
+    L1_128, L2_129 = A0_127.source()
+  else
+    L1_128 = A0_127.chunk
+  end
+  A0_127.chunk, L3_130 = A0_127:dispatch(L1_128, L2_129, true)
+  return L3_130
+end
+function ActiveDecoder.fetch(A0_131)
+  local L1_132, L2_133
+  L1_132 = A0_131.source
+  L2_133 = L1_132()
+  _UPVALUE0_(L1_132 or not L2_133, L2_133)
+  return L1_132
+end

@@ -1,0 +1,387 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQExtendWifi", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.XQLog")
+function write_t_v(A0_1, A1_2)
+  local L2_3
+  L2_3 = type
+  L2_3 = L2_3(A0_1)
+  if L2_3 ~= "string" or A0_1 == nil then
+    return
+  end
+  L2_3 = type
+  L2_3 = L2_3(A1_2)
+  if L2_3 ~= "string" or A1_2 == nil then
+    return
+  end
+  L2_3 = "echo "
+  L2_3 = L2_3 .. A0_1 .. "=" .. A1_2 .. " >>" .. _UPVALUE0_
+  os.execute(L2_3)
+  return get_val(A0_1)
+end
+function clean_type_and_val(A0_4)
+  local L1_5
+  L1_5 = type
+  L1_5 = L1_5(A0_4)
+  if L1_5 ~= "string" or A0_4 == nil then
+    return
+  end
+  L1_5 = "sed -i '/"
+  L1_5 = L1_5 .. A0_4 .. "/d' " .. _UPVALUE0_
+  os.execute(L1_5)
+  return (_UPVALUE1_(A0_4))
+end
+function get_val(A0_6)
+  if type(A0_6) ~= "string" or A0_6 == nil then
+    print("get type error type:" .. type(A0_6) .. "type:" .. A0_6)
+    return
+  end
+  print("will get type")
+  return _UPVALUE0_(A0_6)
+end
+function get_peer_ip()
+  return get_val("peer_ip")
+end
+function get_self_ip()
+  return get_val("self_ip")
+end
+function get_self_ifname()
+  return get_val("self_ifname")
+end
+function get_peer_ifname()
+  return get_val("peer_ifname")
+end
+function get_token()
+  return get_val("token")
+end
+function set_token(A0_7)
+  return write_t_v("token", A0_7)
+end
+function getLanEth()
+  return require("luci.model.network").init():get_network("lan"):get_option_value("ifname")
+end
+function landown()
+  local L0_8
+  L0_8 = "ifconfig "
+  L0_8 = L0_8 .. getLanEth() .. " down"
+  os.execute(L0_8)
+  _UPVALUE0_.log(1, "run cmd:" .. L0_8)
+end
+function lanup()
+  local L0_9
+  L0_9 = "ifconfig "
+  L0_9 = L0_9 .. getLanEth() .. " up"
+  os.execute(L0_9)
+  _UPVALUE0_.log(1, "run cmd:" .. L0_9)
+end
+function oneClickGetRemoteTokenForLua(A0_10, A1_11, A2_12)
+  local L3_13, L4_14, L5_15, L6_16
+  L3_13 = require
+  L4_14 = "xiaoqiang.XQLog"
+  L3_13 = L3_13(L4_14)
+  L4_14 = require
+  L5_15 = "xiaoqiang.common.XQFunction"
+  L4_14 = L4_14(L5_15)
+  L5_15 = {}
+  L5_15.code = 0
+  L6_16 = L4_14.isStrNil
+  L6_16 = L6_16(A0_10)
+  if not L6_16 then
+    L6_16 = L4_14.isStrNil
+    L6_16 = L6_16(A1_11)
+    if not L6_16 then
+      L6_16 = L4_14.isStrNil
+      L6_16 = L6_16(A2_12)
+    end
+  elseif L6_16 then
+    L5_15.code = 1636
+    return L5_15
+  end
+  L6_16 = clean_type_and_val
+  L6_16("token")
+  L6_16 = get_peer_ip
+  L6_16 = L6_16()
+  if L6_16 == nil or L6_16 == "" then
+    L5_15.code = 1639
+    L3_13.log(1, "func(oneClickGetRemoteTokenForLua),get peer ip error")
+    return L5_15
+  end
+  res = get_remote_token(L6_16, A0_10, A1_11, A2_12)
+  if res.code ~= 0 then
+    return res
+  end
+  set_token(res.result)
+  L5_15.token = res.result
+  return L5_15
+end
+function ExtendWifiRequestRemoteAPIForLua(A0_17, A1_18, A2_19)
+  local L3_20, L4_21, L5_22, L6_23
+  L3_20 = require
+  L4_21 = "xiaoqiang.XQLog"
+  L3_20 = L3_20(L4_21)
+  L4_21 = {}
+  L4_21.code = 0
+  if A1_18 == "" or A1_18 == nil then
+    A1_18 = "0"
+  end
+  L5_22 = params_st
+  if L5_22 ~= nil then
+    L5_22 = L3_20.log
+    L6_23 = 1
+    L5_22(L6_23, "func(exten),get api_str" .. A0_17 .. " params_str:" .. A2_19)
+  else
+    L5_22 = L3_20.log
+    L6_23 = 1
+    L5_22(L6_23, "func(exten),get api_str" .. A0_17)
+  end
+  if A0_17 ~= nil and A0_17 ~= "" then
+    L5_22 = type
+    L6_23 = A0_17
+    L5_22 = L5_22(L6_23)
+  elseif L5_22 ~= "string" then
+    L4_21.code = 1636
+    return L4_21
+  end
+  if A1_18 ~= "1" and A1_18 ~= "0" then
+    L4_21.code = 1639
+    L5_22 = L3_20.log
+    L6_23 = 1
+    L5_22(L6_23, "func(ExtendWifiRequestRemoteAPIForLua),need_token error")
+    return L4_21
+  end
+  L5_22 = get_peer_ip
+  L5_22 = L5_22()
+  if L5_22 ~= "" then
+    L5_22 = get_peer_ip
+    L5_22 = L5_22()
+  elseif L5_22 == nil then
+    L4_21.code = 1639
+    L5_22 = L3_20.log
+    L6_23 = 1
+    L5_22(L6_23, "func(ExtendWifiRequestRemoteAPIForLua),get peer ip error")
+    return L4_21
+  end
+  L5_22 = get_token
+  L5_22 = L5_22()
+  if A1_18 == "1" and (L5_22 == "" or L5_22 == nil) then
+    L4_21.code = 1639
+    L6_23 = L3_20.log
+    L6_23(1, "func(ExtendWifiRequestRemoteAPIForLua),get token error")
+    return L4_21
+  end
+  if A1_18 == "1" then
+    L6_23 = L3_20.log
+    L6_23(1, "get remote_ip" .. get_peer_ip() .. " get token:" .. L5_22)
+  else
+    L6_23 = L3_20.log
+    L6_23(1, "get remote_ip" .. get_peer_ip() .. " do not need token")
+    L5_22 = ""
+  end
+  L6_23 = nil
+  L6_23 = ExtenWifiRequestRemoteAPI_(get_peer_ip(), A0_17, L5_22, A2_19)
+  if L6_23.code ~= 0 then
+    L4_21.code = L6_23.code
+    L4_21.msg = L6_23.msg
+  else
+    L4_21.code = 0
+    L4_21.msg = L6_23.msg
+  end
+  L3_20.log(1, "func(ExtendWifiRequestRemoteAPIForLua).result.msg" .. L4_21.msg)
+  return L4_21
+end
+function ExtendWifiSetSynDirForLua(A0_24, A1_25)
+  local L2_26, L3_27
+  L2_26 = require
+  L3_27 = "xiaoqiang.XQLog"
+  L2_26 = L2_26(L3_27)
+  L3_27 = {}
+  L3_27.code = 0
+  if A1_25 == "" or A1_25 == nil then
+    L3_27.code = 1612
+    return L3_27
+  end
+  if type(A1_25) ~= "string" then
+    L3_27.code = 1636
+    return L3_27
+  end
+  if A0_24 == "" or A0_24 == nil then
+    L3_27.code = 1612
+    return L3_27
+  end
+  if type(A0_24) ~= "string" then
+    L3_27.code = 1636
+    return L3_27
+  end
+  if A0_24 ~= "1" and A0_24 ~= "2" then
+    L3_27.code = 1636
+    return L3_27
+  end
+  L3_27 = ExtendWifiCallNewRouterDataCenterAPI(A0_24, 118, A1_25)
+  return L3_27
+end
+function ExtendWifiCallNewRouterDataCenterAPI(A0_28, A1_29)
+  if A1_29 == "" or A1_29 == nil then
+    ({code = 0}).code = 1612
+    return {code = 0}
+  end
+  if type(A1_29) ~= "string" then
+    ({code = 0}).code = 1636
+    return {code = 0}
+  end
+  if A0_28 == nil or A0_28 == "" then
+    ({code = 0}).code = 1612
+    return {code = 0}
+  end
+  if A0_28 ~= "1" and A0_28 ~= "2" then
+    ({code = 0}).code = 1636
+    return {code = 0}
+  end
+  if A0_28 == "1" then
+    return (ExtendWifiCallPeerDataCenterAPI(A1_29))
+  else
+    return {
+      code = 0,
+      msg = ExtendWifiCallSelfDataCenterAPI(A1_29)
+    }
+  end
+end
+function ExtenWifiRequestRemoteAPI_(A0_30, A1_31, A2_32, A3_33)
+  local L4_34, L5_35, L6_36, L7_37
+  L4_34 = require
+  L5_35 = "xiaoqiang.util.XQHttpUtil"
+  L4_34 = L4_34(L5_35)
+  L5_35 = require
+  L6_36 = "xiaoqiang.XQLog"
+  L5_35 = L5_35(L6_36)
+  L6_36 = {}
+  L6_36.code = 0
+  L7_37 = nil
+  if type(A0_30) ~= "string" or A0_30 == nil or type(A1_31) ~= "string" or A1_31 == nil then
+    return
+  end
+  if A2_32 == "" or A2_32 == nil then
+    L7_37 = "http://" .. A0_30 .. "/cgi-bin/luci" .. A1_31
+  else
+    L7_37 = "http://" .. A0_30 .. "/cgi-bin/luci/;stok=" .. A2_32 .. A1_31
+  end
+  if A3_33 ~= nil then
+    L5_35.log(1, "func(ExtenWifiRequestRemoteAPI_),url:" .. L7_37 .. " params:" .. A3_33)
+  else
+    L5_35.log(1, "func(ExtenWifiRequestRemoteAPI_),url:" .. L7_37)
+  end
+  if L4_34.httpGetRequest(L7_37, A3_33).code == 200 then
+    L6_36.code = 0
+    L6_36.msg = L4_34.httpGetRequest(L7_37, A3_33).res
+  else
+    L6_36.code = 1643
+    L6_36.msg = "http request error"
+  end
+  return L6_36
+end
+function ExtendWifiCallSelfDataCenterAPI(A0_38)
+  local L1_39, L2_40, L3_41, L4_42, L5_43
+  L1_39 = require
+  L2_40 = "xiaoqiang.XQLog"
+  L1_39 = L1_39(L2_40)
+  L2_40 = require
+  L3_41 = "xiaoqiang.common.XQConfigs"
+  L2_40 = L2_40(L3_41)
+  L3_41 = require
+  L4_42 = "xiaoqiang.util.XQCryptoUtil"
+  L3_41 = L3_41(L4_42)
+  L4_42 = L3_41.binaryBase64Enc
+  L5_43 = A0_38
+  L4_42 = L4_42(L5_43)
+  L5_43 = L2_40.THRIFT_TUNNEL_TO_DATACENTER
+  L5_43 = L5_43 % L4_42
+  return (require("luci.util").exec(L5_43))
+end
+function ExtendWifiCallPeerDataCenterAPI(A0_44)
+  local L1_45, L2_46
+  L1_45 = require
+  L2_46 = "xiaoqiang.XQLog"
+  L1_45 = L1_45(L2_46)
+  L2_46 = "payload="
+  L2_46 = L2_46 .. A0_44
+  L1_45.log(1, "func(ExtendWifiCallPeerDataCenterAPI)return " .. ExtendWifiRequestRemoteAPIForLua("/api/xqdatacenter/request", "1", L2_46).code)
+  return (ExtendWifiRequestRemoteAPIForLua("/api/xqdatacenter/request", "1", L2_46))
+end
+function ExtendWifiCallOldRouterDataCenterAPI(A0_47, A1_48)
+  local L2_49, L3_50
+  L2_49 = require
+  L3_50 = "xiaoqiang.XQLog"
+  L2_49 = L2_49(L3_50)
+  L3_50 = {}
+  L3_50.code = 0
+  if A1_48 == nil or A1_48 == "" then
+    L3_50.code = 1612
+    return L3_50
+  end
+  if type(A1_48) ~= "string" then
+    L3_50.code = 1636
+    return L3_50
+  end
+  if A0_47 == nil or A0_47 == "" then
+    L3_50.code = 1612
+    return L3_50
+  end
+  if A0_47 ~= "1" and A0_47 ~= "2" then
+    L3_50.code = 1636
+    return L3_50
+  end
+  if A0_47 == "1" then
+    L3_50 = {
+      code = 0,
+      msg = ExtendWifiCallSelfDataCenterAPI(A1_48)
+    }
+    return L3_50
+  else
+    return (ExtendWifiCallPeerDataCenterAPI(A1_48))
+  end
+end
+function get_remote_token(A0_51, A1_52, A2_53, A3_54)
+  local L4_55, L5_56, L6_57, L7_58, L8_59, L9_60, L10_61
+  L4_55 = require
+  L5_56 = "xiaoqiang.XQLog"
+  L4_55 = L4_55(L5_56)
+  L5_56 = require
+  L6_57 = "xiaoqiang.util.XQHttpUtil"
+  L5_56 = L5_56(L6_57)
+  L6_57 = require
+  L7_58 = "xiaoqiang.util.XQNetUtil"
+  L6_57 = L6_57(L7_58)
+  L7_58 = {}
+  L7_58.code = 0
+  L8_59 = "http://"
+  L9_60 = A0_51
+  L10_61 = "/cgi-bin/luci/api/xqsystem/token"
+  L8_59 = L8_59 .. L9_60 .. L10_61
+  L9_60 = {
+    L10_61,
+    {"password", A2_53},
+    {"nonce", A3_54}
+  }
+  L10_61 = {"username", A1_52}
+  L10_61 = ""
+  table.foreach(L9_60, function(A0_62, A1_63)
+    _UPVALUE0_ = _UPVALUE0_ .. A1_63[1] .. "=" .. A1_63[2] .. "&"
+  end)
+  L4_55.log(1, "func(get_remote_token),http request: " .. L8_59 .. "?" .. string.sub(L10_61, 1, 4294967294))
+  if L5_56.httpGetRequest(L8_59, string.sub(L10_61, 1, 4294967294)).code == 200 then
+    if require("cjson").decode(L5_56.httpGetRequest(L8_59, string.sub(L10_61, 1, 4294967294)).res).code == 0 then
+      L7_58.code = 0
+      L7_58.result = require("cjson").decode(L5_56.httpGetRequest(L8_59, string.sub(L10_61, 1, 4294967294)).res).token
+    elseif require("cjson").decode(L5_56.httpGetRequest(L8_59, string.sub(L10_61, 1, 4294967294)).res).code == 401 then
+      L7_58.code = 1653
+    elseif require("cjson").decode(L5_56.httpGetRequest(L8_59, string.sub(L10_61, 1, 4294967294)).res).code == 1582 then
+      L7_58.code = 1654
+    else
+      L7_58.code = 1639
+    end
+  else
+    L7_58.code = 1643
+  end
+  L4_55.log(1, "get remote token return code:" .. L7_58.code)
+  return L7_58
+end

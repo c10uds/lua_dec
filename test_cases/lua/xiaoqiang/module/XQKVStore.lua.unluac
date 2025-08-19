@@ -1,0 +1,85 @@
+module("xiaoqiang.module.XQKVStore", package.seeall)
+function getRouterKV()
+  local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20
+  L0_0 = require
+  L1_1 = "xiaoqiang.common.XQFunction"
+  L0_0 = L0_0(L1_1)
+  L1_1 = require
+  L2_2 = "xiaoqiang.util.XQPushUtil"
+  L1_1 = L1_1(L2_2)
+  L2_2 = require
+  L3_3 = "xiaoqiang.util.XQSysUtil"
+  L2_2 = L2_2(L3_3)
+  L3_3 = require
+  L4_4 = "xiaoqiang.util.XQWifiUtil"
+  L3_3 = L3_3(L4_4)
+  L4_4 = require
+  L5_5 = "xiaoqiang.util.XQDeviceUtil"
+  L4_4 = L4_4(L5_5)
+  L5_5 = require
+  L6_6 = "xiaoqiang.util.XQLanWanUtil"
+  L5_5 = L5_5(L6_6)
+  L6_6 = require
+  L7_7 = "xiaoqiang.util.XQQoSUtil"
+  L6_6 = L6_6(L7_7)
+  L7_7 = require
+  L8_8 = "xiaoqiang.module.XQVASModule"
+  L7_7 = L7_7(L8_8)
+  L8_8 = require
+  L9_9 = "xiaoqiang.module.XQPredownload"
+  L8_8 = L8_8(L9_9)
+  L9_9 = L0_0.getNetModeType
+  L9_9 = L9_9()
+  L10_10 = L3_3.apcli_get_active_type
+  L10_10 = L10_10()
+  if L9_9 == 0 then
+    L11_11 = L6_6.qosHistory
+    L12_12 = L4_4.getDeviceMacsFromDB
+    L20_20 = L12_12()
+    L11_11 = L11_11(L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20, L12_12())
+  else
+    L11_11 = L11_11 or {}
+  end
+  L12_12 = L1_1.pushSettings
+  L12_12 = L12_12()
+  L13_13 = L4_4.devicesInfo
+  L13_13 = L13_13()
+  L14_14 = L3_3.getWifiBssid
+  L15_15 = L14_14()
+  L16_16 = L3_3.getGuestWifiBssid
+  L16_16 = L16_16()
+  L17_17 = L3_3.getWifissid
+  L18_18 = L17_17()
+  L19_19 = L3_3.getWiFiMacfilterModel
+  L19_19 = L19_19()
+  L19_19 = L19_19 - 1
+  L20_20 = L7_7.get_vas_kv_info
+  L20_20 = L20_20()
+  if L20_20 then
+    for _FORV_24_, _FORV_25_ in pairs(L20_20) do
+      L13_13[_FORV_24_] = _FORV_25_
+    end
+  end
+  L11_11.guest = L6_6.guestQoSInfo()
+  if L19_19 < 0 then
+    L19_19 = 0
+  end
+  L13_13.router_name = L2_2.getRouterName()
+  L13_13.plugin_id_list = L2_2.getPluginIdList()
+  L13_13.router_locale = tostring(L2_2.getRouterLocale())
+  L13_13.work_mode = tostring(L9_9)
+  L13_13.active_apcli_mode = tostring(L10_10)
+  L13_13.ap_lan_ip = L5_5.getLanIp()
+  L13_13.bssid_24G = L14_14 or ""
+  L13_13.bssid_5G = L15_15 or ""
+  L13_13.bssid_guest = L16_16 or ""
+  L13_13.ssid_24G = L17_17 or ""
+  L13_13.ssid_5G = L18_18 or ""
+  L13_13.bssid_lan = L5_5.getLanWanInfo("lan").mac
+  L13_13.protection_enabled = L12_12.auth and "1" or "0"
+  L13_13.protection_mode = tostring(L19_19)
+  L13_13.qos_info = L11_11
+  L13_13.auto_ota_rom = tostring(L8_8.predownloadInfo().auto)
+  L13_13.auto_ota_plugin = tostring(L8_8.predownloadInfo().plugin)
+  return L13_13
+end

@@ -1,0 +1,9 @@
+module("luci.controller.api.index", package.seeall)
+function index()
+  node("api").target = firstchild()
+  node("api").title = _("")
+  node("api").order = 10
+  node("api").sysauth = "admin"
+  node("api").sysauth_authenticator = "jsonauth"
+  node("api").index = true
+end

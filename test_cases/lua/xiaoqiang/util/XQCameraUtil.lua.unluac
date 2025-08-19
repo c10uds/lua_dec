@@ -1,0 +1,504 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10
+L0_0 = module
+L1_1 = "xiaoqiang.util.XQCameraUtil"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "luci.http.protocol"
+L0_0 = L0_0(L1_1)
+L1_1 = L0_0.urlencode
+L2_2 = require
+L3_3 = "xiaoqiang.XQLog"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "xiaoqiang.util.XQDeviceUtil"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "xiaoqiang.common.XQFunction"
+L4_4 = L4_4(L5_5)
+L5_5 = require
+L6_6 = "xiaoqiang.util.XQHttpUtil"
+L5_5 = L5_5(L6_6)
+L6_6 = require
+L7_7 = "json"
+L6_6 = L6_6(L7_7)
+L7_7 = require
+L8_8 = "luci.util"
+L7_7 = L7_7(L8_8)
+L8_8 = require
+L9_9 = "luci.fs"
+L8_8 = L8_8(L9_9)
+L9_9 = "/\230\145\132\229\131\143\230\156\186\231\155\145\230\142\167\232\167\134\233\162\145"
+L10_10 = "http://%s/sd/record/"
+function set_ANTS_HTTP_BASE_MAIN()
+  local L1_11
+  L1_11 = _UPVALUE1_
+  _UPVALUE0_ = L1_11
+end
+function set_ANTS_HTTP_BASE_SUB()
+  local L1_12
+  L1_12 = _UPVALUE1_
+  _UPVALUE0_ = L1_12
+end
+;({}).enable = "no"
+;({}).hd = "yes"
+;({}).days = 7
+function chmod777(A0_13)
+  _UPVALUE0_.exec(("/bin/chmod 777 %s"):format(A0_13))
+end
+function chmod777R(A0_14)
+  _UPVALUE0_.exec(("/bin/chmod -R 777 %s"):format(A0_14))
+end
+function set_base(A0_15)
+  local L1_16
+  _UPVALUE0_ = A0_15
+end
+function reset_base()
+  _UPVALUE0_ = _UPVALUE1_:get("misc", "hardware", "camera")
+end
+function set_token(A0_17)
+  local L1_18
+  _UPVALUE0_ = A0_17
+end
+function reset_token(A0_19)
+  _UPVALUE0_ = ""
+end
+function getModel()
+  local L0_20, L1_21
+  L0_20 = _UPVALUE0_
+  return L0_20
+end
+function getCurrentDisk()
+  if _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}") and _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}").code == 0 then
+    return math.floor(tonumber(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}").free) / 1048576)
+  else
+    return 0
+  end
+end
+function getCurrentDisk1()
+  if _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}") and _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}").code == 0 then
+    return (_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":26}"))
+  else
+    return nil
+  end
+end
+function checkPathExists()
+  if _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":17}").code == 0 then
+    for _FORV_6_, _FORV_7_ in pairs(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":17}").allpath) do
+      if _FORV_7_.path == _UPVALUE1_ then
+        _UPVALUE2_.log(2, "XQCameraUtil:dir ok : " .. _UPVALUE1_)
+        return _UPVALUE1_
+      end
+      if 0 < tonumber(_FORV_7_.available) then
+        max_capa = tonumber(_FORV_7_.available)
+      end
+    end
+    _UPVALUE1_ = _FORV_7_.path
+    _UPVALUE2_.log(2, "XQCameraUtil:dir checked : " .. _UPVALUE1_)
+  end
+  chmod777R(_UPVALUE1_ .. _UPVALUE3_)
+end
+function getUid(A0_22)
+  _, _, uid = A0_22:find("%w+-%w+-(%w+)-?%w*")
+  return uid
+end
+function getpwd(A0_23)
+  _, _, pwd = A0_23:find("%w+-%w+-%w+-?(%w*)")
+  return pwd
+end
+function getConfig(A0_24)
+  local L1_25
+  L1_25 = getUid
+  L1_25 = L1_25(A0_24)
+  if not _UPVALUE0_.access("/etc/config/record_camera") then
+    _UPVALUE0_.writefile("/etc/config/record_camera", "")
+  end
+  if not _UPVALUE1_:cursor():get_all(_UPVALUE2_, L1_25) then
+    return _UPVALUE3_
+  else
+    _UPVALUE1_:cursor():get_all(_UPVALUE2_, L1_25).days = tonumber(_UPVALUE1_:cursor():get_all(_UPVALUE2_, L1_25).days)
+    return (_UPVALUE1_:cursor():get_all(_UPVALUE2_, L1_25))
+  end
+end
+function setConfig(A0_26, A1_27)
+  local L2_28
+  L2_28 = getUid
+  L2_28 = L2_28(A0_26)
+  _UPVALUE0_:cursor():section(_UPVALUE1_, "camera", L2_28, A1_27)
+  _UPVALUE0_:cursor():save(_UPVALUE1_)
+  _UPVALUE0_:cursor():commit(_UPVALUE1_)
+end
+function getDay(A0_29)
+  local L1_30, L2_31
+  L1_30 = tonumber
+  L2_31 = A0_29
+  L1_30 = L1_30(L2_31)
+  L1_30 = L1_30 * 24
+  L1_30 = L1_30 * 60
+  L1_30 = L1_30 * 60
+  if L1_30 < 86400 then
+    L1_30 = 86400
+  end
+  L2_31 = "/bin/date  \"+%Y-%m-%d %H:%M\" -D %s -d $(( $(/bin/date +%s) - "
+  L2_31 = L2_31 .. L1_30 .. " )) "
+  _, _ = _UPVALUE0_.exec(L2_31):find("(%d+)-(%d+)-(%d+)%s+(%d+):(%d+)")
+  ;({
+    min = _UPVALUE0_.exec(L2_31):find("(%d+)-(%d+)-(%d+)%s+(%d+):(%d+)")
+  }).sec = "00"
+  return {
+    min = _UPVALUE0_.exec(L2_31):find("(%d+)-(%d+)-(%d+)%s+(%d+):(%d+)")
+  }
+end
+function getCurrentPID()
+  local L0_32, L1_33
+  L0_32 = _UPVALUE0_
+  L0_32 = L0_32.readfile
+  L1_33 = "/proc/self/stat"
+  L0_32 = L0_32(L1_33)
+  L1_33 = ""
+  if L0_32 then
+    _, _, L1_33 = L0_32:find("^(%d+)%s.+")
+  end
+  return L1_33
+end
+function isRunning(A0_34)
+  local L1_35
+  L1_35 = _UPVALUE0_
+  L1_35 = L1_35.readfile
+  L1_35 = L1_35("/tmp/record_camera_" .. A0_34 .. ".PID")
+  if L1_35 then
+    return _UPVALUE0_.access("/proc/" .. L1_35)
+  end
+  return false
+end
+function writePID(A0_36)
+  local L1_37
+  L1_37 = getCurrentPID
+  L1_37 = L1_37()
+  if L1_37 then
+    _UPVALUE0_.writefile("/tmp/record_camera_" .. A0_36 .. ".PID", L1_37)
+  end
+end
+function getAntsCams()
+  local L0_38, L1_39, L2_40, L3_41, L4_42, L5_43, L6_44
+  L0_38 = {}
+  L1_39 = _UPVALUE0_
+  L1_39 = L1_39.getDeviceList
+  L1_39 = L1_39(L2_40, L3_41)
+  for L5_43, L6_44 in L2_40(L3_41) do
+    if L6_44.ptype == 6 then
+      table.insert(L0_38, L6_44)
+    end
+  end
+  return L0_38
+end
+function getFilesOnCam(A0_45, A1_46)
+  local L2_47, L3_48, L4_49, L5_50, L6_51, L7_52, L8_53, L9_54, L10_55, L11_56, L12_57, L13_58, L14_59, L15_60, L16_61, L17_62, L18_63
+  L2_47 = {}
+  L3_48 = _UPVALUE0_
+  L4_49 = L3_48
+  L3_48 = L3_48.format
+  L5_50 = A0_45.ip
+  L3_48 = L3_48(L4_49, L5_50)
+  L4_49 = _UPVALUE1_
+  L4_49 = L4_49.httpGetRequest
+  L5_50 = L3_48
+  L5_50 = L5_50 .. L6_51 .. L7_52
+  L4_49 = L4_49(L5_50)
+  L5_50 = L4_49.code
+  if L5_50 == 200 then
+    L5_50 = string
+    L5_50 = L5_50.gmatch
+    L5_50 = L5_50(L6_51, L7_52)
+    for L9_54 in L5_50, nil, nil do
+      L11_56 = L9_54
+      L10_55 = L9_54.find
+      L12_57 = "(%d+)Y(%d+)M(%d+)D(%d+)H"
+      L13_58 = L10_55(L11_56, L12_57)
+      hh = L15_60
+      dd = L14_59
+      mm = L13_58
+      yy = L12_57
+      _ = L11_56
+      _ = L10_55
+      L10_55 = yy
+      L11_56 = mm
+      L12_57 = dd
+      L13_58 = hh
+      L10_55 = L10_55 .. L11_56 .. L12_57 .. L13_58
+      L11_56 = A1_46.year
+      L12_57 = A1_46.month
+      L13_58 = A1_46.day
+      L11_56 = L11_56 .. L12_57 .. L13_58 .. L14_59
+      if L10_55 > L11_56 then
+        L12_57 = _UPVALUE1_
+        L12_57 = L12_57.httpGetRequest
+        L13_58 = L3_48
+        L17_62 = getpwd
+        L18_63 = A0_45.origin_name
+        L17_62 = L17_62(L18_63)
+        L13_58 = L13_58 .. L14_59 .. L15_60 .. L16_61 .. L17_62
+        L12_57 = L12_57(L13_58)
+        L13_58 = L12_57.code
+        if L13_58 == 200 then
+          L13_58 = string
+          L13_58 = L13_58.gmatch
+          L13_58 = L13_58(L14_59, L15_60)
+          for L17_62 in L13_58, nil, nil do
+            L18_63 = {}
+            _, _, L18_63.year, L18_63.month, L18_63.day, L18_63.hour = L9_54:find("(%d+)Y(%d+)M(%d+)D(%d+)H")
+            _, _, L18_63.min, L18_63.sec, L18_63.size = L17_62:find("<A HREF=\"(%d+)M(%d+)S%.mp4\".+%s+(%d+)")
+            if L18_63.min and L18_63.sec and L18_63.size then
+              L18_63.url = L3_48 .. L9_54 .. "/" .. L18_63.min .. "M" .. L18_63.sec .. "S.mp4"
+              L18_63.pwd = getpwd(A0_45.origin_name)
+              L18_63.size = tonumber(L18_63.size)
+              L18_63.dir_name = A0_45.name .. "_" .. A0_45.mac:gsub(":", "")
+              table.insert(L2_47, L18_63)
+            end
+          end
+        end
+      end
+    end
+  end
+  return L2_47
+end
+function listlocaldir(A0_64)
+  local L1_65, L2_66, L3_67, L4_68, L5_69, L6_70, L7_71
+  L1_65 = {}
+  L2_66 = _UPVALUE0_
+  L2_66 = L2_66.dir
+  L2_66 = L2_66(L3_67)
+  if L2_66 then
+    for L6_70, L7_71 in L3_67(L4_68) do
+      if L7_71 ~= "." and L7_71 ~= ".." then
+        table.insert(L1_65, L7_71)
+      end
+    end
+  end
+  return L1_65
+end
+function walkCamFilesOnRouter(A0_72, A1_73, A2_74)
+  local L3_75, L4_76, L5_77, L6_78, L7_79, L8_80, L9_81, L10_82, L11_83, L12_84, L13_85, L14_86, L15_87, L16_88, L17_89, L18_90, L19_91, L20_92, L21_93
+  L3_75 = listlocaldir
+  L3_75 = L3_75(L4_76)
+  if L3_75 then
+    if L4_76 > 0 then
+      for L7_79, L8_80 in L4_76(L5_77) do
+        L9_81 = listlocaldir
+        L13_85 = L8_80
+        L9_81 = L9_81(L10_82)
+        if L9_81 then
+          if L10_82 > 0 then
+            for L13_85, L14_86 in L10_82(L11_83) do
+              L15_87 = listlocaldir
+              L19_91 = L8_80
+              L20_92 = "/"
+              L21_93 = L14_86
+              L15_87 = L15_87(L16_88)
+              if L15_87 then
+                if L16_88 > 0 then
+                  for L19_91, L20_92 in L16_88(L17_89) do
+                    L21_93 = {}
+                    L21_93.file = "/" .. A0_72 .. "/" .. L8_80 .. "/" .. L14_86 .. "/" .. L20_92
+                    L19_91, L19_91, L21_93.dir_name, L21_93.year, L21_93.month, L21_93.day, L21_93.hour, L21_93.min, L21_93.sec = L21_93.file:find("/(%S+)/(%d+)\229\185\180(%d+)\230\156\136(%d+)\230\151\165/(%d+)\230\151\182/(%d+)\229\136\134(%d+)\231\167\146.mp4")
+                    if _UPVALUE0_.access(_UPVALUE1_ .. _UPVALUE2_ .. L21_93.file) then
+                      L21_93.size = _UPVALUE0_.stat(_UPVALUE1_ .. _UPVALUE2_ .. L21_93.file).size
+                      A1_73(L21_93, A2_74)
+                    end
+                  end
+                end
+              else
+                L19_91 = "/"
+                L20_92 = A0_72
+                L21_93 = "/"
+                L16_88(L17_89)
+                L19_91 = "/"
+                L20_92 = A0_72
+                L21_93 = "/"
+                L16_88(L17_89, L18_90)
+              end
+            end
+          end
+        else
+          L13_85 = "/"
+          L14_86 = A0_72
+          L15_87 = "/"
+          L10_82(L11_83)
+          L13_85 = "/"
+          L14_86 = A0_72
+          L15_87 = "/"
+          L10_82(L11_83, L12_84)
+        end
+      end
+    end
+  end
+end
+function hasFile(A0_94)
+  local L1_95, L2_96
+  L1_95 = "%s%s/%s/%s\229\185\180%s\230\156\136%s\230\151\165/%s\230\151\182/%s\229\136\134%s\231\167\146.mp4"
+  L2_96 = L1_95.format
+  L2_96 = L2_96(L1_95, _UPVALUE0_, _UPVALUE1_, A0_94.dir_name, A0_94.year, A0_94.month, A0_94.day, A0_94.hour, A0_94.min, A0_94.sec)
+  if _UPVALUE2_.access(L2_96) and A0_94.size == _UPVALUE2_.stat(L2_96).size then
+    _UPVALUE3_.log(2, "XQCameraUtil:already download: " .. L2_96)
+    return true
+  end
+  return false
+end
+function mergeFiles(A0_97)
+  local L1_98, L2_99, L3_100, L4_101, L5_102, L6_103
+  L1_98 = {}
+  for L5_102, L6_103 in L2_99(L3_100) do
+    if not hasFile(L6_103) then
+      table.insert(L1_98, L6_103)
+    end
+  end
+  return L1_98
+end
+function _fnDoDelete(A0_104, A1_105)
+  if A0_104.year and A0_104.month and A0_104.day and A0_104.hour and A0_104.year .. A0_104.month .. A0_104.day .. A0_104.hour < A1_105.year .. A1_105.month .. A1_105.day .. A1_105.hour then
+    _UPVALUE0_.log(2, "XQCameraUtil:delete: " .. A0_104.file)
+    _UPVALUE1_.unlink(_UPVALUE2_ .. _UPVALUE3_ .. A0_104.file)
+  end
+end
+function doDelete(A0_106, A1_107)
+  walkCamFilesOnRouter(A0_106, _fnDoDelete, A1_107)
+end
+function doDownload(A0_108)
+  local L1_109, L2_110, L3_111
+  L1_109 = "/usr/bin/curl '%s' -o '%s' --create-dirs --connect-timeout 3 -sS"
+  L2_110 = "%s%s/%s/%s\229\185\180%s\230\156\136%s\230\151\165/%s\230\151\182/%s\229\136\134%s\231\167\146.mp4"
+  L3_111 = L2_110.format
+  L3_111 = L3_111(L2_110, _UPVALUE0_, _UPVALUE1_, A0_108.dir_name, A0_108.year, A0_108.month, A0_108.day, A0_108.hour, A0_108.min, A0_108.sec)
+  _UPVALUE2_.log(2, "XQCameraUtil:downloading: " .. A0_108.url .. "?pwd=" .. A0_108.pwd .. " to " .. L3_111)
+  if string.find(A0_108.url, "'") or string.find(A0_108.pwd, "'") or string.find(L3_111, "'") then
+    return
+  end
+  _UPVALUE3_.exec(L1_109:format(A0_108.url .. "?pwd=" .. A0_108.pwd, L3_111))
+  if _UPVALUE4_.access(L3_111) then
+    if A0_108.size ~= _UPVALUE4_.stat(L3_111).size then
+      _UPVALUE2_.log(2, "XQCameraUtil:download error: expect " .. A0_108.size .. " ,got " .. _UPVALUE4_.stat(L3_111).size)
+      _UPVALUE4_.unlink(L3_111)
+    else
+      _UPVALUE4_.writefile(_UPVALUE5_, ("%s\229\185\180%s\230\156\136%s\230\151\165%s\230\151\182%s\229\136\134"):format(A0_108.year, A0_108.month, A0_108.day, A0_108.hour, A0_108.min))
+      chmod777(L3_111)
+    end
+  end
+end
+function getAll(A0_112)
+  local L1_113, L2_114, L3_115, L4_116, L5_117, L6_118
+  if not A0_112 then
+    L1_113 = _UPVALUE0_
+    return L1_113
+  end
+  L1_113 = {}
+  L2_114 = getConfig
+  L3_115 = A0_112
+  L2_114 = L2_114(L3_115)
+  L1_113.config = L2_114
+  L3_115 = isRunning
+  L4_116 = "main"
+  L3_115 = L3_115(L4_116)
+  if L3_115 then
+    L1_113.isRunning = "yes"
+  else
+    L1_113.isRunning = "no"
+  end
+  L3_115 = getCurrentDisk1
+  L3_115 = L3_115()
+  if L3_115 ~= nil then
+    L4_116 = math
+    L4_116 = L4_116.floor
+    L5_117 = tonumber
+    L6_118 = L3_115.free
+    L5_117 = L5_117(L6_118)
+    L5_117 = L5_117 / 1048576
+    L4_116 = L4_116(L5_117)
+    L1_113.space = L4_116
+    L4_116 = math
+    L4_116 = L4_116.floor
+    L5_117 = tonumber
+    L6_118 = L3_115.capacity
+    L5_117 = L5_117(L6_118)
+    L5_117 = L5_117 / 1048576
+    L4_116 = L4_116(L5_117)
+    L1_113.total = L4_116
+  end
+  L1_113.code = 0
+  L4_116 = _UPVALUE1_
+  L4_116 = L4_116.access
+  L5_117 = _UPVALUE2_
+  L4_116 = L4_116(L5_117)
+  if L4_116 then
+    L4_116 = _UPVALUE1_
+    L4_116 = L4_116.readfile
+    L5_117 = _UPVALUE2_
+    L4_116 = L4_116(L5_117)
+    L1_113.file = L4_116
+  end
+  L4_116 = "%s%s/%s/"
+  L5_117 = getAntsCams
+  L5_117 = L5_117()
+  L6_118 = ""
+  for _FORV_10_, _FORV_11_ in pairs(L5_117) do
+    if _FORV_11_.origin_name == A0_112 then
+      L6_118 = _FORV_11_.name .. "_" .. _FORV_11_.mac:gsub(":", "")
+    end
+  end
+  if L2_114.custom_dir and L2_114.custom_dir ~= "" then
+    L1_113.path = L4_116:format(L2_114.custom_dir, _UPVALUE3_, L6_118)
+  else
+    L1_113.path = L4_116:format(_UPVALUE4_, _UPVALUE3_, L6_118)
+  end
+  return _UPVALUE5_.encode(L1_113)
+end
+function setAllConfig(A0_119, A1_120)
+  local L2_121
+  L2_121 = {}
+  if A1_120.enable == "yes" then
+    L2_121.enable = "yes"
+  else
+    L2_121.enable = "no"
+  end
+  if A1_120.days and tonumber(A1_120.days) > 0 then
+    L2_121.days = A1_120.days
+  else
+    L2_121.days = 1
+  end
+  if A1_120.hd == "yes" then
+    L2_121.hd = "yes"
+  else
+    L2_121.hd = "no"
+  end
+  if A1_120.custom_dir and A1_120.custom_dir ~= "" then
+    L2_121.custom_dir = A1_120.custom_dir
+  end
+  if A1_120.token and A1_120.token ~= "" then
+    L2_121.token = A1_120.token
+  end
+  if A0_119 and A0_119 ~= "" then
+    setConfig(A0_119, L2_121)
+  end
+  return _UPVALUE0_
+end
+function runNow()
+  _UPVALUE0_.forkExec("/usr/sbin/crontab_record_camera.lua")
+  return _UPVALUE1_
+end
+function request(A0_122)
+  if A0_122 == nil then
+    return _UPVALUE0_
+  end
+  if _UPVALUE1_.decode(A0_122) == nil then
+    return _UPVALUE0_
+  end
+  if _UPVALUE1_.decode(A0_122).command == "get_all" then
+    return getAll(_UPVALUE1_.decode(A0_122).did)
+  elseif _UPVALUE1_.decode(A0_122).command == "set_config" then
+    return setAllConfig(_UPVALUE1_.decode(A0_122).did, _UPVALUE1_.decode(A0_122).config)
+  elseif _UPVALUE1_.decode(A0_122).command == "run_backup" then
+    return runNow()
+  else
+    return _UPVALUE2_
+  end
+end

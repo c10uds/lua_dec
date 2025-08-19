@@ -1,0 +1,21 @@
+Lua代码恢复报告
+==================================================
+
+总文件数: 6
+成功恢复: 6
+恢复失败: 0
+
+成功恢复的文件:
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac
+  - /Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac
+
+依赖图统计:
+  total_files: 6
+  total_dependencies: 0
+  max_dependencies: 0
+  min_dependencies: 0
+  avg_dependencies: 0.0

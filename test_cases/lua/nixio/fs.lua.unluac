@@ -1,0 +1,169 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("table")
+require("nixio.util")
+module("nixio.fs", function(A0_1)
+  _UPVALUE0_(A0_1, {
+    __index = _UPVALUE1_.fs
+  })
+end)
+function readfile(A0_2, A1_3)
+  local L2_4, L3_5, L4_6, L5_7
+  L2_4 = _UPVALUE0_
+  L2_4 = L2_4.open
+  L3_5 = A0_2
+  L4_6 = "r"
+  L4_6 = L2_4(L3_5, L4_6)
+  L5_7 = nil
+  if not L2_4 then
+    return nil, L3_5, L4_6
+  end
+  L5_7, L3_5, L4_6 = L2_4:readall(A1_3)
+  L2_4:close()
+  return L5_7, L3_5, L4_6
+end
+function writefile(A0_8, A1_9)
+  local L2_10, L3_11, L4_12, L5_13
+  L2_10 = _UPVALUE0_
+  L2_10 = L2_10.open
+  L3_11 = A0_8
+  L4_12 = "w"
+  L5_13 = L2_10(L3_11, L4_12)
+  if not L2_10 then
+    return nil, L3_11, L4_12
+  end
+  L5_13, L3_11, L4_12 = L2_10:writeall(A1_9)
+  L2_10:close()
+  return L5_13, L3_11, L4_12
+end
+function datacopy(A0_14, A1_15, A2_16)
+  local L3_17, L4_18, L5_19, L6_20, L7_21, L8_22, L9_23, L10_24, L11_25, L12_26
+  L3_17 = _UPVALUE0_
+  L3_17 = L3_17.open
+  L4_18 = A0_14
+  L5_19 = "r"
+  L5_19 = L3_17(L4_18, L5_19)
+  if not L3_17 then
+    L6_20 = nil
+    L7_21 = L4_18
+    L8_22 = L5_19
+    return L6_20, L7_21, L8_22
+  end
+  L6_20 = _UPVALUE0_
+  L6_20 = L6_20.open
+  L7_21 = A1_15
+  L8_22 = "w"
+  L8_22 = L6_20(L7_21, L8_22)
+  if not L6_20 then
+    L9_23 = nil
+    L10_24 = L7_21
+    L11_25 = L8_22
+    return L9_23, L10_24, L11_25
+  end
+  L10_24 = L3_17
+  L9_23 = L3_17.copy
+  L11_25 = L6_20
+  L12_26 = A2_16
+  L12_26 = L9_23(L10_24, L11_25, L12_26)
+  L3_17:close()
+  L6_20:close()
+  return L9_23, L10_24, L11_25, L12_26
+end
+function copy(A0_27, A1_28)
+  local L2_29, L3_30, L4_31, L5_32
+  L2_29 = _UPVALUE0_
+  L2_29 = L2_29.fs
+  L2_29 = L2_29.lstat
+  L3_30 = A0_27
+  L5_32 = L2_29(L3_30)
+  if not L2_29 then
+    return nil, L3_30, L4_31
+  end
+  if L2_29.type == "dir" then
+    if _UPVALUE0_.fs.stat(A1_28, _UPVALUE1_) ~= "dir" then
+      L5_32, L3_30, L4_31 = _UPVALUE0_.fs.mkdir(A1_28)
+    else
+      L2_29 = true
+    end
+  elseif L2_29.type == "lnk" then
+    L5_32, L3_30, L4_31 = _UPVALUE0_.fs.symlink(_UPVALUE0_.fs.readlink(A0_27), A1_28)
+  elseif L2_29.type == "reg" then
+    L5_32, L3_30, L4_31 = datacopy(A0_27, A1_28)
+  end
+  if not L5_32 then
+    return nil, L3_30, L4_31
+  end
+  _UPVALUE0_.fs.utimes(A1_28, L2_29.atime, L2_29.mtime)
+  if _UPVALUE0_.fs.lchown then
+    _UPVALUE0_.fs.lchown(A1_28, L2_29.uid, L2_29.gid)
+  end
+  if L2_29.type ~= "lnk" then
+    _UPVALUE0_.fs.chmod(A1_28, L2_29.modedec)
+  end
+  return true
+end
+function move(A0_33, A1_34)
+  local L2_35, L3_36, L4_37
+  L2_35 = _UPVALUE0_
+  L2_35 = L2_35.fs
+  L2_35 = L2_35.rename
+  L3_36 = A0_33
+  L4_37 = A1_34
+  L4_37 = L2_35(L3_36, L4_37)
+  if not L2_35 and L3_36 == _UPVALUE0_.const.EXDEV then
+    L2_35, L3_36, L4_37 = copy(A0_33, A1_34)
+    if L2_35 then
+      L2_35, L3_36, L4_37 = _UPVALUE0_.fs.unlink(A0_33)
+    end
+  end
+  return L2_35, L3_36, L4_37
+end
+function mkdirr(A0_38, A1_39)
+  local L2_40, L3_41, L4_42
+  L2_40 = _UPVALUE0_
+  L2_40 = L2_40.fs
+  L2_40 = L2_40.stat
+  L3_41 = A0_38
+  L4_42 = "type"
+  L2_40 = L2_40(L3_41, L4_42)
+  if L2_40 == "dir" then
+    L2_40 = true
+    return L2_40
+  else
+    L2_40 = _UPVALUE0_
+    L2_40 = L2_40.fs
+    L2_40 = L2_40.mkdir
+    L3_41 = A0_38
+    L4_42 = A1_39
+    L4_42 = L2_40(L3_41, L4_42)
+    if not L2_40 and L3_41 == _UPVALUE0_.const.ENOENT then
+      L2_40, L3_41, L4_42 = mkdirr(_UPVALUE0_.fs.dirname(A0_38), A1_39)
+      if L2_40 then
+        L2_40, L3_41, L4_42 = _UPVALUE0_.fs.mkdir(A0_38, A1_39)
+      end
+    end
+    return L2_40, L3_41, L4_42
+  end
+end
+function copyr(A0_43, A1_44)
+  return _UPVALUE0_(copy, A0_43, A1_44)
+end
+function mover(A0_45, A1_46)
+  local L2_47, L3_48, L4_49
+  L2_47 = _UPVALUE0_
+  L2_47 = L2_47.fs
+  L2_47 = L2_47.rename
+  L3_48 = A0_45
+  L4_49 = A1_46
+  L4_49 = L2_47(L3_48, L4_49)
+  if not L2_47 and L3_48 == _UPVALUE0_.const.EXDEV then
+    L2_47, L3_48, L4_49 = _UPVALUE1_(copy, A0_45, A1_46)
+    if L2_47 then
+      L2_47, L3_48, L4_49 = _UPVALUE1_(_UPVALUE0_.fs.remove, A0_45)
+    end
+  end
+  return L2_47, L3_48, L4_49
+end
+function remover(A0_50)
+  return _UPVALUE0_(_UPVALUE1_.fs.remove, A0_50)
+end

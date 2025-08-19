@@ -1,0 +1,84 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQSecurity", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function security_status()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6
+  L0_1 = require
+  L1_2 = "luci.model.uci"
+  L0_1 = L0_1(L1_2)
+  L0_1 = L0_1.cursor
+  L0_1 = L0_1()
+  L1_2 = require
+  L2_3 = "xiaoqiang.util.XQPushUtil"
+  L1_2 = L1_2(L2_3)
+  L2_3 = tonumber
+  L4_5 = L0_1
+  L3_4 = L0_1.get
+  L5_6 = "vas"
+  L3_4 = L3_4(L4_5, L5_6, "services", "security_page")
+  L3_4 = L3_4 or 0
+  L2_3 = L2_3(L3_4)
+  L3_4 = tonumber
+  L5_6 = L0_1
+  L4_5 = L0_1.get
+  L4_5 = L4_5(L5_6, "vas_user", "services", "security_page")
+  L4_5 = L4_5 or 0
+  L3_4 = L3_4(L4_5)
+  L4_5 = tonumber
+  L5_6 = L0_1.get
+  L5_6 = L5_6(L0_1, "security", "common", "malicious_url_firewall")
+  L5_6 = L5_6 or 0
+  L4_5 = L4_5(L5_6)
+  if L3_4 ~= L4_5 and L2_3 ~= 4294967290 then
+    L5_6 = L0_1.set
+    L5_6(L0_1, "security", "common", "malicious_url_firewall", L3_4)
+    L5_6 = L0_1.commit
+    L5_6(L0_1, "security")
+    L5_6 = _UPVALUE0_
+    L5_6 = L5_6.forkExec
+    L5_6("touch /etc/config/securitypage/enable.tag;/etc/init.d/securitypage restart")
+  end
+  L5_6 = {}
+  L5_6.wifi_arn = 0
+  L5_6.privacy_protection = tonumber(L0_1:get("security", "common", "privacy_protection") or 0)
+  L5_6.virus_file_firewall = tonumber(L0_1:get("security", "common", "virus_file_firewall") or 0)
+  L5_6.malicious_url_firewall = L3_4
+  if _UPVALUE1_.get_vas().app_security_v2 then
+    L5_6.app_security_v2 = _UPVALUE1_.get_vas().app_security_v2
+  end
+  L5_6.wifi_arn = L1_2.pushSettings().auth and 1 or 0
+  for _FORV_12_, _FORV_13_ in pairs(L5_6) do
+    if _FORV_13_ == 0 then
+      break
+    end
+  end
+  L5_6.open = 0
+  L5_6.count = L1_2.pushSettings().count
+  return L5_6
+end
+function security_switch(A0_7)
+  local L1_8, L2_9, L3_10, L4_11, L5_12, L6_13
+  L1_8 = require
+  L1_8 = L1_8(L2_9)
+  L1_8 = L1_8.cursor
+  L1_8 = L1_8()
+  if A0_7 then
+    if L2_9 == "table" then
+      for L5_12, L6_13 in L2_9(L3_10) do
+        if L5_12 == "privacy_protection" then
+          L1_8:set("security", "common", "privacy_protection", L6_13)
+        elseif L5_12 == "virus_file_firewall" then
+          L1_8:set("security", "common", "virus_file_firewall", L6_13)
+        elseif L5_12 == "malicious_url_firewall" then
+          _UPVALUE0_.set_vas({security_page = L6_13})
+        elseif L5_12 == "app_security_v2" then
+          _UPVALUE0_.set_vas({app_security_v2 = L6_13})
+        end
+      end
+      L2_9(L3_10, L4_11)
+      L2_9(L3_10)
+    end
+  end
+end

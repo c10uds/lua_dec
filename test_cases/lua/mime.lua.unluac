@@ -1,0 +1,74 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9
+L0_0 = _G
+L1_1 = require
+L2_2 = "ltn12"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "mime.core"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "io"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "string"
+L4_4 = L4_4(L5_5)
+L5_5 = L2_2
+L6_6 = {}
+L7_7 = {}
+L8_8 = {}
+L5_5.encodet = L6_6
+L5_5.decodet = L7_7
+L5_5.wrapt = L8_8
+function L9_9(A0_10)
+  local L1_11
+  function L1_11(A0_12, A1_13, A2_14)
+    local L3_15
+    L3_15 = _UPVALUE0_
+    L3_15 = L3_15.type
+    L3_15 = L3_15(A0_12)
+    if L3_15 ~= "string" then
+      L3_15 = "default"
+      A1_13, A2_14 = A0_12, A1_13
+      A0_12 = L3_15
+    end
+    L3_15 = _UPVALUE1_
+    L3_15 = L3_15[A0_12 or "nil"]
+    if not L3_15 then
+      _UPVALUE0_.error("unknown key (" .. _UPVALUE0_.tostring(A0_12) .. ")", 3)
+    else
+      return L3_15(A1_13, A2_14)
+    end
+  end
+  return L1_11
+end
+function L6_6.base64()
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.b64, "")
+end
+L6_6["quoted-printable"] = function(A0_16)
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.qp, "", A0_16 == "binary" and "=0D=0A" or "\r\n")
+end
+function L7_7.base64()
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.unb64, "")
+end
+L7_7["quoted-printable"] = function()
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.unqp, "")
+end
+function L8_8.text(A0_17)
+  A0_17 = A0_17 or 76
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.wrp, A0_17, A0_17)
+end
+L8_8.base64 = L8_8.text
+L8_8.default = L8_8.text
+L8_8["quoted-printable"] = function()
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.qpwrp, 76, 76)
+end
+L5_5.encode = L9_9(L6_6)
+L5_5.decode = L9_9(L7_7)
+L5_5.wrap = L9_9(L8_8)
+function L5_5.normalize(A0_18)
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.eol, 0, A0_18)
+end
+function L5_5.stuff()
+  return _UPVALUE0_.filter.cycle(_UPVALUE1_.dot, 2)
+end
+return L5_5

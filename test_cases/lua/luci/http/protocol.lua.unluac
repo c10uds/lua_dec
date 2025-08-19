@@ -1,0 +1,637 @@
+local L0_0
+L0_0 = module
+L0_0("luci.http.protocol", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+HTTP_MAX_CONTENT = 65536
+function urldecode(A0_1, A1_2)
+  local L2_3
+  function L2_3(A0_4)
+    return string.char(tonumber(A0_4, 16))
+  end
+  if type(A0_1) == "string" then
+    if not A1_2 then
+      A0_1 = A0_1:gsub("+", " ")
+    end
+    A0_1 = A0_1:gsub("%%([a-fA-F0-9][a-fA-F0-9])", L2_3)
+  end
+  return A0_1
+end
+function urldecode_params(A0_5, A1_6)
+  local L2_7, L3_8, L4_9, L5_10, L6_11, L7_12, L8_13
+  L2_7 = A1_6 or {}
+  if L3_8 then
+    L6_11 = "%1"
+    A0_5 = L3_8
+  end
+  for L6_11 in L3_8(L4_9, L5_10) do
+    L7_12 = urldecode
+    L8_13 = L6_11.match
+    L8_13 = L8_13(L6_11, "^([^=]+)")
+    L7_12 = L7_12(L8_13, L8_13(L6_11, "^([^=]+)"))
+    L8_13 = urldecode
+    L8_13 = L8_13(L6_11:match("^[^=]+=(.+)$"))
+    if type(L7_12) == "string" and L7_12:len() > 0 then
+      if type(L8_13) ~= "string" then
+        L8_13 = ""
+      end
+      if not L2_7[L7_12] then
+        L2_7[L7_12] = L8_13
+      elseif type(L2_7[L7_12]) ~= "table" then
+        L2_7[L7_12] = {
+          L2_7[L7_12],
+          L8_13
+        }
+      else
+        table.insert(L2_7[L7_12], L8_13)
+      end
+    end
+  end
+  return L2_7
+end
+function urlencode(A0_14)
+  local L1_15
+  function L1_15(A0_16)
+    local L2_17
+    L2_17 = string
+    L2_17 = L2_17.format
+    return L2_17("%%%02x", string.byte(A0_16))
+  end
+  if type(A0_14) == "string" then
+    A0_14 = A0_14:gsub("([^a-zA-Z0-9$_%-%.%+!*'(),])", L1_15)
+  end
+  return A0_14
+end
+function xqurlencode(A0_18)
+  if A0_18 then
+    A0_18 = string.gsub(A0_18, "\r?\n", "\r\n")
+    A0_18 = string.gsub(A0_18, "([^%w%-%.%_%~ ])", function(A0_19)
+      local L2_20
+      L2_20 = string
+      L2_20 = L2_20.format
+      return L2_20("%%%02X", string.byte(A0_19))
+    end)
+    A0_18 = string.gsub(A0_18, " ", "+")
+  end
+  return A0_18
+end
+function xq_urlencode_params(A0_21)
+  local L1_22, L2_23, L3_24, L4_25, L5_26, L6_27, L7_28, L8_29, L9_30, L10_31, L11_32
+  L1_22 = ""
+  for L5_26, L6_27 in L2_23(L3_24) do
+    if L7_28 == "table" then
+      for L10_31, L11_32 in L7_28(L8_29) do
+        L1_22 = L1_22 .. (#L1_22 > 0 and "&" or "") .. urlencode(L5_26) .. "=" .. xqurlencode(L11_32)
+      end
+    else
+      if L8_29 > 0 then
+      else
+      end
+      L10_31 = L5_26
+      L10_31 = "="
+      L11_32 = xqurlencode
+      L11_32 = L11_32(L6_27)
+      L1_22 = L7_28 .. L8_29 .. L9_30 .. L10_31 .. L11_32
+    end
+  end
+  return L1_22
+end
+function urlencode_params(A0_33)
+  local L1_34, L2_35, L3_36, L4_37, L5_38, L6_39, L7_40, L8_41, L9_42, L10_43, L11_44
+  L1_34 = ""
+  for L5_38, L6_39 in L2_35(L3_36) do
+    if L7_40 == "table" then
+      for L10_43, L11_44 in L7_40(L8_41) do
+        L1_34 = L1_34 .. (#L1_34 > 0 and "&" or "") .. urlencode(L5_38) .. "=" .. urlencode(L11_44)
+      end
+    else
+      if L8_41 > 0 then
+      else
+      end
+      L10_43 = L5_38
+      L10_43 = "="
+      L11_44 = urlencode
+      L11_44 = L11_44(L6_39)
+      L1_34 = L7_40 .. L8_41 .. L9_42 .. L10_43 .. L11_44
+    end
+  end
+  return L1_34
+end
+;({}).magic = function(A0_45, A1_46, A2_47)
+  local L3_48, L4_49, L5_50, L6_51
+  if A1_46 ~= nil then
+    L3_48 = #A1_46
+    if L3_48 == 0 then
+      L3_48 = true
+      L4_49 = nil
+      return L3_48, L4_49
+    end
+    L4_49 = A1_46
+    L3_48 = A1_46.match
+    L5_50 = "^([A-Z]+) ([^ ]+) HTTP/([01]%.[019])$"
+    L5_50 = L3_48(L4_49, L5_50)
+    if L3_48 then
+      A0_45.type = "request"
+      L6_51 = L3_48.lower
+      L6_51 = L6_51(L3_48)
+      A0_45.request_method = L6_51
+      A0_45.request_uri = L4_49
+      L6_51 = tonumber
+      L6_51 = L6_51(L5_50)
+      A0_45.http_version = L6_51
+      L6_51 = {}
+      A0_45.headers = L6_51
+      L6_51 = true
+      return L6_51, function(A0_52)
+        return _UPVALUE0_.headers(_UPVALUE1_, A0_52)
+      end
+    else
+      L6_51 = A1_46.match
+      L6_51 = L6_51(A1_46, "^HTTP/([01]%.[019]) ([0-9]+) ([^\r\n]+)$")
+      if L6_51(A1_46, "^HTTP/([01]%.[019]) ([0-9]+) ([^\r\n]+)$") then
+        A0_45.status_message, A0_45.status_code, A0_45.type = L6_51(A1_46, "^HTTP/([01]%.[019]) ([0-9]+) ([^\r\n]+)$")
+        A0_45.status_message, A0_45.status_code, A0_45.type = L6_51(A1_46, "^HTTP/([01]%.[019]) ([0-9]+) ([^\r\n]+)$")
+        A0_45.http_version = tonumber(L6_51)
+        A0_45.headers = {}
+        return true, function(A0_53)
+          return _UPVALUE0_.headers(_UPVALUE1_, A0_53)
+        end
+      end
+    end
+  end
+  L3_48 = nil
+  L4_49 = "Invalid HTTP message magic"
+  return L3_48, L4_49
+end
+;({}).headers = function(A0_54, A1_55)
+  local L2_56, L3_57, L4_58, L5_59
+  if A1_55 ~= nil then
+    L3_57 = A1_55
+    L2_56 = A1_55.match
+    L4_58 = "^([A-Za-z][A-Za-z0-9%-_]+): +(.+)$"
+    L3_57 = L2_56(L3_57, L4_58)
+    L4_58 = type
+    L5_59 = L2_56
+    L4_58 = L4_58(L5_59)
+    if L4_58 == "string" then
+      L5_59 = L2_56
+      L4_58 = L2_56.len
+      L4_58 = L4_58(L5_59)
+      if L4_58 > 0 then
+        L4_58 = type
+        L5_59 = L3_57
+        L4_58 = L4_58(L5_59)
+        if L4_58 == "string" then
+          L5_59 = L3_57
+          L4_58 = L3_57.len
+          L4_58 = L4_58(L5_59)
+          if L4_58 > 0 then
+            L4_58 = A0_54.headers
+            L4_58[L2_56] = L3_57
+            L4_58 = true
+            L5_59 = nil
+            return L4_58, L5_59
+          end
+        end
+      end
+    else
+      L4_58 = #A1_55
+      if L4_58 == 0 then
+        L4_58 = false
+        L5_59 = nil
+        return L4_58, L5_59
+      else
+        L4_58 = nil
+        L5_59 = "Invalid HTTP header received"
+        return L4_58, L5_59
+      end
+    end
+  else
+    L2_56 = nil
+    L3_57 = "Unexpected EOF"
+    return L2_56, L3_57
+  end
+end
+function header_source(A0_60)
+  return _UPVALUE0_.source.simplify(function()
+    local L0_61, L1_62
+    L0_61 = _UPVALUE0_
+    L1_62 = L0_61
+    L0_61 = L0_61.receive
+    L1_62 = L0_61(L1_62, "*l")
+    if L0_61 == nil then
+      if L1_62 ~= "timeout" then
+        return nil, L0_61(L1_62, "*l") and "Line exceeds maximum allowed length" or "Unexpected EOF"
+      else
+        return nil, L1_62
+      end
+    elseif L0_61 ~= nil then
+      L0_61 = L0_61:gsub("\r$", "")
+      return L0_61, nil
+    end
+  end)
+end
+function mimedecode_message_body(A0_63, A1_64, A2_65)
+  local L3_66, L4_67, L5_68, L6_69, L7_70, L8_71, L9_72
+  if A1_64 then
+    L3_66 = A1_64.env
+    L3_66 = L3_66.CONTENT_TYPE
+    if L3_66 then
+      L3_66 = A1_64.env
+      L3_66 = L3_66.CONTENT_TYPE
+      L4_67 = L3_66
+      L3_66 = L3_66.match
+      L5_68 = "^multipart/form%-data; boundary=(.+)$"
+      L3_66 = L3_66(L4_67, L5_68)
+      A1_64.mime_boundary = L3_66
+    end
+  end
+  L3_66 = A1_64.mime_boundary
+  if not L3_66 then
+    L3_66 = nil
+    L4_67 = "Invalid Content-Type found"
+    return L3_66, L4_67
+  end
+  L3_66 = 0
+  L4_67 = false
+  L5_68, L6_69, L7_70 = nil, nil, nil
+  function L8_71(A0_73, A1_74)
+    local L2_75
+    repeat
+      A0_73, L2_75 = A0_73:gsub("^([A-Z][A-Za-z0-9%-_]+): +([^\r\n]+)\r\n", function(A0_76, A1_77)
+        local L2_78
+        L2_78 = _UPVALUE0_
+        L2_78 = L2_78.headers
+        L2_78[A0_76] = A1_77
+        L2_78 = ""
+        return L2_78
+      end)
+    until L2_75 == 0
+    A0_73, L2_75 = A0_73:gsub("^\r\n", "")
+    if L2_75 > 0 then
+      if A1_74.headers["Content-Disposition"] and A1_74.headers["Content-Disposition"]:match("^form%-data; ") then
+        A1_74.name = A1_74.headers["Content-Disposition"]:match("name=\"(.-)\"")
+        A1_74.file = A1_74.headers["Content-Disposition"]:match("filename=\"(.+)\"$")
+      end
+      if not A1_74.headers["Content-Type"] then
+        A1_74.headers["Content-Type"] = "text/plain"
+      end
+      if A1_74.name and A1_74.file and _UPVALUE0_ then
+        _UPVALUE1_(_UPVALUE2_.params, A1_74.name)
+        _UPVALUE3_(_UPVALUE2_.params, A1_74.name, A1_74.file)
+        _UPVALUE4_ = _UPVALUE0_
+      elseif A1_74.name then
+        _UPVALUE1_(_UPVALUE2_.params, A1_74.name)
+        function _UPVALUE4_(A0_79, A1_80, A2_81)
+          _UPVALUE0_(_UPVALUE1_.params, _UPVALUE2_.name, A1_80)
+        end
+      else
+        _UPVALUE4_ = nil
+      end
+      return A0_73, true
+    end
+    return A0_73, false
+  end
+  function L9_72(A0_82)
+    local L1_83, L2_84, L3_85, L4_86, L5_87
+    L1_83 = _UPVALUE0_
+    if A0_82 then
+      L2_84 = #A0_82
+    else
+      L2_84 = L2_84 or 0
+    end
+    L1_83 = L1_83 + L2_84
+    _UPVALUE0_ = L1_83
+    L1_83 = _UPVALUE1_
+    L1_83 = L1_83.env
+    L1_83 = L1_83.CONTENT_LENGTH
+    if L1_83 then
+      L1_83 = _UPVALUE0_
+      L2_84 = tonumber
+      L3_85 = _UPVALUE1_
+      L3_85 = L3_85.env
+      L3_85 = L3_85.CONTENT_LENGTH
+      L2_84 = L2_84(L3_85)
+      L2_84 = L2_84 + 2
+      if L1_83 > L2_84 then
+        L1_83 = nil
+        L2_84 = "Message body size exceeds Content-Length"
+        return L1_83, L2_84
+      end
+    end
+    if A0_82 then
+      L1_83 = _UPVALUE2_
+      if not L1_83 then
+        L1_83 = "\r\n"
+        L2_84 = A0_82
+        L1_83 = L1_83 .. L2_84
+        _UPVALUE2_ = L1_83
+      end
+    else
+      L1_83 = _UPVALUE2_
+      if L1_83 then
+        L1_83 = _UPVALUE2_
+        L2_84 = A0_82 or ""
+        L1_83 = L1_83 .. L2_84
+        L2_84, L3_85, L4_86 = nil, nil, nil
+        repeat
+          L5_87 = L1_83.find
+          L3_85, L5_87 = L1_83, L5_87(L1_83, "\r\n--" .. _UPVALUE1_.mime_boundary .. "\r\n", 1, true)
+          L2_84 = L5_87
+          if not L2_84 then
+            L5_87 = L1_83.find
+            L3_85, L5_87 = L1_83, L5_87(L1_83, "\r\n--" .. _UPVALUE1_.mime_boundary .. "--\r\n", 1, true)
+            L2_84 = L5_87
+          end
+          if L2_84 then
+            L5_87 = L1_83.sub
+            L5_87 = L5_87(L1_83, 1, L2_84 - 1)
+            if _UPVALUE3_ then
+              L5_87, eof = _UPVALUE4_(L5_87, _UPVALUE5_)
+              if not eof then
+                return nil, "Invalid MIME section header"
+              elseif not _UPVALUE5_.name then
+                return nil, "Invalid Content-Disposition header"
+              end
+            end
+            if _UPVALUE6_ then
+              _UPVALUE6_(_UPVALUE5_, L5_87, true)
+            end
+            _UPVALUE5_ = {
+              headers = {}
+            }
+            L4_86 = L4_86 or true
+            L1_83, eof = _UPVALUE4_(L1_83:sub(L3_85 + 1, #L1_83), _UPVALUE5_)
+            _UPVALUE3_ = not eof
+          end
+        until not L2_84
+        if L4_86 then
+          L5_87 = L1_83
+          L1_83 = nil
+          _UPVALUE2_ = L5_87
+        else
+          L5_87 = _UPVALUE3_
+          if L5_87 then
+            L5_87 = _UPVALUE4_
+            eof, L5_87 = L1_83, L5_87(L1_83, _UPVALUE5_)
+            _UPVALUE2_ = L5_87
+            L5_87 = eof
+            L5_87 = not L5_87
+            _UPVALUE3_ = L5_87
+          else
+            L5_87 = _UPVALUE6_
+            L5_87(_UPVALUE5_, _UPVALUE2_, false)
+            L5_87 = A0_82
+            A0_82 = nil
+            _UPVALUE2_ = L5_87
+          end
+        end
+      end
+    end
+    L1_83 = true
+    return L1_83
+  end
+  return _UPVALUE2_.pump.all(A0_63, L9_72)
+end
+function urldecode_message_body(A0_88, A1_89)
+  local L2_90, L3_91, L4_92
+  L2_90 = 0
+  L3_91 = nil
+  function L4_92(A0_93)
+    local L1_94, L2_95, L3_96, L4_97, L5_98, L6_99
+    L1_94 = _UPVALUE0_
+    if A0_93 then
+      L2_95 = #A0_93
+    else
+      L2_95 = L2_95 or 0
+    end
+    L1_94 = L1_94 + L2_95
+    _UPVALUE0_ = L1_94
+    L1_94 = _UPVALUE1_
+    L1_94 = L1_94.env
+    L1_94 = L1_94.CONTENT_LENGTH
+    if L1_94 then
+      L1_94 = _UPVALUE0_
+      L2_95 = tonumber
+      L3_96 = _UPVALUE1_
+      L3_96 = L3_96.env
+      L3_96 = L3_96.CONTENT_LENGTH
+      L2_95 = L2_95(L3_96)
+      L2_95 = L2_95 + 2
+      if L1_94 > L2_95 then
+        L1_94 = nil
+        L2_95 = "Message body size exceeds Content-Length"
+        return L1_94, L2_95
+      end
+    else
+      L1_94 = _UPVALUE0_
+      L2_95 = HTTP_MAX_CONTENT
+      if L1_94 > L2_95 then
+        L1_94 = nil
+        L2_95 = "Message body size exceeds maximum allowed length"
+        return L1_94, L2_95
+      end
+    end
+    L1_94 = _UPVALUE2_
+    if not L1_94 and A0_93 then
+      _UPVALUE2_ = A0_93
+    else
+      L1_94 = _UPVALUE2_
+      if L1_94 then
+        L1_94 = _UPVALUE2_
+        L2_95 = A0_93 or "&"
+        L1_94 = L1_94 .. L2_95
+        L2_95, L3_96 = nil, nil
+        repeat
+          L5_98 = L1_94
+          L4_97 = L1_94.find
+          L6_99 = "^.-[;&]"
+          L5_98 = L4_97(L5_98, L6_99)
+          L3_96 = L5_98
+          L2_95 = L4_97
+          if L2_95 then
+            L5_98 = L1_94
+            L4_97 = L1_94.sub
+            L6_99 = L2_95
+            L4_97 = L4_97(L5_98, L6_99, L3_96 - 1)
+            L6_99 = L4_97
+            L5_98 = L4_97.match
+            L5_98 = L5_98(L6_99, "^(.-)=")
+            L6_99 = L4_97.match
+            L6_99 = L6_99(L4_97, "=([^%s]*)%s*$")
+            if L5_98 and #L5_98 > 0 then
+              _UPVALUE3_(_UPVALUE1_.params, L5_98)
+              _UPVALUE4_(_UPVALUE1_.params, L5_98, L6_99)
+              _UPVALUE5_(_UPVALUE1_.params, L5_98, urldecode)
+            else
+              L5_98 = "invalid_param"
+              _UPVALUE3_(_UPVALUE1_.params, L5_98)
+              _UPVALUE4_(_UPVALUE1_.params, L5_98, L4_97)
+              _UPVALUE5_(_UPVALUE1_.params, L5_98, urldecode)
+            end
+            L1_94 = L1_94:sub(L3_96 + 1, #L1_94)
+          end
+        until not L2_95
+        _UPVALUE2_ = L1_94
+      end
+    end
+    L1_94 = true
+    return L1_94
+  end
+  return _UPVALUE3_.pump.all(A0_88, L4_92)
+end
+function parse_message_header(A0_100)
+  local L1_101, L2_102, L3_103
+  L1_101 = true
+  L2_102 = {}
+  L3_103 = _UPVALUE0_
+  L3_103 = L3_103.sink
+  L3_103 = L3_103.simplify
+  L3_103 = L3_103(function(A0_104)
+    return _UPVALUE0_.magic(_UPVALUE1_, A0_104)
+  end)
+  while L1_101 do
+    L1_101, err = _UPVALUE0_.pump.step(A0_100, L3_103)
+    if not L1_101 and err then
+      return nil, err
+    elseif not L1_101 then
+      if (L2_102.request_method == "get" or L2_102.request_method == "post") and L2_102.request_uri:match("?") then
+        L2_102.params = urldecode_params(L2_102.request_uri)
+      else
+        L2_102.params = {}
+      end
+      L2_102.env = {
+        CONTENT_LENGTH = L2_102.headers["Content-Length"],
+        CONTENT_TYPE = L2_102.headers["Content-Type"] or L2_102.headers["Content-type"],
+        REQUEST_METHOD = L2_102.request_method:upper(),
+        REQUEST_URI = L2_102.request_uri,
+        SCRIPT_NAME = L2_102.request_uri:gsub("?.+$", ""),
+        SCRIPT_FILENAME = "",
+        SERVER_PROTOCOL = "HTTP/" .. string.format("%.1f", L2_102.http_version),
+        QUERY_STRING = L2_102.request_uri:match("?") and L2_102.request_uri:gsub("^.+?", "") or ""
+      }
+      for _FORV_7_, _FORV_8_ in ipairs({
+        "Accept",
+        "Accept-Charset",
+        "Accept-Encoding",
+        "Accept-Language",
+        "Connection",
+        "Cookie",
+        "Host",
+        "Referer",
+        "User-Agent",
+        "X-Forwarded-For"
+      }) do
+        L2_102.env["HTTP_" .. _FORV_8_:upper():gsub("%-", "_")] = L2_102.headers[_FORV_8_]
+      end
+    end
+  end
+  return L2_102
+end
+function parse_message_body(A0_105, A1_106, A2_107)
+  local L3_108, L4_109, L5_110
+  L3_108 = A1_106.env
+  L3_108 = L3_108.REQUEST_METHOD
+  if L3_108 == "POST" then
+    L3_108 = A1_106.env
+    L3_108 = L3_108.CONTENT_TYPE
+    if L3_108 then
+      L3_108 = A1_106.env
+      L3_108 = L3_108.CONTENT_TYPE
+      L4_109 = L3_108
+      L3_108 = L3_108.match
+      L5_110 = "^multipart/form%-data"
+      L3_108 = L3_108(L4_109, L5_110)
+      if L3_108 then
+        L3_108 = mimedecode_message_body
+        L4_109 = A0_105
+        L5_110 = A1_106
+        return L3_108(L4_109, L5_110, A2_107)
+      end
+    end
+  else
+    L3_108 = A1_106.env
+    L3_108 = L3_108.REQUEST_METHOD
+    if L3_108 == "POST" then
+      L3_108 = A1_106.env
+      L3_108 = L3_108.CONTENT_TYPE
+      if L3_108 then
+        L3_108 = A1_106.env
+        L3_108 = L3_108.CONTENT_TYPE
+        L4_109 = L3_108
+        L3_108 = L3_108.match
+        L5_110 = "^application/x%-www%-form%-urlencoded"
+        L3_108 = L3_108(L4_109, L5_110)
+        if L3_108 then
+          L3_108 = urldecode_message_body
+          L4_109 = A0_105
+          L5_110 = A1_106
+          return L3_108(L4_109, L5_110, A2_107)
+        end
+      end
+    else
+      L3_108 = nil
+      L4_109 = type
+      L5_110 = A2_107
+      L4_109 = L4_109(L5_110)
+      if L4_109 == "function" then
+        L3_108 = A2_107
+      else
+        A1_106.content = ""
+        A1_106.content_length = 0
+        function L3_108(A0_111, A1_112)
+          local L2_113
+          if A0_111 then
+            L2_113 = _UPVALUE0_
+            L2_113 = L2_113.content_length
+            L2_113 = L2_113 + #A0_111
+            if L2_113 <= HTTP_MAX_CONTENT then
+              L2_113 = _UPVALUE0_
+              L2_113.content = _UPVALUE0_.content .. A0_111
+              L2_113 = _UPVALUE0_
+              L2_113.content_length = _UPVALUE0_.content_length + #A0_111
+              L2_113 = true
+              return L2_113
+            else
+              L2_113 = nil
+              return L2_113, "POST data exceeds maximum allowed length"
+            end
+          end
+          L2_113 = true
+          return L2_113
+        end
+      end
+      while true do
+        L4_109 = _UPVALUE0_
+        L4_109 = L4_109.pump
+        L4_109 = L4_109.step
+        L5_110 = A0_105
+        L5_110 = L4_109(L5_110, L3_108)
+        if not L4_109 and L5_110 then
+          return nil, L5_110
+        elseif not L5_110 then
+          return true
+        end
+      end
+      L4_109 = true
+      return L4_109
+    end
+  end
+end
+statusmsg = {
+  [200] = "OK",
+  [206] = "Partial Content",
+  [301] = "Moved Permanently",
+  [302] = "Found",
+  [304] = "Not Modified",
+  [400] = "Bad Request",
+  [403] = "Forbidden",
+  [404] = "Not Found",
+  [405] = "Method Not Allowed",
+  [408] = "Request Time-out",
+  [411] = "Length Required",
+  [412] = "Precondition Failed",
+  [416] = "Requested range not satisfiable",
+  [500] = "Internal Server Error",
+  [503] = "Server Unavailable"
+}

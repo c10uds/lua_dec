@@ -1,0 +1,306 @@
+local L0_0
+L0_0 = module
+L0_0("luci.tools.firewall", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+function fmt_neg(A0_1)
+  local L1_2
+  L1_2 = type
+  L1_2 = L1_2(A0_1)
+  if L1_2 == "string" then
+    L1_2 = A0_1.gsub
+    L1_2 = L1_2(A0_1, "^ *! *", "")
+    if L1_2(A0_1, "^ *! *", "") > 0 then
+      return L1_2, "%s " % _UPVALUE0_("not")
+    else
+      return A0_1, ""
+    end
+  end
+  L1_2 = A0_1
+  return L1_2, ""
+end
+function fmt_mac(A0_3)
+  local L1_4, L2_5, L3_6, L4_7, L5_8, L6_9, L7_10
+  if A0_3 then
+    L1_4 = #A0_3
+    if L1_4 > 0 then
+      L1_4, L2_5 = nil, nil
+      L3_6 = {L4_7, L5_8}
+      for L7_10 in L4_7(L5_8) do
+        L7_10, L2_5 = fmt_neg(L7_10)
+        L3_6[#L3_6 + 1] = "<var>%s%s</var>" % {L2_5, L7_10}
+        L3_6[#L3_6 + 1] = ", "
+      end
+      if L4_7 > 1 then
+        L3_6[L4_7] = nil
+        if L4_7 > 3 then
+          L3_6[1] = L4_7
+        end
+        return L4_7(L5_8, L6_9)
+      end
+    end
+  end
+end
+function fmt_port(A0_11, A1_12)
+  local L2_13, L3_14, L4_15, L5_16, L6_17, L7_18, L8_19, L9_20, L10_21
+  if A0_11 then
+    L2_13 = #A0_11
+    if L2_13 > 0 then
+      L2_13, L3_14 = nil, nil
+      L4_15 = {L5_16, L6_17}
+      for L8_19 in L5_16(L6_17) do
+        L9_20 = fmt_neg
+        L10_21 = L8_19
+        L10_21 = L9_20(L10_21)
+        L3_14 = L10_21
+        L8_19 = L9_20
+        L10_21 = L8_19
+        L9_20 = L8_19.match
+        L10_21 = L9_20(L10_21, "(%d+)%D+(%d+)")
+        if L9_20 and L10_21 then
+          L4_15[1] = _UPVALUE0_("ports")
+          L4_15[#L4_15 + 1] = "<var>%s%d-%d</var>" % {
+            L3_14,
+            L9_20,
+            L10_21
+          }
+        else
+          L4_15[#L4_15 + 1] = "<var>%s%d</var>" % {L3_14, L8_19}
+        end
+        L4_15[#L4_15 + 1] = ", "
+      end
+      if L5_16 > 1 then
+        L4_15[L5_16] = nil
+        if L5_16 > 3 then
+          L4_15[1] = L5_16
+        end
+        return L5_16(L6_17, L7_18)
+      end
+    end
+  end
+  L2_13 = A1_12 and "<var>%s</var>" % A1_12
+  return L2_13
+end
+function fmt_ip(A0_22, A1_23)
+  local L2_24, L3_25, L4_26, L5_27, L6_28, L7_29, L8_30, L9_31
+  if A0_22 then
+    L2_24 = #A0_22
+    if L2_24 > 0 then
+      L2_24 = {L3_25, L4_26}
+      L3_25 = _UPVALUE0_
+      L4_26 = "IP"
+      L3_25 = L3_25(L4_26)
+      L4_26 = " "
+      L3_25, L4_26, L5_27 = nil, nil, nil
+      for L9_31 in L6_28(L7_29) do
+        L9_31, L5_27 = fmt_neg(L9_31)
+        L4_26, m = L9_31:match("(%S+)/(%d+%.%S+)")
+        L4_26 = L4_26 or L9_31
+        L4_26 = L4_26:match(":") and _UPVALUE2_.IPv6(L4_26, m) or _UPVALUE2_.IPv4(L4_26, m)
+        if L4_26 and (L4_26:is6() and L4_26:prefix() < 128 or L4_26:prefix() < 32) then
+          L2_24[1] = _UPVALUE0_("IP range")
+          L2_24[#L2_24 + 1] = "<var title='%s - %s'>%s%s</var>" % {
+            L4_26:minhost():string(),
+            L4_26:maxhost():string(),
+            L5_27,
+            L4_26:string()
+          }
+        else
+          L2_24[#L2_24 + 1] = "<var>%s%s</var>" % {
+            L5_27,
+            L4_26 and L4_26:string() or L9_31
+          }
+        end
+        L2_24[#L2_24 + 1] = ", "
+      end
+      if L6_28 > 1 then
+        L2_24[L6_28] = nil
+        if L6_28 > 3 then
+          L2_24[1] = L6_28
+        end
+        return L6_28(L7_29, L8_30)
+      end
+    end
+  end
+  L2_24 = A1_23 and "<var>%s</var>" % A1_23
+  return L2_24
+end
+function fmt_zone(A0_32, A1_33)
+  if A0_32 == "*" then
+    return "<var>%s</var>" % _UPVALUE0_("any zone")
+  elseif A0_32 and #A0_32 > 0 then
+    return "<var>%s</var>" % A0_32
+  elseif A1_33 then
+    return "<var>%s</var>" % A1_33
+  end
+end
+function fmt_icmp_type(A0_34)
+  local L1_35, L2_36, L3_37, L4_38, L5_39, L6_40, L7_41, L8_42
+  if A0_34 then
+    L1_35 = #A0_34
+    if L1_35 > 0 then
+      L1_35, L2_36, L3_37 = nil, nil, nil
+      L4_38 = {L5_39, L6_40}
+      for L8_42 in L5_39(L6_40) do
+        L8_42, L3_37 = fmt_neg(L8_42)
+        L4_38[#L4_38 + 1] = "<var>%s%s</var>" % {L3_37, L8_42}
+        L4_38[#L4_38 + 1] = ", "
+      end
+      if L5_39 > 1 then
+        L4_38[L5_39] = nil
+        if L5_39 > 3 then
+          L4_38[1] = L5_39
+        end
+        return L5_39(L6_40, L7_41)
+      end
+    end
+  end
+end
+function fmt_proto(A0_43, A1_44)
+  local L2_45, L3_46, L4_47, L5_48, L6_49, L7_50, L8_51, L9_52
+  if A0_43 then
+    L2_45 = #A0_43
+    if L2_45 > 0 then
+      L2_45, L3_46 = nil, nil
+      L4_47 = {}
+      L5_48 = fmt_icmp_type
+      L5_48 = L5_48(L6_49)
+      for L9_52 in L6_49(L7_50) do
+        L9_52, L3_46 = fmt_neg(L9_52)
+        if L9_52 == "tcpudp" then
+          L4_47[#L4_47 + 1] = "TCP"
+          L4_47[#L4_47 + 1] = ", "
+          L4_47[#L4_47 + 1] = "UDP"
+          L4_47[#L4_47 + 1] = ", "
+        elseif L9_52 ~= "all" and _UPVALUE1_.getproto(L9_52) then
+          if (_UPVALUE1_.getproto(L9_52).proto == 1 or _UPVALUE1_.getproto(L9_52).proto == 58) and L5_48 then
+            L4_47[#L4_47 + 1] = _UPVALUE2_("%s%s with %s", L3_46, _UPVALUE1_.getproto(L9_52).aliases[1] or _UPVALUE1_.getproto(L9_52).name, L5_48)
+          else
+            L4_47[#L4_47 + 1] = "%s%s" % {
+              L3_46,
+              _UPVALUE1_.getproto(L9_52).aliases[1] or _UPVALUE1_.getproto(L9_52).name
+            }
+          end
+          L4_47[#L4_47 + 1] = ", "
+        end
+      end
+      if L6_49 > 0 then
+        L4_47[L6_49] = nil
+        return L6_49(L7_50, L8_51)
+      end
+    end
+  end
+end
+function fmt_limit(A0_53, A1_54)
+  local L2_55, L3_56
+  L2_55 = tonumber
+  L3_56 = A1_54
+  L2_55 = L2_55(L3_56)
+  A1_54 = L2_55
+  if A0_53 then
+    L2_55 = #A0_53
+    if L2_55 > 0 then
+      L3_56 = A0_53
+      L2_55 = A0_53.match
+      L3_56 = L2_55(L3_56, "(%d+)/(%w+)")
+      L2_55 = tonumber(L2_55 or A0_53)
+      L3_56 = L3_56 or "second"
+      if L2_55 then
+        if L3_56:match("^s") then
+          L3_56 = _UPVALUE0_("second")
+        elseif L3_56:match("^m") then
+          L3_56 = _UPVALUE0_("minute")
+        elseif L3_56:match("^h") then
+          L3_56 = _UPVALUE0_("hour")
+        elseif L3_56:match("^d") then
+          L3_56 = _UPVALUE0_("day")
+        end
+        if A1_54 and A1_54 > 0 then
+          return _UPVALUE1_([[
+<var>%d</var> pkts. per <var>%s</var>, 
+				    burst <var>%d</var> pkts.]], L2_55, L3_56, A1_54)
+        else
+          return _UPVALUE1_("<var>%d</var> pkts. per <var>%s</var>", L2_55, L3_56)
+        end
+      end
+    end
+  end
+end
+function fmt_target(A0_57, A1_58)
+  if A1_58 and #A1_58 > 0 then
+    if A0_57 == "ACCEPT" then
+      return _UPVALUE0_("Accept forward")
+    elseif A0_57 == "REJECT" then
+      return _UPVALUE0_("Refuse forward")
+    elseif A0_57 == "NOTRACK" then
+      return _UPVALUE0_("Do not track forward")
+    else
+      return _UPVALUE0_("Discard forward")
+    end
+  elseif A0_57 == "ACCEPT" then
+    return _UPVALUE0_("Accept input")
+  elseif A0_57 == "REJECT" then
+    return _UPVALUE0_("Refuse input")
+  elseif A0_57 == "NOTRACK" then
+    return _UPVALUE0_("Do not track input")
+  else
+    return _UPVALUE0_("Discard input")
+  end
+end
+function opt_enabled(A0_59, A1_60, ...)
+  if A1_60 == luci.cbi.Button then
+    A0_59:option(A1_60, "__enabled").render = function(A0_62, A1_63)
+      if A0_62.map:get(A1_63, "enabled") ~= "0" then
+        A0_62.title = _UPVALUE0_("Rule is enabled")
+        A0_62.inputtitle = _UPVALUE0_("Disable")
+        A0_62.inputstyle = "reset"
+      else
+        A0_62.title = _UPVALUE0_("Rule is disabled")
+        A0_62.inputtitle = _UPVALUE0_("Enable")
+        A0_62.inputstyle = "apply"
+      end
+      _UPVALUE1_.render(A0_62, A1_63)
+    end
+    A0_59:option(A1_60, "__enabled").write = function(A0_64, A1_65, A2_66)
+      if A0_64.map:get(A1_65, "enabled") ~= "0" then
+        A0_64.map:set(A1_65, "enabled", "0")
+      else
+        A0_64.map:del(A1_65, "enabled")
+      end
+    end
+    return (A0_59:option(A1_60, "__enabled"))
+  else
+    A0_59:option(A1_60, "enabled", ...).enabled = ""
+    A0_59:option(A1_60, "enabled", ...).disabled = "0"
+    A0_59:option(A1_60, "enabled", ...).default = A0_59:option(A1_60, "enabled", ...).enabled
+    return (A0_59:option(A1_60, "enabled", ...))
+  end
+end
+function opt_name(A0_67, A1_68, ...)
+  local L3_70, L4_71, L5_72, L6_73, L7_74
+  L4_71 = A0_67
+  L3_70 = A0_67.option
+  L5_72 = A1_68
+  L6_73 = "name"
+  L7_74 = ...
+  L3_70 = L3_70(L4_71, L5_72, L6_73, L7_74)
+  function L4_71(A0_75, A1_76)
+    return A0_75.map:get(A1_76, "name") or A0_75.map:get(A1_76, "_name") or "-"
+  end
+  L3_70.cfgvalue = L4_71
+  function L4_71(A0_77, A1_78, A2_79)
+    if A2_79 ~= "-" then
+      A0_77.map:set(A1_78, "name", A2_79)
+      A0_77.map:del(A1_78, "_name")
+    else
+      A0_77:remove(A1_78)
+    end
+  end
+  L3_70.write = L4_71
+  function L4_71(A0_80, A1_81)
+    A0_80.map:del(A1_81, "name")
+    A0_80.map:del(A1_81, "_name")
+  end
+  L3_70.remove = L4_71
+  return L3_70
+end

@@ -1,0 +1,165 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQEcos", package.seeall)
+L0_0 = require
+L0_0 = L0_0("json")
+function _getEcosDevices()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9
+  L0_1 = _UPVALUE0_
+  L0_1 = L0_1.exec
+  L1_2 = "ubus call trafficd hw"
+  L0_1 = L0_1(L1_2)
+  L1_2 = _UPVALUE1_
+  L1_2 = L1_2.isStrNil
+  L1_2 = L1_2(L2_3)
+  if L1_2 then
+    L1_2 = {}
+    return L1_2
+  end
+  L1_2 = {}
+  L0_1 = L2_3
+  for L5_6, L6_7 in L2_3(L3_4) do
+    L7_8, L8_9 = nil, nil
+    if L6_7.description then
+      L7_8, L8_9 = pcall(_UPVALUE2_.decode, L6_7.description)
+    end
+    if L7_8 and L8_9 and L8_9.hardware and _UPVALUE3_[L8_9.hardware] and L6_7.version and tonumber(L6_7.is_ap) ~= 0 and tonumber(L6_7.assoc) == 1 then
+      if 0 < #L6_7.ip_list then
+        ({
+          mac = L5_6,
+          version = L6_7.version,
+          channel = "current",
+          color = L8_9.color or "100",
+          sn = L8_9.sn or "",
+          ctycode = L8_9.country_code or "CN"
+        }).ip = L6_7.ip_list[1].ip
+      end
+      ;({
+        mac = L5_6,
+        version = L6_7.version,
+        channel = "current",
+        color = L8_9.color or "100",
+        sn = L8_9.sn or "",
+        ctycode = L8_9.country_code or "CN"
+      }).channel = L8_9.channel or "current"
+      if ({
+        mac = L5_6,
+        version = L6_7.version,
+        channel = "current",
+        color = L8_9.color or "100",
+        sn = L8_9.sn or "",
+        ctycode = L8_9.country_code or "CN"
+      }).ip then
+        L1_2[L5_6] = {
+          mac = L5_6,
+          version = L6_7.version,
+          channel = "current",
+          color = L8_9.color or "100",
+          sn = L8_9.sn or "",
+          ctycode = L8_9.country_code or "CN"
+        }
+      end
+    end
+  end
+  return L1_2
+end
+function _getEcosSignal(A0_10)
+  if tonumber(require("xiaoqiang.util.XQWifiUtil").getWifiDeviceSignal(A0_10)) then
+    if tonumber(require("xiaoqiang.util.XQWifiUtil").getWifiDeviceSignal(A0_10)) < 4294967226 then
+      return 3
+    elseif tonumber(require("xiaoqiang.util.XQWifiUtil").getWifiDeviceSignal(A0_10)) > 4294967236 then
+      return 1
+    else
+      return 2
+    end
+  end
+  return nil
+end
+function _getEcosSignalDB(A0_11)
+  return tonumber(require("xiaoqiang.util.XQWifiUtil").getWifiDeviceSignal(A0_11)) or 4294967226
+end
+function _getEcosUpgrade(A0_12, A1_13, A2_14, A3_15)
+  if require("xiaoqiang.util.XQNetUtil").checkEcosUpgrade(A0_12, A1_13, A2_14, A3_15) and require("xiaoqiang.util.XQNetUtil").checkEcosUpgrade(A0_12, A1_13, A2_14, A3_15).needUpdate == 1 then
+    return (require("xiaoqiang.util.XQNetUtil").checkEcosUpgrade(A0_12, A1_13, A2_14, A3_15))
+  else
+    return nil
+  end
+end
+function _getEcosWRoamingStatus(A0_16)
+  local L1_17
+  if not A0_16 then
+    L1_17 = nil
+    return L1_17
+  end
+  L1_17 = _UPVALUE0_
+  L1_17 = L1_17.exec
+  L1_17 = L1_17("tbus call " .. A0_16 .. " desc \"{\\\"desc\\\":1}\" 2>/dev/null")
+  if L1_17 and pcall(_UPVALUE1_.decode, L1_17) then
+    return pcall(_UPVALUE1_.decode, L1_17).switch_wifi_explorer or 0
+  end
+  return 0
+end
+function getEcosInfo(A0_18)
+  if _UPVALUE0_.isStrNil(A0_18) then
+    return nil
+  end
+  if _getEcosDevices()[A0_18] then
+    if _getEcosUpgrade(_getEcosDevices()[A0_18].version, _getEcosDevices()[A0_18].channel, _getEcosDevices()[A0_18].sn, _getEcosDevices()[A0_18].ctycode) then
+      ({}).upgradeinfo, ({}).upgrade = _getEcosUpgrade(_getEcosDevices()[A0_18].version, _getEcosDevices()[A0_18].channel, _getEcosDevices()[A0_18].sn, _getEcosDevices()[A0_18].ctycode), true
+    else
+      ({}).upgrade = false
+    end
+    ;({}).signal = _getEcosSignal(A0_18) or 2
+    ;({}).signalDB = _getEcosSignalDB(A0_18)
+    ;({}).roaming = _getEcosWRoamingStatus(_getEcosDevices()[A0_18].ip) or 0
+    ;({}).version = _getEcosDevices()[A0_18].version
+    ;({}).channel = _getEcosDevices()[A0_18].channel
+    ;({}).color = _getEcosDevices()[A0_18].color
+    ;({}).ip = _getEcosDevices()[A0_18].ip
+    return {}
+  else
+    return nil
+  end
+end
+function ecosWirelessRoamingSwitch(A0_19, A1_20)
+  local L2_21, L3_22, L4_23
+  L2_21 = _getEcosDevices
+  L2_21 = L2_21()
+  L3_22 = L2_21[A0_19]
+  if L3_22 then
+    L4_23 = "tbus call "
+    L4_23 = L4_23 .. L3_22.ip .. " switch \"{\\\"wifi_explorer\\\":" .. (A1_20 and "1" or "0") .. "}\" >/dev/null 2>/dev/null"
+    return os.execute(L4_23) == 0
+  end
+  L4_23 = false
+  return L4_23
+end
+function ecosUpgrade(A0_24)
+  local L1_25
+  if A0_24 then
+    L1_25 = os
+    L1_25 = L1_25.execute
+    L1_25("echo 1 > /tmp/" .. A0_24)
+    L1_25 = "lua /usr/sbin/ecos_upgrade.lua "
+    L1_25 = L1_25 .. A0_24 .. " 2>/dev/null"
+    _UPVALUE0_.forkExec(L1_25)
+  end
+end
+function ecosUpgradeStatus(A0_26)
+  local L1_27, L2_28, L3_29
+  if A0_26 then
+    L1_27 = require
+    L2_28 = "nixio.fs"
+    L1_27 = L1_27(L2_28)
+    L2_28 = "/tmp/"
+    L3_29 = A0_26
+    L2_28 = L2_28 .. L3_29
+    L3_29 = L1_27.readfile
+    L3_29 = L3_29(L2_28)
+    if tonumber(L3_29) then
+      return tonumber(L3_29)
+    end
+  end
+  L1_27 = 0
+  return L1_27
+end

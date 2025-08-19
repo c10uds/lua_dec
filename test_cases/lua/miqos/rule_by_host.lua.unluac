@@ -1,0 +1,252 @@
+local L0_0
+L0_0 = require
+L0_0("miqos.common")
+L0_0 = "host"
+qdisc[L0_0] = {}
+;({}).clean = function(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8
+  L1_2 = {}
+  for L5_6, L6_7 in L2_3(L3_4) do
+    L7_8 = string
+    L7_8 = L7_8.format
+    L7_8 = L7_8("%s del dev %s root ", const_tc_qdisc, L6_7.dev)
+    table.insert(L1_2, L7_8)
+  end
+  if not L2_3 then
+    L2_3(L3_4, L4_5)
+  end
+  _UPVALUE0_ = L2_3
+  _UPVALUE1_ = L2_3
+  _UPVALUE2_ = L2_3
+end
+;({}).update_counters = function(A0_9)
+  local L1_10, L2_11, L3_12, L4_13, L5_14, L6_15, L7_16, L8_17, L9_18, L10_19, L11_20, L12_21, L13_22, L14_23, L15_24, L16_25, L17_26, L18_27, L19_28, L20_29, L21_30
+  L1_10 = cfg
+  L1_10 = L1_10.enabled
+  L1_10 = L1_10.flag
+  if L1_10 == "0" then
+    return
+  end
+  L1_10 = UP
+  L1_10 = A0_9[L1_10]
+  L1_10 = L1_10.id
+  L2_11 = DOWN
+  L2_11 = A0_9[L2_11]
+  L2_11 = L2_11.id
+  L3_12 = {}
+  L3_12[L1_10] = L4_13
+  L3_12[L2_11] = L4_13
+  for L7_16, L8_17 in L4_13(L5_14) do
+    L9_18 = L8_17.dev
+    L10_19 = {}
+    L14_23 = L9_18
+    L21_30 = L12_21(L13_22, L14_23)
+    L14_23 = "*line"
+    while L12_21 do
+      L14_23 = string
+      L14_23 = L14_23.find
+      L15_24 = L12_21
+      L16_25 = "class htb (%d+):(%w+).*rate (%w+) ceil (%w+)"
+      L19_28 = L14_23(L15_24, L16_25)
+      if L14_23 then
+        L20_29 = L3_12[L16_25]
+        L20_29 = L20_29[L17_26]
+        if not L20_29 then
+          L20_29 = L3_12[L16_25]
+          L21_30 = {}
+          L20_29[L17_26] = L21_30
+        end
+        L20_29 = L3_12[L16_25]
+        L20_29 = L20_29[L17_26]
+        L20_29.r = L18_27
+        L20_29 = L3_12[L16_25]
+        L20_29 = L20_29[L17_26]
+        L20_29.c = L19_28
+      end
+      L21_30 = L11_20
+      L20_29 = L11_20.read
+      L20_29 = L20_29(L21_30, "*line")
+    end
+    L15_24 = L11_20
+    L14_23 = L11_20.close
+    L14_23(L15_24)
+  end
+  L7_16 = 0
+  L8_17 = 0
+  L9_18 = nil
+  L10_19 = _UPVALUE1_
+  L10_19 = L10_19.child
+  L10_19 = L10_19[2]
+  L10_19 = L10_19.id
+  for L14_23, L15_24 in L11_20(L12_21) do
+    L16_25 = dec2hexstr
+    L17_26 = L15_24.id
+    L17_26 = L17_26 * 16
+    L17_26 = L10_19 + L17_26
+    L16_25 = L16_25(L17_26)
+    L9_18 = L16_25
+    L16_25 = L3_12[L1_10]
+    L16_25 = L16_25[L9_18]
+    if L16_25 then
+      L16_25 = L3_12[L1_10]
+      L16_25 = L16_25[L9_18]
+      L16_25 = L3_12[L1_10]
+      L16_25 = L16_25[L9_18]
+      L7_16 = L16_25.r
+    end
+    L16_25 = L3_12[L2_11]
+    L16_25 = L16_25[L9_18]
+    if L16_25 then
+      L16_25 = L3_12[L2_11]
+      L16_25 = L16_25[L9_18]
+      L16_25 = L3_12[L2_11]
+      L16_25 = L16_25[L9_18]
+      L8_17 = L16_25.r
+    end
+    L16_25, L17_26 = nil, nil
+    L18_27 = L15_24.mac
+    L19_28 = "on"
+    if L18_27 then
+      L20_29 = g_group_def
+      L20_29 = L20_29[L18_27]
+      if L20_29 then
+        L20_29 = tonumber
+        L21_30 = g_group_def
+        L21_30 = L21_30[L18_27]
+        L21_30 = L21_30.max_grp_uplink
+        L20_29 = L20_29(L21_30)
+        L21_30 = tonumber
+        L21_30 = L21_30(g_group_def[L18_27].max_grp_downlink)
+        if L20_29 < 1 then
+          L20_29 = math.ceil(cfg.bands.UP * L20_29)
+        elseif L20_29 == 1 then
+          L20_29 = 0
+        end
+        if L21_30 < 1 then
+          L21_30 = math.ceil(cfg.bands.DOWN * L21_30)
+        elseif L21_30 == 1 then
+          L21_30 = 0
+        end
+        L16_25 = {
+          max_per = L20_29,
+          min_per = g_group_def[L18_27].min_grp_uplink,
+          max_cfg = math.ceil(g_group_def[L18_27].max_grp_uplink),
+          max = L5_14,
+          min_cfg = math.ceil(g_group_def[L18_27].min_grp_uplink),
+          min = L7_16
+        }
+        L17_26 = {
+          max_per = L21_30,
+          min_per = g_group_def[L18_27].min_grp_downlink,
+          max_cfg = math.ceil(g_group_def[L18_27].max_grp_downlink),
+          max = L6_15,
+          min_cfg = math.ceil(g_group_def[L18_27].min_grp_downlink),
+          min = L8_17
+        }
+        L19_28 = g_group_def[L18_27].flag or "on"
+      end
+    else
+      L20_29 = {}
+      L20_29.max_per = 0
+      L20_29.min_per = 2.8363E-319
+      L20_29.max_cfg = 0
+      L20_29.max = L5_14
+      L20_29.min_cfg = 0
+      L20_29.min = L7_16
+      L16_25 = L20_29
+      L20_29 = {}
+      L20_29.max_per = 0
+      L20_29.min_per = 2.8363E-319
+      L20_29.max_cfg = 0
+      L20_29.max = L6_15
+      L20_29.min_cfg = 0
+      L20_29.min = L8_17
+      L17_26 = L20_29
+    end
+    L20_29 = {}
+    L20_29.MAC = L18_27
+    L20_29.UP = L16_25
+    L20_29.DOWN = L17_26
+    L20_29.flag = L19_28
+    L4_13[L14_23] = L20_29
+  end
+  return L4_13
+end
+;({}).changed = function()
+  local L0_31, L1_32
+  L0_31 = true
+  return L0_31
+end
+;({}).read_qos_config = function()
+  if cfg.bands.changed then
+    _UPVALUE0_()
+  end
+  if not read_qos_group_config() then
+    logger(3, "read_qos_group_config failed.")
+    return false
+  end
+  if not read_qos_guest_xq_config() then
+    logger(3, "read_qos_guest_xq_config failed.")
+    return false
+  end
+end
+;({}).apply = function(A0_33, A1_34, A2_35, A3_36)
+  local L4_37, L5_38, L6_39
+  L4_37 = "add"
+  L5_38 = "0"
+  if not A0_33 then
+    L6_39 = _UPVALUE0_
+    L6_39 = L6_39()
+    L5_38 = L6_39
+    L5_38 = "1"
+    L4_37 = "add"
+  else
+    L6_39 = qdisc
+    L6_39 = L6_39[A0_33]
+    if not L6_39 then
+      L6_39 = logger
+      L6_39(3, "ERROR: qdisc `" .. A0_33 .. "` not found. ")
+      L6_39 = false
+      return L6_39
+    elseif A3_36 then
+      L6_39 = _UPVALUE1_
+      L6_39 = L6_39.clean
+      L6_39(A2_35)
+      L4_37 = "add"
+    else
+      L6_39 = _UPVALUE2_
+      if A0_33 == L6_39 then
+        L6_39 = _UPVALUE0_
+        L6_39 = L6_39()
+        L5_38 = L6_39
+        if L5_38 == "0" then
+          L6_39 = false
+          return L6_39
+        end
+        L4_37 = "change"
+      else
+        L6_39 = _UPVALUE1_
+        L6_39 = L6_39.clean
+        L6_39(A2_35)
+        L6_39 = _UPVALUE0_
+        L6_39 = L6_39()
+        L5_38 = L6_39
+        L5_38 = "1"
+        L4_37 = "add"
+      end
+    end
+  end
+  L6_39 = {}
+  if not _UPVALUE3_(L6_39, A2_35, L4_37, A1_34, L5_38) then
+    logger(3, "ERROR: generate host qdisc failed. ")
+    return false
+  end
+  if not _UPVALUE4_(L6_39, A2_35) then
+    return false
+  end
+  if not exec_cmd(L6_39, nil) then
+    logger(3, "ERROR: apply host qdisc failed.")
+    return false
+  end
+  return true
+end

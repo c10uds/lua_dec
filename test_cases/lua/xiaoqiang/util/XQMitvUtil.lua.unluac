@@ -1,0 +1,127 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQMitvUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.json")
+function DoExec(A0_1)
+  _UPVALUE0_.log(7, A0_1)
+  return (require("luci.util").exec(A0_1))
+end
+function request(A0_2)
+  local L1_3, L2_4
+  if A0_2 == nil then
+    L1_3 = _UPVALUE0_
+    return L1_3
+  end
+  L1_3 = _UPVALUE1_
+  L1_3 = L1_3.decode
+  L2_4 = A0_2
+  L1_3 = L1_3(L2_4)
+  if L1_3 == nil then
+    L2_4 = _UPVALUE0_
+    return L2_4
+  end
+  L2_4 = L1_3.ip
+  if L2_4 == nil then
+    if L1_3.mac == nil then
+      return _UPVALUE0_
+    end
+    if require("xiaoqiang.util.XQDeviceUtil").getDHCPDict()[L1_3.mac] == nil then
+      return _UPVALUE0_
+    end
+    L2_4 = require("xiaoqiang.util.XQDeviceUtil").getDHCPDict()[L1_3.mac].ip
+  end
+  if not string.match(L2_4, "^%d+%.%d+%.%d+%.%d+$") then
+    return _UPVALUE0_
+  end
+  if L1_3.command == "isalive" then
+    return isalive(L2_4)
+  elseif L1_3.command == "keyevent" then
+    return control(L2_4, L1_3.keycode)
+  elseif L1_3.command == "video_playurl" then
+    return playVideoByUrl(L2_4, L1_3.url)
+  elseif L1_3.command == "video_playmediaid" then
+    return playVideoByMediaid(L2_4, L1_3.mediaid, L1_3.ci)
+  elseif L1_3.command == "music_playurl" then
+    return playMusicByUrl(L2_4, L1_3.url)
+  elseif L1_3.command == "photo_playurl" then
+    return playPhotoByUrl(L2_4, L1_3.url)
+  else
+    return _UPVALUE2_
+  end
+end
+function castMitvResult(A0_5)
+  local L1_6
+  if A0_5 == nil or A0_5 == "" then
+    L1_6 = _UPVALUE0_
+    return L1_6
+  end
+  L1_6 = _UPVALUE1_
+  L1_6 = L1_6.decode
+  L1_6 = L1_6(A0_5)
+  L1_6.code = L1_6.status
+  return _UPVALUE1_.encode(L1_6)
+end
+function isalive(A0_7)
+  local L1_8, L2_9
+  L1_8 = "curl -s -k --connect-timeout 1 'http://%s:6095/request?action=isalive'"
+  L2_9 = DoExec
+  L2_9 = L2_9(string.format(L1_8, A0_7))
+  return castMitvResult(L2_9)
+end
+function control(A0_10, A1_11)
+  local L2_12, L3_13
+  L2_12 = string
+  L2_12 = L2_12.match
+  L3_13 = A1_11
+  L2_12 = L2_12(L3_13, "^%a+$")
+  if not L2_12 then
+    L2_12 = _UPVALUE0_
+    return L2_12
+  end
+  L2_12 = "curl -s -k 'http://%s:6095/controller?action=keyevent&keycode=%s'"
+  L3_13 = DoExec
+  L3_13 = L3_13(string.format(L2_12, A0_10, A1_11))
+  return castMitvResult(L3_13)
+end
+function playVideoByUrl(A0_14, A1_15)
+  local L2_16, L3_17
+  L2_16 = "curl -s -k 'http://%s:6095/video?action=play&url=%s&clientname=miwifi'"
+  L3_17 = DoExec
+  L3_17 = L3_17(string.format(L2_16, A0_14, _UPVALUE0_._cmdformat(_UPVALUE1_(A1_15))))
+  return castMitvResult(L3_17)
+end
+function playVideoByMediaid(A0_18, A1_19, A2_20)
+  local L3_21, L4_22
+  L3_21 = string
+  L3_21 = L3_21.match
+  L4_22 = A1_19
+  L3_21 = L3_21(L4_22, "^%d+$")
+  if L3_21 then
+    L3_21 = string
+    L3_21 = L3_21.match
+    L4_22 = A2_20
+    L3_21 = L3_21(L4_22, "^%d+$")
+  elseif not L3_21 then
+    L3_21 = _UPVALUE0_
+    return L3_21
+  end
+  L3_21 = "curl -s -k 'http://%s:6095/video?action=play&mediaid=%s&ci=%s&prefersource=1&clientname=miwifi'"
+  L4_22 = DoExec
+  L4_22 = L4_22(string.format(L3_21, A0_18, A1_19, A2_20))
+  return castMitvResult(L4_22)
+end
+function playMusicByUrl(A0_23, A1_24)
+  local L2_25, L3_26
+  L2_25 = "curl -s -k 'http://%s:6095/music?action=play&url=%s&clientname=miwifi'"
+  L3_26 = DoExec
+  L3_26 = L3_26(string.format(L2_25, A0_23, _UPVALUE0_._cmdformat(_UPVALUE1_(A1_24))))
+  return castMitvResult(L3_26)
+end
+function playPhotoByUrl(A0_27, A1_28)
+  local L2_29, L3_30
+  L2_29 = "curl -s -k 'http://%s:6095/photo?action=play&url=%s&clientname=miwifi'"
+  L3_30 = DoExec
+  L3_30 = L3_30(string.format(L2_29, A0_27, _UPVALUE0_._cmdformat(_UPVALUE1_(A1_28))))
+  return castMitvResult(L3_30)
+end

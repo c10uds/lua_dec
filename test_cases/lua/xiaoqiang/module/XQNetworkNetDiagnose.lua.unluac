@@ -1,0 +1,121 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQNetworkNetDiagnose", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+NETTB = {
+  ["1"] = "wan port unplug",
+  ["2"] = "dhcp no server",
+  ["3"] = "pppoe no reaponse",
+  ["4"] = "dhcp upstream conflict",
+  ["5"] = "gateway unreachable",
+  ["6"] = "dns resolve failed",
+  ["7"] = "dns custom set",
+  ["8"] = "wifi_ap gateway unreachable",
+  ["9"] = "wired_ap gateway unreachable",
+  ["10"] = "link broken",
+  ["31"] = "pppoe no more sesson",
+  ["32"] = "pppoe password error",
+  ["33"] = "pppoe account not valid",
+  ["34"] = "pppoe need reset mac",
+  ["35"] = "pppoe stop by user"
+}
+function execl2(A0_1)
+  local L1_2, L2_3
+  L1_2 = io
+  L1_2 = L1_2.popen
+  L2_3 = A0_1
+  L1_2 = L1_2(L2_3)
+  L2_3 = ""
+  while true do
+    L2_3 = L1_2:read()
+    if L2_3 == nil then
+      break
+    end
+    ;({})[#{} + 1] = L2_3
+  end
+  L1_2:close()
+  return {}
+end
+function saveNettb(A0_4)
+  if A0_4 then
+    require("xiaoqiang.XQPreference").set("NETTB", A0_4)
+  end
+end
+function getWanMode()
+  io.popen("uci -q get network.wan.proto"):close()
+  return (io.popen("uci -q get network.wan.proto"):read("*line"))
+end
+function getDnsIp()
+  local L0_5, L1_6, L2_7, L3_8, L4_9, L5_10, L6_11, L7_12, L8_13, L9_14, L10_15
+  L0_5 = execl2
+  L1_6 = "cat /tmp/resolv.conf.auto"
+  L0_5 = L0_5(L1_6)
+  L1_6 = nil
+  if L0_5 then
+    L2_7 = next
+    L2_7 = L2_7(L3_8)
+    if L2_7 ~= nil then
+      L2_7 = 0
+      for L6_11, L7_12 in L3_8(L4_9) do
+        if L2_7 > 2 then
+          break
+        end
+        L8_13 = string
+        L8_13 = L8_13.find
+        L9_14 = L7_12
+        L10_15 = "nameserver ([0-9]+%.[0-9]+%.[0-9]+%.[0-9]+)"
+        L10_15 = L8_13(L9_14, L10_15)
+        if L10_15 then
+          L2_7 = L2_7 + 1
+          if L1_6 then
+            L1_6 = L1_6 .. " " .. L10_15
+          else
+            L1_6 = L10_15
+          end
+        end
+      end
+      if L1_6 then
+        return L1_6
+      else
+        return L3_8
+      end
+    end
+  else
+    L2_7 = "0"
+    return L2_7
+  end
+end
+function getNetDiagResult()
+  local L0_16, L1_17, L2_18
+  L0_16 = require
+  L1_17 = "xiaoqiang.XQPreference"
+  L0_16 = L0_16(L1_17)
+  L1_17 = tonumber
+  L2_18 = L0_16.get
+  L2_18 = L2_18("NETTB")
+  L1_17 = L1_17(L2_18, L2_18("NETTB"))
+  if L1_17 then
+    if L1_17 == 99 then
+      L2_18 = L1_17
+      return L2_18, "detecting..."
+    elseif L1_17 == 0 then
+      L2_18 = L1_17
+      return L2_18, "network ok!"
+    else
+      L2_18 = NETTB
+      L2_18 = L2_18[tostring(L1_17)]
+      if L2_18 then
+        return L1_17, L2_18
+      end
+      return 4294967295, "unknown nettb code!"
+    end
+  else
+    L2_18 = 4294967294
+    return L2_18, "no diag result!"
+  end
+end
+function asyncNetDiag()
+  saveNettb("99")
+  _UPVALUE0_.forkExec("lua /usr/sbin/do_net_diagose.lua")
+end

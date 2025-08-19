@@ -1,0 +1,94 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQBrUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+function get_macs(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11, L11_12
+  L1_2 = "/sys/class/net/"
+  L2_3 = A0_1
+  L3_4 = "/brif"
+  L1_2 = L1_2 .. L2_3 .. L3_4
+  L2_3 = io
+  L2_3 = L2_3.open
+  L3_4 = L1_2
+  L2_3 = L2_3(L3_4)
+  if L2_3 == nil then
+    L3_4 = nil
+    return L3_4
+  end
+  L4_5 = L2_3
+  L3_4 = L2_3.close
+  L3_4(L4_5)
+  L3_4 = get_port_map
+  L4_5 = A0_1
+  L3_4 = L3_4(L4_5)
+  if A0_1 == nil then
+    L4_5 = nil
+    return L4_5
+  end
+  L4_5 = "cat /sys/class/net/"
+  L5_6 = A0_1
+  L4_5 = L4_5 .. L5_6 .. L6_7
+  L5_6 = _UPVALUE0_
+  L5_6 = L5_6.execl
+  L5_6 = L5_6(L6_7)
+  macs_table = L5_6
+  L5_6 = {}
+  for L9_10, L10_11 in L6_7(L7_8) do
+    L11_12 = {}
+    fields = _UPVALUE0_.split(L10_11, ";")
+    L11_12.no = fields[1]
+    L11_12.dev = L3_4[tonumber(L11_12.no)]
+    L11_12.mac = fields[2]
+    L11_12.is_local = fields[3]
+    L11_12.ageing = _UPVALUE0_.trim(fields[4])
+    table.insert(L5_6, L11_12)
+  end
+  return L5_6
+end
+function get_port_map(A0_13)
+  local L1_14, L2_15, L3_16, L4_17, L5_18, L6_19, L7_20, L8_21, L9_22, L10_23
+  L1_14 = {}
+  L2_15 = "ls /sys/class/net/"
+  L2_15 = L2_15 .. L3_16 .. L4_17
+  files = L3_16
+  for L6_19, L7_20 in L3_16(L4_17) do
+    L8_21 = "/sys/class/net/"
+    L9_22 = A0_13
+    L10_23 = "/brif/"
+    L8_21 = L8_21 .. L9_22 .. L10_23 .. L7_20 .. "/port_no"
+    L9_22 = io
+    L9_22 = L9_22.open
+    L10_23 = L8_21
+    L9_22 = L9_22(L10_23)
+    if L9_22 == nil then
+      L10_23 = nil
+      return L10_23
+    end
+    L10_23 = L9_22.read
+    L10_23 = L10_23(L9_22, "*a")
+    L9_22:close()
+    L1_14[tonumber(L10_23)] = L7_20
+  end
+  return L1_14
+end
+function print_br_macs(A0_24)
+  macs = get_macs(A0_24)
+  print(string.format("%s:", A0_24))
+  if macs == nil then
+    print("Device name error:" .. A0_24)
+    return nil
+  end
+  print(string.format("port_no\tdev\tmac_addr\t\tis_local\tageing_timer"))
+  for _FORV_4_, _FORV_5_ in ipairs(macs) do
+    print(string.format("%3s\t%s\t%s\t%s\t\t%8s", _FORV_5_.no, _FORV_5_.dev, _FORV_5_.mac, _FORV_5_.is_local, _FORV_5_.ageing))
+  end
+end
+function print_all_macs()
+  local L0_25, L1_26, L2_27, L3_28, L4_29
+  L3_28 = "br-guest"
+  for L3_28, L4_29 in L0_25(L1_26) do
+    print_br_macs(L4_29)
+  end
+end

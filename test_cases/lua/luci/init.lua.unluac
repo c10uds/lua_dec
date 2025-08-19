@@ -1,0 +1,8 @@
+local L0_0
+L0_0 = require
+if not _G.bit then
+  _G.bit = L0_0("bit")
+end
+module("luci")
+__version__ = L0_0("luci.version").luciversion or "trunk"
+__appname__ = L0_0("luci.version").luciname or "LuCI"

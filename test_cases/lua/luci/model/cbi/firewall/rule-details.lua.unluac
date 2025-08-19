@@ -1,0 +1,288 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11
+L0_0 = require
+L1_1 = "luci.sys"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "luci.dispatcher"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "nixio"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.tools.firewall"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "luci.model.network"
+L4_4 = L4_4(L5_5)
+L5_5, L6_6, L7_7, L8_8, L9_9 = nil, nil, nil, nil, nil
+L10_10 = arg
+L11_11 = arg
+L11_11 = L11_11[1]
+L11_11 = L11_11 or ""
+L10_10[1] = L11_11
+L10_10 = Map
+L11_11 = "firewall"
+L10_10 = L10_10(L11_11, translate("Firewall - Traffic Rules"), translate([[
+This page allows you to change advanced properties of the 
+	           traffic rule entry, such as matched source and destination 
+			   hosts.]]))
+L5_5 = L10_10
+L10_10 = L1_1.build_url
+L11_11 = "admin/network/firewall/rules"
+L10_10 = L10_10(L11_11)
+L5_5.redirect = L10_10
+L10_10 = L4_4.init
+L11_11 = L5_5.uci
+L10_10(L11_11)
+L10_10 = L5_5.uci
+L11_11 = L10_10
+L10_10 = L10_10.get
+L10_10 = L10_10(L11_11, "firewall", arg[1])
+if L10_10 == "redirect" then
+  L11_11 = L5_5.get
+  L11_11 = L11_11(L5_5, arg[1], "target")
+  if L11_11 ~= "SNAT" then
+    L10_10 = nil
+  end
+end
+if not L10_10 then
+  L11_11 = luci
+  L11_11 = L11_11.http
+  L11_11 = L11_11.redirect
+  L11_11(L5_5.redirect)
+  return
+elseif L10_10 == "redirect" then
+  L11_11 = L5_5.get
+  L11_11 = L11_11(L5_5, arg[1], "name")
+  if not L11_11 then
+    L11_11 = L5_5.get
+    L11_11 = L11_11(L5_5, arg[1], "_name")
+  end
+  if not L11_11 or #L11_11 == 0 then
+    L11_11 = translate("(Unnamed SNAT)")
+  else
+    L11_11 = "SNAT %s" % L11_11
+  end
+  L5_5.title = "%s - %s" % {
+    translate("Firewall - Traffic Rules"),
+    L11_11
+  }
+  L5_5.uci:foreach("firewall", "zone", function(A0_12)
+    local L1_13, L2_14
+    L1_13 = A0_12.network
+    L1_13 = L1_13 or A0_12.name
+    if L1_13 then
+      L2_14 = nil
+      for _FORV_6_ in L1_13:gmatch("%S+") do
+        if _FORV_6_ == "wan" then
+          _UPVALUE0_ = A0_12.name
+          return false
+        end
+      end
+    end
+  end)
+  L6_6 = L5_5:section(NamedSection, arg[1], "redirect", "")
+  L6_6.anonymous = true
+  L6_6.addremove = false
+  L3_3.opt_enabled(L6_6, Button)
+  L3_3.opt_name(L6_6, Value, translate("Name"))
+  L7_7 = L6_6:option(Value, "proto", translate("Protocol"), translate([[
+You may specify multiple by selecting "-- custom --" and 
+		           then entering protocols separated by space.]]))
+  L7_7:value("all", "All protocols")
+  L7_7:value("tcp udp", "TCP+UDP")
+  L7_7:value("tcp", "TCP")
+  L7_7:value("udp", "UDP")
+  L7_7:value("icmp", "ICMP")
+  function L7_7.cfgvalue(...)
+    local L1_16, L2_17
+    L1_16 = Value
+    L1_16 = L1_16.cfgvalue
+    L2_17 = ...
+    L1_16 = L1_16(L2_17)
+    if not L1_16 or L1_16 == "tcpudp" then
+      L2_17 = "tcp udp"
+      return L2_17
+    end
+    return L1_16
+  end
+  L7_7 = L6_6:option(Value, "src", translate("Source zone"))
+  L7_7.nocreate = true
+  L7_7.default = "wan"
+  L7_7.template = "cbi/firewall_zonelist"
+  L7_7 = L6_6:option(DynamicList, "src_mac", translate("Source MAC address"))
+  L7_7.rmempty = true
+  L7_7.datatype = "neg(macaddr)"
+  L7_7.placeholder = translate("any")
+  luci.sys.net.mac_hints(function(A0_18, A1_19)
+    _UPVALUE0_:value(A0_18, "%s (%s)" % {A0_18, A1_19})
+  end)
+  L7_7 = L6_6:option(Value, "src_ip", translate("Source IP address"))
+  L7_7.rmempty = true
+  L7_7.datatype = "neg(ipaddr)"
+  L7_7.placeholder = translate("any")
+  luci.sys.net.ipv4_hints(function(A0_20, A1_21)
+    _UPVALUE0_:value(A0_20, "%s (%s)" % {A0_20, A1_21})
+  end)
+  L7_7 = L6_6:option(Value, "src_port", translate("Source port"), translate([[
+Match incoming traffic originating from the given source 
+			port or port range on the client host.]]))
+  L7_7.rmempty = true
+  L7_7.datatype = "neg(portrange)"
+  L7_7.placeholder = translate("any")
+  L7_7 = L6_6:option(Value, "dest", translate("Destination zone"))
+  L7_7.nocreate = true
+  L7_7.default = "lan"
+  L7_7.template = "cbi/firewall_zonelist"
+  L7_7 = L6_6:option(Value, "dest_ip", translate("Destination IP address"))
+  L7_7.datatype = "neg(ip4addr)"
+  luci.sys.net.ipv4_hints(function(A0_22, A1_23)
+    _UPVALUE0_:value(A0_22, "%s (%s)" % {A0_22, A1_23})
+  end)
+  L7_7 = L6_6:option(Value, "dest_port", translate("Destination port"), translate([[
+Match forwarded traffic to the given destination port or 
+			port range.]]))
+  L7_7.rmempty = true
+  L7_7.placeholder = translate("any")
+  L7_7.datatype = "neg(portrange)"
+  L7_7 = L6_6:option(Value, "src_dip", translate("SNAT IP address"), translate("Rewrite matched traffic to the given address."))
+  L7_7.rmempty = false
+  L7_7.datatype = "ip4addr"
+  for _FORV_16_, _FORV_17_ in ipairs(L4_4:get_interfaces()) do
+    for _FORV_22_, _FORV_23_ in ipairs(_FORV_17_:ipaddrs()) do
+      L7_7:value(_FORV_23_:host():string(), "%s (%s)" % {
+        _FORV_23_:host():string(),
+        _FORV_17_:shortname()
+      })
+    end
+  end
+  L7_7 = L6_6:option(Value, "src_dport", translate("SNAT port"), translate([[
+Rewrite matched traffic to the given source port. May be 
+			left empty to only rewrite the IP address.]]))
+  L7_7.datatype = "portrange"
+  L7_7.rmempty = true
+  L7_7.placeholder = translate("Do not rewrite")
+  L6_6:option(Value, "extra", translate("Extra arguments"), translate("Passes additional arguments to iptables. Use with care!"))
+else
+  L11_11 = L5_5.get
+  L11_11 = L11_11(L5_5, arg[1], "name")
+  if not L11_11 then
+    L11_11 = L5_5.get
+    L11_11 = L11_11(L5_5, arg[1], "_name")
+  end
+  if not L11_11 or #L11_11 == 0 then
+    L11_11 = translate("(Unnamed Rule)")
+  end
+  L5_5.title = "%s - %s" % {
+    translate("Firewall - Traffic Rules"),
+    L11_11
+  }
+  L6_6 = L5_5:section(NamedSection, arg[1], "rule", "")
+  L6_6.anonymous = true
+  L6_6.addremove = false
+  L3_3.opt_enabled(L6_6, Button)
+  L3_3.opt_name(L6_6, Value, translate("Name"))
+  L7_7 = L6_6:option(ListValue, "family", translate("Restrict to address family"))
+  L7_7.rmempty = true
+  L7_7:value("", translate("IPv4 and IPv6"))
+  L7_7:value("ipv4", translate("IPv4 only"))
+  L7_7:value("ipv6", translate("IPv6 only"))
+  L7_7 = L6_6:option(Value, "proto", translate("Protocol"))
+  L7_7:value("all", translate("Any"))
+  L7_7:value("tcp udp", "TCP+UDP")
+  L7_7:value("tcp", "TCP")
+  L7_7:value("udp", "UDP")
+  L7_7:value("icmp", "ICMP")
+  function L7_7.cfgvalue(...)
+    local L1_25, L2_26
+    L1_25 = Value
+    L1_25 = L1_25.cfgvalue
+    L2_26 = ...
+    L1_25 = L1_25(L2_26)
+    if not L1_25 or L1_25 == "tcpudp" then
+      L2_26 = "tcp udp"
+      return L2_26
+    end
+    return L1_25
+  end
+  L7_7 = L6_6:option(DynamicList, "icmp_type", translate("Match ICMP type"))
+  L7_7:value("", "any")
+  L7_7:value("echo-reply")
+  L7_7:value("destination-unreachable")
+  L7_7:value("network-unreachable")
+  L7_7:value("host-unreachable")
+  L7_7:value("protocol-unreachable")
+  L7_7:value("port-unreachable")
+  L7_7:value("fragmentation-needed")
+  L7_7:value("source-route-failed")
+  L7_7:value("network-unknown")
+  L7_7:value("host-unknown")
+  L7_7:value("network-prohibited")
+  L7_7:value("host-prohibited")
+  L7_7:value("TOS-network-unreachable")
+  L7_7:value("TOS-host-unreachable")
+  L7_7:value("communication-prohibited")
+  L7_7:value("host-precedence-violation")
+  L7_7:value("precedence-cutoff")
+  L7_7:value("source-quench")
+  L7_7:value("redirect")
+  L7_7:value("network-redirect")
+  L7_7:value("host-redirect")
+  L7_7:value("TOS-network-redirect")
+  L7_7:value("TOS-host-redirect")
+  L7_7:value("echo-request")
+  L7_7:value("router-advertisement")
+  L7_7:value("router-solicitation")
+  L7_7:value("time-exceeded")
+  L7_7:value("ttl-zero-during-transit")
+  L7_7:value("ttl-zero-during-reassembly")
+  L7_7:value("parameter-problem")
+  L7_7:value("ip-header-bad")
+  L7_7:value("required-option-missing")
+  L7_7:value("timestamp-request")
+  L7_7:value("timestamp-reply")
+  L7_7:value("address-mask-request")
+  L7_7:value("address-mask-reply")
+  L7_7 = L6_6:option(Value, "src", translate("Source zone"))
+  L7_7.nocreate = true
+  L7_7.allowany = true
+  L7_7.default = "wan"
+  L7_7.template = "cbi/firewall_zonelist"
+  L7_7 = L6_6:option(Value, "src_mac", translate("Source MAC address"))
+  L7_7.datatype = "list(macaddr)"
+  L7_7.placeholder = translate("any")
+  luci.sys.net.mac_hints(function(A0_27, A1_28)
+    _UPVALUE0_:value(A0_27, "%s (%s)" % {A0_27, A1_28})
+  end)
+  L7_7 = L6_6:option(Value, "src_ip", translate("Source address"))
+  L7_7.datatype = "neg(ipaddr)"
+  L7_7.placeholder = translate("any")
+  luci.sys.net.ipv4_hints(function(A0_29, A1_30)
+    _UPVALUE0_:value(A0_29, "%s (%s)" % {A0_29, A1_30})
+  end)
+  L7_7 = L6_6:option(Value, "src_port", translate("Source port"))
+  L7_7.datatype = "list(neg(portrange))"
+  L7_7.placeholder = translate("any")
+  L7_7 = L6_6:option(Value, "dest", translate("Destination zone"))
+  L7_7.nocreate = true
+  L7_7.allowany = true
+  L7_7.allowlocal = true
+  L7_7.template = "cbi/firewall_zonelist"
+  L7_7 = L6_6:option(Value, "dest_ip", translate("Destination address"))
+  L7_7.datatype = "neg(ipaddr)"
+  L7_7.placeholder = translate("any")
+  luci.sys.net.ipv4_hints(function(A0_31, A1_32)
+    _UPVALUE0_:value(A0_31, "%s (%s)" % {A0_31, A1_32})
+  end)
+  L7_7 = L6_6:option(Value, "dest_port", translate("Destination port"))
+  L7_7.datatype = "list(neg(portrange))"
+  L7_7.placeholder = translate("any")
+  L7_7 = L6_6:option(ListValue, "target", translate("Action"))
+  L7_7.default = "ACCEPT"
+  L7_7:value("DROP", translate("drop"))
+  L7_7:value("ACCEPT", translate("accept"))
+  L7_7:value("REJECT", translate("reject"))
+  L7_7:value("NOTRACK", translate("don't track"))
+  L6_6:option(Value, "extra", translate("Extra arguments"), translate("Passes additional arguments to iptables. Use with care!"))
+end
+return L5_5

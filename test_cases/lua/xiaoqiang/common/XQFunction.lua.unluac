@@ -1,0 +1,594 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.common.XQFunction", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQConfigs")
+function macFormat(A0_1)
+  local L1_2
+  if A0_1 then
+    L1_2 = _cmdformat
+    L1_2 = L1_2(string.upper((string.gsub(A0_1, "-", ":"))))
+    return L1_2
+  else
+    L1_2 = ""
+    return L1_2
+  end
+end
+function isStrNil(A0_3)
+  local L1_4
+  L1_4 = A0_3 == nil or A0_3 == ""
+  return L1_4
+end
+function checkChineseChar(A0_5)
+  local L1_6, L2_7, L3_8, L4_9, L5_10
+  L1_6 = false
+  if A0_5 then
+    if L2_7 == "string" then
+      for L5_10 = 1, #A0_5 do
+        if string.byte(A0_5, L5_10) > 127 then
+          L1_6 = true
+          break
+        end
+      end
+    end
+  end
+  return L1_6
+end
+function isDomain(A0_11)
+  if not A0_11 then
+    return false
+  end
+  if A0_11:match("^%w[%w%-%.]+%w$") then
+    return true
+  end
+  return false
+end
+function parseEnter2br(A0_12)
+  if A0_12 ~= nil then
+    A0_12 = A0_12:gsub("\r\n", "<br>")
+    A0_12 = A0_12:gsub("\r", "<br>")
+    A0_12 = A0_12:gsub("\n", "<br>")
+  end
+  return A0_12
+end
+function forkExec(A0_13)
+  local L1_14, L2_15, L3_16
+  L1_14 = require
+  L2_15 = "nixio"
+  L1_14 = L1_14(L2_15)
+  L2_15 = L1_14.fork
+  L2_15 = L2_15()
+  if L2_15 > 0 then
+    return
+  elseif L2_15 == 0 then
+    L3_16 = L1_14.chdir
+    L3_16("/")
+    L3_16 = L1_14.open
+    L3_16 = L3_16("/dev/null", "w+")
+    if L3_16 then
+      L1_14.dup(L3_16, L1_14.stderr)
+      L1_14.dup(L3_16, L1_14.stdout)
+      L1_14.dup(L3_16, L1_14.stdin)
+      if L3_16:fileno() > 2 then
+        L3_16:close()
+      end
+    end
+    L1_14.exec("/bin/sh", "-c", A0_13)
+  end
+end
+function doPrint(A0_17)
+  local L1_18, L2_19, L3_20, L4_21, L5_22
+  if L1_18 == "table" then
+    for L4_21, L5_22 in L1_18(L2_19) do
+      if type(L5_22) == "table" then
+        print("<" .. L4_21 .. ": ")
+        doPrint(L5_22)
+        print(">")
+      else
+        print("[" .. L4_21 .. " : " .. tostring(L5_22) .. "]")
+      end
+    end
+  else
+    L1_18(L2_19)
+  end
+end
+function forkRestartWifi(A0_23)
+  if A0_23 then
+    forkExec(_UPVALUE0_.FORK_RESTART_WIFI .. ";" .. A0_23)
+  else
+    forkExec(_UPVALUE0_.FORK_RESTART_WIFI)
+  end
+end
+function forkRestartWifiNotify()
+  forkExec(_UPVALUE0_.FORK_RESTART_WIFI_NOTIFY_BUT_MIIO)
+end
+function forkRestartWifiNotifyButMiio()
+  forkExec(_UPVALUE0_.FORK_RESTART_WIFI_NOTIFY_BUT_MIIO)
+end
+function forkReboot()
+  forkExec(_UPVALUE0_.FORK_RESTART_ROUTER)
+end
+function forkShutdown()
+  forkExec(_UPVALUE0_.FORK_SHUTDOWN_ROUTER)
+end
+function forkResetAll()
+  forkExec(_UPVALUE0_.FORK_RESET_ALL)
+end
+function forkRestartDnsmasq()
+  forkExec(_UPVALUE0_.FORK_RESTART_DNSMASQ)
+end
+function forkFlashRomFile(A0_24)
+  forkExec("flash.sh " .. A0_24)
+end
+function forkShutdownAndRebootWithDelay(A0_25, A1_26)
+  local L2_27, L3_28, L4_29
+  L2_27 = tonumber
+  L3_28 = A0_25
+  L2_27 = L2_27(L3_28)
+  L3_28 = tonumber
+  L4_29 = A1_26
+  L3_28 = L3_28(L4_29)
+  if L2_27 and L3_28 and (L2_27 ~= 0 or L3_28 ~= 0) then
+    L4_29 = nil
+    if L2_27 > 0 and L3_28 > 0 then
+      L4_29 = string.format("sleep %s ; /usr/sbin/uhbn 2 %s", tostring(60 * L2_27), tostring(L3_28))
+    end
+    if L2_27 == 0 and L3_28 > 0 then
+      L4_29 = string.format("sleep 4 ; /usr/sbin/uhbn 2 %s", tostring(L3_28))
+    end
+    if L2_27 > 0 and L3_28 == 0 then
+      L4_29 = string.format("sleep %s ; /usr/sbin/uhbn 3", tostring(60 * L2_27))
+    end
+    forkExec(L4_29)
+  end
+end
+function syncRestartMacFilter()
+  os.execute(_UPVALUE0_.RESTART_MAC_FILTER)
+end
+function closeWebInitRDR()
+  os.execute("/usr/sbin/sysapi webinitrdr set off")
+end
+function getTime()
+  local L1_30
+  L1_30 = os
+  L1_30 = L1_30.date
+  return L1_30("%Y-%m-%d--%X", os.time())
+end
+function hzFormat(A0_31)
+  for _FORV_5_ = 1, 5 do
+    if A0_31 > 1024 and _FORV_5_ < 5 then
+      A0_31 = A0_31 / 1024
+    else
+      return string.format("%.2f %s", A0_31, ({
+        "Hz",
+        "KHz",
+        "MHz",
+        "GHz",
+        "THz"
+      })[_FORV_5_])
+    end
+  end
+end
+function byteFormat(A0_32)
+  for _FORV_5_ = 1, 5 do
+    if A0_32 > 1024 and _FORV_5_ < 5 then
+      A0_32 = A0_32 / 1024
+    else
+      return string.format("%.2f %s", A0_32, ({
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+      })[_FORV_5_])
+    end
+  end
+end
+function utfstrlen(A0_33)
+  local L1_34, L2_35, L4_36
+  L1_34 = #A0_33
+  L2_35 = L1_34
+  L4_36 = 0
+  while L2_35 ~= 0 do
+    while ({
+      0,
+      192,
+      224,
+      240,
+      248,
+      252
+    })[#{
+      0,
+      192,
+      224,
+      240,
+      248,
+      252
+    }] do
+      if string.byte(A0_33, #L2_35) >= ({
+        0,
+        192,
+        224,
+        240,
+        248,
+        252
+      })[#{
+        0,
+        192,
+        224,
+        240,
+        248,
+        252
+      }] then
+        L2_35 = L2_35 - #{
+          0,
+          192,
+          224,
+          240,
+          248,
+          252
+        }
+        break
+      end
+    end
+    L4_36 = L4_36 + 1
+  end
+  return L4_36
+end
+function checkSSID(A0_37)
+  local L1_38
+  L1_38 = true
+  return L1_38
+end
+function sysLock()
+  return os.execute(_UPVALUE0_.UPGRADE_LOCK)
+end
+function sysUnlock()
+  return os.execute(_UPVALUE0_.UPGRADE_UNLOCK)
+end
+function sysLockStatus()
+  if require("luci.fs").access(_UPVALUE0_.UPGRADE_LOCK_FILE) then
+    return 1
+  else
+    return 0
+  end
+end
+function ledFlashAlert(A0_39)
+  if A0_39 then
+    forkExec(_UPVALUE0_.UPDATE_LED_FLASH_ALERT_ENABLE)
+  else
+    os.execute(_UPVALUE0_.UPDATE_LED_FLASH_ALERT_DISABLE)
+  end
+end
+function getGpioValue(A0_40)
+  local L1_41, L2_42
+  L1_41 = require
+  L2_42 = "luci.util"
+  L1_41 = L1_41(L2_42)
+  L2_42 = L1_41.exec
+  L2_42 = L2_42(string.format(_UPVALUE0_.GPIO_VALUE, tostring(A0_40)))
+  if L2_42 then
+    return tonumber(L1_41.trim(L2_42)) or 0
+  end
+  return 0
+end
+function _cmdformat(A0_43)
+  if isStrNil(A0_43) then
+    return ""
+  else
+    return (A0_43:gsub("\\", "\\\\"):gsub("`", "\\`"):gsub("\"", "\\\""):gsub("%$", "\\$"))
+  end
+end
+function _strformat(A0_44)
+  if isStrNil(A0_44) then
+    return ""
+  else
+    return (A0_44:gsub("'", ""):gsub("\\", "\\\\"):gsub("`", "\\`"):gsub("\"", "\\\""):gsub("%$", "\\$"))
+  end
+end
+function paramFormat(A0_45)
+  if isStrNil(A0_45) then
+    return ""
+  else
+    return (A0_45:gsub("\\", "\\\\"):gsub("`", "\\`"):gsub("\"", "\\\""):gsub("%$", "\\$"))
+  end
+end
+function bdataGet(A0_46, A1_47)
+  local L2_48, L3_49, L4_50
+  L2_48 = isStrNil
+  L3_49 = A0_46
+  L2_48 = L2_48(L3_49)
+  if L2_48 then
+    return A1_47
+  end
+  L2_48 = require
+  L3_49 = "luci.util"
+  L2_48 = L2_48(L3_49)
+  L3_49 = string
+  L3_49 = L3_49.format
+  L4_50 = "bdata get \"%s\""
+  L3_49 = L3_49(L4_50, _cmdformat(A0_46))
+  L4_50 = L2_48.exec
+  L4_50 = L4_50(L3_49)
+  if L4_50 then
+    L4_50 = L2_48.trim(L4_50)
+    return L4_50
+  end
+  return A1_47
+end
+function nvramGet(A0_51, A1_52)
+  local L2_53, L3_54, L4_55
+  L2_53 = isStrNil
+  L3_54 = A0_51
+  L2_53 = L2_53(L3_54)
+  if L2_53 then
+    return A1_52
+  end
+  L2_53 = require
+  L3_54 = "luci.util"
+  L2_53 = L2_53(L3_54)
+  L3_54 = string
+  L3_54 = L3_54.format
+  L4_55 = "nvram get \"%s\""
+  L3_54 = L3_54(L4_55, _cmdformat(A0_51))
+  L4_55 = L2_53.exec
+  L4_55 = L4_55(L3_54)
+  if L4_55 then
+    L4_55 = L2_53.trim(L4_55)
+    return L4_55
+  end
+  return A1_52
+end
+function nvramSet(A0_56, A1_57)
+  local L2_58
+  L2_58 = isStrNil
+  L2_58 = L2_58(A0_56)
+  if L2_58 then
+    return
+  end
+  L2_58 = nil
+  if isStrNil(A1_57) then
+    L2_58 = string.format("nvram unset \"%s\"", _cmdformat(A0_56))
+  else
+    L2_58 = string.format("nvram set \"%s\"=\"%s\"", _cmdformat(A0_56), _cmdformat(A1_57))
+  end
+  os.execute(L2_58)
+end
+function nvramCommit()
+  os.execute("nvram commit")
+end
+function getNetMode()
+  local L0_59, L1_60
+  L0_59 = require
+  L1_60 = "luci.model.uci"
+  L0_59 = L0_59(L1_60)
+  L0_59 = L0_59.cursor
+  L0_59 = L0_59()
+  L1_60 = L0_59.get
+  L1_60 = L1_60(L0_59, "xiaoqiang", "common", "NETMODE")
+  if isStrNil(L1_60) then
+    L1_60 = nil
+  end
+  return L1_60
+end
+function miscRecovery()
+  local L0_61, L1_62
+  L0_61 = require
+  L1_62 = "luci.model.uci"
+  L0_61 = L0_61(L1_62)
+  L0_61 = L0_61.cursor
+  L0_61 = L0_61()
+  L1_62 = L0_61.get
+  L1_62 = L1_62(L0_61, "misc", "hardware", "recovery")
+  if isStrNil(L1_62) then
+    L1_62 = 0
+  end
+  return tonumber(L1_62)
+end
+function getNetModeType()
+  if miscRecovery() == 1 then
+    return 100
+  end
+  if getNetMode() == "lanapmode" then
+  elseif getNetMode() == "wifiapmode" then
+  else
+  end
+  return 3
+end
+function setNetMode(A0_63)
+  if A0_63 then
+    if A0_63 == "wifiapmode" then
+      require("xiaoqiang.util.XQSynchrodata").syncWorkMode(1)
+    elseif A0_63 == "lanapmode" then
+      require("xiaoqiang.util.XQSynchrodata").syncWorkMode(2)
+    end
+    require("luci.model.uci").cursor():set("xiaoqiang", "common", "NETMODE", A0_63)
+  else
+    require("xiaoqiang.util.XQSynchrodata").syncWorkMode(0)
+    require("luci.model.uci").cursor():delete("xiaoqiang", "common", "NETMODE")
+  end
+  require("luci.model.uci").cursor():commit("xiaoqiang")
+end
+function thrift_tunnel_to_datacenter(A0_64)
+  local L1_65, L2_66, L3_67
+  L1_65 = isStrNil
+  L2_66 = A0_64
+  L1_65 = L1_65(L2_66)
+  if L1_65 then
+    L1_65 = nil
+    return L1_65
+  end
+  L1_65 = require
+  L2_66 = "luci.util"
+  L1_65 = L1_65(L2_66)
+  L2_66 = require
+  L3_67 = "xiaoqiang.util.XQCryptoUtil"
+  L2_66 = L2_66(L3_67)
+  L3_67 = L2_66.binaryBase64Enc
+  L3_67 = L3_67(A0_64)
+  A0_64 = L3_67
+  L3_67 = L1_65.trim
+  L3_67 = L3_67(L1_65.exec(_UPVALUE0_.THRIFT_TUNNEL_TO_DATACENTER % A0_64))
+  if isStrNil(L3_67) then
+    return nil
+  else
+    return require("cjson").decode(L3_67)
+  end
+end
+function thrift_tunnel_to_smarthome_controller(A0_68)
+  local L1_69, L2_70, L3_71
+  L1_69 = isStrNil
+  L2_70 = A0_68
+  L1_69 = L1_69(L2_70)
+  if L1_69 then
+    L1_69 = nil
+    return L1_69
+  end
+  L1_69 = require
+  L2_70 = "luci.util"
+  L1_69 = L1_69(L2_70)
+  L2_70 = require
+  L3_71 = "xiaoqiang.util.XQCryptoUtil"
+  L2_70 = L2_70(L3_71)
+  L3_71 = L2_70.binaryBase64Enc
+  L3_71 = L3_71(A0_68)
+  A0_68 = L3_71
+  L3_71 = L1_69.trim
+  L3_71 = L3_71(L1_69.exec(_UPVALUE0_.THRIFT_TUNNEL_TO_SMARTHOME_CONTROLLER % A0_68))
+  if isStrNil(L3_71) then
+    return nil
+  else
+    return require("cjson").decode(L3_71)
+  end
+end
+function mattool_identify_device()
+  local L0_72, L1_73, L2_74
+  L0_72 = require
+  L1_73 = "luci.util"
+  L0_72 = L0_72(L1_73)
+  L1_73 = "matool --method identifyDevice"
+  L2_74 = L0_72.trim
+  L2_74 = L2_74(L0_72.exec(L1_73))
+  if isStrNil(L2_74) then
+    L2_74 = ""
+  end
+  return L2_74
+end
+function mattool_get_deviceid()
+  local L0_75, L1_76, L2_77
+  L0_75 = require
+  L1_76 = "luci.util"
+  L0_75 = L0_75(L1_76)
+  L1_76 = "matool --method deviceID"
+  L2_77 = L0_75.trim
+  L2_77 = L2_77(L0_75.exec(L1_76))
+  if isStrNil(L2_77) then
+    L2_77 = ""
+  end
+  return L2_77
+end
+function _parse(A0_78, A1_79)
+  local L2_80, L3_81, L4_82, L5_83, L6_84, L7_85
+  if A0_78 == 0 then
+    L2_80 = 0
+    return L2_80
+  end
+  L2_80 = 0
+  for L6_84 = 0, 7 do
+    L7_85 = bit
+    L7_85 = L7_85.rshift
+    L7_85 = L7_85(128, L6_84)
+    if bit.band(A0_78, L7_85) == 0 then
+      if A0_78 - L2_80 == 0 then
+        if A1_79 == 0 or A1_79 == 2 then
+          return 4294967295
+        elseif A1_79 == 1 then
+          return 2
+        end
+      else
+        return 4294967295
+      end
+    end
+    L2_80 = L2_80 + L7_85
+  end
+  return L3_81
+end
+function checkMask(A0_86)
+  local L1_87, L2_88, L3_89, L4_90, L5_91, L6_92, L7_93, L8_94, L9_95
+  L1_87 = isStrNil
+  L2_88 = A0_86
+  L1_87 = L1_87(L2_88)
+  if L1_87 then
+    L1_87 = false
+    return L1_87
+  end
+  if A0_86 == "0.0.0.0" or A0_86 == "255.255.255.255" then
+    L1_87 = false
+    return L1_87
+  end
+  L1_87 = require
+  L2_88 = "luci.util"
+  L1_87 = L1_87(L2_88)
+  L2_88 = require
+  L3_89 = "luci.cbi.datatypes"
+  L2_88 = L2_88(L3_89)
+  L3_89 = L2_88.ipaddr
+  L4_90 = A0_86
+  L3_89 = L3_89(L4_90)
+  if not L3_89 then
+    L3_89 = false
+    return L3_89
+  end
+  L3_89 = L1_87.split
+  L4_90 = A0_86
+  L3_89 = L3_89(L4_90, L5_91)
+  L4_90 = 1
+  for L8_94, L9_95 in L5_91(L6_92) do
+    L4_90 = _parse(tonumber(L9_95), L4_90)
+    if L4_90 == 4294967295 then
+      return false
+    end
+  end
+  return L5_91
+end
+function encode4HtmlValue(A0_96)
+  A0_96 = string.gsub(A0_96, "&", "&amp;")
+  A0_96 = string.gsub(A0_96, "<", "&lt;")
+  A0_96 = string.gsub(A0_96, ">", "&gt;")
+  A0_96 = string.gsub(A0_96, "\"", "&quot;")
+  A0_96 = string.gsub(A0_96, "'", "&#039;")
+  return A0_96
+end
+function encode4Js(A0_97)
+  A0_97 = string.gsub(A0_97, "\\", "\\\\")
+  return A0_97
+end
+function getRouterName()
+  local L0_98, L1_99, L2_100
+  L0_98 = require
+  L1_99 = "xiaoqiang.util.XQSysUtil"
+  L0_98 = L0_98(L1_99)
+  L1_99 = L0_98.getRouterName
+  L1_99 = L1_99()
+  L2_100 = L0_98.getRouterLocale
+  L2_100 = L2_100()
+  if L2_100 ~= "" then
+    L2_100 = " (" .. encode4HtmlValue(L2_100) .. ")"
+  end
+  L1_99 = encode4HtmlValue(L1_99) .. L2_100
+  return L1_99
+end
+function get_active_apcli()
+  local L0_101, L1_102
+  L0_101 = require
+  L1_102 = "luci.model.uci"
+  L0_101 = L0_101(L1_102)
+  L0_101 = L0_101.cursor
+  L0_101 = L0_101()
+  L1_102 = L0_101.get
+  L1_102 = L1_102(L0_101, "xiaoqiang", "common", "active_apcli")
+  if isStrNil(L1_102) then
+    L1_102 = nil
+  end
+  return L1_102
+end

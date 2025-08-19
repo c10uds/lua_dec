@@ -1,0 +1,406 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11
+L0_0 = require
+L1_1 = "posix.bit32"
+L0_0 = L0_0(L1_1)
+L1_1 = {}
+L5_5 = "dirent"
+L6_6 = "errno"
+L7_7 = "fcntl"
+L11_11 = "grp"
+for L5_5, L6_6 in L2_2(L3_3) do
+  L7_7 = require
+  L7_7 = L7_7(L8_8)
+  for L11_11, _FORV_12_ in L8_8(L9_9) do
+    if L11_11 ~= "version" then
+      assert(L1_1[L11_11] == nil, "posix namespace clash: " .. L6_6 .. "." .. L11_11)
+      L1_1[L11_11] = _FORV_12_
+    end
+  end
+end
+L1_1.version = L2_2
+L5_5 = L1_1.checktable
+L6_6 = L1_1.toomanyargerror
+L7_7 = {}
+L7_7.sub = L8_8
+L11_11 = L1_1.getegid
+if _DEBUG ~= false then
+  function L1_1.euidaccess(...)
+    local L1_13
+    L1_13 = {
+      ...
+    }
+    _UPVALUE0_("euidaccess", 1, L1_13[1])
+    _UPVALUE0_("euidaccess", 2, L1_13[2])
+    if #L1_13 > 2 then
+      _UPVALUE1_("euidaccess", 2, #L1_13)
+    end
+    return _UPVALUE2_(...)
+  end
+else
+  function L1_1.euidaccess(A0_14, A1_15)
+    local L2_16, L3_17, L4_18, L5_19
+    L2_16 = _UPVALUE0_
+    L2_16 = L2_16()
+    L3_17 = _UPVALUE1_
+    L3_17 = L3_17()
+    L4_18 = _UPVALUE2_
+    L4_18 = L4_18()
+    if L4_18 == L2_16 then
+      L4_18 = _UPVALUE3_
+      L4_18 = L4_18()
+      if L4_18 == L3_17 then
+        L4_18 = _UPVALUE4_
+        L5_19 = A0_14
+        return L4_18(L5_19, A1_15)
+      end
+    end
+    L4_18 = _UPVALUE5_
+    L5_19 = A0_14
+    L4_18 = L4_18(L5_19)
+    if not L4_18 then
+      return
+    end
+    if L2_16 == 0 then
+      L5_19 = string
+      L5_19 = L5_19.match
+      L5_19 = L5_19(A1_15, "x")
+      if L5_19 then
+        L5_19 = string
+        L5_19 = L5_19.match
+        L5_19 = L5_19(L4_18.st_mode, "x")
+      elseif L5_19 then
+        L5_19 = 0
+        return L5_19
+      end
+    end
+    L5_19 = string
+    L5_19 = L5_19.gsub
+    L5_19 = L5_19(A1_15, "[^rwx]", "")
+    A1_15 = L5_19
+    if A1_15 == "" then
+      L5_19 = 0
+      return L5_19
+    end
+    L5_19 = L4_18.st_mode
+    L5_19 = L5_19.sub
+    L5_19 = L5_19(L5_19, 1, 3)
+    if L2_16 == L4_18.st_uid then
+      L5_19 = L4_18.st_mode:sub(7, 9)
+    elseif L3_17 == L4_18.st_gid or set.new(posix.getgroups()):member(L4_18.st_gid) then
+      L5_19 = L4_18.st_mode:sub(4, 6)
+    end
+    L5_19 = string.gsub(L5_19, "[^rwx]", "")
+    if string.gsub("[^" .. L5_19 .. "]", A1_15) == "" then
+      return 0
+    end
+    _UPVALUE6_(EACCESS)
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.openpty(...)
+    local L1_21
+    L1_21 = {
+      ...
+    }
+    if #L1_21 > 0 then
+      _UPVALUE0_("openpty", 0, #L1_21)
+    end
+    return _UPVALUE1_(...)
+  end
+else
+  function L1_1.openpty(A0_22, A1_23)
+    local L2_24, L3_25, L4_26, L5_27, L6_28
+    L4_26, L3_25 = _UPVALUE0_(_UPVALUE1_(_UPVALUE2_, _UPVALUE3_))
+    if L4_26 then
+      L2_24, L3_25 = _UPVALUE4_(L4_26)
+      if L2_24 then
+        L2_24, L3_25 = _UPVALUE5_(L4_26)
+        if L2_24 then
+          L6_28, L3_25 = _UPVALUE6_(L4_26)
+          if L6_28 then
+            L5_27, L3_25 = _UPVALUE7_(L6_28, _UPVALUE1_(_UPVALUE2_, _UPVALUE3_))
+            if L5_27 then
+              return L4_26, L5_27, L6_28
+            end
+          end
+        end
+      end
+      _UPVALUE8_(L4_26)
+    end
+    return nil, L3_25
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.spawn(A0_29, ...)
+    local L2_31, L3_32, L4_33, L5_34, L6_35, L7_36
+    L2_31 = {
+      L3_32,
+      [6] = ...
+    }
+    L3_32 = A0_29
+    L7_36 = ...
+    ;({
+      L3_32,
+      [6] = ...
+    })[2] = L4_33
+    ;({
+      L3_32,
+      [6] = ...
+    })[3] = L5_34
+    ;({
+      L3_32,
+      [6] = ...
+    })[4] = L6_35
+    ;({
+      L3_32,
+      [6] = ...
+    })[5] = L7_36
+    L3_32 = type
+    L3_32 = L3_32(L4_33)
+    if L3_32 ~= "string" and L3_32 ~= "table" and L3_32 ~= "function" then
+      L7_36 = "string, table or function"
+      L4_33(L5_34, L6_35, L7_36, A0_29)
+    end
+    for L7_36 = 2, #L2_31 do
+      if type(L2_31[L7_36]) ~= "string" and type(L2_31[L7_36]) ~= "nil" then
+        _UPVALUE0_("spawn", L7_36, "string or nil", L2_31[L7_36])
+      end
+    end
+    L7_36 = ...
+    return L4_33(L5_34, L6_35, L7_36, ...)
+  end
+else
+  function L1_1.spawn(A0_37, ...)
+    local L2_39, L3_40, L4_41, L5_42, L6_43, L7_44, L8_45
+    L2_39 = _UPVALUE0_
+    L3_40 = L2_39()
+    if L2_39 == nil then
+      L4_41 = L2_39
+      L5_42 = L3_40
+      return L4_41, L5_42
+    elseif L2_39 == 0 then
+      L4_41 = type
+      L5_42 = A0_37
+      L4_41 = L4_41(L5_42)
+      if L4_41 == "string" then
+        L4_41 = {
+          L5_42,
+          L6_43,
+          L7_44
+        }
+        L5_42 = "/bin/sh"
+        L6_43 = "-c"
+        L7_44 = A0_37
+        L8_45 = ...
+        ;({
+          L5_42,
+          L6_43,
+          L7_44
+        })[4] = L8_45
+        A0_37 = L4_41
+      end
+      L4_41 = type
+      L5_42 = A0_37
+      L4_41 = L4_41(L5_42)
+      if L4_41 == "table" then
+        L4_41 = _UPVALUE1_
+        L5_42 = _UPVALUE2_
+        L6_43 = A0_37
+        L8_45 = L5_42(L6_43)
+        L4_41(L5_42, L6_43, L7_44, L8_45)
+        L4_41 = _UPVALUE3_
+        L5_42 = L4_41()
+        L6_43 = _UPVALUE4_
+        L7_44 = L5_42
+        L6_43(L7_44)
+      else
+        L4_41 = _UPVALUE4_
+        L5_42 = A0_37
+        L8_45 = ...
+        L5_42 = L5_42(L6_43, L7_44, L8_45)
+        L5_42 = L5_42 or 0
+        L4_41(L5_42)
+      end
+    else
+      L4_41 = _UPVALUE5_
+      L5_42 = L2_39
+      L6_43 = L4_41(L5_42)
+      L7_44 = L6_43
+      L8_45 = L5_42
+      return L7_44, L8_45
+    end
+  end
+end
+L1_1.system = L1_1.spawn
+if _DEBUG ~= false then
+  function L1_1.pipeline(...)
+    local L1_47
+    L1_47 = {
+      ...
+    }
+    _UPVALUE0_("pipeline", 1, L1_47[1])
+    if L1_47[2] ~= nil and type(L1_47[2]) ~= "function" then
+      _UPVALUE1_("pipeline", 2, "function or nil", L1_47[2])
+    end
+    if #L1_47 > 2 then
+      _UPVALUE2_("pipeline", 2, #L1_47)
+    end
+    return _UPVALUE3_(...)
+  end
+else
+  function L1_1.pipeline(A0_48, A1_49)
+    local L2_50, L3_51, L4_52, L5_53
+    A1_49 = A1_49 or _UPVALUE0_
+    L2_50, L3_51, L4_52, L5_53 = nil, nil, nil, nil
+    if #A0_48 > 1 then
+      L3_51, L4_52 = A1_49()
+      if not L3_51 then
+        die("error opening pipe")
+      end
+      L2_50 = _UPVALUE1_()
+      if L2_50 == nil then
+        die("error forking")
+      elseif L2_50 == 0 then
+        if not _UPVALUE2_(L3_51, _UPVALUE3_) then
+          die("error dup2-ing")
+        end
+        _UPVALUE4_(L3_51)
+        _UPVALUE4_(L4_52)
+        os.exit(_UPVALUE5_(_UPVALUE6_.sub(A0_48, 2), A1_49))
+      else
+        L5_53 = _UPVALUE7_(_UPVALUE8_)
+        if not L5_53 then
+          die("error dup-ing")
+        end
+        if not _UPVALUE2_(L4_52, _UPVALUE8_) then
+          die("error dup2-ing")
+        end
+        _UPVALUE4_(L3_51)
+        _UPVALUE4_(L4_52)
+      end
+    end
+    if not _UPVALUE9_(A0_48[1]) then
+      die("error in fork or wait")
+    end
+    _UPVALUE4_(_UPVALUE8_)
+    if #A0_48 > 1 then
+      _UPVALUE4_(L4_52)
+      _UPVALUE10_(L2_50)
+      if not _UPVALUE2_(L5_53, _UPVALUE8_) then
+        die("error dup2-ing")
+      end
+      _UPVALUE4_(L5_53)
+    end
+    return (_UPVALUE9_(A0_48[1]))
+  end
+end
+function pipeline_iterator(A0_54, A1_55)
+  local L2_56, L3_57
+  L2_56 = _UPVALUE0_
+  L3_57 = L2_56()
+  if not L2_56 then
+    die("error opening pipe")
+  end
+  table.insert(A0_54, function()
+    local L0_58
+    while true do
+      L0_58 = _UPVALUE0_
+      L0_58 = L0_58(_UPVALUE1_, _UPVALUE2_)
+      if not L0_58 or #L0_58 == 0 then
+        break
+      end
+      _UPVALUE3_(_UPVALUE4_, L0_58)
+    end
+    L0_58 = _UPVALUE5_
+    L0_58(_UPVALUE4_)
+  end)
+  if _UPVALUE6_() == nil then
+    die("error forking")
+  elseif _UPVALUE6_() == 0 then
+    os.exit(_UPVALUE7_(A0_54, A1_55))
+  else
+    _UPVALUE5_(L3_57)
+    return function()
+      if not _UPVALUE0_(_UPVALUE1_, _UPVALUE2_) or #_UPVALUE0_(_UPVALUE1_, _UPVALUE2_) == 0 then
+        _UPVALUE3_(_UPVALUE4_)
+        return nil
+      end
+      return (_UPVALUE0_(_UPVALUE1_, _UPVALUE2_))
+    end
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.pipeline_iterator(...)
+    local L1_60
+    L1_60 = {
+      ...
+    }
+    _UPVALUE0_("pipeline_iterator", 1, L1_60[1])
+    if L1_60[2] ~= nil and type(L1_60[2]) ~= "function" then
+      _UPVALUE1_("pipeline_iterator", 2, "function or nil", L1_60[2])
+    end
+    if #L1_60 > 2 then
+      _UPVALUE2_("pipeline_iterator", 2, #L1_60)
+    end
+    return pipeline_iterator(...)
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.pipeline_slurp(...)
+    local L1_62
+    L1_62 = {
+      ...
+    }
+    _UPVALUE0_("pipeline_slurp", 1, L1_62[1])
+    if L1_62[2] ~= nil and type(L1_62[2]) ~= "function" then
+      _UPVALUE1_("pipeline_slurp", 2, "function or nil", L1_62[2])
+    end
+    if #L1_62 > 2 then
+      _UPVALUE2_("pipeline_slurp", 2, #L1_62)
+    end
+    return _UPVALUE3_(...)
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.timeradd(...)
+    local L1_64
+    L1_64 = {
+      ...
+    }
+    _UPVALUE0_("timeradd", 1, L1_64[1])
+    _UPVALUE0_("timeradd", 2, L1_64[2])
+    if #L1_64 > 2 then
+      _UPVALUE1_("timeradd", 2, #L1_64)
+    end
+    return _UPVALUE2_(...)
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.timercmp(...)
+    local L1_66
+    L1_66 = {
+      ...
+    }
+    _UPVALUE0_("timercmp", 1, L1_66[1])
+    _UPVALUE0_("timercmp", 2, L1_66[2])
+    if #L1_66 > 2 then
+      _UPVALUE1_("timercmp", 2, #L1_66)
+    end
+    return _UPVALUE2_(...)
+  end
+end
+if _DEBUG ~= false then
+  function L1_1.timersub(...)
+    local L1_68
+    L1_68 = {
+      ...
+    }
+    _UPVALUE0_("timersub", 1, L1_68[1])
+    _UPVALUE0_("timersub", 2, L1_68[2])
+    if #L1_68 > 2 then
+      _UPVALUE1_("timersub", 2, #L1_68)
+    end
+    return _UPVALUE2_(...)
+  end
+end
+return L1_1

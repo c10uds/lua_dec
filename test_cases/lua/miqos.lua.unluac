@@ -1,0 +1,44 @@
+QOS_VER = "NOIFB"
+module("miqos", package.seeall)
+function cmd(A0_0)
+  local L1_1, L2_2, L3_3
+  L1_1 = require
+  L2_2 = "miqos.common"
+  L1_1(L2_2)
+  L1_1 = require
+  L2_2 = "miqos.command"
+  L1_1(L2_2)
+  L1_1 = require
+  L2_2 = "miqos.rule_by_noifb"
+  L1_1(L2_2)
+  L1_1 = "noifb"
+  cur_qdisc = L1_1
+  L1_1 = "/usr/sbin/miqosd noifb"
+  L2_2 = string
+  L2_2 = L2_2.split
+  L3_3 = A0_0
+  L2_2 = L2_2(L3_3, " ")
+  L3_3 = {}
+  L3_3.status = 4
+  L3_3.data = "unkown error."
+  if lock() then
+    logger(3, "[NOIFB_QOS_CMD]: miqos " .. A0_0 .. "")
+    read_qos_config()
+    if qdisc[cur_qdisc] and qdisc[cur_qdisc].read_qos_config then
+      qdisc[cur_qdisc].read_qos_config()
+    end
+    cfg.qos_type.mode = "noifb"
+    L3_3, execflag = process_cmd(unpack(L2_2))
+    if execflag then
+      logger(3, "execute cmd: " .. L1_1)
+      os.execute(L1_1)
+    end
+    unlock()
+  else
+    L3_3 = {
+      status = 2,
+      data = "command already in running."
+    }
+  end
+  return L3_3
+end

@@ -1,0 +1,189 @@
+local L0_0
+L0_0 = module
+L0_0("luci.tools.status", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.model.uci")
+L0_0 = L0_0.cursor
+L0_0 = L0_0()
+function dhcp_leases()
+  return _UPVALUE0_(4)
+end
+function dhcp6_leases()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10
+  L0_1 = require
+  L1_2 = "nixio.fs"
+  L0_1 = L0_1(L1_2)
+  L1_2 = "/tmp/hosts/6relayd"
+  L2_3 = {}
+  L3_4 = L0_1.access
+  L4_5 = L1_2
+  L5_6 = "r"
+  L3_4 = L3_4(L4_5, L5_6)
+  if L3_4 then
+    L3_4 = io
+    L3_4 = L3_4.open
+    L4_5 = L1_2
+    L5_6 = "r"
+    L3_4 = L3_4(L4_5, L5_6)
+    if L3_4 then
+      while true do
+        L5_6 = L3_4
+        L4_5 = L3_4.read
+        L6_7 = "*l"
+        L4_5 = L4_5(L5_6, L6_7)
+        if not L4_5 then
+          break
+        else
+          L6_7 = L4_5
+          L5_6 = L4_5.match
+          L7_8 = "^# (%S+) (%S+) (%S+) (%S+) (%d+) (%S+) (%S+) (.*)"
+          L9_10 = L5_6(L6_7, L7_8)
+          if L5_6(L6_7, L7_8) then
+            L2_3[#L2_3 + 1] = {
+              expires = os.difftime(tonumber(L9_10) or 0, os.time()),
+              duid = L6_7,
+              ip6addr = L5_6(L6_7, L7_8)
+            }
+          end
+        end
+      end
+      L5_6 = L3_4
+      L4_5 = L3_4.close
+      L4_5(L5_6)
+    end
+    return L2_3
+  else
+    L3_4 = luci
+    L3_4 = L3_4.sys
+    L3_4 = L3_4.call
+    L4_5 = "dnsmasq --version 2>/dev/null | grep -q ' DHCPv6 '"
+    L3_4 = L3_4(L4_5)
+    if L3_4 == 0 then
+      L3_4 = _UPVALUE0_
+      L4_5 = 6
+      return L3_4(L4_5)
+    end
+  end
+end
+function wifi_networks()
+  local L0_11
+  L0_11 = {}
+  for _FORV_6_, _FORV_7_ in ipairs(require("luci.model.network").init():get_wifidevs()) do
+    for _FORV_13_, _FORV_14_ in ipairs(_FORV_7_:get_wifinets()) do
+      ({
+        up = _FORV_7_:is_up(),
+        device = _FORV_7_:name(),
+        name = _FORV_7_:get_i18n(),
+        networks = {}
+      }).networks[#({
+        up = _FORV_7_:is_up(),
+        device = _FORV_7_:name(),
+        name = _FORV_7_:get_i18n(),
+        networks = {}
+      }).networks + 1] = {
+        name = _FORV_14_:shortname(),
+        link = _FORV_14_:adminlink(),
+        up = _FORV_14_:is_up(),
+        mode = _FORV_14_:active_mode(),
+        ssid = _FORV_14_:active_ssid(),
+        bssid = _FORV_14_:active_bssid(),
+        encryption = _FORV_14_:active_encryption(),
+        frequency = _FORV_14_:frequency(),
+        channel = _FORV_14_:channel(),
+        signal = _FORV_14_:signal(),
+        quality = _FORV_14_:signal_percent(),
+        noise = _FORV_14_:noise(),
+        bitrate = _FORV_14_:bitrate(),
+        ifname = _FORV_14_:ifname(),
+        assoclist = _FORV_14_:assoclist(),
+        country = _FORV_14_:country(),
+        txpower = _FORV_14_:txpower(),
+        txpoweroff = _FORV_14_:txpower_offset()
+      }
+    end
+    L0_11[#L0_11 + 1] = {
+      up = _FORV_7_:is_up(),
+      device = _FORV_7_:name(),
+      name = _FORV_7_:get_i18n(),
+      networks = {}
+    }
+  end
+  return L0_11
+end
+function wifi_network(A0_12)
+  if require("luci.model.network").init():get_wifinet(A0_12) and require("luci.model.network").init():get_wifinet(A0_12):get_device() then
+    return {
+      id = A0_12,
+      name = require("luci.model.network").init():get_wifinet(A0_12):shortname(),
+      link = require("luci.model.network").init():get_wifinet(A0_12):adminlink(),
+      up = require("luci.model.network").init():get_wifinet(A0_12):is_up(),
+      mode = require("luci.model.network").init():get_wifinet(A0_12):active_mode(),
+      ssid = require("luci.model.network").init():get_wifinet(A0_12):active_ssid(),
+      bssid = require("luci.model.network").init():get_wifinet(A0_12):active_bssid(),
+      encryption = require("luci.model.network").init():get_wifinet(A0_12):active_encryption(),
+      frequency = require("luci.model.network").init():get_wifinet(A0_12):frequency(),
+      channel = require("luci.model.network").init():get_wifinet(A0_12):channel(),
+      signal = require("luci.model.network").init():get_wifinet(A0_12):signal(),
+      quality = require("luci.model.network").init():get_wifinet(A0_12):signal_percent(),
+      noise = require("luci.model.network").init():get_wifinet(A0_12):noise(),
+      bitrate = require("luci.model.network").init():get_wifinet(A0_12):bitrate(),
+      ifname = require("luci.model.network").init():get_wifinet(A0_12):ifname(),
+      assoclist = require("luci.model.network").init():get_wifinet(A0_12):assoclist(),
+      country = require("luci.model.network").init():get_wifinet(A0_12):country(),
+      txpower = require("luci.model.network").init():get_wifinet(A0_12):txpower(),
+      txpoweroff = require("luci.model.network").init():get_wifinet(A0_12):txpower_offset(),
+      device = {
+        up = require("luci.model.network").init():get_wifinet(A0_12):get_device():is_up(),
+        device = require("luci.model.network").init():get_wifinet(A0_12):get_device():name(),
+        name = require("luci.model.network").init():get_wifinet(A0_12):get_device():get_i18n()
+      }
+    }
+  end
+  return {}
+end
+function switch_status(A0_13)
+  local L1_14, L2_15, L3_16, L4_17, L5_18, L6_19, L7_20, L8_21, L9_22, L10_23, L11_24, L12_25
+  L2_15 = {}
+  for L6_19 in L3_16(L4_17, L5_18) do
+    L7_20 = {}
+    L8_21 = io
+    L8_21 = L8_21.popen
+    L9_22 = "swconfig dev %q show" % L6_19
+    L10_23 = "r"
+    L8_21 = L8_21(L9_22, L10_23)
+    if L8_21 then
+      L9_22 = nil
+      repeat
+        L11_24 = L8_21
+        L10_23 = L8_21.read
+        L12_25 = "*l"
+        L10_23 = L10_23(L11_24, L12_25)
+        L9_22 = L10_23
+        if L9_22 then
+          L11_24 = L9_22
+          L10_23 = L9_22.match
+          L12_25 = "port:(%d+) link:(%w+)"
+          L11_24 = L10_23(L11_24, L12_25)
+          if L10_23 then
+            L12_25 = L9_22.match
+            L12_25 = L12_25(L9_22, " speed:(%d+)")
+            L7_20[#L7_20 + 1] = {
+              port = tonumber(L10_23) or 0,
+              speed = tonumber(L12_25) or 0,
+              link = L11_24 == "up",
+              duplex = L9_22:match(" (%w+)-duplex") == "full",
+              rxflow = not not L9_22:match(" (rxflow)"),
+              txflow = not not L9_22:match(" (txflow)"),
+              auto = not not L9_22:match(" (auto)")
+            }
+          end
+        end
+      until not L9_22
+      L11_24 = L8_21
+      L10_23 = L8_21.close
+      L10_23(L11_24)
+    end
+    L2_15[L6_19] = L7_20
+  end
+  return L2_15
+end

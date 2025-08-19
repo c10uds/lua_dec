@@ -1,0 +1,166 @@
+local L0_0
+L0_0 = {}
+L0_0.util = require("luci.util")
+L0_0.sys = require("luci.sys")
+L0_0.ip = require("luci.ip")
+module("luci.sys.iptparser")
+IptParser = L0_0.util.class()
+function IptParser.__init__(A0_1, A1_2)
+  A0_1._family = _UPVALUE0_(A1_2) == 6 and 6 or 4
+  A0_1._rules = {}
+  A0_1._chains = {}
+  if A0_1._family == 4 then
+    A0_1._nulladdr = "0.0.0.0/0"
+    A0_1._tables = {
+      "filter",
+      "nat",
+      "mangle",
+      "raw"
+    }
+    A0_1._command = "iptables -t %s --line-numbers -nxvL"
+  else
+    A0_1._nulladdr = "::/0"
+    A0_1._tables = {
+      "filter",
+      "mangle",
+      "raw"
+    }
+    A0_1._command = "ip6tables -t %s --line-numbers -nxvL"
+  end
+  A0_1:_parse_rules()
+end
+function IptParser.find(A0_3, A1_4)
+  local L2_5, L3_6
+  L2_5 = A1_4 or {}
+  L3_6 = {}
+  L2_5.source = L2_5.source and A0_3:_parse_addr(L2_5.source)
+  L2_5.destination = L2_5.destination and A0_3:_parse_addr(L2_5.destination)
+  for _FORV_7_, _FORV_8_ in _UPVALUE0_(A0_3._rules) do
+    if (false == true and L2_5.options and A0_3:_match_options(_FORV_8_.options, L2_5.options) or false) == true then
+      L3_6[#L3_6 + 1] = _FORV_8_
+    end
+  end
+  return L3_6
+end
+function IptParser.resync(A0_7)
+  A0_7._rules = {}
+  A0_7._chain = nil
+  A0_7:_parse_rules()
+end
+function IptParser.tables(A0_8)
+  local L1_9
+  L1_9 = A0_8._tables
+  return L1_9
+end
+function IptParser.chains(A0_10, A1_11)
+  local L2_12, L3_13, L4_14
+  L2_12 = {}
+  L3_13 = {}
+  for _FORV_7_, _FORV_8_ in L4_14(A0_10:find({table = A1_11})) do
+    if not L2_12[_FORV_8_.chain] then
+      L2_12[_FORV_8_.chain] = true
+      L3_13[#L3_13 + 1] = _FORV_8_.chain
+    end
+  end
+  return L3_13
+end
+function IptParser.chain(A0_15, A1_16, A2_17)
+  local L3_18
+  L3_18 = A0_15._chains
+  L3_18 = L3_18[A1_16:lower()]
+  if L3_18 then
+    L3_18 = A0_15._chains
+    L3_18 = L3_18[A1_16:lower()]
+    L3_18 = L3_18[A2_17]
+  end
+  return L3_18
+end
+function IptParser.is_custom_target(A0_19, A1_20)
+  for _FORV_5_, _FORV_6_ in _UPVALUE0_(A0_19._rules) do
+    if _FORV_6_.chain == A1_20 then
+      return true
+    end
+  end
+  return false
+end
+function IptParser._parse_addr(A0_21, A1_22)
+  if A0_21._family == 4 then
+    return _UPVALUE0_.ip.IPv4(A1_22)
+  else
+    return _UPVALUE0_.ip.IPv6(A1_22)
+  end
+end
+function IptParser._parse_rules(A0_23)
+  local L1_24, L2_25, L3_26, L4_27, L5_28, L6_29, L7_30, L8_31, L9_32, L10_33, L11_34, L12_35
+  for L4_27, L5_28 in L1_24(L2_25) do
+    L6_29[L5_28] = L7_30
+    L12_35 = L7_30(L8_31)
+    for L9_32, L10_33 in L6_29(L7_30, L8_31, L9_32, L10_33, L11_34, L12_35, L7_30(L8_31)) do
+      L12_35 = L10_33
+      L11_34 = L10_33.find
+      L11_34 = L11_34(L12_35, "^Chain ")
+      if L11_34 == 1 then
+        L11_34 = nil
+        L12_35 = L10_33.match
+        L12_35 = L12_35(L10_33, "^Chain ([^%s]*) %(policy (%w+) " .. "(%d+) packets, (%d+) bytes%)")
+        if not L12_35 then
+          L12_35, L11_34 = L10_33:match("^Chain ([^%s]*) %((%d+) references%)")
+        end
+        A0_23._chain = L12_35
+        A0_23._chains[L5_28][L12_35] = {
+          policy = L12_35(L10_33, "^Chain ([^%s]*) %(policy (%w+) " .. "(%d+) packets, (%d+) bytes%)")
+        }
+      else
+        L12_35 = L10_33
+        L11_34 = L10_33.find
+        L11_34 = L11_34(L12_35, "%d")
+        if L11_34 == 1 then
+          L11_34 = _UPVALUE1_
+          L11_34 = L11_34.util
+          L11_34 = L11_34.split
+          L12_35 = L10_33
+          L11_34 = L11_34(L12_35, "%s+", nil, true)
+          L12_35 = {}
+          if L10_33:match("^%d+%s+%d+%s+%d+%s%s") then
+            _UPVALUE3_.insert(L11_34, 4, nil)
+          end
+          if A0_23._family == 6 then
+            _UPVALUE3_.insert(L11_34, 6, "--")
+          end
+          L12_35.table = L5_28
+          L12_35.chain = A0_23._chain
+          L12_35.index = _UPVALUE2_(L11_34[1])
+          L12_35.packets = _UPVALUE2_(L11_34[2])
+          L12_35.bytes = _UPVALUE2_(L11_34[3])
+          L12_35.target = L11_34[4]
+          L12_35.protocol = L11_34[5]
+          L12_35.flags = L11_34[6]
+          L12_35.inputif = L11_34[7]
+          L12_35.outputif = L11_34[8]
+          L12_35.source = L11_34[9]
+          L12_35.destination = L11_34[10]
+          L12_35.options = {}
+          for _FORV_16_ = 11, #L11_34 - 1 do
+            L12_35.options[_FORV_16_ - 10] = L11_34[_FORV_16_]
+          end
+          A0_23._rules[#A0_23._rules + 1] = L12_35
+          A0_23._chains[L5_28][A0_23._chain].rules[#A0_23._chains[L5_28][A0_23._chain].rules + 1] = L12_35
+        end
+      end
+    end
+  end
+  A0_23._chain = nil
+end
+function IptParser._match_options(A0_36, A1_37, A2_38)
+  local L3_39
+  L3_39 = {}
+  for _FORV_7_, _FORV_8_ in _UPVALUE0_(A1_37) do
+    L3_39[_FORV_8_] = true
+  end
+  for _FORV_7_, _FORV_8_ in _UPVALUE0_(A2_38) do
+    if not L3_39[_FORV_8_] then
+      return false
+    end
+  end
+  return true
+end

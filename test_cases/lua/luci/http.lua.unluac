@@ -1,0 +1,286 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("luci.ltn12")
+module("luci.http", package.seeall)
+context = require("luci.util").threadlocal()
+Request = require("luci.util").class()
+function Request.__init__(A0_1, A1_2, A2_3, A3_4)
+  local L4_5
+  A0_1.input = A2_3
+  A0_1.error = A3_4
+  function L4_5()
+    local L0_6, L1_7
+  end
+  A0_1.filehandler = L4_5
+  L4_5 = {}
+  L4_5.env = A1_2
+  L4_5.headers = {}
+  L4_5.params = _UPVALUE0_.urldecode_params(A1_2.QUERY_STRING or "")
+  A0_1.message = L4_5
+  A0_1.parsed_input = false
+end
+function Request.formvalue(A0_8, A1_9, A2_10)
+  if not A2_10 and not A0_8.parsed_input then
+    A0_8:_parse_input()
+  end
+  if A1_9 then
+    return A0_8.message.params[A1_9]
+  else
+    return A0_8.message.params
+  end
+end
+function Request.formvaluetable(A0_11, A1_12)
+  local L2_13, L3_14, L4_15, L5_16, L6_17, L7_18, L8_19
+  L2_13 = {}
+  if A1_12 then
+    L3_14 = A1_12
+    L3_14 = L3_14 .. L4_15
+  else
+    A1_12 = L3_14 or "."
+  end
+  L3_14 = A0_11.parsed_input
+  if not L3_14 then
+    L3_14 = A0_11._parse_input
+    L3_14(L4_15)
+  end
+  L3_14 = A0_11.message
+  L3_14 = L3_14.params
+  L3_14 = L3_14[nil]
+  for L7_18, L8_19 in L4_15(L5_16) do
+    if L7_18:find(A1_12, 1, true) == 1 then
+      L2_13[L7_18:sub(#A1_12 + 1)] = _UPVALUE1_(L8_19)
+    end
+  end
+  return L2_13
+end
+function Request.content(A0_20)
+  if not A0_20.parsed_input then
+    A0_20:_parse_input()
+  end
+  return A0_20.message.content, A0_20.message.content_length
+end
+function Request.getcookie(A0_21, A1_22)
+  local L2_23, L3_24, L4_25, L5_26, L6_27
+  L2_23 = _UPVALUE0_
+  L2_23 = L2_23.gsub
+  L3_24 = ";"
+  L5_26 = A0_21
+  L4_25 = A0_21.getenv
+  L6_27 = "HTTP_COOKIE"
+  L4_25 = L4_25(L5_26, L6_27)
+  L4_25 = L4_25 or ""
+  L5_26 = ";"
+  L3_24 = L3_24 .. L4_25 .. L5_26
+  L4_25 = "%s*;%s*"
+  L5_26 = ";"
+  L2_23 = L2_23(L3_24, L4_25, L5_26)
+  L3_24 = ";"
+  L4_25 = A1_22
+  L5_26 = "=(.-);"
+  L3_24 = L3_24 .. L4_25 .. L5_26
+  L5_26 = L2_23
+  L4_25 = L2_23.find
+  L6_27 = L3_24
+  L6_27 = L4_25(L5_26, L6_27)
+  return L6_27 and urldecode(L6_27)
+end
+function Request.getenv(A0_28, A1_29)
+  local L2_30
+  if A1_29 then
+    L2_30 = A0_28.message
+    L2_30 = L2_30.env
+    L2_30 = L2_30[A1_29]
+    return L2_30
+  else
+    L2_30 = A0_28.message
+    L2_30 = L2_30.env
+    return L2_30
+  end
+end
+function Request.setfilehandler(A0_31, A1_32)
+  A0_31.filehandler = A1_32
+end
+function Request._parse_input(A0_33)
+  _UPVALUE0_.parse_message_body(A0_33.input, A0_33.message, A0_33.filehandler)
+  A0_33.parsed_input = true
+end
+function close()
+  if not context.eoh then
+    context.eoh = true
+    _UPVALUE0_.yield(3)
+  end
+  if not context.closed then
+    context.closed = true
+    _UPVALUE0_.yield(5)
+  end
+end
+function content()
+  return context.request:content()
+end
+function formvalue_unsafe(A0_34, A1_35)
+  return context.request:formvalue(A0_34, A1_35)
+end
+function formvalue(A0_36, A1_37)
+  local L2_38
+  L2_38 = context
+  L2_38 = L2_38.request
+  L2_38 = L2_38.formvalue
+  L2_38 = L2_38(L2_38, A0_36, A1_37)
+  return _UPVALUE0_.hackCheck(A0_36, L2_38)
+end
+function xqformvalue(A0_39, A1_40)
+  local L2_41
+  L2_41 = context
+  L2_41 = L2_41.request
+  L2_41 = L2_41.formvalue
+  L2_41 = L2_41(L2_41, A0_39, A1_40)
+  return _UPVALUE0_.xssCheck(L2_41)
+end
+function formvaluetable(A0_42)
+  return context.request:formvaluetable(A0_42)
+end
+function getcookie(A0_43)
+  return context.request:getcookie(A0_43)
+end
+function getenv(A0_44)
+  return context.request:getenv(A0_44)
+end
+function setfilehandler(A0_45)
+  return context.request:setfilehandler(A0_45)
+end
+function header(A0_46, A1_47)
+  if not context.headers then
+    context.headers = {}
+  end
+  context.headers[A0_46:lower()] = A1_47
+  _UPVALUE0_.yield(2, A0_46, A1_47)
+end
+function prepare_content(A0_48)
+  if not context.headers or not context.headers["content-type"] then
+    if A0_48 == "application/xhtml+xml" then
+      if not getenv("HTTP_ACCEPT") or not getenv("HTTP_ACCEPT"):find("application/xhtml+xml", nil, true) then
+        A0_48 = "text/html; charset=UTF-8"
+      end
+      header("Vary", "Accept")
+    end
+    header("Content-Type", A0_48)
+  end
+end
+function source()
+  local L0_49, L1_50
+  L0_49 = context
+  L0_49 = L0_49.request
+  L0_49 = L0_49.input
+  return L0_49
+end
+function status(A0_51, A1_52)
+  A0_51 = A0_51 or 200
+  A1_52 = A1_52 or "OK"
+  context.status = A0_51
+  _UPVALUE0_.yield(1, A0_51, A1_52)
+end
+function write(A0_53, A1_54, A2_55, A3_56)
+  if not A0_53 then
+    if A1_54 then
+      _UPVALUE0_(A1_54)
+    else
+      close()
+    end
+    return true
+  elseif #A0_53 == 0 then
+    return true
+  else
+    if not context.eoh then
+      if not context.status then
+        status()
+      end
+      if not context.headers or not context.headers["content-type"] then
+        if A2_55 then
+          header("Content-Type", "text/javascript; charset=utf-8")
+        else
+          header("Content-Type", "text/html; charset=utf-8")
+        end
+      end
+      if not context.headers["cache-control"] then
+        header("Cache-Control", "no-cache")
+        header("Expires", "0")
+      end
+      if A3_56 and not context.headers["Content-Length"] then
+        header("Content-Length", _UPVALUE1_(_UPVALUE2_.len(A0_53)))
+      end
+      context.eoh = true
+      _UPVALUE3_.yield(3)
+    end
+    _UPVALUE3_.yield(4, A0_53)
+    return true
+  end
+end
+function splice(A0_57, A1_58)
+  _UPVALUE0_.yield(6, A0_57, A1_58)
+end
+function redirect(A0_59)
+  status(302, "Found")
+  header("Location", A0_59)
+  close()
+end
+function build_querystring(A0_60)
+  local L1_61, L2_62, L3_63, L4_64, L5_65, L6_66
+  L1_61 = {L2_62}
+  for L5_65, L6_66 in L2_62(L3_63) do
+    if #L1_61 > 1 then
+      L1_61[#L1_61 + 1] = "&"
+    end
+    L1_61[#L1_61 + 1] = urldecode(L5_65)
+    L1_61[#L1_61 + 1] = "="
+    L1_61[#L1_61 + 1] = urldecode(L6_66)
+  end
+  return L2_62(L3_63, L4_64)
+end
+urldecode = require("luci.http.protocol").urldecode
+urlencode = require("luci.http.protocol").urlencode
+function writeJsonNoLog(A0_67)
+  if A0_67 == nil then
+    write("null")
+  elseif _UPVALUE0_(A0_67) == "table" then
+    write(require("luci.json").encode(A0_67), nil, false, true)
+  elseif _UPVALUE0_(A0_67) == "number" or _UPVALUE0_(A0_67) == "boolean" then
+    if A0_67 ~= A0_67 then
+      write("Number.NaN")
+    else
+      write(_UPVALUE1_(A0_67))
+    end
+  else
+    write("\"%s\"" % _UPVALUE1_(A0_67):gsub("[\"%z\001-\031]", function(A0_68)
+      return "\\u%04x" % A0_68:byte(1)
+    end))
+  end
+end
+function write_json(A0_69)
+  require("xiaoqiang.XQLog").log(7, A0_69)
+  writeJsonNoLog(A0_69)
+end
+function write_jsonp(A0_70, A1_71)
+  if A0_70 == nil then
+    write("null")
+  elseif _UPVALUE0_(A0_70) == "table" then
+    if A1_71 then
+      write(A1_71 .. "(" .. require("luci.json").encode(A0_70) .. ");", nil, true)
+    else
+      write("jsonpHandler(" .. require("luci.json").encode(A0_70) .. ");", nil, true)
+    end
+  elseif _UPVALUE0_(A0_70) == "number" or _UPVALUE0_(A0_70) == "boolean" then
+    if A0_70 ~= A0_70 then
+      write("Number.NaN")
+    else
+      write(_UPVALUE1_(A0_70))
+    end
+  elseif A1_71 then
+    write(A1_71 .. "(\"%s\");" % _UPVALUE1_(A0_70):gsub("[\"%z\001-\031]", function(A0_72)
+      return "\\u%04x" % A0_72:byte(1)
+    end), nil, true)
+  else
+    write("jsonpHandler(\"%s\");" % _UPVALUE1_(A0_70):gsub("[\"%z\001-\031]", function(A0_73)
+      return "\\u%04x" % A0_73:byte(1)
+    end), nil, true)
+  end
+end

@@ -1,0 +1,159 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQGuestWifi", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.XQLog")
+function _checkGuestWifi()
+  if require("luci.model.uci").cursor():get_all("network", "guest") then
+    return true
+  else
+    return false
+  end
+end
+function hookLanIPChangeEvent(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11, L11_12
+  L1_2 = require
+  L2_3 = "xiaoqiang.util.XQLanWanUtil"
+  L1_2 = L1_2(L2_3)
+  L2_3 = require
+  L3_4 = "luci.model.uci"
+  L2_3 = L2_3(L3_4)
+  L2_3 = L2_3.cursor
+  L2_3 = L2_3()
+  L4_5 = L2_3
+  L3_4 = L2_3.get_all
+  L5_6 = "network"
+  L6_7 = "guest"
+  L3_4 = L3_4(L4_5, L5_6, L6_7)
+  L4_5 = nil
+  L5_6 = 0
+  L6_7 = _UPVALUE0_
+  L6_7 = L6_7.isStrNil
+  L7_8 = A0_1
+  L6_7 = L6_7(L7_8)
+  if not L6_7 then
+    L7_8 = A0_1
+    L6_7 = A0_1.gsub
+    L8_9 = ".%d+.%d+$"
+    L9_10 = ""
+    L6_7 = L6_7(L7_8, L8_9, L9_10)
+    L7_8 = tonumber
+    L9_10 = A0_1
+    L8_9 = A0_1.match
+    L10_11 = ".(%d+).%d+$"
+    L11_12 = L8_9(L9_10, L10_11)
+    L7_8 = L7_8(L8_9, L9_10, L10_11, L11_12, L8_9(L9_10, L10_11))
+    L8_9 = _UPVALUE1_
+    L8_9 = L8_9.bxor
+    L9_10 = 12
+    L10_11 = L7_8
+    L8_9 = L8_9(L9_10, L10_11)
+    L7_8 = L8_9
+    L8_9 = L6_7
+    L9_10 = "."
+    L10_11 = tostring
+    L11_12 = L7_8
+    L10_11 = L10_11(L11_12)
+    L11_12 = ".1"
+    L4_5 = L8_9 .. L9_10 .. L10_11 .. L11_12
+    L8_9 = L1_2.ubusWanStatus
+    L8_9 = L8_9()
+    if L8_9 then
+      L9_10 = L8_9.ipv4
+      if L9_10 then
+        L9_10 = L8_9.ipv4
+        L9_10 = L9_10.address
+        if L9_10 then
+          L10_11 = _UPVALUE2_
+          L10_11 = L10_11.log
+          L11_12 = 1
+          L10_11(L11_12, "now wan ip is " .. L9_10)
+          L11_12 = L9_10
+          L10_11 = L9_10.gsub
+          L10_11 = L10_11(L11_12, ".%d+$", "")
+          L11_12 = L4_5.gsub
+          L11_12 = L11_12(L4_5, ".%d+$", "")
+          _UPVALUE2_.log(1, "guestip_prefix is " .. L11_12)
+          if L10_11 == L11_12 then
+            _UPVALUE2_.log(1, "new guest ip conflict with wan : " .. L11_12)
+            L7_8 = _UPVALUE1_.bxor(16, L7_8)
+            _UPVALUE2_.log(1, "new guest cip = " .. L7_8)
+            L4_5 = L6_7 .. "." .. tostring(L7_8) .. ".1"
+          end
+        end
+      end
+    end
+    if L3_4 then
+      L10_11 = L2_3
+      L9_10 = L2_3.get
+      L11_12 = "network"
+      L9_10 = L9_10(L10_11, L11_12, "guest", "ipaddr")
+      if L9_10 ~= L4_5 then
+        L5_6 = 1
+      end
+      L11_12 = L2_3
+      L10_11 = L2_3.set
+      L10_11(L11_12, "network", "guest", "ipaddr", L4_5)
+      L11_12 = L2_3
+      L10_11 = L2_3.commit
+      L10_11(L11_12, "network")
+    end
+    if L5_6 == 1 then
+      L9_10 = require
+      L10_11 = "luci.util"
+      L9_10 = L9_10(L10_11)
+      L10_11 = L9_10.exec
+      L11_12 = "/etc/init.d/network reload"
+      L10_11 = L10_11(L11_12)
+      L11_12 = _UPVALUE2_
+      L11_12 = L11_12.log
+      L11_12(1, "new guest ip, reload network ok !")
+    end
+    L9_10 = _UPVALUE2_
+    L9_10 = L9_10.log
+    L10_11 = 6
+    L11_12 = "calc new guest ip "
+    L11_12 = L11_12 .. L4_5
+    L9_10(L10_11, L11_12)
+    return L4_5
+  end
+  L6_7 = _UPVALUE2_
+  L6_7 = L6_7.log
+  L7_8 = 6
+  L8_9 = "param ip is null, please check !!!"
+  L6_7(L7_8, L8_9)
+  L6_7 = false
+  return L6_7
+end
+function setGuestWifi(A0_13, A1_14, A2_15, A3_16, A4_17, A5_18, A6_19, A7_20)
+  local L8_21, L9_22, L10_23, L11_24
+  L8_21 = require
+  L9_22 = "xiaoqiang.util.XQLanWanUtil"
+  L8_21 = L8_21(L9_22)
+  L9_22 = require
+  L10_23 = "xiaoqiang.util.XQWifiUtil"
+  L9_22 = L9_22(L10_23)
+  L10_23 = L9_22.setGuestWifi
+  L11_24 = A0_13
+  L10_23 = L10_23(L11_24, A1_14, A2_15, A3_16, A4_17, A5_18, A6_19)
+  if not L10_23 then
+    L11_24 = false
+    return L11_24
+  end
+  L11_24 = true
+  if _checkGuestWifi() then
+    L11_24 = false
+  end
+  if A7_20 and type(A7_20) == "function" then
+    A7_20(L11_24)
+  elseif L11_24 then
+    _UPVALUE0_.forkExec("sleep 4; /usr/sbin/guestwifi.sh open; lua /usr/sbin/sync_guest_bssid.lua >/dev/null 2>/dev/null")
+  else
+    _UPVALUE0_.forkRestartWifi("lua /usr/sbin/sync_guest_bssid.lua")
+  end
+  return true
+end
+function delGuestWifi(A0_25)
+  require("xiaoqiang.util.XQWifiUtil").delGuestWifi(A0_25)
+  _UPVALUE0_.forkExec("sleep 4; /usr/sbin/guestwifi.sh close >/dev/null 2>/dev/null")
+end

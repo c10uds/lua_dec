@@ -1,0 +1,145 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6
+L0_0 = require
+L1_1 = "luci.sys"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "luci.dispatcher"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.tools.firewall"
+L2_2 = L2_2(L3_3)
+L3_3, L4_4, L5_5 = nil, nil, nil
+L6_6 = arg
+L6_6[1] = arg[1] or ""
+L6_6 = Map
+L6_6 = L6_6("firewall", translate("Firewall - Port Forwards"), translate([[
+This page allows you to change advanced properties of the port 
+	           forwarding entry. In most cases there is no need to modify 
+			   those settings.]]))
+L3_3 = L6_6
+L6_6 = L1_1.build_url
+L6_6 = L6_6("admin/network/firewall/forwards")
+L3_3.redirect = L6_6
+L6_6 = L3_3.uci
+L6_6 = L6_6.get
+L6_6 = L6_6(L6_6, "firewall", arg[1])
+if L6_6 ~= "redirect" then
+  L6_6 = luci
+  L6_6 = L6_6.http
+  L6_6 = L6_6.redirect
+  L6_6(L3_3.redirect)
+  return
+else
+  L6_6 = L3_3.get
+  L6_6 = L6_6(L3_3, arg[1], "name")
+  if not L6_6 then
+    L6_6 = L3_3.get
+    L6_6 = L6_6(L3_3, arg[1], "_name")
+  end
+  if not L6_6 or #L6_6 == 0 then
+    L6_6 = translate("(Unnamed Entry)")
+  end
+  L3_3.title = "%s - %s" % {
+    translate("Firewall - Port Forwards"),
+    L6_6
+  }
+end
+L6_6 = nil
+L3_3.uci:foreach("firewall", "zone", function(A0_7)
+  local L1_8, L2_9
+  L1_8 = A0_7.network
+  L1_8 = L1_8 or A0_7.name
+  if L1_8 then
+    L2_9 = nil
+    for _FORV_6_ in L1_8:gmatch("%S+") do
+      if _FORV_6_ == "wan" then
+        _UPVALUE0_ = A0_7.name
+        return false
+      end
+    end
+  end
+end)
+L4_4 = L3_3:section(NamedSection, arg[1], "redirect", "")
+L4_4.anonymous = true
+L4_4.addremove = false
+L2_2.opt_enabled(L4_4, Button)
+L2_2.opt_name(L4_4, Value, translate("Name"))
+L5_5 = L4_4:option(Value, "proto", translate("Protocol"))
+L5_5:value("tcp udp", "TCP+UDP")
+L5_5:value("tcp", "TCP")
+L5_5:value("udp", "UDP")
+L5_5:value("icmp", "ICMP")
+function L5_5.cfgvalue(...)
+  local L1_11, L2_12
+  L1_11 = Value
+  L1_11 = L1_11.cfgvalue
+  L2_12 = ...
+  L1_11 = L1_11(L2_12)
+  if not L1_11 or L1_11 == "tcpudp" then
+    L2_12 = "tcp udp"
+    return L2_12
+  end
+  return L1_11
+end
+L5_5 = L4_4:option(Value, "src", translate("Source zone"))
+L5_5.nocreate = true
+L5_5.default = "wan"
+L5_5.template = "cbi/firewall_zonelist"
+L5_5 = L4_4:option(DynamicList, "src_mac", translate("Source MAC address"), translate("Only match incoming traffic from these MACs."))
+L5_5.rmempty = true
+L5_5.datatype = "neg(macaddr)"
+L5_5.placeholder = translate("any")
+luci.sys.net.mac_hints(function(A0_13, A1_14)
+  _UPVALUE0_:value(A0_13, "%s (%s)" % {A0_13, A1_14})
+end)
+L5_5 = L4_4:option(Value, "src_ip", translate("Source IP address"), translate("Only match incoming traffic from this IP or range."))
+L5_5.rmempty = true
+L5_5.datatype = "neg(ip4addr)"
+L5_5.placeholder = translate("any")
+luci.sys.net.ipv4_hints(function(A0_15, A1_16)
+  _UPVALUE0_:value(A0_15, "%s (%s)" % {A0_15, A1_16})
+end)
+L5_5 = L4_4:option(Value, "src_port", translate("Source port"), translate("Only match incoming traffic originating from the given source port or port range on the client host"))
+L5_5.rmempty = true
+L5_5.datatype = "neg(portrange)"
+L5_5.placeholder = translate("any")
+L5_5 = L4_4:option(Value, "src_dip", translate("External IP address"), translate("Only match incoming traffic directed at the given IP address."))
+luci.sys.net.ipv4_hints(function(A0_17, A1_18)
+  _UPVALUE0_:value(A0_17, "%s (%s)" % {A0_17, A1_18})
+end)
+L5_5.rmempty = true
+L5_5.datatype = "neg(ip4addr)"
+L5_5.placeholder = translate("any")
+L5_5 = L4_4:option(Value, "src_dport", translate("External port"), translate("Match incoming traffic directed at the given " .. "destination port or port range on this host"))
+L5_5.datatype = "neg(portrange)"
+L5_5 = L4_4:option(Value, "dest", translate("Internal zone"))
+L5_5.nocreate = true
+L5_5.default = "lan"
+L5_5.template = "cbi/firewall_zonelist"
+L5_5 = L4_4:option(Value, "dest_ip", translate("Internal IP address"), translate([[
+Redirect matched incoming traffic to the specified 
+		internal host]]))
+L5_5.datatype = "ip4addr"
+luci.sys.net.ipv4_hints(function(A0_19, A1_20)
+  _UPVALUE0_:value(A0_19, "%s (%s)" % {A0_19, A1_20})
+end)
+L5_5 = L4_4:option(Value, "dest_port", translate("Internal port"), translate([[
+Redirect matched incoming traffic to the given port on 
+		the internal host]]))
+L5_5.placeholder = translate("any")
+L5_5.datatype = "portrange"
+L5_5 = L4_4:option(Flag, "reflection", translate("Enable NAT Loopback"))
+L5_5.rmempty = true
+L5_5.default = L5_5.enabled
+L5_5:depends("src", L6_6)
+function L5_5.cfgvalue(...)
+  local L1_22, L2_23
+  L1_22 = Flag
+  L1_22 = L1_22.cfgvalue
+  L2_23 = ...
+  L1_22 = L1_22(L2_23)
+  L1_22 = L1_22 or "1"
+  return L1_22
+end
+L4_4:option(Value, "extra", translate("Extra arguments"), translate("Passes additional arguments to iptables. Use with care!"))
+return L3_3

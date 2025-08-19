@@ -1,0 +1,208 @@
+local L0_0
+L0_0 = module
+L0_0("xssFilter", package.seeall)
+L0_0 = pcall
+L0_0 = L0_0(require, "iconv")
+function REPLACE_TAGS(A0_1, A1_2, A2_3, A3_4)
+  local L4_5
+  L4_5 = "<code>[HTML tag &lt;"
+  L4_5 = L4_5 .. A1_2 .. "&gt; removed"
+  if A2_3 then
+    L4_5 = L4_5 .. ": " .. A2_3
+  end
+  return L4_5 .. "]</code>"
+end
+function REMOVE_TAGS(A0_6, A1_7, A2_8, A3_9)
+  return A3_9
+end
+ALLOWED_TAGS = {
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "ul",
+  "ol",
+  "li",
+  "dl",
+  "dt",
+  "dd",
+  "br",
+  "em",
+  "strong",
+  "i",
+  "b",
+  "blockquote",
+  "pre",
+  "code",
+  "acronym",
+  "abbr",
+  "cite",
+  "dfn",
+  "tt",
+  "del",
+  "ins",
+  "kbd",
+  "strike",
+  "sub",
+  "sup",
+  "var",
+  "table",
+  "tr",
+  "thead",
+  "caption",
+  "tbody",
+  "tfoot",
+  "big",
+  "center",
+  "right",
+  "left",
+  "hr",
+  "style",
+  "div",
+  span = {
+    style = ".",
+    _test = function(A0_10)
+      if not A0_10.xarg.style or not A0_10.xarg.style:find("url") then
+        return true
+      else
+        return nil, "'url' not allowed in the value of 'style'"
+      end
+    end
+  },
+  th = {colspan = ".", rowspan = "."},
+  td = {colspan = ".", rowspan = "."}
+}
+EXTRA_TAGS = {
+  object = {
+    data = "http://",
+    _test = function(A0_11)
+      local L1_12, L2_13
+      L1_12 = A0_11.xarg
+      L1_12 = L1_12.type
+      if L1_12 == "image/svg+xml" then
+        L1_12 = true
+        return L1_12
+      else
+        L1_12 = false
+        L2_13 = "only 'image/svg+xml' is allowed for 'type'"
+        return L1_12, L2_13
+      end
+    end
+  }
+}
+GENERIC_ATTRIBUTES = {
+  class = ".",
+  alt = ".",
+  title = "."
+}
+function new(A0_14, A1_15, A2_16)
+  setmetatable({}, _UPVALUE0_):init(A0_14)
+  if _UPVALUE1_ then
+    setmetatable({}, _UPVALUE0_).utf8_converter = _UPVALUE2_.new("UTF8", "UTF8")
+  end
+  setmetatable({}, _UPVALUE0_).tags_handler = A2_16 or REPLACE_TAGS
+  return (setmetatable({}, _UPVALUE0_))
+end
+;({}).init = function(A0_17, A1_18, A2_19)
+  A0_17.allowed_tags = A1_18 or ALLOWED_TAGS
+  for _FORV_6_, _FORV_7_ in ipairs(A0_17.allowed_tags) do
+    A0_17.allowed_tags[_FORV_7_] = A0_17.allowed_tags[_FORV_7_] or {}
+  end
+  A0_17.generic_attributes = A2_19 or GENERIC_ATTRIBUTES
+end
+;({}).filter = function(A0_20, A1_21)
+  if A0_20.utf8_converter then
+    out, err = A0_20.utf8_converter:iconv(A1_21)
+    if err then
+      A1_21 = "[Invalid UTF8 - removed by XSSFilter]"
+    end
+  end
+  if not pcall(_UPVALUE0_, "<xml>" .. A1_21 .. "</xml>") then
+    return nil, "XSSFilter could not parse (X)HTML:\n" .. A1_21:gsub("<", "&lt;"):gsub(">", "&gt;")
+  end
+  function xml2string(A0_22)
+    local L1_23, L2_24, L3_25, L4_26, L5_27, L6_28, L7_29, L8_30, L9_31, L10_32, L11_33, L12_34, L13_35, L14_36
+    for L4_26, L5_27 in L1_23(L2_24) do
+      L6_28 = type
+      L7_29 = L5_27
+      L6_28 = L6_28(L7_29)
+      if L6_28 == "string" then
+        L6_28 = _UPVALUE0_
+        L7_29 = L5_27
+        L6_28 = L6_28 .. L7_29
+        _UPVALUE0_ = L6_28
+      else
+        L6_28 = type
+        L7_29 = L5_27
+        L6_28 = L6_28(L7_29)
+        if L6_28 == "table" then
+          L6_28 = _UPVALUE1_
+          L6_28 = L6_28.allowed_tags
+          L7_29 = L5_27.label
+          L6_28 = L6_28[L7_29]
+          if not L6_28 then
+            L7_29 = _UPVALUE0_
+            L8_30 = _UPVALUE1_
+            L8_30 = L8_30.tags_handler
+            L12_34 = L5_27[1]
+            L8_30 = L8_30(L9_31, L10_32, L11_33, L12_34)
+            L7_29 = L7_29 .. L8_30
+            _UPVALUE0_ = L7_29
+          else
+            L7_29 = L6_28._test
+            L7_29 = L7_29 or _UPVALUE2_
+            L8_30 = L5_27
+            L8_30 = L7_29(L8_30)
+            if not L7_29 then
+              L12_34 = L5_27.label
+              L13_35 = L8_30
+              L14_36 = L5_27[1]
+              _UPVALUE0_ = L9_31
+            else
+              _UPVALUE0_ = L9_31
+              for L12_34, L13_35 in L9_31(L10_32) do
+                L14_36 = L6_28[L12_34]
+                if not L14_36 then
+                  L14_36 = _UPVALUE1_
+                  L14_36 = L14_36.generic_attributes
+                  L14_36 = L14_36[L12_34]
+                  L14_36 = L14_36 or {}
+                end
+                if _UPVALUE3_(L13_35, L14_36) then
+                  _UPVALUE0_ = _UPVALUE0_ .. " " .. L12_34 .. "=\"" .. L13_35:gsub("\"", "&quot;") .. "\""
+                end
+              end
+              if L9_31 then
+                _UPVALUE0_ = L9_31
+              else
+                _UPVALUE0_ = L9_31
+                L9_31(L10_32)
+                L12_34 = ">"
+                _UPVALUE0_ = L9_31
+              end
+            end
+          end
+        else
+          L6_28 = error
+          L7_29 = "XSSFilter: Unexpected type of field in parsed XML"
+          L6_28(L7_29)
+        end
+      end
+    end
+  end
+  xml2string(pcall(_UPVALUE0_, "<xml>" .. A1_21 .. "</xml>")[2])
+  return ""
+end
+;({}).call_tags_handler = function(A0_37, A1_38, A2_39, A3_40)
+  local L4_41, L5_42
+  L5_42 = A0_37
+  L4_41 = A0_37.tags_handler
+  L5_42 = L4_41(L5_42, A1_38, A2_39, A3_40)
+  if not L4_41 then
+    error(L5_42)
+  end
+  return L4_41 or ""
+end

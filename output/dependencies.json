@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "total_files": 6,
+    "total_dependencies": 0,
+    "generated_at": "2025-08-19 11:12:24.329848"
+  },
+  "files": [
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac",
+      "module_name": "main",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    },
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac",
+      "module_name": "luci.http.",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    },
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac",
+      "module_name": "nixio.fs.",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    },
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac",
+      "module_name": "luci.controller.api.xqnetwork.",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    },
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac",
+      "module_name": "luci.util.",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    },
+    {
+      "file_path": "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac",
+      "module_name": "luci.jsonc.",
+      "dependencies_count": 0,
+      "dependents_count": 0
+    }
+  ],
+  "dependencies": [],
+  "topological_order": [
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac",
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac",
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac",
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac",
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac",
+    "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac"
+  ]
+}

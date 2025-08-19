@@ -1,0 +1,168 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4
+function L4_4(A0_5)
+  return A0_5:gsub("\\", "\\\\"):gsub("`", "\\`"):gsub("\"", "\\\""):gsub("%$", "\\$")
+end
+cmdfmt = L4_4
+function L4_4()
+  _UPVALUE0_ = require("xiaoqiang.util.XQDeviceUtil")
+  _UPVALUE1_ = require("xiaoqiang.XQEquipment")
+  _UPVALUE2_ = _UPVALUE0_.getDeviceInfoFromDB()
+  _UPVALUE3_ = _UPVALUE0_.getDHCPDict()
+end
+get_hostname_init = L4_4
+function L4_4(A0_6)
+  local L1_7, L2_8
+  L2_8 = _UPVALUE0_
+  L2_8 = L2_8[A0_6]
+  if L2_8 then
+    L2_8 = _UPVALUE0_
+    L2_8 = L2_8[A0_6]
+    L2_8 = L2_8.nickname
+    if L2_8 ~= "" then
+      L2_8 = _UPVALUE0_
+      L2_8 = L2_8[A0_6]
+      L1_7 = L2_8.nickname
+    end
+  else
+    L2_8 = _UPVALUE1_
+    L2_8 = L2_8[A0_6]
+    if L2_8 then
+      L2_8 = _UPVALUE1_
+      L2_8 = L2_8[A0_6]
+      L2_8 = L2_8.name
+    else
+      L2_8 = L2_8 or ""
+    end
+    if L2_8 == "" then
+      L1_7 = _UPVALUE2_.identifyDevice(A0_6, "").name
+    elseif _UPVALUE2_.identifyDevice(A0_6, L2_8).type.p + _UPVALUE2_.identifyDevice(A0_6, L2_8).type.c > 0 then
+      L1_7 = _UPVALUE2_.identifyDevice(A0_6, L2_8).name
+    else
+      L1_7 = L2_8
+    end
+  end
+  L2_8 = L1_7 == "" and A0_6 or L1_7
+  return L2_8
+end
+get_hostname = L4_4
+function L4_4()
+  if not require("ubus").connect() then
+    elog("Failed to connect to ubusd")
+  end
+  require("ubus").connect():close()
+  return require("ubus").connect():call("network.interface.wan", "status", {}).l3_device and require("ubus").connect():call("network.interface.wan", "status", {}).l3_device or require("ubus").connect():call("network.interface.wan", "status", {}).device
+end
+get_wan_dev_name = L4_4
+function L4_4()
+  if not require("ubus").connect() then
+    elog("Failed to connect to ubusd")
+  end
+  require("ubus").connect():close()
+  return require("ubus").connect():call("network.interface.lan", "status", {}).l3_device and require("ubus").connect():call("network.interface.lan", "status", {}).l3_device or require("ubus").connect():call("network.interface.lan", "status", {}).device
+end
+get_lan_dev_name = L4_4
+function L4_4()
+  local L0_9, L1_10, L2_11
+  L0_9 = io
+  L0_9 = L0_9.popen
+  L1_10 = "uci get xiaoqiang.common.NETMODE"
+  L0_9 = L0_9(L1_10)
+  L2_11 = L0_9
+  L1_10 = L0_9.read
+  L1_10 = L1_10(L2_11, "*line")
+  L2_11 = L0_9.close
+  L2_11(L0_9)
+  if L1_10 == "wifiapmode" then
+    L2_11 = io
+    L2_11 = L2_11.popen
+    L2_11 = L2_11("ifconfig  apcli0 | grep HWaddr")
+    L0_9 = L2_11
+    L2_11 = L0_9.read
+    L2_11 = L2_11(L0_9, "*line")
+    L0_9:close()
+    return string.find(L2_11, "HWaddr%s+([0-9A-F:]+)%s*$")
+  end
+  if L1_10 == "lanapmode" then
+    L2_11 = io
+    L2_11 = L2_11.popen
+    L2_11 = L2_11("ifconfig  br-lan | grep HWaddr")
+    L0_9 = L2_11
+    L2_11 = L0_9.read
+    L2_11 = L2_11(L0_9, "*line")
+    L0_9:close()
+    return string.find(L2_11, "HWaddr%s+([0-9A-F:]+)%s*$")
+  end
+  L2_11 = nil
+  return L2_11
+end
+get_ap_hw = L4_4
+function L4_4()
+  os.execute("killall -q -s 10 noflushd")
+end
+trafficd_lua_done = L4_4
+function L4_4()
+  return require("xiaoqiang.util.XQSysUtil").getRouterInfo4Trafficd()
+end
+get_description = L4_4
+function L4_4()
+  return require("xiaoqiang.util.XQSysUtil").getRomVersion()
+end
+get_version = L4_4
+function L4_4(A0_12)
+  local L1_13, L2_14, L3_15, L4_16, L5_17, L6_18, L7_19, L8_20, L9_21, L10_22, L11_23, L12_24, L13_25, L14_26, L15_27, L16_28, L17_29, L18_30, L19_31
+  L9_21 = require
+  L10_22 = "json"
+  L9_21 = L9_21(L10_22)
+  L10_22, L11_23, L12_24 = nil, nil, nil
+  L13_25 = 1
+  L14_26, L15_27 = nil, nil
+  L10_22 = L16_28
+  L11_23 = L16_28
+  L16_28(L17_29)
+  L10_22 = L16_28
+  L14_26 = L16_28
+  L16_28(L17_29)
+  if L11_23 ~= nil and L14_26 ~= nil then
+    L14_26 = L16_28
+    if L14_26 ~= nil then
+      for L19_31 = 0, L14_26 do
+        L10_22 = io.popen(string.format("uci get wireless.@wifi-iface[%d].ifname", L19_31))
+        L12_24 = L10_22:read("*line")
+        L10_22:close()
+        if L12_24 == L11_23 then
+          L13_25 = L19_31
+          break
+        end
+      end
+    end
+  end
+  L19_31 = cmdfmt
+  L19_31 = L19_31(L11_23)
+  L19_31 = L17_29(L18_30, L19_31, cmdfmt(A0_12))
+  L16_28(L17_29, L18_30, L19_31, L17_29(L18_30, L19_31, cmdfmt(A0_12)))
+  file = L16_28
+  if L16_28 ~= nil then
+    for L19_31 in L16_28(L17_29) do
+      L1_13 = L9_21.decode(L19_31).code
+      L2_14 = L9_21.decode(L19_31).token
+      L3_15 = L9_21.decode(L19_31).ssid
+      L4_16 = L9_21.decode(L19_31).ssid_pwd
+      L5_17 = L9_21.decode(L19_31).ssid_type
+      L6_18 = L9_21.decode(L19_31).ssid_hidden
+      L7_19 = L9_21.decode(L19_31).bssid
+      L8_20 = L9_21.decode(L19_31).device_id
+      os.execute("logger " .. L1_13)
+      os.execute("logger " .. L2_14)
+      os.execute("logger " .. L3_15)
+      os.execute("logger " .. L4_16)
+      os.execute("logger " .. L5_17)
+      os.execute("logger " .. L6_18)
+      os.execute("logger " .. L7_19)
+      os.execute("logger " .. L8_20)
+    end
+    L16_28(L17_29)
+  end
+  L19_31 = L4_16
+  return L16_28, L17_29, L18_30, L19_31, L5_17, L6_18, L7_19, L8_20
+end
+trafficd_lua_ecos_pair_verify = L4_4

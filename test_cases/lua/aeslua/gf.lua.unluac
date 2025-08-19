@@ -1,0 +1,108 @@
+local L0_0
+L0_0 = module
+L0_0("aeslua.gf", package.seeall)
+L0_0 = require
+L0_0 = L0_0("bit")
+aeslua.gf = {}
+;({}).n = 256
+;({}).ord = 255
+;({}).irrPolynom = 283
+;({}).exp = {}
+;({}).log = {}
+;({}).add = function(A0_1, A1_2)
+  return _UPVALUE0_.bxor(A0_1, A1_2)
+end
+;({}).sub = function(A0_3, A1_4)
+  return _UPVALUE0_.bxor(A0_3, A1_4)
+end
+;({}).invert = function(A0_5)
+  local L1_6, L2_7
+  if A0_5 == 1 then
+    L1_6 = 1
+    return L1_6
+  end
+  L1_6 = _UPVALUE0_
+  L1_6 = L1_6.ord
+  L2_7 = _UPVALUE0_
+  L2_7 = L2_7.log
+  L2_7 = L2_7[A0_5]
+  L1_6 = L1_6 - L2_7
+  L2_7 = _UPVALUE0_
+  L2_7 = L2_7.exp
+  L2_7 = L2_7[L1_6]
+  return L2_7
+end
+;({}).mul = function(A0_8, A1_9)
+  local L2_10, L3_11
+  if A0_8 == 0 or A1_9 == 0 then
+    L2_10 = 0
+    return L2_10
+  end
+  L2_10 = _UPVALUE0_
+  L2_10 = L2_10.log
+  L2_10 = L2_10[A0_8]
+  L3_11 = _UPVALUE0_
+  L3_11 = L3_11.log
+  L3_11 = L3_11[A1_9]
+  L2_10 = L2_10 + L3_11
+  L3_11 = _UPVALUE0_
+  L3_11 = L3_11.ord
+  if L2_10 >= L3_11 then
+    L3_11 = _UPVALUE0_
+    L3_11 = L3_11.ord
+    L2_10 = L2_10 - L3_11
+  end
+  L3_11 = _UPVALUE0_
+  L3_11 = L3_11.exp
+  L3_11 = L3_11[L2_10]
+  return L3_11
+end
+;({}).div = function(A0_12, A1_13)
+  local L2_14, L3_15
+  if A0_12 == 0 then
+    L2_14 = 0
+    return L2_14
+  end
+  L2_14 = _UPVALUE0_
+  L2_14 = L2_14.log
+  L2_14 = L2_14[A0_12]
+  L3_15 = _UPVALUE0_
+  L3_15 = L3_15.log
+  L3_15 = L3_15[A1_13]
+  L2_14 = L2_14 - L3_15
+  if L2_14 < 0 then
+    L3_15 = _UPVALUE0_
+    L3_15 = L3_15.ord
+    L2_14 = L2_14 + L3_15
+  end
+  L3_15 = _UPVALUE0_
+  L3_15 = L3_15.exp
+  L3_15 = L3_15[L2_14]
+  return L3_15
+end
+;({}).printLog = function()
+  local L0_16, L2_17, L3_18
+  for _FORV_3_ = 1, L2_17.n do
+    print("log(", _FORV_3_ - 1, ")=", _UPVALUE0_.log[_FORV_3_ - 1])
+  end
+end
+;({}).printExp = function()
+  local L0_19, L2_20, L3_21
+  for _FORV_3_ = 1, L2_20.n do
+    print("exp(", _FORV_3_ - 1, ")=", _UPVALUE0_.exp[_FORV_3_ - 1])
+  end
+end
+;({}).initMulTable = function()
+  local L0_22, L1_23, L2_24, L3_25, L4_26
+  L0_22 = 1
+  for L4_26 = 0, L2_24 - 1 do
+    _UPVALUE0_.exp[L4_26] = L0_22
+    _UPVALUE0_.log[L0_22] = L4_26
+    L0_22 = _UPVALUE1_.bxor(_UPVALUE1_.lshift(L0_22, 1), L0_22)
+    if L0_22 > _UPVALUE0_.ord then
+      L0_22 = _UPVALUE2_.sub(L0_22, _UPVALUE0_.irrPolynom)
+    end
+  end
+end
+;({}).initMulTable()
+return {}

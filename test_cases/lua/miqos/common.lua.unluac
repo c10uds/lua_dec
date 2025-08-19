@@ -1,0 +1,887 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5
+L0_0 = require
+L1_1 = "nixio.fs"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "ubus"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.uci"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.util"
+L3_3 = L3_3(L4_4)
+util = L3_3
+L3_3 = require
+L4_4 = "posix"
+L3_3 = L3_3(L4_4)
+px = L3_3
+L3_3 = require
+L4_4 = "nixio"
+L3_3 = L3_3(L4_4)
+L4_4 = "/etc/config/"
+L5_5 = "/tmp/etc/config/"
+cfg = {
+  server = {
+    path = "/var/run/miqosd.sock"
+  },
+  idle_timeout = {wire = 301, wireless = 10},
+  check_interval = 20,
+  clean_counters = 0,
+  lan = {ip = "", mask = ""},
+  DEVS = {
+    UP = {dev = "", id = "2"},
+    DOWN = {dev = "br-lan", id = "1"}
+  },
+  guest = {
+    changed = 0,
+    UP = 4.667261458434778E-62,
+    DOWN = 4.667261458434778E-62,
+    inner = {UP = 0, DOWN = 0},
+    default = 4.667261458434778E-62
+  },
+  xq = {
+    changed = 0,
+    UP = -6.065988000114918E66,
+    DOWN = -6.065988000114918E66,
+    inner = {UP = 0, DOWN = 0},
+    default = -6.065988000114918E66
+  },
+  enabled = {
+    started = true,
+    changed = false,
+    flag = false
+  },
+  group = {
+    changed = false,
+    tab = g_group_def,
+    default = "00",
+    min_default = 2.8363E-319
+  },
+  flow = {
+    changed = false,
+    seq = "",
+    dft = "auto"
+  },
+  qdisc = {old = nil, cur = nil},
+  bands = {
+    UP = 0,
+    DOWN = 0,
+    changed = true
+  },
+  qos_type = {changed = false, mode = "service"},
+  quan = 1600,
+  virtual_proto = "ip",
+  supress_host = {changed = false, enabled = false},
+  wangzhe = {
+    changed = false,
+    modeon = false,
+    plugon = false,
+    bandchanged = false,
+    cleanother = false,
+    cleanflag = false,
+    bands = {UP = 1024000, DOWN = 1024000},
+    devbands = {UP = 5000, DOWN = 5000},
+    iplist = {}
+  }
+}
+seq_prio = {
+  auto = {
+    game = 2,
+    web = 3,
+    video = 4,
+    download = 5
+  },
+  game = {
+    game = 2,
+    web = 3,
+    video = 4,
+    download = 5
+  },
+  web = {
+    web = 2,
+    game = 3,
+    video = 4,
+    download = 5
+  },
+  video = {
+    video = 2,
+    game = 3,
+    web = 4,
+    download = 5
+  }
+}
+UNIT = "kbit"
+UP, DOWN = "UP", "DOWN"
+const_ipt_mangle = "iptables -t mangle "
+const_ipt_clear = "iptables -t mangle -F "
+const_ipt_delete = "iptables -t mangle -X "
+const_tc_qdisc = "tc qdisc"
+const_tc_class = "tc class"
+const_tc_filter = "tc filter"
+qdisc = {}
+old_qdisc, cur_qdisc = "", ""
+g_debug = false
+g_CONFIG_HZ = 100
+g_htb_buffer_factor = 3.13984E-319
+g_htb_buffer_data = 1.2174E-319 / g_CONFIG_HZ
+g_min_burst = 1600
+g_supress_host = false
+px.openlog("miqos", LOG_NDELAY, LOG_USER)
+function logger(A0_6, A1_7)
+  px.syslog(A0_6, A1_7)
+end
+const_lockfile = "/tmp/miqos.lock"
+g_lockfile = nil
+function run_cmd(A0_8)
+  if not A0_8 or A0_8 == "" then
+    return nil
+  end
+  io.popen(A0_8):close()
+  return (io.popen(A0_8):read("*line"))
+end
+function read_interfaces(A0_9)
+  local L1_10
+  L1_10 = {}
+  if A0_9 == "lan" then
+    return "br-lan"
+  elseif A0_9 == "wan" then
+    if (run_cmd("uci -q get misc.hardware.model") or "unknown") == "D01" then
+      return "eth0"
+    end
+    return (run_cmd("uci -q get network.wan.ifname"))
+  end
+  return ""
+end
+function lock()
+  if not g_lockfile then
+    g_lockfile = _UPVALUE0_.open(const_lockfile, "w")
+  end
+  if not g_lockfile:lock("tlock") then
+    logger(3, "Note: try to get lock failed .")
+    return false
+  end
+  return true
+end
+function unlock()
+  if g_lockfile then
+    g_lockfile:lock("ulock")
+    g_lockfile:close()
+    g_lockfile = nil
+  end
+  return true
+end
+g_ubus = L1_1.connect()
+function cfg2tmp()
+  local L0_11, L1_12, L2_13
+  L0_11 = QOS_VER
+  if L0_11 ~= "FIX" then
+    L0_11 = QOS_VER
+  elseif L0_11 == "NOIFB" then
+    L0_11 = true
+    return L0_11
+  end
+  L0_11 = _UPVALUE0_
+  L0_11 = L0_11.mkdirr
+  L1_12 = _UPVALUE1_
+  L2_13 = L0_11(L1_12)
+  if not L0_11 then
+    logger(3, "fatal error: mkdir failed, code:" .. L1_12 .. ",msg:" .. L2_13)
+    return nil
+  end
+  L0_11, L1_12, L2_13 = _UPVALUE0_.copy(_UPVALUE2_, _UPVALUE3_)
+  if not L0_11 then
+    logger(3, "fatal error: copy cfg file 2 /tmp memory failed. code:" .. L1_12 .. ",msg:" .. L2_13)
+    return nil
+  end
+  return true
+end
+function dec2hexstr(A0_14)
+  return string.format("%x", A0_14)
+end
+function tmp2cfg()
+  if QOS_VER == "FIX" or QOS_VER == "NOIFB" then
+    return true
+  end
+  if not _UPVALUE0_.copy(_UPVALUE1_, _UPVALUE2_) then
+    logger(3, "fatal error: copy /tmp cfg file 2 /etc/config/ failed. exit.")
+    return nil
+  end
+  os.execute("/bin/sync")
+  return true
+end
+function copytab(A0_15)
+  local L1_16, L2_17, L3_18, L4_19, L5_20, L6_21
+  L1_16 = {}
+  L3_18 = A0_15 or {}
+  for L5_20, L6_21 in L2_17(L3_18) do
+    if type(L6_21) ~= "table" then
+      L1_16[L5_20] = L6_21
+    else
+      L1_16[L5_20] = copytab(L6_21)
+    end
+  end
+  return L1_16
+end
+function get_conf_std(A0_22, A1_23, A2_24, A3_25)
+  return pcall(function()
+    return _UPVALUE0_:get(_UPVALUE1_, _UPVALUE2_, _UPVALUE3_)
+  end) or A3_25
+end
+function get_cursor()
+  if QOS_VER ~= "FIX" and QOS_VER ~= "NOIFB" then
+    _UPVALUE0_.cursor():set_confdir(_UPVALUE1_)
+  end
+  return (_UPVALUE0_.cursor())
+end
+function get_tbls(A0_26, A1_27)
+  local L2_28
+  L2_28 = {}
+  return L2_28 or {}
+end
+function read_network_conf()
+  cfg.lan.ip, cfg.lan.mask = _UPVALUE0_("lan")
+  if QOS_VER == "HWQOS" then
+    return true
+  end
+  if QOS_VER == "STD" then
+    if get_conf_std("network", "wan", "proto") == "dhcp" or get_conf_std("network", "wan", "proto") == "static" then
+      cfg.DEVS.UP.dev = read_interfaces("wan")
+      cfg.virtual_proto = "ip"
+    elseif get_conf_std("network", "wan", "proto") == "pppoe" then
+      cfg.DEVS.UP.dev = read_interfaces("wan")
+      cfg.virtual_proto = "pppoe"
+    else
+      logger(1, "cannot determine wan interface! exit")
+      return false
+    end
+  elseif get_conf_std("network", "wan", "proto") == "pppoe" then
+    cfg.DEVS.UP.dev = read_interfaces("wan")
+    cfg.virtual_proto = "pppoe"
+  else
+    cfg.DEVS.UP.dev = read_interfaces("wan")
+    cfg.virtual_proto = "ip"
+  end
+  if QOS_VER == "NOIFB" then
+    cfg.DEVS.UP.dev = "br-lan"
+  end
+  for _FORV_4_, _FORV_5_ in pairs(cfg.DEVS) do
+    if util.exec("ip link 2>&-|grep UP|grep " .. _FORV_5_.dev) == "" then
+      logger(3, "DEV " .. _FORV_5_.dev .. " is not UP. exit. ")
+      return false
+    end
+  end
+  return true
+end
+function read_qos_config()
+  local L0_29, L1_30, L2_31, L3_32, L4_33
+  L0_29 = QOS_VER
+  if L0_29 ~= "FIX" then
+    L0_29 = cfg
+    L0_29 = L0_29.enabled
+    L0_29 = L0_29.started
+    if not L0_29 then
+      L0_29 = g_debug
+      if L0_29 then
+        L0_29 = logger
+        L1_30 = 3
+        L2_31 = "qos stopped, no action."
+        L0_29(L1_30, L2_31)
+      end
+      L0_29 = false
+      return L0_29
+    end
+  end
+  L0_29, L1_30 = nil, nil
+  L2_31 = get_tbls
+  L3_32 = "miqos"
+  L4_33 = "miqos"
+  L2_31 = L2_31(L3_32, L4_33)
+  L3_32 = L2_31.settings
+  L3_32 = L3_32.enabled
+  L0_29 = L3_32 or "0"
+  L3_32 = cfg
+  L3_32 = L3_32.enabled
+  L3_32 = L3_32.flag
+  if L3_32 ~= L0_29 then
+    L3_32 = cfg
+    L3_32 = L3_32.enabled
+    L3_32.flag = L0_29
+    L3_32 = cfg
+    L3_32 = L3_32.enabled
+    L3_32.changed = true
+  end
+  L3_32 = L2_31.settings
+  L3_32 = L3_32.qos_auto
+  L0_29 = L3_32 or "auto"
+  L3_32 = cfg
+  L3_32 = L3_32.qos_type
+  L3_32 = L3_32.mode
+  if L3_32 ~= L0_29 then
+    L3_32 = cfg
+    L3_32 = L3_32.qos_type
+    L3_32.mode = L0_29
+    L3_32 = cfg
+    L3_32 = L3_32.qos_type
+    L3_32.changed = true
+  else
+    L3_32 = cfg
+    L3_32 = L3_32.qos_type
+    L3_32.changed = false
+  end
+  L3_32 = get_tbls
+  L4_33 = "miqos"
+  L3_32 = L3_32(L4_33, "system")
+  L4_33 = L3_32.param
+  L4_33 = L4_33.seq_prio
+  L4_33 = L4_33 or "auto"
+  if cfg.flow.seq ~= L4_33 then
+    cfg.flow.seq = L4_33
+    if cfg.flow.seq == "" then
+      cfg.flow.seq = cfg.flow.dft
+    end
+    cfg.flow.changed = true
+  end
+  L4_33 = L2_31.settings.upload or "0"
+  L1_30 = L2_31.settings.download or "0"
+  if cfg.bands.UP ~= L4_33 or cfg.bands.DOWN ~= L1_30 then
+    cfg.bands.UP, cfg.bands.DOWN = L4_33, L1_30
+    cfg.bands.changed = true
+  else
+    cfg.bands.changed = false
+  end
+  if tonumber(cfg.bands.UP) <= 0 or tonumber(cfg.bands.DOWN) <= 0 then
+    cfg.clean_counters = cfg.clean_counters + 1
+    if g_debug then
+      logger(3, "bands zero clean counters: " .. cfg.clean_counters)
+    end
+    if 3 > cfg.clean_counters then
+      if g_debug then
+        logger(3, "bands zero clean system ")
+      end
+      cleanup_system()
+    end
+    return false
+  elseif tonumber(cfg.bands.DOWN) < 8000 then
+    cfg.bands.UP = "0"
+    cfg.bands.DOWN = "0"
+    update_bw("0", "0")
+    cleanup_system()
+    return false
+  end
+  if QOS_VER == "HWQOS" then
+    cfg.qdisc.cur = "service"
+  elseif cfg.enabled.flag == "0" then
+    cfg.qdisc.cur = "prio"
+  else
+    cfg.qdisc.cur = "service"
+  end
+  if QOS_VER == "FIX" then
+    cur_qdisc = "service"
+    cfg.qdisc.cur = "service"
+  elseif QOS_VER == "NOIFB" then
+    cur_qdisc = "noifb"
+    cfg.qdisc.cur = "noifb"
+  else
+    old_qdisc, cur_qdisc = cfg.qdisc.old, cfg.qdisc.cur
+  end
+  if qdisc[cur_qdisc] and qdisc[cur_qdisc].read_qos_config then
+    qdisc[cur_qdisc].read_qos_config()
+  end
+  return true
+end
+function read_qos_group_config()
+  g_group_def = get_tbls("miqos", "group")
+  g_group_def[cfg.group.default].min_grp_uplink = cfg.group.min_default
+  g_group_def[cfg.group.default].min_grp_downlink = cfg.group.min_default
+  if QOS_VER == "FIX" or QOS_VER == "HWQOS" or QOS_VER == "NOIFB" then
+    for _FORV_3_, _FORV_4_ in pairs(g_group_def) do
+      if _FORV_4_.name ~= cfg.group.default then
+        if not _FORV_4_.flag then
+          if tonumber(g_group_def[_FORV_3_].max_grp_uplink or 0) <= 0 then
+            if 0 >= tonumber(g_group_def[_FORV_3_].max_grp_downlink or 0) then
+              g_group_def[_FORV_3_].flag = "off"
+            end
+          end
+        elseif _FORV_4_.flag == "off" then
+          g_group_def[_FORV_3_].max_grp_uplink = 0
+          g_group_def[_FORV_3_].max_grp_downlink = 0
+        end
+      end
+    end
+    return true
+  elseif cfg.qos_type.mode == "auto" then
+    for _FORV_3_, _FORV_4_ in pairs(g_group_def) do
+      if _FORV_4_.name ~= cfg.group.default then
+        g_group_def[_FORV_3_] = nil
+      else
+        g_group_def[_FORV_3_].min_grp_uplink = cfg.group.min_default
+        g_group_def[_FORV_3_].min_grp_downlink = cfg.group.min_default
+      end
+    end
+  elseif cfg.qos_type.mode == "min" then
+    for _FORV_3_, _FORV_4_ in pairs(g_group_def) do
+      if _FORV_4_.name ~= cfg.group.default then
+        g_group_def[_FORV_3_].max_grp_uplink = 0
+        g_group_def[_FORV_3_].max_grp_downlink = 0
+      end
+      if g_group_def[_FORV_3_].min_grp_uplink == 0 then
+        g_group_def[_FORV_3_].min_grp_uplink = cfg.group.min_default
+      end
+      if g_group_def[_FORV_3_].min_grp_downlink == 0 then
+        g_group_def[_FORV_3_].min_grp_downlink = cfg.group.min_default
+      end
+    end
+  elseif cfg.qos_type.mode == "max" then
+    for _FORV_3_, _FORV_4_ in pairs(g_group_def) do
+      if _FORV_4_.name ~= cfg.group.default then
+        g_group_def[_FORV_3_].min_grp_uplink = 0
+        g_group_def[_FORV_3_].min_grp_downlink = 0
+      end
+      if g_group_def[_FORV_3_].min_grp_uplink == 0 then
+        g_group_def[_FORV_3_].min_grp_uplink = cfg.group.min_default
+      end
+      if g_group_def[_FORV_3_].min_grp_downlink == 0 then
+        g_group_def[_FORV_3_].min_grp_downlink = cfg.group.min_default
+      end
+    end
+  elseif cfg.qos_type.mode == "both" then
+  elseif cfg.qos_type.mode == "service" then
+    for _FORV_3_, _FORV_4_ in pairs(g_group_def) do
+      if _FORV_4_.name ~= cfg.group.default then
+        if not _FORV_4_.flag then
+          if tonumber(g_group_def[_FORV_3_].max_grp_uplink or 0) <= 0 then
+            if 0 >= tonumber(g_group_def[_FORV_3_].max_grp_downlink or 0) then
+              g_group_def[_FORV_3_].flag = "off"
+            end
+          end
+        elseif _FORV_4_.flag == "off" then
+          g_group_def[_FORV_3_].max_grp_uplink = 0
+          g_group_def[_FORV_3_].max_grp_downlink = 0
+        end
+      end
+    end
+  else
+    logger(3, "ERROR: not supported qos type MODE.")
+    return false
+  end
+  return true
+end
+function read_qos_guest_xq_config(A0_34)
+  local L1_35, L2_36, L3_37, L4_38, L5_39, L6_40, L7_41, L8_42, L9_43, L10_44, L11_45, L12_46, L13_47, L14_48, L15_49
+  L1_35 = {L2_36, L3_37}
+  if A0_34 then
+    for L5_39, L6_40 in L2_36(L3_37) do
+      for L10_44, L11_45 in L7_41(L8_42) do
+        L13_47 = cfg
+        L13_47 = L13_47[L6_40]
+        L13_47 = L13_47.default
+        if L12_46 <= 0 then
+          L13_47 = cfg
+          L13_47 = L13_47[L6_40]
+          L14_48 = tonumber
+          L15_49 = cfg
+          L15_49 = L15_49.bands
+          L15_49 = L15_49[L11_45]
+          L14_48 = L14_48(L15_49)
+          L13_47[L11_45] = L14_48
+        elseif L12_46 <= 1 then
+          L13_47 = cfg
+          L13_47 = L13_47[L6_40]
+          L14_48 = math
+          L14_48 = L14_48.ceil
+          L15_49 = cfg
+          L15_49 = L15_49.bands
+          L15_49 = L15_49[L11_45]
+          L15_49 = L15_49 * L12_46
+          L14_48 = L14_48(L15_49)
+          L13_47[L11_45] = L14_48
+        else
+          L13_47 = cfg
+          L13_47 = L13_47[L6_40]
+          L14_48 = math
+          L14_48 = L14_48.ceil
+          L15_49 = L12_46
+          L14_48 = L14_48(L15_49)
+          L13_47[L11_45] = L14_48
+        end
+      end
+    end
+    return L2_36
+  end
+  for L6_40, L7_41 in L3_37(L4_38) do
+    if L8_42 then
+      if L10_44 == L8_42 then
+      else
+        if L10_44 ~= L9_43 then
+          L11_45.DOWN = L9_43
+          L10_44.UP = L12_46
+          L10_44.changed = 1
+      end
+      else
+        L10_44.changed = 0
+      end
+      L13_47 = "DOWN"
+      for L13_47, L14_48 in L10_44(L11_45) do
+        L15_49 = tonumber
+        L15_49 = L15_49(cfg[L7_41].inner[L14_48])
+        if L15_49 <= 0 then
+          cfg[L7_41][L14_48] = tonumber(cfg.bands[L14_48])
+        elseif L15_49 <= 1 then
+          cfg[L7_41][L14_48] = math.ceil(cfg.bands[L14_48] * L15_49)
+        else
+          cfg[L7_41][L14_48] = math.ceil(L15_49)
+        end
+      end
+    end
+  end
+  return L3_37
+end
+function get_burst(A0_50)
+  local L1_51, L2_52
+  L1_51 = math
+  L1_51 = L1_51.ceil
+  L2_52 = g_htb_buffer_data
+  L2_52 = A0_50 * L2_52
+  L2_52 = L2_52 * g_htb_buffer_factor
+  L1_51 = L1_51(L2_52)
+  L2_52 = math
+  L2_52 = L2_52.ceil
+  L2_52 = L2_52(A0_50 * g_htb_buffer_data)
+  if L1_51 < g_min_burst then
+    L1_51 = g_min_burst
+  end
+  if L2_52 < g_min_burst then
+    L2_52 = g_min_burst
+  end
+  return L1_51, L2_52
+end
+function get_supressed_ceil(A0_53, A1_54)
+  if cfg.supress_host.enabled and A1_54 and A1_54 > 0 then
+  end
+  return A0_53 - A1_54
+end
+function exec_cmd(A0_55, A1_56)
+  local L2_57, L3_58, L4_59, L5_60, L6_61, L7_62, L8_63
+  L2_57 = "/tmp/miqos.log"
+  for L6_61, L7_62 in L3_58(L4_59) do
+    L8_63 = L7_62
+    if g_debug then
+      logger(3, "++" .. L8_63)
+      L8_63 = L8_63 .. " >/dev/null 2>>" .. L2_57
+    else
+      L8_63 = L8_63 .. " &>/dev/null "
+    end
+    if os.execute(L8_63) ~= 0 and A1_56 ~= 1 then
+      if g_debug then
+        os.execute("echo \"^^^ " .. L8_63 .. " ^^^ \" >>" .. L2_57)
+      end
+      logger(3, "[ERROR]:  " .. L8_63 .. " failed!")
+      dump_qdisc(cfg.DEVS)
+      system_exit()
+      return false
+    end
+  end
+  return L3_58
+end
+function newset()
+  local L0_64, L1_65
+  L0_64 = {}
+  L1_65 = {}
+  return setmetatable(L1_65, {
+    __index = {
+      insert = function(A0_66, A1_67)
+        if not _UPVALUE0_[A1_67] then
+          table.insert(A0_66, A1_67)
+          _UPVALUE0_[A1_67] = table.getn(A0_66)
+        end
+      end,
+      remove = function(A0_68, A1_69)
+        local L2_70
+        L2_70 = _UPVALUE0_
+        L2_70 = L2_70[A1_69]
+        if L2_70 then
+          _UPVALUE0_[A1_69] = nil
+          if table.remove(A0_68) ~= A1_69 then
+            A0_68[L2_70], _UPVALUE0_[table.remove(A0_68)] = table.remove(A0_68), L2_70
+          end
+        end
+      end
+    }
+  })
+end
+function string.split(A0_71, A1_72)
+  string.gsub(A0_71, "[^" .. A1_72 .. "]+", function(A0_73)
+    table.insert(_UPVALUE0_, A0_73)
+  end)
+  return {}
+end
+function pr(A0_74, A1_75, A2_76)
+  A2_76 = A2_76 or logger
+  A1_75 = A1_75 or ""
+  A1_75 = A1_75 .. "-----------------"
+  A2_76(3, A1_75)
+  _UPVALUE0_(A0_74, "")
+  A2_76(3, A1_75)
+end
+function pr_console(A0_77, A1_78)
+  if not printf then
+    printf = logger
+  end
+  A1_78 = A1_78 or ""
+  A1_78 = A1_78 .. "-----------------"
+  printf(3, A1_78)
+  _UPVALUE0_(A0_77, "", printf)
+  printf(3, A1_78)
+end
+function p_sysinfo()
+  return "INFO," .. "Qdisc:" .. (cfg.qdisc.cur or "") .. ",Mode:" .. cfg.qos_type.mode .. ",Band: U:" .. cfg.bands.UP .. "kbps,D:" .. cfg.bands.DOWN .. "kbps"
+end
+g_limit = {}
+function update_counters(A0_79)
+  local L1_80
+  L1_80 = cfg
+  L1_80 = L1_80.qdisc
+  L1_80 = L1_80.cur
+  if qdisc[L1_80] and qdisc[L1_80].update_counters then
+    g_limit = qdisc[L1_80].update_counters(A0_79)
+  else
+    g_limit = {}
+  end
+end
+function dump_qdisc(A0_81)
+  local L1_82, L2_83, L3_84, L4_85, L5_86, L6_87, L7_88, L8_89, L9_90, L10_91, L11_92, L12_93
+  L1_82 = {}
+  L2_83(L3_84, L4_85)
+  for L5_86, L6_87 in L2_83(L3_84) do
+    L7_88 = table
+    L7_88 = L7_88.insert
+    L8_89 = L1_82
+    L7_88(L8_89, L9_90)
+  end
+  for L5_86, L6_87 in L2_83(L3_84) do
+    L7_88 = table
+    L7_88 = L7_88.insert
+    L8_89 = L1_82
+    L7_88(L8_89, L9_90)
+  end
+  L2_83(L3_84, L4_85)
+  for L7_88, L8_89 in L4_85(L5_86) do
+    if L2_83 then
+      for L12_93 in L9_90(L10_91) do
+        logger(3, L12_93)
+      end
+    end
+  end
+  L4_85(L5_86)
+  L4_85(L5_86, L6_87)
+end
+function calc_fq_codel_params(A0_94)
+  local L1_95, L2_96
+  L1_95 = 5000
+  L2_96 = 100000
+  if A0_94 <= 0 then
+    return L1_95, L2_96
+  end
+  L1_95 = 3.4453693E-317 / A0_94
+  if L1_95 < 5000 then
+    L1_95 = 5000
+  end
+  L2_96 = 95000 + L1_95
+  return math.ceil(L1_95), math.ceil(L2_96)
+end
+function apply_leaf_qdisc(A0_97, A1_98, A2_99, A3_100, A4_101, A5_102)
+  local L6_103, L7_104, L8_105, L9_106, L10_107
+  L6_103 = "add"
+  L7_104 = nil
+  L8_105 = {}
+  L9_106 = g_leaf_type
+  if L9_106 == "sfq" then
+    if not A5_102 then
+      L9_106 = string
+      L9_106 = L9_106.format
+      L10_107 = " %s del dev %s parent %s:%s sfq"
+      L9_106 = L9_106(L10_107, const_tc_qdisc, A1_98, A2_99, A3_100)
+      L7_104 = L9_106
+      L9_106 = table
+      L9_106 = L9_106.insert
+      L10_107 = L8_105
+      L9_106(L10_107, L7_104)
+    end
+    L9_106 = string
+    L9_106 = L9_106.format
+    L10_107 = " %s %s dev %s parent %s:%s sfq perturb 10 "
+    L9_106 = L9_106(L10_107, const_tc_qdisc, L6_103, A1_98, A2_99, A3_100)
+    L7_104 = L9_106
+    L9_106 = table
+    L9_106 = L9_106.insert
+    L10_107 = A0_97
+    L9_106(L10_107, L7_104)
+  else
+    L9_106 = g_leaf_type
+    if L9_106 == "fq_codel" then
+      if not A5_102 then
+        L9_106 = string
+        L9_106 = L9_106.format
+        L10_107 = " %s del dev %s parent %s:%s "
+        L9_106 = L9_106(L10_107, const_tc_qdisc, A1_98, A2_99, A3_100)
+        L7_104 = L9_106
+        L9_106 = table
+        L9_106 = L9_106.insert
+        L10_107 = L8_105
+        L9_106(L10_107, L7_104)
+      end
+      L9_106 = calc_fq_codel_params
+      L10_107 = A4_101
+      L10_107 = L9_106(L10_107)
+      L7_104 = string.format(" %s %s dev %s parent %s:%s fq_codel limit 1024 flows 1024 target %sus interval %sus ", const_tc_qdisc, L6_103, A1_98, A2_99, A3_100, L9_106, L10_107)
+      table.insert(A0_97, L7_104)
+    else
+      if not A5_102 then
+        L9_106 = string
+        L9_106 = L9_106.format
+        L10_107 = " %s del dev %s parent %s:%s "
+        L9_106 = L9_106(L10_107, const_tc_qdisc, A1_98, A2_99, A3_100)
+        L7_104 = L9_106
+        L9_106 = table
+        L9_106 = L9_106.insert
+        L10_107 = L8_105
+        L9_106(L10_107, L7_104)
+      end
+      L9_106 = string
+      L9_106 = L9_106.format
+      L10_107 = " %s %s dev %s parent %s:%s pfifo limit 1024 "
+      L9_106 = L9_106(L10_107, const_tc_qdisc, L6_103, A1_98, A2_99, A3_100)
+      L7_104 = L9_106
+      L9_106 = table
+      L9_106 = L9_106.insert
+      L10_107 = A0_97
+      L9_106(L10_107, L7_104)
+    end
+  end
+  L9_106 = exec_cmd
+  L10_107 = L8_105
+  L9_106(L10_107, 1)
+end
+function apply_ppp_qdisc(A0_108, A1_109, A2_110, A3_111)
+  local L4_112, L5_113, L6_114, L7_115
+  L4_112 = A3_111 or "1"
+  L5_113 = "0x80"
+  L6_114 = 0
+  L7_115 = nil
+  if cfg.virtual_proto == "pppoe" then
+    L6_114 = 6
+    L7_115 = "0x8864"
+    expr = string.format(" %s %s dev %s parent %s: prio %s protocol %s u32 match u8 0x80 %s at %d flowid %s: ", const_tc_filter, "add", A1_109, A2_110, L4_112, L7_115, L5_113, L6_114, A2_110)
+    table.insert(A0_108, expr)
+  end
+end
+function apply_arp_small_filter(A0_116, A1_117, A2_118, A3_119, A4_120)
+  local L5_121, L6_122, L7_123, L8_124, L9_125
+  L5_121 = ""
+  L6_122 = "ip"
+  L7_123 = 0
+  L8_124 = "3"
+  L9_125 = cfg
+  L9_125 = L9_125.virtual_proto
+  if L9_125 == "pppoe" then
+    if A1_117 == "pppoe-wan" then
+      L7_123 = 0
+    else
+      L9_125 = string
+      L9_125 = L9_125.find
+      L9_125 = L9_125(A1_117, "eth", 1)
+      if L9_125 then
+        L7_123 = 8
+        L6_122 = "0x8864"
+      else
+        L9_125 = QOS_VER
+        if L9_125 == "STD" then
+          L6_122 = "0x8864"
+          L7_123 = 8
+        else
+          L6_122 = "ip"
+          L7_123 = 0
+        end
+      end
+    end
+  end
+  L9_125 = "0xffc0"
+  L5_121 = string.format(" %s %s dev %s parent %s: prio %s protocol %s u32 match u16 0x0000 %s at %d flowid %s:%s ", const_tc_filter, A2_118, A1_117, A3_119, L8_124, L6_122, L9_125, L7_123 + 2, A3_119, A4_120)
+  table.insert(A0_116, L5_121)
+end
+function get_stab_string(A0_126)
+  local L1_127
+  L1_127 = g_enable_stab
+  if L1_127 then
+    L1_127 = "0"
+    if cfg.virtual_proto == "pppoe" then
+      if A0_126 == "pppoe-wan" then
+        L1_127 = "14"
+      elseif string.find(A0_126, "eth") then
+        L1_127 = "22"
+      elseif QOS_VER == "STD" then
+        L1_127 = "22"
+      else
+        L1_127 = "14"
+      end
+    else
+      L1_127 = "14"
+    end
+    return "stab linklayer ethernet mpu 0 overhead " .. L1_127
+  else
+    L1_127 = " "
+    return L1_127
+  end
+end
+function cleanup_system()
+  if QOS_VER ~= "FIX" and QOS_VER ~= "NOIFB" and cfg.qdisc.cur and qdisc[cfg.qdisc.cur] and qdisc[cfg.qdisc.cur].clean then
+    logger(3, "======= Cleanup QoS rules for " .. cfg.qdisc.cur)
+    qdisc[cfg.qdisc.cur].clean(cfg.DEVS)
+    cfg.qdisc.cur = nil
+    cfg.qdisc.old = nil
+  elseif QOS_VER == "HWQOS" then
+    logger(3, "======= Cleanup  HWQOS rules for ")
+    qdisc.service.clean(nil)
+  else
+    logger(3, "======= Cleanup  default ")
+    _UPVALUE0_()
+  end
+  return true
+end
+function dump_cur_old_qdisc(A0_128)
+  local L1_129, L2_130, L3_131, L4_132
+  L1_129 = cfg
+  L1_129 = L1_129.qdisc
+  L1_129 = L1_129.old
+  L2_130 = cfg
+  L2_130 = L2_130.qdisc
+  L2_130 = L2_130.cur
+  cur_qdisc = L2_130
+  old_qdisc = L1_129
+  L1_129 = "NULL"
+  L2_130 = "NULL"
+  L3_131 = "NULL"
+  L4_132 = "NULL"
+  if old_qdisc ~= nil then
+    L1_129 = string.format("old_qdisc: %s  ", old_qdisc)
+  else
+    L1_129 = string.format("old_qdisc: %s  ", "nil")
+  end
+  if cur_qdisc ~= nil then
+    L2_130 = string.format("cur_qdisc: %s  ", cur_qdisc)
+  else
+    L2_130 = string.format("cur_qdisc: %s  ", "nil")
+  end
+  if cfg.qdisc.old ~= nil then
+    L3_131 = string.format("cfg.qdisc.old: %s  ", cfg.qdisc.old)
+  else
+    L3_131 = string.format("cfg.qdisc.old: %s  ", "nil")
+  end
+  if cfg.qdisc.cur ~= nil then
+    L4_132 = string.format("cfg.qdisc.cur: %s  ", cfg.qdisc.cur)
+  else
+    L4_132 = string.format("cfg.qdisc.cur: %s  ", "nil")
+  end
+  logger(3, "=================" .. A0_128 .. L1_129 .. L2_130 .. L3_131 .. L4_132)
+end

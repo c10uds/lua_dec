@@ -1,0 +1,103 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7
+L0_0 = luci
+L0_0 = L0_0.model
+L0_0 = L0_0.network
+L1_1, L2_2 = nil, nil
+L6_6 = "pptp"
+L7_7 = "pppoe"
+for L6_6, L7_7 in L3_3(L4_4) do
+  L0_0:register_protocol(L7_7).get_i18n = function(A0_8)
+    if _UPVALUE0_ == "ppp" then
+      return luci.i18n.translate("PPP")
+    elseif _UPVALUE0_ == "pptp" then
+      return luci.i18n.translate("PPtP")
+    elseif _UPVALUE0_ == "3g" then
+      return luci.i18n.translate("UMTS/GPRS/EV-DO")
+    elseif _UPVALUE0_ == "pppoe" then
+      return luci.i18n.translate("PPPoE")
+    elseif _UPVALUE0_ == "pppoa" then
+      return luci.i18n.translate("PPPoATM")
+    elseif _UPVALUE0_ == "l2tp" then
+      return luci.i18n.translate("L2TP")
+    end
+  end
+  L0_0:register_protocol(L7_7).ifname = function(A0_9)
+    return _UPVALUE0_ .. "-" .. A0_9.sid
+  end
+  L0_0:register_protocol(L7_7).opkg_package = function(A0_10)
+    local L1_11
+    L1_11 = _UPVALUE0_
+    if L1_11 == "ppp" then
+      L1_11 = _UPVALUE0_
+      return L1_11
+    else
+      L1_11 = _UPVALUE0_
+      if L1_11 == "3g" then
+        L1_11 = "comgt"
+        return L1_11
+      else
+        L1_11 = _UPVALUE0_
+        if L1_11 == "pptp" then
+          L1_11 = "ppp-mod-pptp"
+          return L1_11
+        else
+          L1_11 = _UPVALUE0_
+          if L1_11 == "pppoe" then
+            L1_11 = "ppp-mod-pppoe"
+            return L1_11
+          else
+            L1_11 = _UPVALUE0_
+            if L1_11 == "pppoa" then
+              L1_11 = "ppp-mod-pppoa"
+              return L1_11
+            else
+              L1_11 = _UPVALUE0_
+              if L1_11 == "l2tp" then
+                L1_11 = "xl2tpd"
+                return L1_11
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  L0_0:register_protocol(L7_7).is_installed = function(A0_12)
+    if _UPVALUE0_ == "pppoa" then
+      return nixio.fs.glob("/usr/lib/pppd/*/pppoatm.so")() ~= nil
+    elseif _UPVALUE0_ == "pppoe" then
+      return nixio.fs.glob("/usr/lib/pppd/*/rp-pppoe.so")() ~= nil
+    elseif _UPVALUE0_ == "pptp" then
+      return nixio.fs.glob("/usr/lib/pppd/*/pptp.so")() ~= nil
+    elseif _UPVALUE0_ == "3g" then
+      return nixio.fs.access("/lib/netifd/proto/3g.sh")
+    elseif _UPVALUE0_ == "l2tp" then
+      return nixio.fs.access("/lib/netifd/proto/l2tp.sh")
+    else
+      return nixio.fs.access("/lib/netifd/proto/ppp.sh")
+    end
+  end
+  L0_0:register_protocol(L7_7).is_floating = function(A0_13)
+    return _UPVALUE0_ ~= "pppoe"
+  end
+  L0_0:register_protocol(L7_7).is_virtual = function(A0_14)
+    local L1_15
+    L1_15 = true
+    return L1_15
+  end
+  L0_0:register_protocol(L7_7).get_interfaces = function(A0_16)
+    if A0_16:is_floating() then
+      return nil
+    else
+      return _UPVALUE0_.protocol.get_interfaces(A0_16)
+    end
+  end
+  L0_0:register_protocol(L7_7).contains_interface = function(A0_17, A1_18)
+    if A0_17:is_floating() then
+      return _UPVALUE0_:ifnameof(A1_18) == A0_17:ifname()
+    else
+      return _UPVALUE0_.protocol.contains_interface(A0_17, A1_18)
+    end
+  end
+  L0_0:register_pattern_virtual("^%s-%%w" % L7_7)
+end

@@ -1,0 +1,15 @@
+module("luci.controller.dispatch.index", package.seeall)
+function index()
+  if not node().target then
+    node().target = alias("dispatch")
+    node().index = true
+  end
+  node("dispatch").target = firstchild()
+  node("dispatch").title = _("")
+  node("dispatch").order = 1
+  node("dispatch").sysauth = "admin"
+  node("dispatch").mediaurlbase = "/xiaoqiang/dispatch"
+  node("dispatch").sysauth_authenticator = "htmlauth"
+  node("dispatch").index = true
+  entry({"dispatch"}, template("index"), _("\232\183\179\232\189\172"), 1, 9)
+end

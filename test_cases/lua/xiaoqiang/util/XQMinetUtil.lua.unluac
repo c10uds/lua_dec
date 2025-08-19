@@ -1,0 +1,151 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQMinetUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function listFsm()
+  local L0_1, L1_2, L2_3, L3_4, L4_5
+  L0_1 = {}
+  L0_1.code = 0
+  L1_2 = require
+  L2_3 = "luci.util"
+  L1_2 = L1_2(L2_3)
+  L2_3 = require
+  L3_4 = "luci.json"
+  L2_3 = L2_3(L3_4)
+  L3_4 = "ubus call minetd fsm_state"
+  L4_5 = L1_2.exec
+  L4_5 = L4_5(L3_4)
+  if _UPVALUE0_.isStrNil(L4_5) then
+    L0_1.code = 1
+    return L0_1
+  end
+  L4_5 = L2_3.decode(L4_5)
+  if _UPVALUE0_.isStrNil(L4_5) then
+    L0_1.code = 2
+    return L0_1
+  end
+  L0_1.code = 0
+  L0_1.data = L4_5
+  return L0_1
+end
+function ctrlState(A0_6)
+  local L1_7
+  L1_7 = {}
+  L1_7.code = 0
+  _UPVALUE0_.log(1, "MiNet state ctrl " .. A0_6)
+  if A0_6 == nil then
+    L1_7.code = 1
+    return L1_7
+  end
+  if A0_6 == "1" then
+    require("luci.util").exec("ubus call minetd ctrl '{ \"cmd\":1, \"push\":0, \"src\":\"luci\"}'")
+  end
+  if A0_6 == "2" then
+    require("luci.util").exec("ubus call minetd ctrl '{ \"cmd\":2, \"push\":0, \"src\":\"luci\"}'")
+  end
+  return L1_7
+end
+function listDevice()
+  local L0_8, L1_9, L2_10, L3_11, L4_12
+  L0_8 = {}
+  L0_8.code = 0
+  L1_9 = require
+  L2_10 = "luci.util"
+  L1_9 = L1_9(L2_10)
+  L2_10 = require
+  L3_11 = "luci.json"
+  L2_10 = L2_10(L3_11)
+  L3_11 = "ubus call minetd list"
+  L4_12 = L1_9.exec
+  L4_12 = L4_12(L3_11)
+  if _UPVALUE0_.isStrNil(L4_12) then
+    L0_8.code = 1
+    return L0_8
+  end
+  L4_12 = L2_10.decode(L4_12)
+  if _UPVALUE0_.isStrNil(L4_12) then
+    L0_8.code = 1
+    return L0_8
+  end
+  L0_8.code = 0
+  L0_8.data = L4_12
+  return L0_8
+end
+function grantDevice(A0_13, A1_14)
+  local L2_15, L3_16, L4_17, L5_18, L6_19, L7_20, L8_21
+  L2_15 = {}
+  L2_15.code = 0
+  L3_16 = {}
+  L4_17 = _UPVALUE0_
+  L4_17 = L4_17._strformat
+  L5_18 = A0_13
+  L4_17 = L4_17(L5_18)
+  L3_16.mac = L4_17
+  L4_17 = tonumber
+  L5_18 = A1_14
+  L4_17 = L4_17(L5_18)
+  L3_16.ctrl = L4_17
+  L4_17 = require
+  L5_18 = "luci.util"
+  L4_17 = L4_17(L5_18)
+  L5_18 = require
+  L6_19 = "luci.json"
+  L5_18 = L5_18(L6_19)
+  L6_19 = "ubus call minetd grant "
+  L7_20 = "'"
+  L8_21 = L5_18.encode
+  L8_21 = L8_21(L3_16)
+  L7_20 = L7_20 .. L8_21 .. "'"
+  L8_21 = L4_17.exec
+  L8_21 = L8_21(L6_19 .. L7_20)
+  _UPVALUE1_.log(1, "MiNet grant Device " .. A1_14)
+  if _UPVALUE0_.isStrNil(L8_21) then
+    L2_15.code = 1
+    return L2_15
+  end
+  L8_21 = L5_18.decode(L8_21)
+  if _UPVALUE0_.isStrNil(L8_21) then
+    L2_15.code = 1
+    return L2_15
+  end
+  L2_15.code = L8_21.code
+  return L2_15
+end
+function getConfig()
+  local L0_22
+  L0_22 = {}
+  L0_22.code = 0
+  L0_22.data = {enable = 0, express = 0}
+  if posix.stat("/usr/sbin/minetd") == nil then
+    L0_22.code = 1
+    return L0_22
+  end
+  L0_22.data.enable = tonumber(require("luci.model.uci").cursor():get("minet", "setting", "enabled")) or 0
+  L0_22.data.express = tonumber(require("luci.model.uci").cursor():get("minet", "setting", "express_connect")) or 0
+  L0_22.code = 0
+  return L0_22
+end
+function setConfig(A0_23, A1_24)
+  local L2_25, L3_26
+  L2_25 = require
+  L3_26 = "luci.model.uci"
+  L2_25 = L2_25(L3_26)
+  L2_25 = L2_25.cursor
+  L2_25 = L2_25()
+  L3_26 = [[
+      /etc/init.d/minet restart
+    ]]
+  if posix.stat("/usr/sbin/minetd") == nil then
+    return
+  end
+  if A0_23 ~= nil then
+    L2_25:set("minet", "setting", "enabled", A0_23)
+  end
+  if A1_24 ~= nil then
+    L2_25:set("minet", "setting", "express_connect", A1_24)
+  end
+  L2_25:commit("minet")
+  _UPVALUE0_.forkExec(L3_26)
+  return
+end

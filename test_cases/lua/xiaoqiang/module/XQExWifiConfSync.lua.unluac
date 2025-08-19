@@ -1,0 +1,182 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQExWifiConfSync", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function extendwifi_config_pull()
+  local L0_1, L1_2, L2_3, L3_4
+  L0_1 = _UPVALUE0_
+  L1_2 = _UPVALUE1_
+  L0_1 = L0_1 .. L1_2
+  L1_2 = nil
+  L2_3 = _UPVALUE2_
+  L2_3 = L2_3.log
+  L3_4 = _UPVALUE3_
+  L2_3(L3_4, "enter extendwifi_config_pull")
+  L2_3 = _UPVALUE4_
+  L3_4 = _UPVALUE0_
+  L2_3 = L2_3(L3_4)
+  res = L2_3
+  L2_3 = res
+  if not L2_3 then
+    L2_3 = _UPVALUE2_
+    L2_3 = L2_3.log
+    L3_4 = _UPVALUE3_
+    L2_3(L3_4, "work directory create failed, " .. _UPVALUE0_)
+    L2_3 = nil
+    return L2_3
+  end
+  L2_3 = os
+  L2_3 = L2_3.execute
+  L3_4 = "tar -zcvf "
+  L3_4 = L3_4 .. L0_1 .. " " .. _UPVALUE5_ .. " " .. _UPVALUE6_ .. " >/dev/null 2>&1"
+  L2_3(L3_4)
+  L2_3 = io
+  L2_3 = L2_3.open
+  L3_4 = L0_1
+  L2_3 = L2_3(L3_4, "r")
+  if not L2_3 then
+    L3_4 = _UPVALUE2_
+    L3_4 = L3_4.log
+    L3_4(_UPVALUE3_, "config file open failed!")
+    L3_4 = _UPVALUE7_
+    L3_4(_UPVALUE0_)
+    L3_4 = nil
+    return L3_4
+  end
+  L3_4 = _UPVALUE8_
+  L3_4 = L3_4.md5File
+  L3_4 = L3_4(L0_1)
+  if not L3_4 then
+    _UPVALUE2_.log(_UPVALUE3_, "config file calculate md5sum failed!")
+    io.close(L2_3)
+    _UPVALUE7_(_UPVALUE0_)
+    return nil
+  end
+  _UPVALUE9_.header("Content-Checksum", L3_4)
+  _UPVALUE9_.header("Content-Disposition", "attachment; filename=\"%s\"" % {_UPVALUE1_})
+  _UPVALUE9_.prepare_content("application/otect-stream")
+  while true do
+    L1_2 = L2_3:read(nixio.const.buffersize)
+    if not L1_2 or #L1_2 == 0 then
+      break
+    else
+      _UPVALUE9_.write(L1_2)
+    end
+  end
+  L2_3:close()
+  _UPVALUE9_.close()
+  _UPVALUE7_(_UPVALUE0_)
+  return 0
+end
+function extendwifi_config_push()
+  local L0_5, L1_6
+end
+function extendwifi_config_merge()
+  local L0_7, L1_8, L2_9, L3_10, L4_11, L5_12, L6_13, L7_14, L8_15
+  L0_7 = require
+  L1_8 = "xiaoqiang.module.XQExWifiConfSyncUci"
+  L0_7 = L0_7(L1_8)
+  L1_8 = _UPVALUE0_
+  L1_8 = L1_8.log
+  L2_9 = _UPVALUE1_
+  L3_10 = "enter extendwifi_config_merge"
+  L1_8(L2_9, L3_10)
+  L1_8 = L0_7.config_merge
+  L1_8 = L1_8()
+  L2_9 = L0_7.hotspot_info
+  L5_12 = L2_9()
+  L6_13 = L1_8
+  L7_14 = L2_9
+  L8_15 = L3_10
+  return L6_13, L7_14, L8_15, L4_11, L5_12
+end
+function extendwifi_hotspot_shutdown()
+  local L0_16, L1_17, L2_18, L3_19, L4_20, L5_21, L6_22, L7_23
+  L0_16 = require
+  L1_17 = "xiaoqiang.module.XQExtendWifi"
+  L0_16 = L0_16(L1_17)
+  L1_17 = require
+  L2_18 = "xiaoqiang.util.XQWifiUtil"
+  L1_17 = L1_17(L2_18)
+  L2_18 = _UPVALUE0_
+  L2_18 = L2_18.log
+  L2_18(L3_19, L4_20)
+  L2_18 = L1_17.apcli_get_ifnames
+  L2_18 = L2_18()
+  for L6_22, L7_23 in L3_19(L4_20) do
+    _UPVALUE2_(L7_23)
+  end
+  L3_19(L4_20)
+  if L3_19 then
+    L3_19(L4_20)
+    L6_22 = L0_16.get_self_ifname
+    L6_22 = L6_22()
+    L3_19(L4_20, L5_21)
+  else
+    L3_19(L4_20)
+    L3_19(L4_20, L5_21)
+  end
+  return L3_19
+end
+function extendwifi_reboot()
+  XQSysUtil = require("xiaoqiang.util.XQSysUtil")
+  _UPVALUE0_.log(_UPVALUE1_, "enter extendwifi_reboot")
+  XQSysUtil.setSPwd()
+  if XQSysUtil.getHardware() and (XQSysUtil.getHardware() == "RM1800" or XQSysUtil.getHardware() == "R3600" or XQSysUtil.getHardware() == "R2200" or XQSysUtil.getHardware() == "R2350") then
+    _UPVALUE2_.forkExec("(sleep 1; /usr/sbin/set_wps_state 2;)")
+  end
+  _UPVALUE2_.forkExec("(sleep 2; /usr/sbin/sysapi webinitrdr set off; reboot;)")
+  return 0
+end
+function extendwifi_config_sync(A0_24, A1_25)
+  local L2_26, L3_27, L4_28, L5_29, L6_30, L7_31, L8_32, L9_33
+  L8_32 = _UPVALUE0_
+  L8_32 = L8_32.log
+  L9_33 = _UPVALUE1_
+  L8_32(L9_33, "enter extendwifi_config_sync")
+  if not A0_24 then
+    L8_32 = _UPVALUE0_
+    L8_32 = L8_32.log
+    L9_33 = _UPVALUE1_
+    L8_32(L9_33, "invalid input parameter!")
+    L8_32 = _UPVALUE2_
+    L8_32 = L8_32.ERROR_INVALID_MODE
+    return L8_32
+  end
+  if A0_24 == "1" then
+    A0_24 = "active"
+  elseif A0_24 == "2" then
+    A0_24 = "passive"
+  else
+    L8_32 = _UPVALUE0_
+    L8_32 = L8_32.log
+    L9_33 = _UPVALUE1_
+    L8_32(L9_33, "unknown work mode " .. A0_24)
+    L8_32 = _UPVALUE2_
+    L8_32 = L8_32.ERROR_INVALID_MODE
+    return L8_32
+  end
+  L8_32 = _UPVALUE3_
+  L9_33 = L8_32()
+  if not L8_32 or not L9_33 then
+    _UPVALUE0_.log(_UPVALUE1_, "get peer info failed!")
+    return _UPVALUE2_.ERROR_PEER_INFO
+  end
+  _UPVALUE0_.log(_UPVALUE1_, "peer info, remote: " .. L8_32 .. " mode: " .. A0_24)
+  if not A1_25 then
+    _UPVALUE0_.log(_UPVALUE1_, "config sync start!")
+    L7_31 = _UPVALUE4_[A0_24]
+    if L7_31 then
+      L2_26, L3_27, L4_28, L5_29, L6_30 = L7_31(L8_32, L9_33)
+    end
+    L2_26 = L2_26 or _UPVALUE2_.ERROR_INTERNAL
+    return L2_26, L3_27, L4_28, L5_29, L6_30
+  else
+    _UPVALUE0_.log(_UPVALUE1_, "config sync finish!")
+    L7_31 = _UPVALUE5_[A0_24]
+    if L7_31 then
+      L7_31(L8_32, L9_33)
+    end
+  end
+end

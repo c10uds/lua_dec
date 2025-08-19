@@ -1,0 +1,245 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8
+L0_0 = require
+L1_1 = "os"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "uci"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.util"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "table"
+L3_3 = L3_3(L4_4)
+L4_4 = setmetatable
+L5_5 = rawget
+L6_6 = rawset
+L7_7 = require
+L8_8 = getmetatable
+module("luci.model.uci")
+cursor = L1_1.cursor
+APIVERSION = L1_1.APIVERSION
+function cursor_state()
+  return cursor(nil, "/var/state")
+end
+inst = cursor()
+inst_state = cursor_state()
+L8_8(inst).apply = function(A0_9, A1_10, A2_11)
+  A1_10 = A0_9:_affected(A1_10)
+  if A2_11 then
+    return {
+      "/sbin/luci-reload",
+      _UPVALUE0_(A1_10)
+    }
+  else
+    return _UPVALUE1_.execute("/sbin/luci-reload %s >/dev/null 2>&1" % _UPVALUE2_.concat(A1_10, " "))
+  end
+end
+L8_8(inst).delete_all = function(A0_12, A1_13, A2_14, A3_15)
+  local L4_16, L5_17, L6_18, L7_19, L8_20, L9_21, L10_22
+  L4_16 = {}
+  L5_17 = _UPVALUE0_
+  L5_17 = L5_17(L6_18)
+  if L5_17 == "table" then
+    L5_17 = A3_15
+    function A3_15(A0_23)
+      for _FORV_4_, _FORV_5_ in _UPVALUE0_(_UPVALUE1_) do
+        if A0_23[_FORV_4_] ~= _FORV_5_ then
+          return false
+        end
+      end
+      return true
+    end
+  end
+  function L5_17(A0_24)
+    if not _UPVALUE0_ or _UPVALUE0_(A0_24) then
+      _UPVALUE1_[#_UPVALUE1_ + 1] = A0_24[".name"]
+    end
+  end
+  L9_21 = A2_14
+  L10_22 = L5_17
+  L6_18(L7_19, L8_20, L9_21, L10_22)
+  for L9_21, L10_22 in L6_18(L7_19) do
+    A0_12:delete(A1_13, L10_22)
+  end
+end
+L8_8(inst).section = function(A0_25, A1_26, A2_27, A3_28, A4_29)
+  local L5_30
+  L5_30 = true
+  if A3_28 then
+    L5_30 = A0_25:set(A1_26, A3_28, A2_27)
+  else
+    A3_28 = A0_25:add(A1_26, A2_27)
+    L5_30 = A3_28 and true
+  end
+  if L5_30 and A4_29 then
+    L5_30 = A0_25:tset(A1_26, A3_28, A4_29)
+  end
+  return L5_30 and A3_28
+end
+L8_8(inst).tset = function(A0_31, A1_32, A2_33, A3_34)
+  local L4_35, L5_36, L6_37, L7_38, L8_39, L9_40
+  L4_35 = true
+  for L8_39, L9_40 in L5_36(L6_37) do
+    if L8_39:sub(1, 1) ~= "." and L4_35 then
+      L4_35 = A0_31:set(A1_32, A2_33, L8_39, L9_40)
+    end
+  end
+  return L4_35
+end
+L8_8(inst).get_bool = function(A0_41, ...)
+  local L2_43, L3_44, L4_45
+  L3_44 = A0_41
+  L2_43 = A0_41.get
+  L4_45 = ...
+  L2_43 = L2_43(L3_44, L4_45)
+  L3_44 = L2_43 == "1" or L2_43 == "true" or L2_43 == "yes" or L2_43 == "on"
+  return L3_44
+end
+L8_8(inst).get_list = function(A0_46, A1_47, A2_48, A3_49)
+-- fail 21
+null
+5
+  local L4_50
+  if A1_47 and A2_48 and A3_49 then
+    L4_50 = A0_46.get
+    L4_50 = L4_50(A0_46, A1_47, A2_48, A3_49)
+    return {L4_50}
+  end
+  L4_50 = nil
+  return L4_50
+end
+L8_8(inst).get_first = function(A0_51, A1_52, A2_53, A3_54, A4_55)
+  A0_51:foreach(A1_52, A2_53, function(A0_56)
+    local L1_57
+    L1_57 = _UPVALUE0_
+    if not L1_57 then
+      L1_57 = A0_56[".name"]
+    elseif not L1_57 then
+      L1_57 = _UPVALUE0_
+      L1_57 = A0_56[L1_57]
+    end
+    if _UPVALUE1_(_UPVALUE2_) == "number" then
+      L1_57 = _UPVALUE3_(L1_57)
+    elseif _UPVALUE1_(_UPVALUE2_) == "boolean" then
+      L1_57 = L1_57 == "1" or L1_57 == "true" or L1_57 == "yes" or L1_57 == "on"
+    end
+    if L1_57 ~= nil then
+      _UPVALUE4_ = L1_57
+      return false
+    end
+  end)
+  return A4_55
+end
+L8_8(inst).set_list = function(A0_58, A1_59, A2_60, A3_61, A4_62)
+-- fail 20
+null
+10
+  if A1_59 and A2_60 and A3_61 then
+    return A0_58:set(A1_59, A2_60, A3_61, {A4_62})
+  end
+  return false
+end
+L8_8(inst)._affected = function(A0_63, A1_64)
+  local L2_65, L3_66, L4_67, L5_68, L6_69, L7_70, L8_71, L9_72, L10_73, L11_74, L12_75, L13_76, L14_77
+  L2_65 = _UPVALUE0_
+  L3_66 = A1_64
+  L2_65 = L2_65(L3_66)
+  if L2_65 ~= "table" or not A1_64 then
+    L2_65 = {L3_66}
+    L3_66 = A1_64
+    A1_64 = L2_65
+  end
+  L2_65 = cursor
+  L2_65 = L2_65()
+  L4_67 = L2_65
+  L3_66 = L2_65.load
+  L3_66(L4_67, L5_68)
+  L3_66 = {}
+  function L4_67(A0_78)
+    local L1_79, L2_80, L3_81, L4_82, L5_83, L6_84, L7_85
+    L1_79 = {L2_80}
+    L2_80 = A0_78
+    L2_80 = {}
+    L6_84 = A0_78
+    function L7_85(A0_86)
+      if A0_86.affects then
+        for _FORV_4_, _FORV_5_ in _UPVALUE0_(A0_86.affects) do
+          _UPVALUE1_[#_UPVALUE1_ + 1] = _FORV_5_
+        end
+      end
+    end
+    L3_81(L4_82, L5_83, L6_84, L7_85)
+    for L6_84, L7_85 in L3_81(L4_82) do
+      for _FORV_11_, _FORV_12_ in _UPVALUE1_(_UPVALUE2_(L7_85)) do
+        L1_79[#L1_79 + 1] = _FORV_12_
+      end
+    end
+    return L1_79
+  end
+  for L8_71, L9_72 in L5_68(L6_69) do
+    L14_77 = L11_74(L12_75)
+    for L13_76, L14_77 in L10_73(L11_74, L12_75, L13_76, L14_77, L11_74(L12_75)) do
+      if not _UPVALUE2_.contains(L3_66, L14_77) then
+        L3_66[#L3_66 + 1] = L14_77
+      end
+    end
+  end
+  return L3_66
+end
+L8_8(inst).substate = function(A0_87)
+  local L1_88
+  L1_88 = _UPVALUE0_
+  L1_88._substates = _UPVALUE0_._substates or {}
+  L1_88 = _UPVALUE0_
+  L1_88 = L1_88._substates
+  L1_88[A0_87] = _UPVALUE0_._substates[A0_87] or cursor_state()
+  L1_88 = _UPVALUE0_
+  L1_88 = L1_88._substates
+  L1_88 = L1_88[A0_87]
+  return L1_88
+end
+L8_8(inst).load = function(A0_89, ...)
+  local L2_91, L3_92, L4_93
+  L2_91 = _UPVALUE0_
+  L2_91 = L2_91._substates
+  if L2_91 then
+    L2_91 = _UPVALUE0_
+    L2_91 = L2_91._substates
+    L2_91 = L2_91[A0_89]
+    if L2_91 then
+      L2_91 = _UPVALUE1_
+      L3_92 = _UPVALUE0_
+      L3_92 = L3_92._substates
+      L3_92 = L3_92[A0_89]
+      L4_93 = ...
+      L2_91(L3_92, L4_93)
+    end
+  end
+  L2_91 = _UPVALUE1_
+  L3_92 = A0_89
+  L4_93 = ...
+  return L2_91(L3_92, L4_93)
+end
+L8_8(inst).unload = function(A0_94, ...)
+  local L2_96, L3_97, L4_98
+  L2_96 = _UPVALUE0_
+  L2_96 = L2_96._substates
+  if L2_96 then
+    L2_96 = _UPVALUE0_
+    L2_96 = L2_96._substates
+    L2_96 = L2_96[A0_94]
+    if L2_96 then
+      L2_96 = _UPVALUE1_
+      L3_97 = _UPVALUE0_
+      L3_97 = L3_97._substates
+      L3_97 = L3_97[A0_94]
+      L4_98 = ...
+      L2_96(L3_97, L4_98)
+    end
+  end
+  L2_96 = _UPVALUE1_
+  L3_97 = A0_94
+  L4_98 = ...
+  return L2_96(L3_97, L4_98)
+end

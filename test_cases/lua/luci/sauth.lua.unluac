@@ -1,0 +1,130 @@
+local L0_0
+L0_0 = module
+L0_0("luci.sauth", package.seeall)
+L0_0 = require
+L0_0("luci.util")
+L0_0 = require
+L0_0("luci.sys")
+L0_0 = require
+L0_0("luci.config")
+L0_0 = require
+L0_0 = L0_0("nixio")
+require("nixio.util")
+luci.config.sauth = luci.config.sauth or {}
+sessionpath = luci.config.sauth.sessionpath
+sessiontime = tonumber(luci.config.sauth.sessiontime) or 900
+function prepare()
+  _UPVALUE0_.mkdir(sessionpath, 700)
+  if not sane() then
+    error("Security Exception: Session path is not sane!")
+  end
+end
+function write(A0_1, A1_2)
+  if not sane() then
+    prepare()
+  end
+  if not _UPVALUE0_(A0_1) then
+    _UPVALUE1_.log(3, "Security Exception: Session ID is invalid! sauth.write")
+    return
+  end
+  if type(A1_2) ~= "table" then
+    _UPVALUE1_.log(3, "Security Exception: Session data invalid! sauth.write")
+    return
+  end
+  A1_2.atime = luci.sys.uptime()
+  _UPVALUE2_(A0_1, luci.util.get_bytecode(A1_2))
+end
+function read(A0_3)
+  local L1_4, L2_5, L3_6
+  if A0_3 then
+    L1_4 = #A0_3
+  elseif L1_4 == 0 then
+    L1_4 = nil
+    return L1_4
+  end
+  L1_4 = _UPVALUE0_
+  L2_5 = A0_3
+  L1_4 = L1_4(L2_5)
+  if not L1_4 then
+    L1_4 = _UPVALUE1_
+    L1_4 = L1_4.log
+    L2_5 = 3
+    L3_6 = "Security Exception: Session ID is invalid! sauth.read"
+    L1_4(L2_5, L3_6)
+    L1_4 = nil
+    return L1_4
+  end
+  L1_4 = sane
+  L2_5 = sessionpath
+  L3_6 = "/"
+  L2_5 = L2_5 .. L3_6 .. A0_3
+  L1_4 = L1_4(L2_5)
+  if not L1_4 then
+    L1_4 = nil
+    return L1_4
+  end
+  L1_4 = _UPVALUE2_
+  L2_5 = A0_3
+  L1_4 = L1_4(L2_5)
+  L2_5 = loadstring
+  L3_6 = L1_4
+  L2_5 = L2_5(L3_6)
+  L3_6 = setfenv
+  L3_6(L2_5, {})
+  L3_6 = L2_5
+  L3_6 = L3_6()
+  if type(L3_6) ~= "table" then
+    _UPVALUE1_.log(3, "Security Exception: Session data invalid! sauth.read")
+    return nil
+  end
+  if L3_6.atime and L3_6.atime + sessiontime < luci.sys.uptime() then
+    kill(A0_3)
+    return nil
+  end
+  write(A0_3, L3_6)
+  return L3_6
+end
+function sane(A0_7)
+  return luci.sys.process.info("uid") == _UPVALUE0_.stat(A0_7 or sessionpath, "uid") and luci.sys.process.info("uid")
+end
+function kill(A0_8)
+  if not _UPVALUE0_(A0_8) then
+    _UPVALUE1_.log(3, "Security Exception: Session ID is invalid! sauth.kill")
+  else
+    _UPVALUE2_.unlink(sessionpath .. "/" .. A0_8)
+  end
+end
+function reap()
+  local L0_9, L1_10, L2_11, L3_12, L4_13
+  L0_9 = sane
+  L0_9 = L0_9()
+  if L0_9 then
+    L0_9 = nil
+    for L4_13 in L1_10(L2_11) do
+      if _UPVALUE1_(L4_13) then
+        read(L4_13)
+      end
+    end
+  end
+end
+function available(A0_14)
+  local L1_15, L2_16, L3_17, L4_18, L5_19
+  L1_15 = sane
+  L1_15 = L1_15()
+  if L1_15 then
+    L1_15 = nil
+    for L5_19 in L2_16(L3_17) do
+      if _UPVALUE1_(L5_19) then
+        if A0_14 then
+          if read(L5_19) and read(L5_19).ip == A0_14 then
+            return (read(L5_19))
+          end
+        elseif read(L5_19) and not read(L5_19).ip then
+          return (read(L5_19))
+        end
+      end
+    end
+  end
+  L1_15 = nil
+  return L1_15
+end

@@ -1,0 +1,204 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("luci.dispatcher")
+m = Map("firewall", translate("Firewall - Traffic Rules"), translate([[
+Traffic rules define policies for packets traveling between 
+		different zones, for example to reject traffic between certain hosts 
+		or to open WAN ports on the router.]]))
+s = m:section(TypedSection, "rule", translate("Traffic Rules"))
+s.addremove = true
+s.anonymous = true
+s.sortable = true
+s.template = "cbi/tblsection"
+s.extedit = L0_0.build_url("admin/network/firewall/rules/%s")
+s.defaults.target = "ACCEPT"
+s.template_addremove = "firewall/cbi_addrule"
+function s.create(A0_1, A1_2)
+  created = TypedSection.create(A0_1, A1_2)
+end
+function s.parse(A0_3, ...)
+  local L2_5, L3_6, L4_7, L5_8, L6_9, L7_10, L8_11
+  L2_5 = TypedSection
+  L2_5 = L2_5.parse
+  L3_6 = A0_3
+  L8_11 = ...
+  L2_5(L3_6, L4_7, L5_8, L6_9, L7_10, L8_11, ...)
+  L2_5 = m
+  L3_6 = L2_5
+  L2_5 = L2_5.formvalue
+  L4_7 = "_newopen.name"
+  L2_5 = L2_5(L3_6, L4_7)
+  L3_6 = m
+  L4_7 = L3_6
+  L3_6 = L3_6.formvalue
+  L5_8 = "_newopen.proto"
+  L3_6 = L3_6(L4_7, L5_8)
+  L4_7 = m
+  L5_8 = L4_7
+  L4_7 = L4_7.formvalue
+  L6_9 = "_newopen.extport"
+  L4_7 = L4_7(L5_8, L6_9)
+  L5_8 = m
+  L6_9 = L5_8
+  L5_8 = L5_8.formvalue
+  L7_10 = "_newopen.submit"
+  L5_8 = L5_8(L6_9, L7_10)
+  L6_9 = m
+  L7_10 = L6_9
+  L6_9 = L6_9.formvalue
+  L8_11 = "_newfwd.name"
+  L6_9 = L6_9(L7_10, L8_11)
+  L7_10 = m
+  L8_11 = L7_10
+  L7_10 = L7_10.formvalue
+  L7_10 = L7_10(L8_11, "_newfwd.src")
+  L8_11 = m
+  L8_11 = L8_11.formvalue
+  L8_11 = L8_11(L8_11, "_newfwd.dest")
+  if L5_8 then
+    created = TypedSection.create(A0_3, section)
+    A0_3.map:set(created, "target", "ACCEPT")
+    A0_3.map:set(created, "src", "wan")
+    A0_3.map:set(created, "proto", L3_6 ~= "other" and L3_6 or "all")
+    A0_3.map:set(created, "dest_port", L4_7)
+    A0_3.map:set(created, "name", L2_5)
+    if L3_6 ~= "other" and L4_7 and #L4_7 > 0 then
+      created = nil
+    end
+  elseif m:formvalue("_newfwd.submit") then
+    created = TypedSection.create(A0_3, section)
+    A0_3.map:set(created, "target", "ACCEPT")
+    A0_3.map:set(created, "src", L7_10)
+    A0_3.map:set(created, "dest", L8_11)
+    A0_3.map:set(created, "name", L6_9)
+  end
+  if created then
+    m.uci:save("firewall")
+    luci.http.redirect(_UPVALUE0_.build_url("admin/network/firewall/rules", created))
+  end
+end
+require("luci.tools.firewall").opt_name(s, DummyValue, translate("Name"))
+match = s:option(DummyValue, "match", translate("Match"))
+match.rawhtml = true
+match.width = "70%"
+function match.cfgvalue(A0_12, A1_13)
+  return "<small>%s<br />%s<br />%s</small>" % {
+    _UPVALUE0_(A0_12, A1_13),
+    _UPVALUE1_(A0_12, A1_13),
+    _UPVALUE2_(A0_12, A1_13)
+  }
+end
+target = s:option(DummyValue, "target", translate("Action"))
+target.rawhtml = true
+target.width = "20%"
+function target.cfgvalue(A0_14, A1_15)
+  local L2_16, L3_17
+  L2_16 = _UPVALUE0_
+  L2_16 = L2_16.fmt_target
+  L3_17 = A0_14.map
+  L3_17 = L3_17.get
+  L3_17 = L3_17(L3_17, A1_15, "target")
+  L2_16 = L2_16(L3_17, A0_14.map:get(A1_15, "dest"))
+  L3_17 = _UPVALUE0_
+  L3_17 = L3_17.fmt_limit
+  L3_17 = L3_17(A0_14.map:get(A1_15, "limit"), A0_14.map:get(A1_15, "limit_burst"))
+  if L3_17 then
+    return translatef("<var>%s</var> and limit to %s", L2_16, L3_17)
+  else
+    return "<var>%s</var>" % L2_16
+  end
+end
+require("luci.tools.firewall").opt_enabled(s, Flag, translate("Enable")).width = "1%"
+s = m:section(TypedSection, "redirect", translate("Source NAT"), translate([[
+Source NAT is a specific form of masquerading which allows 
+		fine grained control over the source IP used for outgoing traffic, 
+		for example to map multiple WAN addresses to internal subnets.]]))
+s.template = "cbi/tblsection"
+s.addremove = true
+s.anonymous = true
+s.sortable = true
+s.extedit = L0_0.build_url("admin/network/firewall/rules/%s")
+s.template_addremove = "firewall/cbi_addsnat"
+function s.create(A0_18, A1_19)
+  created = TypedSection.create(A0_18, A1_19)
+end
+function s.parse(A0_20, ...)
+  local L2_22, L3_23, L4_24, L5_25, L6_26
+  L2_22 = TypedSection
+  L2_22 = L2_22.parse
+  L3_23 = A0_20
+  L6_26 = ...
+  L2_22(L3_23, L4_24, L5_25, L6_26, ...)
+  L2_22 = m
+  L3_23 = L2_22
+  L2_22 = L2_22.formvalue
+  L4_24 = "_newsnat.name"
+  L2_22 = L2_22(L3_23, L4_24)
+  L3_23 = m
+  L4_24 = L3_23
+  L3_23 = L3_23.formvalue
+  L5_25 = "_newsnat.src"
+  L3_23 = L3_23(L4_24, L5_25)
+  L4_24 = m
+  L5_25 = L4_24
+  L4_24 = L4_24.formvalue
+  L6_26 = "_newsnat.dest"
+  L4_24 = L4_24(L5_25, L6_26)
+  L5_25 = m
+  L6_26 = L5_25
+  L5_25 = L5_25.formvalue
+  L5_25 = L5_25(L6_26, "_newsnat.dip")
+  L6_26 = m
+  L6_26 = L6_26.formvalue
+  L6_26 = L6_26(L6_26, "_newsnat.dport")
+  if m:formvalue("_newsnat.submit") and L5_25 and #L5_25 > 0 then
+    created = TypedSection.create(A0_20, section)
+    A0_20.map:set(created, "target", "SNAT")
+    A0_20.map:set(created, "src", L3_23)
+    A0_20.map:set(created, "dest", L4_24)
+    A0_20.map:set(created, "proto", "all")
+    A0_20.map:set(created, "src_dip", L5_25)
+    A0_20.map:set(created, "src_dport", L6_26)
+    A0_20.map:set(created, "name", L2_22)
+  end
+  if created then
+    m.uci:save("firewall")
+    luci.http.redirect(_UPVALUE0_.build_url("admin/network/firewall/rules", created))
+  end
+end
+function s.filter(A0_27, A1_28)
+  return A0_27.map:get(A1_28, "target") == "SNAT"
+end
+require("luci.tools.firewall").opt_name(s, DummyValue, translate("Name"))
+match = s:option(DummyValue, "match", translate("Match"))
+match.rawhtml = true
+match.width = "70%"
+function match.cfgvalue(A0_29, A1_30)
+  return "<small>%s<br />%s<br />%s</small>" % {
+    _UPVALUE0_(A0_29, A1_30),
+    _UPVALUE1_(A0_29, A1_30),
+    _UPVALUE2_(A0_29, A1_30)
+  }
+end
+snat = s:option(DummyValue, "via", translate("Action"))
+snat.rawhtml = true
+snat.width = "20%"
+function snat.cfgvalue(A0_31, A1_32)
+  local L2_33, L3_34
+  L2_33 = _UPVALUE0_
+  L2_33 = L2_33.fmt_ip
+  L3_34 = A0_31.map
+  L3_34 = L3_34.get
+  L3_34 = L3_34(L3_34, A1_32, "src_dip")
+  L2_33 = L2_33(L3_34, L3_34(L3_34, A1_32, "src_dip"))
+  L3_34 = _UPVALUE0_
+  L3_34 = L3_34.fmt_port
+  L3_34 = L3_34(A0_31.map:get(A1_32, "src_dport"))
+  if L2_33 and L3_34 then
+    return translatef("Rewrite to source %s, %s", L2_33, L3_34)
+  else
+    return translatef("Rewrite to source %s", L2_33 or L3_34)
+  end
+end
+require("luci.tools.firewall").opt_enabled(s, Flag, translate("Enable")).width = "1%"
+return m

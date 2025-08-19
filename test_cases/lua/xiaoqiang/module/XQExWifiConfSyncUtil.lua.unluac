@@ -1,0 +1,382 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQExWifiConfSyncUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("socket.http")
+function account_login(A0_1, A1_2, A2_3)
+  local L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11, L11_12, L12_13, L13_14, L14_15, L15_16, L16_17, L17_18, L18_19, L19_20
+  L6_7 = {}
+  L7_8, L8_9, L9_10, L10_11 = nil, nil, nil, nil
+  L11_12 = _UPVALUE0_
+  L12_13 = A1_2
+  L12_13 = L11_12(L12_13)
+  L5_6 = L12_13
+  L4_5 = L11_12
+  L11_12 = _UPVALUE1_
+  L12_13 = A2_3
+  L13_14 = L4_5
+  L11_12 = L11_12(L12_13, L13_14)
+  L3_4 = L11_12
+  L11_12 = "username=admin&password="
+  L12_13 = L3_4
+  L13_14 = "&logtype=2&nonce="
+  L14_15 = L5_6
+  L11_12 = L11_12 .. L12_13 .. L13_14 .. L14_15
+  L12_13 = _UPVALUE2_
+  L12_13 = L12_13.log
+  L13_14 = _UPVALUE3_
+  L14_15 = "login request: "
+  L14_15 = L14_15 .. L15_16
+  L12_13(L13_14, L14_15)
+  L12_13 = _UPVALUE4_
+  L12_13 = L12_13.request
+  L13_14 = {}
+  L14_15 = "http://"
+  L14_15 = L14_15 .. L15_16 .. L16_17
+  L13_14.url = L14_15
+  L13_14.method = "POST"
+  L14_15 = {}
+  L14_15["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8"
+  L14_15["Content-Length"] = L15_16
+  L13_14.headers = L14_15
+  L14_15 = ltn12
+  L14_15 = L14_15.source
+  L14_15 = L14_15.string
+  L14_15 = L14_15(L15_16)
+  L13_14.source = L14_15
+  L14_15 = ltn12
+  L14_15 = L14_15.sink
+  L14_15 = L14_15.table
+  L14_15 = L14_15(L15_16)
+  L13_14.sink = L14_15
+  L14_15 = L12_13(L13_14)
+  if not L12_13 or not L13_14 or not L14_15 then
+    L15_16(L16_17, L17_18)
+    return L15_16
+  end
+  if L12_13 ~= 1 or L13_14 ~= 200 then
+    L18_19 = L12_13
+    L19_20 = " status: "
+    L15_16(L16_17, L17_18)
+    return L15_16
+  end
+  if L15_16 == "table" then
+    for L18_19, L19_20 in L15_16(L16_17) do
+      L7_8 = _UPVALUE5_.decode(L19_20)
+    end
+  end
+  if not L7_8 then
+    L8_9 = L7_8.url
+    L9_10 = L7_8.token
+    L10_11 = L7_8.code
+  end
+  if L10_11 == 0 then
+    return L9_10
+  end
+  return L15_16
+end
+function config_get(A0_21, A1_22, A2_23)
+  local L3_24, L4_25, L5_26, L6_27, L7_28, L8_29, L9_30
+  if not A0_21 or not A1_22 or not A2_23 then
+    L5_26 = _UPVALUE0_
+    L5_26 = L5_26.log
+    L6_27 = _UPVALUE1_
+    L7_28 = "invalid input parameters!"
+    L5_26(L6_27, L7_28)
+    L5_26 = _UPVALUE2_
+    L5_26 = L5_26.ERROR_INTERNAL
+    return L5_26
+  end
+  L5_26 = _UPVALUE0_
+  L5_26 = L5_26.log
+  L6_27 = _UPVALUE1_
+  L7_28 = "get config from peer: "
+  L8_29 = A0_21
+  L7_28 = L7_28 .. L8_29 .. L9_30 .. A2_23
+  L5_26(L6_27, L7_28)
+  L5_26 = io
+  L5_26 = L5_26.open
+  L6_27 = A2_23
+  L7_28 = "wb"
+  L5_26 = L5_26(L6_27, L7_28)
+  if not L5_26 then
+    L6_27 = _UPVALUE0_
+    L6_27 = L6_27.log
+    L7_28 = _UPVALUE1_
+    L8_29 = "file open failed: "
+    L8_29 = L8_29 .. L9_30
+    L6_27(L7_28, L8_29)
+    L6_27 = _UPVALUE2_
+    L6_27 = L6_27.ERROR_INTERNAL
+    return L6_27
+  end
+  L6_27 = _UPVALUE3_
+  L6_27 = L6_27.request
+  L7_28 = {}
+  L8_29 = "http://"
+  L8_29 = L8_29 .. L9_30 .. "/cgi-bin/luci/;stok=" .. A1_22 .. "/api/misystem/extendwifi_config_pull"
+  L7_28.url = L8_29
+  L7_28.method = "GET"
+  L8_29 = ltn12
+  L8_29 = L8_29.sink
+  L8_29 = L8_29.file
+  L8_29 = L8_29(L9_30)
+  L7_28.sink = L8_29
+  L8_29 = L6_27(L7_28)
+  if not L6_27 or not L7_28 or not L8_29 then
+    L9_30(_UPVALUE1_, "http get request failed!")
+    return L9_30
+  end
+  if L6_27 ~= 1 or L7_28 ~= 200 then
+    L9_30(_UPVALUE1_, "get request failed, res: " .. L6_27 .. " status: " .. L7_28)
+    return L9_30
+  end
+  if L9_30 == "table" then
+    for _FORV_12_, _FORV_13_ in L9_30(L8_29) do
+      if _FORV_12_ == "Content-Checksum" then
+        L4_25 = _FORV_13_
+      end
+    end
+  end
+  if not L9_30 then
+    _UPVALUE0_.log(_UPVALUE1_, "config file open failed!")
+    return _UPVALUE2_.ERROR_CONFIG_TRANS
+  end
+  if L4_25 ~= md5sum then
+    _UPVALUE0_.log(_UPVALUE1_, "config file checksum failed!")
+    io.close(L9_30)
+    return _UPVALUE2_.ERROR_CONFIG_TRANS
+  end
+  _UPVALUE0_.log(_UPVALUE1_, "config file checksum ok!")
+  io.close(L9_30)
+  _UPVALUE0_.log(_UPVALUE1_, "everything seems ok with config get!")
+  return 0
+end
+function config_post(A0_31, A1_32, A2_33)
+  local L3_34, L4_35, L5_36, L6_37, L7_38, L8_39, L9_40, L10_41, L11_42, L12_43, L13_44, L14_45, L15_46, L16_47, L17_48, L18_49, L19_50, L20_51, L21_52, L22_53, L23_54, L24_55, L25_56, L26_57, L27_58
+  L3_34 = {}
+  L4_35, L5_36, L6_37, L7_38, L8_39, L9_40 = nil, nil, nil, nil, nil, nil
+  if not A0_31 or not A1_32 or not A2_33 then
+    L10_41 = _UPVALUE0_
+    L10_41 = L10_41.log
+    L11_42 = _UPVALUE1_
+    L12_43 = "invalid input parameters!"
+    L10_41(L11_42, L12_43)
+    L10_41 = _UPVALUE2_
+    L10_41 = L10_41.ERROR_INTERNAL
+    return L10_41
+  end
+  L10_41 = _UPVALUE0_
+  L10_41 = L10_41.log
+  L11_42 = _UPVALUE1_
+  L12_43 = "post config to peer: "
+  L13_44 = A0_31
+  L14_45 = " "
+  L15_46 = A2_33
+  L12_43 = L12_43 .. L13_44 .. L14_45 .. L15_46
+  L10_41(L11_42, L12_43)
+  L10_41 = io
+  L10_41 = L10_41.open
+  L11_42 = A2_33
+  L12_43 = "rb"
+  L10_41 = L10_41(L11_42, L12_43)
+  if not L10_41 then
+    L11_42 = _UPVALUE0_
+    L11_42 = L11_42.log
+    L12_43 = _UPVALUE1_
+    L13_44 = "file open failed: "
+    L14_45 = A2_33
+    L13_44 = L13_44 .. L14_45
+    L11_42(L12_43, L13_44)
+    L11_42 = _UPVALUE2_
+    L11_42 = L11_42.ERROR_INTERNAL
+    return L11_42
+  end
+  L11_42 = _UPVALUE3_
+  L11_42 = L11_42.md5File
+  L12_43 = A2_33
+  L11_42 = L11_42(L12_43)
+  if not L11_42 then
+    L12_43 = io
+    L12_43 = L12_43.close
+    L12_43()
+    L12_43 = _UPVALUE0_
+    L12_43 = L12_43.log
+    L13_44 = _UPVALUE1_
+    L14_45 = "file calculate checksum failed: "
+    L15_46 = A2_33
+    L14_45 = L14_45 .. L15_46
+    L12_43(L13_44, L14_45)
+    L12_43 = _UPVALUE2_
+    L12_43 = L12_43.ERROR_INTERNAL
+    return L12_43
+  end
+  L12_43 = _UPVALUE4_
+  L13_44 = L10_41
+  L12_43 = L12_43(L13_44)
+  L14_45 = L10_41
+  L13_44 = L10_41.read
+  L15_46 = "*a"
+  L13_44 = L13_44(L14_45, L15_46)
+  L14_45 = "config"
+  L15_46 = "config.tar.gz"
+  L16_47 = "-----------------------------7004473821227421780129388645"
+  L17_48 = "Content-Disposition: form-data; name=\""
+  L18_49 = L14_45
+  L19_50 = "\"; filename=\""
+  L20_51 = L15_46
+  L21_52 = "\"\r\n"
+  L17_48 = L17_48 .. L18_49 .. L19_50 .. L20_51 .. L21_52
+  L18_49 = "Content-Type: application/octetstream\r\n\r\n"
+  L19_50 = "--"
+  L20_51 = L16_47
+  L21_52 = "\r\n"
+  L22_53 = L17_48
+  L26_57 = L16_47
+  L27_58 = "--\r\n"
+  L19_50 = L19_50 .. L20_51 .. L21_52 .. L22_53 .. L23_54 .. L24_55 .. L25_56 .. L26_57 .. L27_58
+  L20_51 = _UPVALUE5_
+  L20_51 = L20_51.request
+  L21_52 = {}
+  L22_53 = "http://"
+  L26_57 = "/api/misystem/extendwifi_config_push?checksum="
+  L27_58 = L11_42
+  L22_53 = L22_53 .. L23_54 .. L24_55 .. L25_56 .. L26_57 .. L27_58
+  L21_52.url = L22_53
+  L21_52.method = "POST"
+  L22_53 = {}
+  L22_53["Content-Type"] = L23_54
+  L22_53["Content-Length"] = L23_54
+  L21_52.headers = L22_53
+  L22_53 = ltn12
+  L22_53 = L22_53.source
+  L22_53 = L22_53.string
+  L22_53 = L22_53(L23_54)
+  L21_52.source = L22_53
+  L22_53 = ltn12
+  L22_53 = L22_53.sink
+  L22_53 = L22_53.table
+  L22_53 = L22_53(L23_54)
+  L21_52.sink = L22_53
+  L22_53 = L20_51(L21_52)
+  L23_54(L24_55)
+  if not L20_51 or not L21_52 or not L22_53 then
+    L23_54(L24_55, L25_56)
+    return L23_54
+  end
+  if L20_51 ~= 1 or L21_52 ~= 200 then
+    L26_57 = L20_51
+    L27_58 = " status: "
+    L23_54(L24_55, L25_56)
+    return L23_54
+  end
+  if L23_54 == "table" then
+    for L26_57, L27_58 in L23_54(L24_55) do
+      L4_35 = _UPVALUE6_.decode(L27_58)
+    end
+  end
+  if L4_35 then
+    L5_36 = L4_35.code
+    L6_37 = L4_35.ssid_24g
+    L7_38 = L4_35.password_24g
+    L8_39 = L4_35.ssid_5g
+    L9_40 = L4_35.password_5g
+  end
+  if L5_36 ~= 0 then
+    if L5_36 then
+      L26_57 = L5_36
+      L23_54(L24_55, L25_56)
+    end
+    return L23_54
+  end
+  if L6_37 then
+    L26_57 = L6_37
+    L23_54(L24_55, L25_56)
+  end
+  if L7_38 then
+    L26_57 = L7_38
+    L23_54(L24_55, L25_56)
+  end
+  if L8_39 then
+    L26_57 = L8_39
+    L23_54(L24_55, L25_56)
+  end
+  if L9_40 then
+    L26_57 = L9_40
+    L23_54(L24_55, L25_56)
+  end
+  L23_54(L24_55, L25_56)
+  L26_57 = L8_39
+  L27_58 = L9_40
+  return L23_54, L24_55, L25_56, L26_57, L27_58
+end
+function config_finish(A0_59, A1_60, A2_61, A3_62)
+  local L4_63, L5_64, L6_65, L7_66, L8_67, L9_68, L10_69, L11_70, L12_71, L13_72, L14_73, L15_74
+  L4_63 = {}
+  L5_64, L6_65, L7_66 = nil, nil, nil
+  if not A0_59 or not A1_60 then
+    L8_67 = _UPVALUE0_
+    L8_67 = L8_67.log
+    L9_68 = _UPVALUE1_
+    L10_69 = "invalid input parameters!"
+    L8_67(L9_68, L10_69)
+    L8_67 = 1
+    return L8_67
+  end
+  if not A2_61 and A3_62 then
+    L5_64 = "reboot=yes"
+  elseif A2_61 and not A3_62 then
+    L5_64 = "wifi=off"
+  else
+    L8_67 = _UPVALUE0_
+    L8_67 = L8_67.log
+    L9_68 = _UPVALUE1_
+    L10_69 = "invalid input parameters, wifi: "
+    L10_69 = L10_69 .. L11_70 .. L12_71 .. L13_72
+    L8_67(L9_68, L10_69)
+    L8_67 = 1
+    return L8_67
+  end
+  L8_67 = _UPVALUE2_
+  L8_67 = L8_67.request
+  L9_68 = {}
+  L10_69 = "http://"
+  L14_73 = "/api/misystem/extendwifi_config_fini?"
+  L15_74 = L5_64
+  L10_69 = L10_69 .. L11_70 .. L12_71 .. L13_72 .. L14_73 .. L15_74
+  L9_68.url = L10_69
+  L9_68.method = "GET"
+  L10_69 = ltn12
+  L10_69 = L10_69.sink
+  L10_69 = L10_69.table
+  L10_69 = L10_69(L11_70)
+  L9_68.sink = L10_69
+  L10_69 = L8_67(L9_68)
+  if not L8_67 or not L9_68 or not L10_69 then
+    L11_70(L12_71, L13_72)
+    return L11_70
+  end
+  if L8_67 ~= 1 or L9_68 ~= 200 then
+    L14_73 = L8_67
+    L15_74 = " status: "
+    L11_70(L12_71, L13_72)
+    return L11_70
+  end
+  if L11_70 == "table" then
+    for L14_73, L15_74 in L11_70(L12_71) do
+      L6_65 = _UPVALUE3_.decode(L15_74)
+    end
+  end
+  if L6_65 then
+    L7_66 = L6_65.code
+  end
+  if L7_66 ~= 0 then
+    if L7_66 then
+      L14_73 = L7_66
+      L11_70(L12_71, L13_72)
+    end
+    return L11_70
+  end
+  L11_70(L12_71, L13_72)
+  return L11_70
+end

@@ -1,0 +1,335 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQBackup", package.seeall)
+L0_0 = "/tmp/cfg_backup.des"
+function save_info(A0_1, A1_2)
+  local L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11, L11_12, L12_13, L13_14
+  L2_3 = require
+  L3_4 = "luci.model.uci"
+  L2_3 = L2_3(L3_4)
+  L2_3 = L2_3.cursor
+  L2_3 = L2_3()
+  L3_4 = require
+  L4_5 = "json"
+  L3_4 = L3_4(L4_5)
+  L4_5 = require
+  L5_6 = "aeslua"
+  L4_5 = L4_5(L5_6)
+  L5_6 = require
+  L6_7 = "nixio.fs"
+  L5_6 = L5_6(L6_7)
+  L6_7 = require
+  L7_8 = "luci.sys"
+  L6_7 = L6_7(L7_8)
+  L7_8 = "/tmp/syslogbackup/"
+  L9_10 = L2_3
+  L8_9 = L2_3.get
+  L10_11 = "cfgbackup"
+  L11_12 = "encryption"
+  L12_13 = "key"
+  L8_9 = L8_9(L9_10, L10_11, L11_12, L12_13)
+  L10_11 = L2_3
+  L9_10 = L2_3.get
+  L11_12 = "network"
+  L12_13 = "lan"
+  L13_14 = "ipaddr"
+  L9_10 = L9_10(L10_11, L11_12, L12_13, L13_14)
+  L9_10 = L9_10 or "192.168.31.1"
+  function L10_11()
+    return _UPVALUE0_.process.info("uid") == _UPVALUE1_.stat(_UPVALUE2_, "uid") and _UPVALUE1_.stat(_UPVALUE2_, "modestr") == "rwx------"
+  end
+  sane = L10_11
+  function L10_11()
+    _UPVALUE0_.mkdir(_UPVALUE1_, 700)
+  end
+  prepare = L10_11
+  L10_11 = sane
+  L10_11 = L10_11()
+  if not L10_11 then
+    L10_11 = prepare
+    L10_11()
+  else
+    L10_11 = os
+    L10_11 = L10_11.execute
+    L11_12 = "rm "
+    L12_13 = L7_8
+    L13_14 = "*.tar.gz >/dev/null 2>/dev/null"
+    L11_12 = L11_12 .. L12_13 .. L13_14
+    L10_11(L11_12)
+  end
+  L10_11 = L3_4.encode
+  L11_12 = A1_2
+  L10_11 = L10_11(L11_12)
+  L11_12 = L3_4.encode
+  L12_13 = A0_1
+  L11_12 = L11_12(L12_13)
+  L12_13 = L4_5.encrypt
+  L13_14 = L8_9
+  L12_13 = L12_13(L13_14, L10_11)
+  L13_14 = os
+  L13_14 = L13_14.date
+  L13_14 = L13_14("%Y-%m-%d--%X", os.time())
+  L13_14 = L13_14 .. ".tar.gz"
+  L5_6.writefile(_UPVALUE0_, L12_13)
+  L5_6.writefile(_UPVALUE1_, L11_12)
+  os.execute("cd /tmp; tar -czf " .. L7_8 .. L13_14 .. " cfg_backup.des cfg_backup.mbu >/dev/null 2>/dev/null")
+  os.execute("rm " .. _UPVALUE0_ .. " >/dev/null 2>/dev/null")
+  os.execute("rm " .. _UPVALUE1_ .. " >/dev/null 2>/dev/null")
+  return L9_10 .. "/backup/log/" .. L13_14
+end
+function defaultKeys()
+  local L0_15, L1_16, L2_17
+  L0_15 = require
+  L1_16 = "luci.model.uci"
+  L0_15 = L0_15(L1_16)
+  L0_15 = L0_15.cursor
+  L0_15 = L0_15()
+  L1_16 = {}
+  L2_17 = L0_15.get_list
+  L2_17 = L2_17(L0_15, "cfgbackup", "backup", "item")
+  if L2_17 then
+    for _FORV_6_, _FORV_7_ in ipairs(L2_17) do
+      if _UPVALUE0_[_FORV_7_] then
+        L1_16[_FORV_7_] = _UPVALUE0_[_FORV_7_]
+      end
+    end
+  end
+  return L1_16
+end
+function backup(A0_18)
+  local L1_19, L2_20, L3_21, L4_22, L5_23, L6_24, L7_25, L8_26, L9_27
+  L1_19 = require
+  L2_20 = "luci.model.uci"
+  L1_19 = L1_19(L2_20)
+  L1_19 = L1_19.cursor
+  L1_19 = L1_19()
+  L2_20 = nil
+  if not A0_18 then
+    L3_21 = L1_19.get_list
+    L7_25 = "item"
+    L3_21 = L3_21(L4_22, L5_23, L6_24, L7_25)
+    L2_20 = L3_21
+  else
+    L2_20 = A0_18
+  end
+  L3_21 = {}
+  if L2_20 then
+    for L7_25, L8_26 in L4_22(L5_23) do
+      L9_27 = _UPVALUE0_
+      L9_27 = L9_27[L8_26]
+      if L9_27 then
+        L3_21[L8_26] = L9_27()
+      end
+    end
+    return L4_22(L5_23, L6_24)
+  end
+  return L4_22
+end
+function extract(A0_28)
+  local L1_29, L2_30, L3_31, L4_32, L5_33, L6_34
+  L1_29 = require
+  L2_30 = "nixio.fs"
+  L1_29 = L1_29(L2_30)
+  L2_30 = A0_28
+  L2_30 = L2_30 or _UPVALUE0_
+  L3_31 = L1_29.access
+  L4_32 = L2_30
+  L3_31 = L3_31(L4_32)
+  if not L3_31 then
+    L3_31 = 1
+    return L3_31
+  end
+  L3_31 = os
+  L3_31 = L3_31.execute
+  L4_32 = "tar -tzvf "
+  L5_33 = L2_30
+  L6_34 = " | grep ^l >/dev/null 2>&1"
+  L4_32 = L4_32 .. L5_33 .. L6_34
+  L3_31 = L3_31(L4_32)
+  if L3_31 == 0 then
+    L4_32 = os
+    L4_32 = L4_32.execute
+    L5_33 = "rm -rf "
+    L6_34 = L2_30
+    L5_33 = L5_33 .. L6_34
+    L4_32(L5_33)
+    L4_32 = 2
+    return L4_32
+  end
+  L4_32 = os
+  L4_32 = L4_32.execute
+  L5_33 = "tar -tzvf "
+  L6_34 = L2_30
+  L5_33 = L5_33 .. L6_34 .. " |grep -v .des|grep -v .mbu >/dev/null 2>&1"
+  L4_32 = L4_32(L5_33)
+  if L4_32 == 0 then
+    L5_33 = os
+    L5_33 = L5_33.execute
+    L6_34 = "rm -rf "
+    L6_34 = L6_34 .. L2_30
+    L5_33(L6_34)
+    L5_33 = 22
+    return L5_33
+  end
+  L5_33 = io
+  L5_33 = L5_33.popen
+  L6_34 = "tar -tzvf "
+  L6_34 = L6_34 .. L2_30 .. " | grep -c .des"
+  L5_33 = L5_33(L6_34)
+  L6_34 = L5_33.read
+  L6_34 = L6_34(L5_33, "*a")
+  L5_33:close()
+  if tonumber(L6_34) ~= 1 then
+    os.execute("rm -rf " .. L2_30)
+    return 2
+  end
+  L5_33 = io.popen("tar -tzvf " .. L2_30 .. " | grep -c .mbu")
+  L6_34 = L5_33:read("*a")
+  L5_33:close()
+  if tonumber(L6_34) ~= 1 then
+    os.execute("rm -rf " .. L2_30)
+    return 3
+  end
+  os.execute("cd /tmp; mkdir " .. _UPVALUE1_ .. "; cd " .. _UPVALUE1_ .. "; tar -xzf " .. L2_30 .. " >/dev/null 2>&1")
+  os.execute("rm " .. L2_30 .. " >/dev/null 2>&1")
+  if not L1_29.access(_UPVALUE2_) then
+    os.execute("rm -rf /tmp/" .. _UPVALUE1_)
+    return 2
+  end
+  if not L1_29.access(_UPVALUE3_) then
+    os.execute("rm -rf /tmp/" .. _UPVALUE1_)
+    return 3
+  end
+  os.execute("mv /tmp/" .. _UPVALUE1_ .. "/* /tmp; rm -rf /tmp/" .. _UPVALUE1_)
+  return 0
+end
+function getdes()
+  local L0_35, L1_36, L2_37, L3_38, L4_39, L5_40, L6_41, L7_42, L8_43, L9_44, L10_45, L11_46, L12_47, L13_48
+  L0_35 = require
+  L1_36 = "nixio.fs"
+  L0_35 = L0_35(L1_36)
+  L1_36 = require
+  L2_37 = "json"
+  L1_36 = L1_36(L2_37)
+  L2_37 = require
+  L3_38 = "luci.model.uci"
+  L2_37 = L2_37(L3_38)
+  L2_37 = L2_37.cursor
+  L2_37 = L2_37()
+  L3_38 = L0_35.access
+  L4_39 = _UPVALUE0_
+  L3_38 = L3_38(L4_39)
+  if not L3_38 then
+    L3_38 = nil
+    return L3_38
+  end
+  L3_38 = L0_35.readfile
+  L4_39 = _UPVALUE0_
+  L3_38 = L3_38(L4_39)
+  L4_39 = pcall
+  L5_40 = L1_36.decode
+  L6_41 = L3_38
+  L5_40 = L4_39(L5_40, L6_41)
+  if L4_39 and L5_40 then
+    L6_41 = {}
+    L7_42 = {}
+    L6_41.keys = L7_42
+    L7_42 = {}
+    L6_41.unknown = L7_42
+    L8_43 = L2_37
+    L7_42 = L2_37.get_list
+    L7_42 = L7_42(L8_43, L9_44, L10_45, L11_46)
+    L8_43 = {}
+    for L12_47, L13_48 in L9_44(L10_45) do
+      L8_43[L13_48] = true
+    end
+    for L12_47, L13_48 in L9_44(L10_45) do
+      if L8_43[L13_48] then
+        L6_41.keys[L13_48] = _UPVALUE1_[L13_48]
+      else
+        table.insert(L6_41.unknown, L13_48)
+      end
+    end
+    return L6_41
+  else
+    L6_41 = nil
+    return L6_41
+  end
+end
+function restore(A0_49, A1_50)
+  local L2_51, L3_52, L4_53, L5_54, L6_55, L7_56, L8_57, L9_58, L10_59, L11_60, L12_61, L13_62, L14_63, L15_64, L16_65, L17_66, L18_67, L19_68
+  L2_51 = require
+  L3_52 = "json"
+  L2_51 = L2_51(L3_52)
+  L3_52 = require
+  L4_53 = "nixio.fs"
+  L3_52 = L3_52(L4_53)
+  L4_53 = require
+  L5_54 = "aeslua"
+  L4_53 = L4_53(L5_54)
+  L5_54 = require
+  L6_55 = "luci.model.uci"
+  L5_54 = L5_54(L6_55)
+  L5_54 = L5_54.cursor
+  L5_54 = L5_54()
+  L6_55 = A0_49
+  L6_55 = L6_55 or _UPVALUE0_
+  L7_56 = L3_52.access
+  L8_57 = L6_55
+  L7_56 = L7_56(L8_57)
+  if not L7_56 then
+    L7_56 = 1
+    return L7_56
+  end
+  L8_57 = L5_54
+  L7_56 = L5_54.get
+  L9_58 = "cfgbackup"
+  L10_59 = "encryption"
+  L11_60 = "key"
+  L7_56 = L7_56(L8_57, L9_58, L10_59, L11_60)
+  L8_57 = L3_52.readfile
+  L9_58 = L6_55
+  L8_57 = L8_57(L9_58)
+  L9_58 = os
+  L9_58 = L9_58.execute
+  L10_59 = "rm "
+  L11_60 = L6_55
+  L12_61 = " >/dev/null 2>/dev/null"
+  L10_59 = L10_59 .. L11_60 .. L12_61
+  L9_58(L10_59)
+  L9_58 = L4_53.decrypt
+  L10_59 = L7_56
+  L11_60 = L8_57
+  L9_58 = L9_58(L10_59, L11_60)
+  if not L9_58 then
+    L10_59 = 2
+    return L10_59
+  end
+  L10_59 = pcall
+  L11_60 = L2_51.decode
+  L12_61 = L9_58
+  L11_60 = L10_59(L11_60, L12_61)
+  if not L10_59 then
+    L12_61 = 2
+    return L12_61
+  end
+  L12_61 = nil
+  if not A1_50 then
+    L16_65 = "backup"
+    L17_66 = "item"
+    L12_61 = L13_62
+  else
+    L12_61 = A1_50
+  end
+  if L12_61 then
+    for L16_65, L17_66 in L13_62(L14_63) do
+      L18_67 = _UPVALUE1_
+      L18_67 = L18_67[L17_66]
+      L19_68 = L11_60[L17_66]
+      if L18_67 and L19_68 then
+        L18_67(L19_68)
+      end
+    end
+  end
+  return L13_62
+end

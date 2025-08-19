@@ -1,0 +1,149 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20
+L2_2 = ...
+L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L16_16 = L1_1
+L15_15 = L1_1.taboption
+L20_20 = translate
+L20_20 = L20_20("Modem device")
+L15_15 = L15_15(L16_16, L17_17, L18_18, L19_19, L20_20, L20_20("Modem device"))
+L3_3 = L15_15
+L3_3.rmempty = false
+L15_15 = nixio
+L15_15 = L15_15.fs
+L15_15 = L15_15.glob
+L16_16 = "/dev/tty*S*"
+L15_15 = L15_15(L16_16)
+if not L15_15 then
+  L15_15 = nixio
+  L15_15 = L15_15.fs
+  L15_15 = L15_15.glob
+  L16_16 = "/dev/tts/*"
+  L15_15 = L15_15(L16_16)
+end
+if L15_15 then
+  L16_16 = nil
+  for L20_20 in L15_15, nil, nil do
+    L3_3:value(L20_20)
+  end
+end
+L16_16 = L1_1.taboption
+L20_20 = "username"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("PAP/CHAP username"))
+L4_4 = L16_16
+L16_16 = L1_1.taboption
+L20_20 = "password"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("PAP/CHAP password"))
+L5_5 = L16_16
+L5_5.password = true
+L16_16 = luci
+L16_16 = L16_16.model
+L16_16 = L16_16.network
+L16_16 = L16_16.has_ipv6
+L16_16 = L16_16(L17_17)
+if L16_16 then
+  L16_16 = L1_1.taboption
+  L20_20 = "ipv6"
+  L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Enable IPv6 negotiation on the PPP link"))
+  L6_6 = L16_16
+  L16_16 = L6_6.disabled
+  L6_6.default = L16_16
+end
+L16_16 = L1_1.taboption
+L20_20 = "defaultroute"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Use default gateway"), translate("If unchecked, no default route is configured"))
+L7_7 = L16_16
+L16_16 = L7_7.enabled
+L7_7.default = L16_16
+L16_16 = L1_1.taboption
+L20_20 = "metric"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Use gateway metric"))
+L8_8 = L16_16
+L8_8.placeholder = "0"
+L8_8.datatype = "uinteger"
+L16_16 = L8_8.depends
+L16_16(L17_17, L18_18, L19_19)
+L16_16 = L1_1.taboption
+L20_20 = "peerdns"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Use DNS servers advertised by peer"), translate("If unchecked, the advertised DNS server addresses are ignored"))
+L9_9 = L16_16
+L16_16 = L9_9.enabled
+L9_9.default = L16_16
+L16_16 = L1_1.taboption
+L20_20 = "dns"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Use custom DNS servers"))
+L10_10 = L16_16
+L16_16 = L10_10.depends
+L16_16(L17_17, L18_18, L19_19)
+L10_10.datatype = "ipaddr"
+L10_10.cast = "string"
+L16_16 = L1_1.taboption
+L20_20 = "_keepalive_failure"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("LCP echo failure threshold"), translate("Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures"))
+L11_11 = L16_16
+function L16_16(A0_21, A1_22)
+  local L2_23
+  L2_23 = m
+  L2_23 = L2_23.get
+  L2_23 = L2_23(L2_23, A1_22, "keepalive")
+  if L2_23 and #L2_23 > 0 then
+    return tonumber(L2_23:match("^(%d+)[ ,]+%d+") or L2_23)
+  end
+end
+L11_11.cfgvalue = L16_16
+function L16_16()
+  local L0_24, L1_25
+end
+L11_11.write = L16_16
+function L16_16()
+  local L0_26, L1_27
+end
+L11_11.remove = L16_16
+L11_11.placeholder = "0"
+L11_11.datatype = "uinteger"
+L16_16 = L1_1.taboption
+L20_20 = "_keepalive_interval"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("LCP echo interval"), translate("Send LCP echo requests at the given interval in seconds, only effective in conjunction with failure threshold"))
+L12_12 = L16_16
+function L16_16(A0_28, A1_29)
+  if m:get(A1_29, "keepalive") and #m:get(A1_29, "keepalive") > 0 then
+    return tonumber(m:get(A1_29, "keepalive"):match("^%d+[ ,]+(%d+)"))
+  end
+end
+L12_12.cfgvalue = L16_16
+function L16_16(A0_30, A1_31, A2_32)
+  local L3_33, L4_34
+  L3_33 = tonumber
+  L4_34 = _UPVALUE0_
+  L4_34 = L4_34.formvalue
+  L4_34 = L4_34(L4_34, A1_31)
+  L3_33 = L3_33(L4_34, L4_34(L4_34, A1_31))
+  L3_33 = L3_33 or 0
+  L4_34 = tonumber
+  L4_34 = L4_34(A2_32)
+  L4_34 = L4_34 or 5
+  if L4_34 < 1 then
+    L4_34 = 1
+  end
+  if L3_33 > 0 then
+    m:set(A1_31, "keepalive", "%d %d" % {L3_33, L4_34})
+  else
+    m:del(A1_31, "keepalive")
+  end
+end
+L12_12.write = L16_16
+L16_16 = L12_12.write
+L12_12.remove = L16_16
+L12_12.placeholder = "5"
+L12_12.datatype = "min(1)"
+L16_16 = L1_1.taboption
+L20_20 = "demand"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Inactivity timeout"), translate("Close inactive connection after the given amount of seconds, use 0 to persist connection"))
+L13_13 = L16_16
+L13_13.placeholder = "0"
+L13_13.datatype = "uinteger"
+L16_16 = L1_1.taboption
+L20_20 = "mtu"
+L16_16 = L16_16(L17_17, L18_18, L19_19, L20_20, translate("Override MTU"))
+L14_14 = L16_16
+L14_14.placeholder = "1500"
+L14_14.datatype = "max(1500)"

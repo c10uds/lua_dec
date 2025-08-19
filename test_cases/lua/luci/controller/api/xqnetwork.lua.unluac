@@ -1,0 +1,5362 @@
+local L0_0, L1_1, L2_2, L3_3
+L0_0 = module
+L1_1 = "luci.controller.api.xqnetwork"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "xiaoqiang.XQLog"
+L0_0 = L0_0(L1_1)
+logger = L0_0
+function L0_0()
+  node("api", "xqnetwork").target = firstchild()
+  node("api", "xqnetwork").title = ""
+  node("api", "xqnetwork").order = 200
+  node("api", "xqnetwork").sysauth = "admin"
+  node("api", "xqnetwork").sysauth_authenticator = "jsonauth"
+  node("api", "xqnetwork").index = true
+  entry({"api", "xqnetwork"}, firstchild(), "", 200)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_status"
+  }, call("getWifiStatus"), "", 201)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_detail"
+  }, call("getWifiInfo"), "", 202)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_detail_all"
+  }, call("getAllWifiInfo"), "", 202)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_connect_devices"
+  }, call("getWifiConDev"), "", 203)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_txpwr_channel"
+  }, call("getWifiChTx"), "", 204)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_txpwr"
+  }, call("setWifiTxpwr"), "", 205)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_up"
+  }, call("turnOnWifi"), "", 206)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_down"
+  }, call("shutDownWifi"), "", 207)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi"
+  }, call("setWifi"), "", 208)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_without_restart"
+  }, call("setWifiWithoutRestart"), "", 208)
+  entry({
+    "api",
+    "xqnetwork",
+    "lan_info"
+  }, call("getLanInfo"), "", 213)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_info"
+  }, call("getWanInfo"), "", 214)
+  entry({
+    "api",
+    "xqnetwork",
+    "lan_dhcp"
+  }, call("getLanDhcp"), "", 215)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_down"
+  }, call("wanDown"), "", 216)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_up"
+  }, call("wanUp"), "", 217)
+  entry({
+    "api",
+    "xqnetwork",
+    "check_wan_type"
+  }, call("getAutoWanType"), "", 218, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "check_wan_link"
+  }, call("getAutoWanLink"), "", 218, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_statistics"
+  }, call("getWanStatistics"), "", 219)
+  entry({
+    "api",
+    "xqnetwork",
+    "devices_statistics"
+  }, call("getDevsStatistics"), "", 220)
+  entry({
+    "api",
+    "xqnetwork",
+    "device_statistics"
+  }, call("getDevStatistics"), "", 221)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_lan_ip"
+  }, call("setLanIp"), "", 222)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wan"
+  }, call("setWan"), "", 223, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wan_new"
+  }, call("setWanNew"), "", 223, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_lan_dhcp"
+  }, call("setLanDhcp"), "", 224)
+  entry({
+    "api",
+    "xqnetwork",
+    "mac_clone"
+  }, call("setWanMac"), "", 225)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_all_wifi"
+  }, call("setAllWifi"), "", 226)
+  entry({
+    "api",
+    "xqnetwork",
+    "avaliable_channels"
+  }, call("getChannels"), "", 227)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_macfilter_info"
+  }, call("getWifiMacfilterInfo"), "", 228)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_macfilter"
+  }, call("setWifiMacfilter"), "", 229)
+  entry({
+    "api",
+    "xqnetwork",
+    "edit_device"
+  }, call("editDevice"), "", 230)
+  entry({
+    "api",
+    "xqnetwork",
+    "manually_add"
+  }, call("manuallyAdd"), "", 231)
+  entry({
+    "api",
+    "xqnetwork",
+    "mac_bind"
+  }, call("macBind"), "", 231)
+  entry({
+    "api",
+    "xqnetwork",
+    "mac_unbind"
+  }, call("macUnbind"), "", 232)
+  entry({
+    "api",
+    "xqnetwork",
+    "savebind"
+  }, call("saveBind"), "", 233)
+  entry({
+    "api",
+    "xqnetwork",
+    "unbindall"
+  }, call("unbindAll"), "", 234)
+  entry({
+    "api",
+    "xqnetwork",
+    "macbind_info"
+  }, call("getMacBindInfo"), "", 235)
+  entry({
+    "api",
+    "xqnetwork",
+    "pppoe_status"
+  }, call("pppoeStatus"), "", 236)
+  entry({
+    "api",
+    "xqnetwork",
+    "pppoe_stop"
+  }, call("pppoeStop"), "", 237)
+  entry({
+    "api",
+    "xqnetwork",
+    "pppoe_start"
+  }, call("pppoeStart"), "", 238)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_info"
+  }, call("getQosInfo"), "", 239)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_switch"
+  }, call("qosSwitch"), "", 240)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_mode"
+  }, call("qosMode"), "", 241)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_limit"
+  }, call("qosLimit"), "", 242)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_limits"
+  }, call("qosLimits"), "", 242)
+  entry({
+    "api",
+    "xqnetwork",
+    "qos_offlimit"
+  }, call("qosOffLimit"), "", 243)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_band"
+  }, call("setBand"), "", 244)
+  entry({
+    "api",
+    "xqnetwork",
+    "portforward"
+  }, call("portForward"), "", 245)
+  entry({
+    "api",
+    "xqnetwork",
+    "add_redirect"
+  }, call("addRedirect"), "", 246)
+  entry({
+    "api",
+    "xqnetwork",
+    "add_range_redirect"
+  }, call("addRangeRedirect"), "", 247)
+  entry({
+    "api",
+    "xqnetwork",
+    "delete_redirect"
+  }, call("deleteRedirect"), "", 248)
+  entry({
+    "api",
+    "xqnetwork",
+    "redirect_apply"
+  }, call("redirectApply"), "", 249)
+  entry({
+    "api",
+    "xqnetwork",
+    "dmz"
+  }, call("getDMZInfo"), "", 250)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_dmz"
+  }, call("setDMZ"), "", 251)
+  entry({
+    "api",
+    "xqnetwork",
+    "dmz_off"
+  }, call("closeDMZ"), "", 252)
+  entry({
+    "api",
+    "xqnetwork",
+    "dmz_reload"
+  }, call("reloadDMZ"), "", 252)
+  entry({
+    "api",
+    "xqnetwork",
+    "ddns"
+  }, call("ddnsStatus"), "", 253)
+  entry({
+    "api",
+    "xqnetwork",
+    "ddns_switch"
+  }, call("ddnsSwitch"), "", 254)
+  entry({
+    "api",
+    "xqnetwork",
+    "add_server"
+  }, call("addServer"), "", 255)
+  entry({
+    "api",
+    "xqnetwork",
+    "del_server"
+  }, call("deleteServer"), "", 256)
+  entry({
+    "api",
+    "xqnetwork",
+    "server_switch"
+  }, call("serverSwitch"), "", 258)
+  entry({
+    "api",
+    "xqnetwork",
+    "ddns_reload"
+  }, call("ddnsReload"), "", 259)
+  entry({
+    "api",
+    "xqnetwork",
+    "ddns_edit"
+  }, call("ddnsEdit"), "", 260)
+  entry({
+    "api",
+    "xqnetwork",
+    "get_server"
+  }, call("getServer"), "", 261)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_list"
+  }, call("getScanList"), "", 262, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "disable_ap"
+  }, call("disableap"), "", 263)
+  entry({
+    "api",
+    "xqnetwork",
+    "mode"
+  }, call("getMode"), "", 264)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_link"
+  }, call("getWanLinkStatus"), "", 265, 9)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_ap"
+  }, call("setWifiApMode"), "", 266)
+  entry({
+    "api",
+    "xqnetwork",
+    "app_set_wifi_ap"
+  }, call("appSetWifiApMode"), "", 286)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifiap_signal"
+  }, call("apcli_get_signal"), "", 267)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifiap_restart"
+  }, call("serviceRestart"), "", 268)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_lan_ap"
+  }, call("setLanAP"), "", 272)
+  entry({
+    "api",
+    "xqnetwork",
+    "disable_lan_ap"
+  }, call("disableLanAP"), "", 273)
+  entry({
+    "api",
+    "xqnetwork",
+    "app_wifiap_restart"
+  }, call("wifiAPserviceRestart"), "", 287)
+  entry({
+    "api",
+    "xqnetwork",
+    "get_status"
+  }, call("getModeStatus"), "", 288)
+  entry({
+    "api",
+    "xqnetwork",
+    "channel_scan_start"
+  }, call("channelScanStart"), "", 269)
+  entry({
+    "api",
+    "xqnetwork",
+    "channel_scan_result"
+  }, call("getScanResult"), "", 270)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_channel"
+  }, call("setChannel"), "", 271)
+  entry({
+    "api",
+    "xqnetwork",
+    "wan_speed"
+  }, call("getWanSpeed"), "", 262)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wan_speed"
+  }, call("setWanSpeed"), "", 263)
+  entry({
+    "api",
+    "xqnetwork",
+    "pppoe_catch"
+  }, call("pppoeCatch"), "", 264, 9)
+  entry({
+    "api",
+    "xqnetwork",
+    "wifi_diag_detail_all"
+  }, call("getDiagAllWifiInfo"), "", 275)
+  entry({
+    "api",
+    "xqnetwork",
+    "diagdevicelist"
+  }, call("getDiagDeviceList"), "", 276)
+  entry({
+    "api",
+    "xqnetwork",
+    "diagudiskstatus"
+  }, call("getDiagUdiskStatus"), "", 277)
+  entry({
+    "api",
+    "xqnetwork",
+    "diagdiskstatus"
+  }, call("getDiagDiskStatus"), "", 278)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_wifi_test"
+  }, call("diagWifiTest"), "", 279)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_usb_test"
+  }, call("diagUsbTest"), "", 280)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_hdd_status"
+  }, call("diagHddStatus"), "", 281)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_disk_test"
+  }, call("diagDiskTest"), "", 282)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_get_paras"
+  }, call("getDiagParas"), "", 283)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_set_paras"
+  }, call("setDiagParas"), "", 284)
+  entry({
+    "api",
+    "xqnetwork",
+    "diag_get_log"
+  }, call("getDiagLog"), "", 285)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_weak"
+  }, call("setWifiWeakInfo"), "", 286)
+  entry({
+    "api",
+    "xqnetwork",
+    "get_wifi_weak"
+  }, call("getWifiWeakInfo"), "", 287)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wan6"
+  }, call("setWan6"), "", 223, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "ipv6_status"
+  }, call("ipv6Status"), "", 223, 8)
+  entry({
+    "api",
+    "xqnetwork",
+    "miscan_switch"
+  }, call("miscanSwitch"), "", 290)
+  entry({
+    "api",
+    "xqnetwork",
+    "get_miscan_switch"
+  }, call("getMiscanSwitch"), "", 291)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_txbf"
+  }, call("setWifiTxbf"), "", 295)
+  entry({
+    "api",
+    "xqnetwork",
+    "set_wifi_ax"
+  }, call("setWifiAx"), "", 296)
+end
+index = L0_0
+L0_0 = require
+L1_1 = "luci.http"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.util.XQErrorUtil"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.uci"
+L2_2 = L2_2(L3_3)
+L2_2 = L2_2.cursor
+L2_2 = L2_2()
+L3_3 = L2_2.get
+L3_3 = L3_3(L2_2, "misc", "hardware", "model")
+L3_3 = L3_3 or ""
+L3_3 = L3_3 and string.lower(L3_3)
+function getWifiStatus()
+  local L0_4, L1_5, L2_6
+  L0_4 = require
+  L1_5 = "xiaoqiang.util.XQWifiUtil"
+  L0_4 = L0_4(L1_5)
+  L1_5 = {}
+  L2_6 = {}
+  table.insert(L2_6, L0_4.getWifiStatus(1))
+  table.insert(L2_6, L0_4.getWifiStatus(2))
+  L1_5.code = 0
+  L1_5.status = L2_6
+  _UPVALUE0_.write_json(L1_5)
+end
+function getWifiInfo()
+  local L0_7, L1_8, L2_9
+  L0_7 = require
+  L1_8 = "xiaoqiang.util.XQWifiUtil"
+  L0_7 = L0_7(L1_8)
+  L1_8 = {}
+  L2_9 = 0
+  if tonumber(_UPVALUE0_.formvalue("wifiIndex")) and tonumber(_UPVALUE0_.formvalue("wifiIndex")) < 3 then
+    L1_8.info = L0_7.getAllWifiInfo()[tonumber(_UPVALUE0_.formvalue("wifiIndex"))]
+  else
+    L2_9 = 1523
+  end
+  if L2_9 ~= 0 then
+    L1_8.msg = _UPVALUE1_.getErrorMessage(L2_9)
+  end
+  L1_8.code = L2_9
+  _UPVALUE0_.write_json(L1_8)
+end
+function getAllWifiInfo()
+  local L0_10, L1_11
+  L0_10 = require
+  L1_11 = "xiaoqiang.util.XQWifiUtil"
+  L0_10 = L0_10(L1_11)
+  L1_11 = {}
+  L1_11.code, L1_11.info = 0, L0_10.getAllWifiInfo()
+  if 0 < #L1_11.info then
+    L1_11.bsd = tonumber(L1_11.info[1].bsd)
+    if not L1_11.bsd then
+      L1_11.bsd = 0
+    end
+  end
+  _UPVALUE0_.write_json(L1_11)
+end
+function getDiagAllWifiInfo()
+  local L0_12, L1_13
+  L0_12 = require
+  L1_13 = "xiaoqiang.util.XQWifiUtil"
+  L0_12 = L0_12(L1_13)
+  L1_13 = {}
+  L1_13.code, L1_13.info = 0, L0_12.getDiagAllWifiInfo()
+  if 0 < #L1_13.info then
+    L1_13.bsd = tonumber(L1_13.info[1].bsd)
+    if not L1_13.bsd then
+      L1_13.bsd = 0
+    end
+  end
+  _UPVALUE0_.write_json(L1_13)
+end
+function getWifiConDev()
+  local L0_14, L1_15
+  L0_14 = require
+  L1_15 = "xiaoqiang.util.XQWifiUtil"
+  L0_14 = L0_14(L1_15)
+  L1_15 = {}
+  L1_15.code = 0
+  L1_15.list = L0_14.getAllWifiConnetDeviceList()
+  _UPVALUE0_.write_json(L1_15)
+end
+function getWifiChTx()
+  local L0_16, L1_17
+  L0_16 = require
+  L1_17 = "xiaoqiang.util.XQWifiUtil"
+  L0_16 = L0_16(L1_17)
+  L1_17 = {}
+  L1_17.code = 0
+  L1_17.list = L0_16.getWifiChannelTxpwrList()
+  _UPVALUE0_.write_json(L1_17)
+end
+function setWifiChTx()
+  local L0_18, L1_19, L2_20, L3_21, L4_22, L5_23, L6_24, L7_25
+  L0_18 = require
+  L1_19 = "xiaoqiang.util.XQWifiUtil"
+  L0_18 = L0_18(L1_19)
+  L1_19 = require
+  L2_20 = "xiaoqiang.common.XQFunction"
+  L1_19 = L1_19(L2_20)
+  L2_20 = {}
+  L3_21 = 0
+  L4_22 = _UPVALUE0_
+  L4_22 = L4_22.formvalue
+  L5_23 = "channel1"
+  L4_22 = L4_22(L5_23)
+  L5_23 = _UPVALUE0_
+  L5_23 = L5_23.formvalue
+  L6_24 = "txpwr1"
+  L5_23 = L5_23(L6_24)
+  L6_24 = _UPVALUE0_
+  L6_24 = L6_24.formvalue
+  L7_25 = "channel2"
+  L6_24 = L6_24(L7_25)
+  L7_25 = _UPVALUE0_
+  L7_25 = L7_25.formvalue
+  L7_25 = L7_25("txpwr2")
+  if L1_19.isStrNil(L4_22) and L1_19.isStrNil(L6_24) and L1_19.isStrNil(L5_23) and L1_19.isStrNil(L7_25) then
+    L3_21 = 1502
+  else
+    L0_18.setWifiChannelTxpwr(L4_22, L5_23, L6_24, L7_25)
+  end
+  if L3_21 ~= 0 then
+    L2_20.msg = _UPVALUE1_.getErrorMessage(L3_21)
+  end
+  L2_20.code = L3_21
+  _UPVALUE0_.write_json(L2_20)
+  if L3_21 == 0 then
+    _UPVALUE0_.close()
+    L1_19.forkRestartWifi()
+  end
+end
+function setWifiTxpwr()
+  local L0_26, L1_27, L2_28, L3_29, L4_30
+  L0_26 = require
+  L1_27 = "xiaoqiang.util.XQWifiUtil"
+  L0_26 = L0_26(L1_27)
+  L1_27 = require
+  L2_28 = "xiaoqiang.common.XQFunction"
+  L1_27 = L1_27(L2_28)
+  L2_28 = {}
+  L3_29 = 0
+  L4_30 = _UPVALUE0_
+  L4_30 = L4_30.formvalue
+  L4_30 = L4_30("txpwr")
+  if L1_27.isStrNil(L4_30) then
+    L3_29 = 1502
+  else
+    L0_26.setWifiTxpwr(L4_30)
+  end
+  if L3_29 ~= 0 then
+    L2_28.msg = _UPVALUE1_.getErrorMessage(L3_29)
+  end
+  L2_28.code = L3_29
+  _UPVALUE0_.write_json(L2_28)
+  if L3_29 == 0 then
+    _UPVALUE0_.close()
+    L1_27.forkRestartWifi()
+  end
+end
+function setWifiTxbf()
+  local L0_31, L1_32, L2_33, L3_34, L4_35
+  L0_31 = require
+  L1_32 = "xiaoqiang.util.XQWifiUtil"
+  L0_31 = L0_31(L1_32)
+  L1_32 = require
+  L2_33 = "xiaoqiang.common.XQFunction"
+  L1_32 = L1_32(L2_33)
+  L2_33 = {}
+  L3_34 = 0
+  L4_35 = _UPVALUE0_
+  L4_35 = L4_35.formvalue
+  L4_35 = L4_35("txbf")
+  logger.log(6, "======================== txbf " .. L4_35)
+  if L1_32.isStrNil(L4_35) then
+    L3_34 = 1502
+  else
+    L0_31.setWifiTxbf(L4_35)
+  end
+  if L3_34 ~= 0 then
+    L2_33.msg = _UPVALUE1_.getErrorMessage(L3_34)
+  end
+  L2_33.code = L3_34
+  _UPVALUE0_.write_json(L2_33)
+  if L3_34 == 0 then
+    _UPVALUE0_.close()
+    L1_32.forkRestartWifi()
+  end
+end
+function setWifiAx()
+  local L0_36, L1_37, L2_38, L3_39, L4_40
+  L0_36 = require
+  L1_37 = "xiaoqiang.util.XQWifiUtil"
+  L0_36 = L0_36(L1_37)
+  L1_37 = require
+  L2_38 = "xiaoqiang.common.XQFunction"
+  L1_37 = L1_37(L2_38)
+  L2_38 = {}
+  L3_39 = 0
+  L4_40 = _UPVALUE0_
+  L4_40 = L4_40.formvalue
+  L4_40 = L4_40("ax")
+  if L1_37.isStrNil(L4_40) then
+    L3_39 = 1502
+  else
+    L0_36.setWifiAx(L4_40)
+  end
+  if L3_39 ~= 0 then
+    L2_38.msg = _UPVALUE1_.getErrorMessage(L3_39)
+  end
+  L2_38.code = L3_39
+  _UPVALUE0_.write_json(L2_38)
+  if L3_39 == 0 then
+    _UPVALUE0_.close()
+    L1_37.forkRestartWifi()
+  end
+end
+function turnOnWifi()
+  local L0_41, L1_42, L2_43, L3_44
+  L0_41 = require
+  L1_42 = "xiaoqiang.util.XQWifiUtil"
+  L0_41 = L0_41(L1_42)
+  L1_42 = {}
+  L2_43 = 0
+  L3_44 = tonumber
+  L3_44 = L3_44(_UPVALUE0_.formvalue("wifiIndex"))
+  if L3_44 and L3_44 < 3 then
+    L0_41.turnWifiOn(L3_44)
+  else
+    L2_43 = 1523
+  end
+  if L2_43 ~= 0 then
+    L1_42.msg = _UPVALUE1_.getErrorMessage(L2_43)
+  end
+  L1_42.code = L2_43
+  _UPVALUE0_.write_json(L1_42)
+end
+function shutDownWifi()
+  local L0_45, L1_46, L2_47, L3_48
+  L0_45 = require
+  L1_46 = "xiaoqiang.util.XQWifiUtil"
+  L0_45 = L0_45(L1_46)
+  L1_46 = {}
+  L2_47 = 0
+  L3_48 = tonumber
+  L3_48 = L3_48(_UPVALUE0_.formvalue("wifiIndex"))
+  if L3_48 and L3_48 < 3 then
+    L0_45.turnWifiOff(L3_48)
+  else
+    L2_47 = 1523
+  end
+  if L2_47 ~= 0 then
+    L1_46.msg = _UPVALUE1_.getErrorMessage(L2_47)
+  end
+  L1_46.code = L2_47
+  _UPVALUE0_.write_json(L1_46)
+end
+function setWifi()
+  local L0_49, L1_50, L2_51, L3_52, L4_53, L5_54, L6_55, L7_56, L8_57, L9_58, L10_59, L11_60, L12_61, L13_62, L14_63, L15_64, L16_65, L17_66, L18_67
+  L0_49 = require
+  L1_50 = "xiaoqiang.XQLog"
+  L0_49 = L0_49(L1_50)
+  L1_50 = require
+  L2_51 = "xiaoqiang.util.XQWifiUtil"
+  L1_50 = L1_50(L2_51)
+  L2_51 = require
+  L3_52 = "xiaoqiang.common.XQFunction"
+  L2_51 = L2_51(L3_52)
+  L3_52 = {}
+  L4_53 = 0
+  L5_54 = tonumber
+  L6_55 = _UPVALUE0_
+  L6_55 = L6_55.formvalue
+  L7_56 = "wifiIndex"
+  L18_67 = L6_55(L7_56)
+  L5_54 = L5_54(L6_55, L7_56, L8_57, L9_58, L10_59, L11_60, L12_61, L13_62, L14_63, L15_64, L16_65, L17_66, L18_67, L6_55(L7_56))
+  L6_55 = _UPVALUE0_
+  L6_55 = L6_55.formvalue
+  L7_56 = "ssid"
+  L6_55 = L6_55(L7_56)
+  L7_56 = _UPVALUE0_
+  L7_56 = L7_56.formvalue
+  L8_57 = "pwd"
+  L7_56 = L7_56(L8_57)
+  L8_57 = _UPVALUE0_
+  L8_57 = L8_57.formvalue
+  L9_58 = "encryption"
+  L8_57 = L8_57(L9_58)
+  L9_58 = _UPVALUE0_
+  L9_58 = L9_58.formvalue
+  L10_59 = "channel"
+  L9_58 = L9_58(L10_59)
+  L10_59 = _UPVALUE0_
+  L10_59 = L10_59.formvalue
+  L11_60 = "bandwidth"
+  L10_59 = L10_59(L11_60)
+  L11_60 = _UPVALUE0_
+  L11_60 = L11_60.formvalue
+  L12_61 = "txpwr"
+  L11_60 = L11_60(L12_61)
+  L12_61 = _UPVALUE0_
+  L12_61 = L12_61.formvalue
+  L13_62 = "hidden"
+  L12_61 = L12_61(L13_62)
+  L13_62 = _UPVALUE0_
+  L13_62 = L13_62.formvalue
+  L14_63 = "on"
+  L13_62 = L13_62(L14_63)
+  L14_63 = _UPVALUE0_
+  L14_63 = L14_63.formvalue
+  L15_64 = "txbf"
+  L14_63 = L14_63(L15_64)
+  L15_64 = _UPVALUE0_
+  L15_64 = L15_64.formvalue
+  L16_65 = "weakenable"
+  L15_64 = L15_64(L16_65)
+  L16_65 = _UPVALUE0_
+  L16_65 = L16_65.formvalue
+  L17_66 = "weakthreshold"
+  L16_65 = L16_65(L17_66)
+  L17_66 = _UPVALUE0_
+  L17_66 = L17_66.formvalue
+  L18_67 = "kickthreshold"
+  L17_66 = L17_66(L18_67)
+  L18_67 = _UPVALUE0_
+  L18_67 = L18_67.formvalue
+  L18_67 = L18_67("ax")
+  if L13_62 ~= nil then
+    L13_62 = tonumber(L13_62)
+  end
+  if L9_58 == "0" then
+    L10_59 = "0"
+  end
+  if L5_54 == 1 then
+    if L9_58 then
+      L0_49.check(0, L0_49.KEY_FUNC_2G_CHANNEL, L9_58)
+    end
+    if L11_60 then
+      L0_49.check(0, L0_49.KEY_FUNC_2G_SIGNAL, L11_60)
+    end
+  elseif L5_54 == 2 then
+    if L9_58 then
+      L0_49.check(0, L0_49.KEY_FUNC_5G_CHANNEL, L9_58)
+    end
+    if L11_60 then
+      L0_49.check(0, L0_49.KEY_FUNC_5G_SIGNAL, L11_60)
+    end
+  elseif L5_54 == 3 then
+  end
+  if L5_54 == 1 then
+    if L1_50.getWifiBasicInfo(L5_54).password == nil then
+      L1_50.getWifiBasicInfo(L5_54).password = ""
+    end
+  end
+  L4_53 = L1_50.checkSSID(L6_55, 31)
+  if L4_53 == 0 then
+    if L5_54 == 1 or L5_54 == 2 then
+      if L1_50.setWifiBasicInfo(L5_54, L6_55, L7_56, L8_57, L9_58, L11_60, L12_61, L13_62, L10_59, nil, L14_63, L15_64, L16_65, L17_66, L18_67) == false then
+        L4_53 = L1_50.checkWifiPasswd(L7_56, L8_57)
+      end
+    else
+    end
+  end
+  if L4_53 ~= 0 then
+    L3_52.msg = _UPVALUE1_.getErrorMessage(L4_53)
+  end
+  L3_52.code = L4_53
+  _UPVALUE0_.write_json(L3_52)
+  if L4_53 == 0 then
+    _UPVALUE0_.close()
+    if true then
+      if true then
+        L2_51.forkRestartWifiNotify()
+      else
+        L2_51.forkRestartWifiNotifyButMiio()
+      end
+    end
+  end
+end
+function setWifiWithoutRestart()
+  local L0_68, L1_69, L2_70, L3_71, L4_72, L5_73, L6_74, L7_75, L8_76, L9_77, L10_78, L11_79, L12_80, L13_81, L14_82, L15_83
+  L0_68 = require
+  L1_69 = "xiaoqiang.XQLog"
+  L0_68 = L0_68(L1_69)
+  L1_69 = require
+  L2_70 = "xiaoqiang.util.XQWifiUtil"
+  L1_69 = L1_69(L2_70)
+  L2_70 = require
+  L3_71 = "xiaoqiang.common.XQFunction"
+  L2_70 = L2_70(L3_71)
+  L3_71 = {}
+  L4_72 = 0
+  L5_73 = tonumber
+  L6_74 = _UPVALUE0_
+  L6_74 = L6_74.formvalue
+  L7_75 = "wifiIndex"
+  L15_83 = L6_74(L7_75)
+  L5_73 = L5_73(L6_74, L7_75, L8_76, L9_77, L10_78, L11_79, L12_80, L13_81, L14_82, L15_83, L6_74(L7_75))
+  L6_74 = _UPVALUE0_
+  L6_74 = L6_74.formvalue
+  L7_75 = "ssid"
+  L6_74 = L6_74(L7_75)
+  L7_75 = _UPVALUE0_
+  L7_75 = L7_75.formvalue
+  L8_76 = "pwd"
+  L7_75 = L7_75(L8_76)
+  L8_76 = _UPVALUE0_
+  L8_76 = L8_76.formvalue
+  L9_77 = "encryption"
+  L8_76 = L8_76(L9_77)
+  L9_77 = _UPVALUE0_
+  L9_77 = L9_77.formvalue
+  L10_78 = "channel"
+  L9_77 = L9_77(L10_78)
+  L10_78 = _UPVALUE0_
+  L10_78 = L10_78.formvalue
+  L11_79 = "bandwidth"
+  L10_78 = L10_78(L11_79)
+  L11_79 = _UPVALUE0_
+  L11_79 = L11_79.formvalue
+  L12_80 = "txpwr"
+  L11_79 = L11_79(L12_80)
+  L12_80 = _UPVALUE0_
+  L12_80 = L12_80.formvalue
+  L13_81 = "hidden"
+  L12_80 = L12_80(L13_81)
+  L13_81 = _UPVALUE0_
+  L13_81 = L13_81.formvalue
+  L14_82 = "on"
+  L13_81 = L13_81(L14_82)
+  L14_82 = _UPVALUE0_
+  L14_82 = L14_82.formvalue
+  L15_83 = "txbf"
+  L14_82 = L14_82(L15_83)
+  L15_83 = _UPVALUE0_
+  L15_83 = L15_83.formvalue
+  L15_83 = L15_83("ax")
+  if L13_81 ~= nil then
+    L13_81 = tonumber(L13_81)
+  end
+  if L9_77 == "0" then
+    L10_78 = "0"
+  end
+  if L5_73 == 1 then
+    if L9_77 then
+      L0_68.check(0, L0_68.KEY_FUNC_2G_CHANNEL, L9_77)
+    end
+    if L11_79 then
+      L0_68.check(0, L0_68.KEY_FUNC_2G_SIGNAL, L11_79)
+    end
+  elseif L5_73 == 2 then
+    if L9_77 then
+      L0_68.check(0, L0_68.KEY_FUNC_5G_CHANNEL, L9_77)
+    end
+    if L11_79 then
+      L0_68.check(0, L0_68.KEY_FUNC_5G_SIGNAL, L11_79)
+    end
+  elseif L5_73 == 3 then
+  end
+  if L5_73 == 1 then
+    if L1_69.getWifiBasicInfo(L5_73).password == nil then
+      L1_69.getWifiBasicInfo(L5_73).password = ""
+    end
+  end
+  L4_72 = L1_69.checkSSID(L6_74, 31)
+  if L4_72 == 0 then
+    if L5_73 == 1 or L5_73 == 2 then
+      if L1_69.setWifiBasicInfo(L5_73, L6_74, L7_75, L8_76, L9_77, L11_79, L12_80, L13_81, L10_78, nil, L14_82, nil, nil, nil, L15_83) == false then
+        L4_72 = L1_69.checkWifiPasswd(L7_75, L8_76)
+      end
+    elseif L5_73 == 3 then
+      if require("xiaoqiang.module.XQGuestWifi").setGuestWifi(1, L6_74, L8_76, L7_75, 1, L13_81) == false then
+        L4_72 = 1615
+      elseif L8_76 ~= "none" and L13_81 == 1 then
+        require("xiaoqiang.module.XQWifiShare").wifi_share_switch(0)
+      end
+    end
+  end
+  if L4_72 ~= 0 then
+    L3_71.msg = _UPVALUE1_.getErrorMessage(L4_72)
+  end
+  L3_71.code = L4_72
+  _UPVALUE0_.write_json(L3_71)
+end
+function setAllWifi()
+  local L0_84, L1_85, L2_86, L3_87, L4_88, L5_89, L6_90, L7_91, L8_92, L9_93, L10_94, L11_95, L12_96, L13_97, L14_98, L15_99, L16_100, L17_101, L18_102, L19_103, L20_104, L21_105, L22_106, L23_107, L24_108, L25_109, L26_110, L27_111, L28_112, L29_113, L30_114, L31_115, L32_116, L33_117, L34_118, L35_119, L36_120, L37_121, L38_122, L39_123, L40_124
+  L0_84 = require
+  L1_85 = "xiaoqiang.XQLog"
+  L0_84 = L0_84(L1_85)
+  L1_85 = require
+  L2_86 = "xiaoqiang.util.XQSysUtil"
+  L1_85 = L1_85(L2_86)
+  L2_86 = require
+  L3_87 = "xiaoqiang.util.XQWifiUtil"
+  L2_86 = L2_86(L3_87)
+  L3_87 = require
+  L4_88 = "xiaoqiang.common.XQFunction"
+  L3_87 = L3_87(L4_88)
+  L4_88 = L2_86.getAllWifiInfo
+  L4_88 = L4_88()
+  L4_88 = L4_88[1]
+  L5_89 = {}
+  L6_90 = 0
+  L7_91 = 0
+  L8_92 = 0
+  L9_93 = {}
+  L10_94 = tonumber
+  L11_95 = _UPVALUE0_
+  L11_95 = L11_95.formvalue
+  L12_96 = "bsd"
+  L40_124 = L11_95(L12_96)
+  L10_94 = L10_94(L11_95, L12_96, L13_97, L14_98, L15_99, L16_100, L17_101, L18_102, L19_103, L20_104, L21_105, L22_106, L23_107, L24_108, L25_109, L26_110, L27_111, L28_112, L29_113, L30_114, L31_115, L32_116, L33_117, L34_118, L35_119, L36_120, L37_121, L38_122, L39_123, L40_124, L11_95(L12_96))
+  L11_95 = _UPVALUE0_
+  L11_95 = L11_95.formvalue
+  L12_96 = "on1"
+  L11_95 = L11_95(L12_96)
+  L12_96 = _UPVALUE0_
+  L12_96 = L12_96.formvalue
+  L13_97 = "ssid1"
+  L12_96 = L12_96(L13_97)
+  L13_97 = _UPVALUE0_
+  L13_97 = L13_97.formvalue
+  L14_98 = "pwd1"
+  L13_97 = L13_97(L14_98)
+  L13_97 = L13_97 or ""
+  L14_98 = _UPVALUE0_
+  L14_98 = L14_98.formvalue
+  L15_99 = "encryption1"
+  L14_98 = L14_98(L15_99)
+  L15_99 = _UPVALUE0_
+  L15_99 = L15_99.formvalue
+  L16_100 = "channel1"
+  L15_99 = L15_99(L16_100)
+  L16_100 = _UPVALUE0_
+  L16_100 = L16_100.formvalue
+  L17_101 = "txpwr1"
+  L16_100 = L16_100(L17_101)
+  L17_101 = _UPVALUE0_
+  L17_101 = L17_101.formvalue
+  L18_102 = "hidden1"
+  L17_101 = L17_101(L18_102)
+  L18_102 = _UPVALUE0_
+  L18_102 = L18_102.formvalue
+  L19_103 = "bandwidth1"
+  L18_102 = L18_102(L19_103)
+  L19_103 = _UPVALUE0_
+  L19_103 = L19_103.formvalue
+  L20_104 = "on2"
+  L19_103 = L19_103(L20_104)
+  L20_104 = _UPVALUE0_
+  L20_104 = L20_104.formvalue
+  L21_105 = "ssid2"
+  L20_104 = L20_104(L21_105)
+  L21_105 = _UPVALUE0_
+  L21_105 = L21_105.formvalue
+  L22_106 = "pwd2"
+  L21_105 = L21_105(L22_106)
+  L21_105 = L21_105 or ""
+  L22_106 = _UPVALUE0_
+  L22_106 = L22_106.formvalue
+  L23_107 = "encryption2"
+  L22_106 = L22_106(L23_107)
+  L23_107 = _UPVALUE0_
+  L23_107 = L23_107.formvalue
+  L24_108 = "channel2"
+  L23_107 = L23_107(L24_108)
+  L24_108 = _UPVALUE0_
+  L24_108 = L24_108.formvalue
+  L25_109 = "txpwr2"
+  L24_108 = L24_108(L25_109)
+  L25_109 = _UPVALUE0_
+  L25_109 = L25_109.formvalue
+  L26_110 = "hidden2"
+  L25_109 = L25_109(L26_110)
+  L26_110 = _UPVALUE0_
+  L26_110 = L26_110.formvalue
+  L27_111 = "bandwidth2"
+  L26_110 = L26_110(L27_111)
+  L27_111 = _UPVALUE0_
+  L27_111 = L27_111.formvalue
+  L28_112 = "on3"
+  L27_111 = L27_111(L28_112)
+  L28_112 = _UPVALUE0_
+  L28_112 = L28_112.formvalue
+  L29_113 = "ssid3"
+  L28_112 = L28_112(L29_113)
+  L29_113 = _UPVALUE0_
+  L29_113 = L29_113.formvalue
+  L30_114 = "pwd3"
+  L29_113 = L29_113(L30_114)
+  L30_114 = _UPVALUE0_
+  L30_114 = L30_114.formvalue
+  L31_115 = "encryption3"
+  L30_114 = L30_114(L31_115)
+  L31_115 = _UPVALUE0_
+  L31_115 = L31_115.formvalue
+  L32_116 = "txbf"
+  L31_115 = L31_115(L32_116)
+  L32_116 = _UPVALUE0_
+  L32_116 = L32_116.formvalue
+  L33_117 = "weakenable"
+  L32_116 = L32_116(L33_117)
+  L33_117 = _UPVALUE0_
+  L33_117 = L33_117.formvalue
+  L34_118 = "weakthreshold"
+  L33_117 = L33_117(L34_118)
+  L34_118 = _UPVALUE0_
+  L34_118 = L34_118.formvalue
+  L35_119 = "kickthreshold"
+  L34_118 = L34_118(L35_119)
+  L35_119 = _UPVALUE0_
+  L35_119 = L35_119.formvalue
+  L36_120 = "ax"
+  L35_119 = L35_119(L36_120)
+  L36_120 = nil
+  if L35_119 ~= nil then
+    L37_121 = type
+    L38_122 = L35_119
+    L37_121 = L37_121(L38_122)
+    if L37_121 == "table" then
+      L36_120 = L35_119[1]
+    else
+      L36_120 = L35_119
+    end
+  end
+  if L11_95 ~= nil then
+    L37_121 = tonumber
+    L38_122 = L11_95
+    L37_121 = L37_121(L38_122)
+    L11_95 = L37_121
+  end
+  if L19_103 ~= nil then
+    L37_121 = tonumber
+    L38_122 = L19_103
+    L37_121 = L37_121(L38_122)
+    L19_103 = L37_121
+  end
+  if L11_95 and L11_95 == 0 and L27_111 then
+    L37_121 = tonumber
+    L38_122 = L27_111
+    L37_121 = L37_121(L38_122)
+    if L37_121 == 1 then
+      L27_111 = nil
+    end
+  end
+  if L15_99 == "0" then
+    L18_102 = "0"
+  end
+  if L23_107 == "0" then
+    L26_110 = "0"
+  end
+  if L10_94 and L10_94 == 1 then
+    L19_103 = L11_95
+    L20_104 = L12_96
+    L21_105 = L13_97
+    L22_106 = L14_98
+    L25_109 = L17_101
+    L37_121 = L4_88.bsd
+    if L37_121 then
+      L37_121 = L4_88.bsd
+    elseif L37_121 == "0" then
+      L11_95 = 1
+      L19_103 = 1
+    end
+    L37_121 = L0_84.check
+    L38_122 = 0
+    L39_123 = L0_84.KEY_FUNC_WIFI_BSD
+    L40_124 = 1
+    L37_121(L38_122, L39_123, L40_124)
+  end
+  L37_121 = L4_88.bsd
+  if L37_121 then
+    L37_121 = L4_88.bsd
+    if L37_121 == "1" and L10_94 and L10_94 == 0 then
+      L11_95 = 1
+      L19_103 = 1
+      if L12_96 then
+        L37_121 = L12_96
+        L38_122 = "_5G"
+        L37_121 = L37_121 .. L38_122
+        L37_121 = #L37_121
+        if L37_121 <= 31 then
+          L37_121 = L12_96
+          L38_122 = "_5G"
+          L20_104 = L37_121 .. L38_122
+        end
+      else
+        L20_104 = L12_96
+      end
+      L21_105 = L13_97
+      L22_106 = L14_98
+      L25_109 = L17_101
+    end
+  end
+  L37_121, L38_122, L39_123 = nil, nil, nil
+  if L11_95 == 0 then
+    L40_124 = L2_86.setWifiBasicInfo
+    L40_124 = L40_124(1, nil, nil, nil, nil, nil, nil, L11_95, nil, L10_94, L31_115, nil, nil, nil, L36_120)
+    L39_123 = L40_124
+  elseif L12_96 and L11_95 then
+    L40_124 = L2_86.checkSSID
+    L40_124 = L40_124(L12_96, 31)
+    L37_121 = L40_124
+    if L37_121 == 0 then
+      L40_124 = L2_86.setWifiBasicInfo
+      L40_124 = L40_124(1, L12_96, L13_97, L14_98, L15_99, L16_100, L17_101, L11_95, L18_102, L10_94, L31_115, L32_116, L33_117, L34_118, L36_120)
+      L39_123 = L40_124
+    else
+      L6_90 = L37_121
+    end
+  end
+  if L39_123 == false then
+    L40_124 = {}
+    L37_121 = L2_86.checkWifiPasswd(L13_97, L14_98)
+    L40_124.code = L37_121
+    L40_124.msg = _UPVALUE1_.getErrorMessage(L37_121)
+    table.insert(L9_93, L40_124)
+  end
+  if L19_103 == 0 then
+    L40_124 = L2_86.setWifiBasicInfo
+    L40_124 = L40_124(2, nil, nil, nil, nil, nil, nil, L19_103, nil, L10_94, L31_115, nil, nil, nil, L36_120)
+    L39_123 = L40_124
+  elseif L20_104 and L19_103 then
+    L40_124 = L2_86.checkSSID
+    L40_124 = L40_124(L20_104, 31)
+    L38_122 = L40_124
+    if L38_122 == 0 then
+      L40_124 = L2_86.setWifiBasicInfo
+      L40_124 = L40_124(2, L20_104, L21_105, L22_106, L23_107, L24_108, L25_109, L19_103, L26_110, L10_94, L31_115, L32_116, L33_117, L34_118, L36_120)
+      L39_123 = L40_124
+    else
+      L6_90 = L38_122
+    end
+  end
+  if L31_115 and L20_104 and L19_103 then
+    L40_124 = L2_86.setWifiBasicInfo
+    L40_124 = L40_124(2, nil, nil, nil, nil, nil, nil, nil, nil, nil, L31_115, nil, nil, nil, L36_120)
+    L39_123 = L40_124
+  end
+  if L39_123 == false then
+    L40_124 = {}
+    L38_122 = L2_86.checkWifiPasswd(L21_105, L22_106)
+    L40_124.code = L38_122
+    L40_124.msg = _UPVALUE1_.getErrorMessage(L38_122)
+    table.insert(L9_93, L40_124)
+  end
+  if L37_121 and L38_122 then
+    L40_124 = L37_121 + L38_122
+    if L40_124 > 0 and L6_90 == 0 then
+      L6_90 = 1516
+    end
+  end
+  L40_124 = true
+  if L6_90 ~= 0 then
+    L5_89.msg = _UPVALUE1_.getErrorMessage(L6_90)
+    L5_89.errorDetails = L9_93
+  end
+  L5_89.code = L6_90
+  _UPVALUE0_.write_json(L5_89)
+  if L6_90 == 0 then
+    _UPVALUE0_.close()
+    if L40_124 then
+      L3_87.forkRestartWifiNotify()
+    end
+  end
+end
+function getLanInfo()
+  local L0_125, L1_126, L2_127, L3_128
+  L0_125 = require
+  L1_126 = "xiaoqiang.util.XQLanWanUtil"
+  L0_125 = L0_125(L1_126)
+  L1_126 = L0_125.getLanWanInfo
+  L2_127 = "lan"
+  L1_126 = L1_126(L2_127)
+  L2_127 = L0_125.getLanLinkList
+  L2_127 = L2_127()
+  L3_128 = {}
+  L3_128.code = 0
+  L3_128.info = L1_126
+  L3_128.linkList = L2_127
+  _UPVALUE0_.write_json(L3_128)
+end
+function getWanInfo()
+  local L0_129, L1_130, L2_131
+  L0_129 = require
+  L1_130 = "xiaoqiang.util.XQLanWanUtil"
+  L0_129 = L0_129(L1_130)
+  L1_130 = L0_129.getLanWanInfo
+  L2_131 = "wan"
+  L1_130 = L1_130(L2_131)
+  L2_131 = {}
+  L2_131.code = 0
+  L2_131.info = L1_130
+  _UPVALUE0_.write_json(L2_131)
+end
+function getWanStatistics()
+  local L0_132, L1_133, L2_134
+  L0_132 = require
+  L1_133 = "xiaoqiang.util.XQDeviceUtil"
+  L0_132 = L0_132(L1_133)
+  L1_133 = L0_132.getWanLanNetworkStatistics
+  L2_134 = "wan"
+  L1_133 = L1_133(L2_134)
+  L2_134 = {}
+  L2_134.code = 0
+  L2_134.statistics = L1_133
+  _UPVALUE0_.write_json(L2_134)
+end
+function getDevsStatistics()
+  local L0_135, L1_136, L2_137
+  L0_135 = require
+  L1_136 = "xiaoqiang.util.XQDeviceUtil"
+  L0_135 = L0_135(L1_136)
+  L1_136 = L0_135.getDevNetStatisticsList
+  L1_136 = L1_136()
+  L2_137 = {}
+  L2_137.code = 0
+  L2_137.statistics = L1_136
+  _UPVALUE0_.write_json(L2_137)
+end
+function getDevStatistics()
+  local L0_138, L1_139, L2_140, L3_141
+  L0_138 = require
+  L1_139 = "xiaoqiang.util.XQDeviceUtil"
+  L0_138 = L0_138(L1_139)
+  L1_139 = require
+  L2_140 = "xiaoqiang.common.XQFunction"
+  L1_139 = L1_139(L2_140)
+  L2_140 = {}
+  L3_141 = _UPVALUE0_
+  L3_141 = L3_141.formvalue
+  L3_141 = L3_141("mac")
+  L2_140.statistics, L2_140.code = L0_138.getDevNetStatisticsDict()[L1_139.macFormat(L3_141)], 0
+  _UPVALUE0_.write_json(L2_140)
+end
+function getAutoWanType()
+  local L0_142, L1_143, L2_144, L3_145, L4_146
+  L0_142 = require
+  L1_143 = "xiaoqiang.util.XQLanWanUtil"
+  L0_142 = L0_142(L1_143)
+  L1_143 = require
+  L2_144 = "xiaoqiang.XQPreference"
+  L1_143 = L1_143(L2_144)
+  L2_144 = require
+  L3_145 = "xiaoqiang.common.XQConfigs"
+  L2_144 = L2_144(L3_145)
+  L3_145 = {}
+  L4_146 = 0
+  if L0_142.getAutoWanType() == false then
+    L4_146 = 1524
+  else
+    L3_145.wanType = L0_142.getAutoWanType()
+    L3_145.pppoeName = L1_143.get(L2_144.PREF_PPPOE_NAME, "")
+    L3_145.pppoePassword = L1_143.get(L2_144.PREF_PPPOE_PASSWORD, "")
+  end
+  if L4_146 ~= 0 then
+    L3_145.msg = _UPVALUE0_.getErrorMessage(L4_146)
+  end
+  L3_145.code = L4_146
+  _UPVALUE1_.write_json(L3_145)
+end
+function getAutoWanLink()
+  local L0_147, L1_148, L2_149, L3_150, L4_151
+  L0_147 = require
+  L1_148 = "xiaoqiang.util.XQLanWanUtil"
+  L0_147 = L0_147(L1_148)
+  L1_148 = require
+  L2_149 = "luci.util"
+  L1_148 = L1_148(L2_149)
+  L2_149 = {}
+  L3_150 = 0
+  L4_151 = os
+  L4_151 = L4_151.execute
+  L4_151("/etc/init.d/autowan off")
+  L4_151 = os
+  L4_151 = L4_151.execute
+  L4_151("/etc/init.d/network reload_warm 2 eth0; sleep 1")
+  L4_151 = L1_148.exec
+  L4_151 = L4_151("ssdk_sh port linkstatus get 2 | grep ENABLE | wc -l")
+  logger.log(6, "==== getAutoWanLink() get eth0 link: " .. L1_148.trim(L4_151))
+  L2_149.code = L1_148.trim(L4_151)
+  _UPVALUE0_.write_json(L2_149)
+end
+function getLanDhcp()
+  local L0_152, L1_153
+  L0_152 = require
+  L1_153 = "xiaoqiang.util.XQLanWanUtil"
+  L0_152 = L0_152(L1_153)
+  L1_153 = {}
+  L1_153.info, L1_153.code = L0_152.getLanDHCPService(), 0
+  _UPVALUE0_.write_json(L1_153)
+end
+function getChannels()
+  local L0_154, L1_155, L2_156
+  L0_154 = require
+  L1_155 = "xiaoqiang.util.XQWifiUtil"
+  L0_154 = L0_154(L1_155)
+  L1_155 = tonumber
+  L2_156 = _UPVALUE0_
+  L2_156 = L2_156.formvalue
+  L2_156 = L2_156("wifiIndex")
+  L1_155 = L1_155(L2_156, L2_156("wifiIndex"))
+  L2_156 = {}
+  L2_156.code = 0
+  L2_156.list = L0_154.getDefaultWifiChannels(L1_155)
+  _UPVALUE0_.write_json(L2_156)
+end
+function wanDown()
+  local L0_157
+  L0_157 = luci
+  L0_157 = L0_157.sys
+  L0_157 = L0_157.call
+  L0_157("env -i /sbin/ifdown wan")
+  L0_157 = {}
+  L0_157.code = 0
+  _UPVALUE0_.write_json(L0_157)
+end
+function wanUp()
+  local L0_158
+  L0_158 = luci
+  L0_158 = L0_158.sys
+  L0_158 = L0_158.call
+  L0_158("env -i /sbin/ifup wan")
+  L0_158 = {}
+  L0_158.code = 0
+  _UPVALUE0_.write_json(L0_158)
+end
+function setLanIp()
+  local L0_159, L1_160, L2_161, L3_162, L4_163, L5_164, L6_165, L7_166, L8_167, L9_168, L10_169, L11_170, L12_171, L13_172, L14_173
+  L0_159 = require
+  L1_160 = "xiaoqiang.util.XQLanWanUtil"
+  L0_159 = L0_159(L1_160)
+  L1_160 = require
+  L2_161 = "xiaoqiang.common.XQFunction"
+  L1_160 = L1_160(L2_161)
+  L2_161 = require
+  L3_162 = "luci.cbi.datatypes"
+  L2_161 = L2_161(L3_162)
+  L3_162 = require
+  L4_163 = "xiaoqiang.util.XQSysUtil"
+  L3_162 = L3_162(L4_163)
+  L4_163 = require
+  L5_164 = "luci.ip"
+  L4_163 = L4_163(L5_164)
+  L5_164 = {}
+  L6_165 = 0
+  L7_166 = _UPVALUE0_
+  L7_166 = L7_166.formvalue
+  L8_167 = "ip"
+  L7_166 = L7_166(L8_167)
+  L8_167 = "255.255.255.0"
+  L9_168 = L0_159.getLanWanIp
+  L10_169 = "wan"
+  L9_168 = L9_168(L10_169)
+  L9_168 = L9_168[1]
+  L10_169 = L0_159.getLanWanIp
+  L11_170 = "lan"
+  L10_169 = L10_169(L11_170)
+  L10_169 = L10_169[1]
+  L11_170 = L2_161.ipaddr
+  L12_171 = L7_166
+  L11_170 = L11_170(L12_171)
+  if not L11_170 then
+    L6_165 = 1525
+  elseif L9_168 then
+    L11_170 = L4_163.iptonl
+    L12_171 = L7_166
+    L11_170 = L11_170(L12_171)
+    L12_171 = L4_163.iptonl
+    L13_172 = L8_167
+    L12_171 = L12_171(L13_172)
+    L13_172 = L4_163.iptonl
+    L14_173 = L9_168.ip
+    L13_172 = L13_172(L14_173)
+    L14_173 = L4_163.iptonl
+    L14_173 = L14_173(L9_168.mask)
+    if bit.band(L11_170, L12_171) == bit.band(L13_172, L12_171) or bit.band(L11_170, L14_173) == bit.band(L13_172, L14_173) then
+      L6_165 = 1526
+    else
+      L6_165 = L0_159.checkLanIp(L7_166)
+    end
+  end
+  if L6_165 == 0 then
+    L11_170 = L0_159.setLanIp
+    L12_171 = L7_166
+    L13_172 = L8_167
+    L11_170(L12_171, L13_172)
+    L5_164.ip = L7_166
+  else
+    L11_170 = _UPVALUE1_
+    L11_170 = L11_170.getErrorMessage
+    L12_171 = L6_165
+    L11_170 = L11_170(L12_171)
+    L5_164.msg = L11_170
+  end
+  L5_164.code = L6_165
+  L11_170 = _UPVALUE0_
+  L11_170 = L11_170.write_json
+  L12_171 = L5_164
+  L11_170(L12_171)
+  if L6_165 == 0 then
+    L11_170 = _UPVALUE0_
+    L11_170 = L11_170.close
+    L11_170()
+    L11_170 = L3_162.getHardware
+    L11_170 = L11_170()
+    if L11_170 then
+      if L11_170 == "D01" then
+        L12_171 = "sh /sbin/whc_to_re_common_api.sh gw_update "
+        L13_172 = L7_166
+        L14_173 = "; sleep 3; reboot"
+        L12_171 = L12_171 .. L13_172 .. L14_173
+        L13_172 = logger
+        L13_172 = L13_172.log
+        L14_173 = 4
+        L13_172(L14_173, string.format("@ activate cmd=%s!", L12_171))
+        L13_172 = L1_160.forkExec
+        L14_173 = L12_171
+        L13_172(L14_173)
+      else
+        L12_171 = L1_160.forkReboot
+        L12_171()
+      end
+    end
+  end
+end
+function setWan()
+  local L0_174, L1_175, L2_176, L3_177, L4_178, L5_179, L6_180, L7_181, L8_182, L9_183, L10_184, L11_185, L12_186, L13_187, L14_188, L15_189, L16_190, L17_191, L18_192, L19_193, L20_194, L21_195, L22_196, L23_197, L24_198
+  L0_174 = require
+  L1_175 = "xiaoqiang.XQLog"
+  L0_174 = L0_174(L1_175)
+  L1_175 = require
+  L2_176 = "xiaoqiang.util.XQLanWanUtil"
+  L1_175 = L1_175(L2_176)
+  L2_176 = require
+  L3_177 = "xiaoqiang.common.XQFunction"
+  L2_176 = L2_176(L3_177)
+  L3_177 = 0
+  L4_178 = {}
+  L5_179 = _UPVALUE0_
+  L5_179 = L5_179.formvalue
+  L6_180 = "client"
+  L5_179 = L5_179(L6_180)
+  L6_180 = _UPVALUE0_
+  L6_180 = L6_180.formvalue
+  L7_181 = "wanType"
+  L6_180 = L6_180(L7_181)
+  L7_181 = _UPVALUE0_
+  L7_181 = L7_181.formvalue
+  L8_182 = "pppoeName"
+  L7_181 = L7_181(L8_182)
+  L8_182 = _UPVALUE0_
+  L8_182 = L8_182.formvalue
+  L9_183 = "pppoePwd"
+  L8_182 = L8_182(L9_183)
+  L9_183 = _UPVALUE0_
+  L9_183 = L9_183.formvalue
+  L10_184 = "staticIp"
+  L9_183 = L9_183(L10_184)
+  L10_184 = _UPVALUE0_
+  L10_184 = L10_184.formvalue
+  L11_185 = "staticMask"
+  L10_184 = L10_184(L11_185)
+  L11_185 = _UPVALUE0_
+  L11_185 = L11_185.formvalue
+  L12_186 = "staticGateway"
+  L11_185 = L11_185(L12_186)
+  L12_186 = _UPVALUE0_
+  L12_186 = L12_186.formvalue
+  L13_187 = "dns1"
+  L12_186 = L12_186(L13_187)
+  L13_187 = _UPVALUE0_
+  L13_187 = L13_187.formvalue
+  L14_188 = "dns2"
+  L13_187 = L13_187(L14_188)
+  L14_188 = _UPVALUE0_
+  L14_188 = L14_188.formvalue
+  L15_189 = "special"
+  L14_188 = L14_188(L15_189)
+  L14_188 = L14_188 or 0
+  L15_189 = _UPVALUE0_
+  L15_189 = L15_189.formvalue
+  L16_190 = "peerDns"
+  L15_189 = L15_189(L16_190)
+  L16_190 = tonumber
+  L17_191 = _UPVALUE0_
+  L17_191 = L17_191.formvalue
+  L18_192 = "mtu"
+  L24_198 = L17_191(L18_192)
+  L16_190 = L16_190(L17_191, L18_192, L19_193, L20_194, L21_195, L22_196, L23_197, L24_198, L17_191(L18_192))
+  L17_191 = _UPVALUE0_
+  L17_191 = L17_191.formvalue
+  L18_192 = "service"
+  L17_191 = L17_191(L18_192)
+  L18_192 = L2_176.isStrNil
+  L19_193 = L6_180
+  L18_192 = L18_192(L19_193)
+  if L18_192 then
+    L18_192 = L2_176.isStrNil
+    L19_193 = L7_181
+    L18_192 = L18_192(L19_193)
+    if L18_192 then
+      L18_192 = L2_176.isStrNil
+      L19_193 = L8_182
+      L18_192 = L18_192(L19_193)
+      if L18_192 then
+        L18_192 = L2_176.isStrNil
+        L19_193 = L9_183
+        L18_192 = L18_192(L19_193)
+        if L18_192 then
+          L18_192 = L2_176.isStrNil
+          L19_193 = L10_184
+          L18_192 = L18_192(L19_193)
+          if L18_192 then
+            L18_192 = L2_176.isStrNil
+            L19_193 = L11_185
+            L18_192 = L18_192(L19_193)
+            if L18_192 then
+              L18_192 = L2_176.isStrNil
+              L19_193 = L12_186
+              L18_192 = L18_192(L19_193)
+              if L18_192 then
+                L18_192 = L2_176.isStrNil
+                L19_193 = L13_187
+                L18_192 = L18_192(L19_193)
+                if L18_192 then
+                  L18_192 = L2_176.isStrNil
+                  L19_193 = L14_188
+                  L18_192 = L18_192(L19_193)
+                  if L18_192 then
+                    L18_192 = L2_176.isStrNil
+                    L19_193 = L15_189
+                    L18_192 = L18_192(L19_193)
+                    if L18_192 then
+                      L3_177 = 1502
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  elseif L6_180 == "pppoe" then
+    if L5_179 == "web" then
+      L18_192 = L0_174.check
+      L19_193 = 0
+      L20_194 = L0_174.KEY_VALUE_NETWORK_PPPOE
+      L21_195 = 1
+      L18_192(L19_193, L20_194, L21_195)
+    end
+    L18_192 = L2_176.isStrNil
+    L19_193 = L7_181
+    L18_192 = L18_192(L19_193)
+    if not L18_192 then
+      L18_192 = L2_176.isStrNil
+      L19_193 = L8_182
+      L18_192 = L18_192(L19_193)
+    else
+      if L18_192 then
+        L3_177 = 1528
+    end
+    elseif L16_190 then
+      L18_192 = L1_175.checkMTU
+      L19_193 = L16_190
+      L18_192 = L18_192(L19_193)
+      if not L18_192 then
+        L3_177 = 1590
+      end
+    else
+      L18_192 = L1_175.setWanPPPoE
+      L19_193 = L7_181
+      L20_194 = L8_182
+      L21_195 = L12_186
+      L22_196 = L13_187
+      L23_197 = L15_189
+      L24_198 = L16_190
+      L18_192 = L18_192(L19_193, L20_194, L21_195, L22_196, L23_197, L24_198, L14_188, L17_191)
+      if not L18_192 then
+        L3_177 = 1529
+      end
+    end
+  elseif L6_180 == "dhcp" then
+    if L5_179 == "web" then
+      L18_192 = L0_174.check
+      L19_193 = 0
+      L20_194 = L0_174.KEY_VALUE_NETWORK_DHCP
+      L21_195 = 1
+      L18_192(L19_193, L20_194, L21_195)
+    end
+    L18_192 = L1_175.setWanStaticOrDHCP
+    L19_193 = L6_180
+    L20_194, L21_195, L22_196 = nil, nil, nil
+    L23_197 = L12_186
+    L24_198 = L13_187
+    L18_192 = L18_192(L19_193, L20_194, L21_195, L22_196, L23_197, L24_198, L15_189, L16_190)
+    if not L18_192 then
+      L3_177 = 1529
+    end
+  else
+    if L6_180 == "static" then
+      if L5_179 == "web" then
+        L18_192 = L0_174.check
+        L19_193 = 0
+        L20_194 = L0_174.KEY_VALUE_NETWORK_STATIC
+        L21_195 = 1
+        L18_192(L19_193, L20_194, L21_195)
+      end
+      L18_192 = require
+      L19_193 = "luci.cbi.datatypes"
+      L18_192 = L18_192(L19_193)
+      L19_193 = require
+      L20_194 = "luci.ip"
+      L19_193 = L19_193(L20_194)
+      L20_194 = L18_192.ipaddr
+      L21_195 = L9_183
+      L20_194 = L20_194(L21_195)
+      if not L20_194 then
+        L3_177 = 1530
+      else
+        L20_194 = L2_176.checkMask
+        L21_195 = L10_184
+        L20_194 = L20_194(L21_195)
+        if not L20_194 then
+          L3_177 = 1531
+        else
+          L20_194 = L18_192.ipaddr
+          L21_195 = L11_185
+          L20_194 = L20_194(L21_195)
+          if not L20_194 then
+            L3_177 = 1532
+          else
+            L20_194 = L1_175.getLanWanIp
+            L21_195 = "lan"
+            L20_194 = L20_194(L21_195)
+            L20_194 = L20_194[1]
+            L21_195 = L19_193.iptonl
+            L22_196 = L20_194.ip
+            L21_195 = L21_195(L22_196)
+            L22_196 = L19_193.iptonl
+            L23_197 = L20_194.mask
+            L22_196 = L22_196(L23_197)
+            L23_197 = L19_193.iptonl
+            L24_198 = L9_183
+            L23_197 = L23_197(L24_198)
+            L24_198 = L19_193.iptonl
+            L24_198 = L24_198(L10_184)
+            if bit.band(L21_195, L22_196) == bit.band(L23_197, L22_196) or bit.band(L21_195, L24_198) == bit.band(L23_197, L24_198) then
+              L3_177 = 1526
+            else
+              L3_177 = L1_175.checkWanIp(L9_183)
+              if L3_177 == 0 and not L1_175.setWanStaticOrDHCP(L6_180, L9_183, L10_184, L11_185, L12_186, L13_187, L15_189, L16_190) then
+                L3_177 = 1529
+              end
+            end
+          end
+        end
+      end
+    else
+    end
+  end
+  L4_178.code = L3_177
+  if L3_177 ~= 0 then
+    L18_192 = _UPVALUE1_
+    L18_192 = L18_192.getErrorMessage
+    L19_193 = L3_177
+    L18_192 = L18_192(L19_193)
+    L4_178.msg = L18_192
+  end
+  L18_192 = _UPVALUE0_
+  L18_192 = L18_192.write_json
+  L19_193 = L4_178
+  L18_192(L19_193)
+end
+function setWan6()
+  local L0_199, L1_200, L2_201, L3_202, L4_203, L5_204, L6_205, L7_206, L8_207, L9_208, L10_209, L11_210, L12_211, L13_212, L14_213, L15_214, L16_215, L17_216, L18_217, L19_218
+  L0_199 = require
+  L1_200 = "xiaoqiang.XQLog"
+  L0_199 = L0_199(L1_200)
+  L1_200 = require
+  L2_201 = "xiaoqiang.util.XQLanWanUtil"
+  L1_200 = L1_200(L2_201)
+  L2_201 = require
+  L3_202 = "xiaoqiang.common.XQFunction"
+  L2_201 = L2_201(L3_202)
+  L3_202 = require
+  L4_203 = "xiaoqiang.util.XQSecureUtil"
+  L3_202 = L3_202(L4_203)
+  L4_203 = require
+  L5_204 = "luci.util"
+  L4_203 = L4_203(L5_204)
+  L5_204 = require
+  L6_205 = "luci.model.uci"
+  L5_204 = L5_204(L6_205)
+  L5_204 = L5_204.cursor
+  L5_204 = L5_204()
+  L6_205 = 0
+  L7_206 = {}
+  L8_207 = _UPVALUE0_
+  L8_207 = L8_207.formvalue
+  L9_208 = "wanType"
+  L8_207 = L8_207(L9_208)
+  L9_208 = require
+  L10_209 = "luci.model.network"
+  L9_208 = L9_208(L10_209)
+  L9_208 = L9_208.init
+  L9_208 = L9_208()
+  L11_210 = L9_208
+  L10_209 = L9_208.get_network
+  L12_211 = "wan"
+  L10_209 = L10_209(L11_210, L12_211)
+  L12_211 = L10_209
+  L11_210 = L10_209.proto
+  L11_210 = L11_210(L12_211)
+  L12_211 = L3_202.parseCmdline
+  L13_212 = _UPVALUE0_
+  L13_212 = L13_212.formvalue
+  L14_213 = "ipaddr"
+  L19_218 = L13_212(L14_213)
+  L12_211 = L12_211(L13_212, L14_213, L15_214, L16_215, L17_216, L18_217, L19_218, L13_212(L14_213))
+  L13_212 = L3_202.parseCmdline
+  L14_213 = _UPVALUE0_
+  L14_213 = L14_213.formvalue
+  L15_214 = "gw"
+  L19_218 = L14_213(L15_214)
+  L13_212 = L13_212(L14_213, L15_214, L16_215, L17_216, L18_217, L19_218, L14_213(L15_214))
+  L14_213 = L3_202.parseCmdline
+  L15_214 = _UPVALUE0_
+  L15_214 = L15_214.formvalue
+  L16_215 = "prefix"
+  L19_218 = L15_214(L16_215)
+  L14_213 = L14_213(L15_214, L16_215, L17_216, L18_217, L19_218, L15_214(L16_215))
+  L15_214 = L3_202.parseCmdline
+  L16_215 = _UPVALUE0_
+  L16_215 = L16_215.formvalue
+  L17_216 = "assign"
+  L19_218 = L16_215(L17_216)
+  L15_214 = L15_214(L16_215, L17_216, L18_217, L19_218, L16_215(L17_216))
+  L16_215 = L3_202.parseCmdline
+  L17_216 = _UPVALUE0_
+  L17_216 = L17_216.formvalue
+  L18_217 = "dns1"
+  L19_218 = L17_216(L18_217)
+  L16_215 = L16_215(L17_216, L18_217, L19_218, L17_216(L18_217))
+  L17_216 = L3_202.parseCmdline
+  L18_217 = _UPVALUE0_
+  L18_217 = L18_217.formvalue
+  L19_218 = "dns2"
+  L19_218 = L18_217(L19_218)
+  L17_216 = L17_216(L18_217, L19_218, L18_217(L19_218))
+  L18_217 = L2_201.isStrNil
+  L19_218 = L8_207
+  L18_217 = L18_217(L19_218)
+  if L18_217 then
+    L18_217 = L2_201.isStrNil
+    L19_218 = L12_211
+    L18_217 = L18_217(L19_218)
+    if L18_217 then
+      L18_217 = L2_201.isStrNil
+      L19_218 = L13_212
+      L18_217 = L18_217(L19_218)
+      if L18_217 then
+        L18_217 = L2_201.isStrNil
+        L19_218 = L14_213
+        L18_217 = L18_217(L19_218)
+        if L18_217 then
+          L6_205 = 1502
+        end
+      end
+    end
+  else
+    if L8_207 == "native" then
+      L18_217 = L2_201.isStrNil
+      L19_218 = L16_215
+      L18_217 = L18_217(L19_218)
+      if L18_217 then
+        L18_217 = L2_201.isStrNil
+        L19_218 = L17_216
+        L18_217 = L18_217(L19_218)
+        if L18_217 then
+          L18_217 = L2_201.forkExec
+          L19_218 = "sleep 2; /etc/init.d/ipv6 native"
+          L18_217(L19_218)
+        end
+      else
+        L18_217 = L2_201.isStrNil
+        L19_218 = L16_215
+        L18_217 = L18_217(L19_218)
+        if not L18_217 then
+          L18_217 = L2_201.isStrNil
+          L19_218 = L17_216
+          L18_217 = L18_217(L19_218)
+          if L18_217 then
+            L18_217 = L2_201.forkExec
+            L19_218 = "sleep 2; /etc/init.d/ipv6 native "
+            L19_218 = L19_218 .. L16_215
+            L18_217(L19_218)
+          end
+        else
+          L18_217 = L2_201.isStrNil
+          L19_218 = L16_215
+          L18_217 = L18_217(L19_218)
+          if L18_217 then
+            L18_217 = L2_201.isStrNil
+            L19_218 = L17_216
+            L18_217 = L18_217(L19_218)
+            if not L18_217 then
+              L18_217 = L2_201.forkExec
+              L19_218 = "sleep 2; /etc/init.d/ipv6 native "
+              L19_218 = L19_218 .. L17_216
+              L18_217(L19_218)
+            end
+          else
+            L18_217 = L2_201.forkExec
+            L19_218 = "sleep 2; /etc/init.d/ipv6 native "
+            L19_218 = L19_218 .. L16_215 .. "," .. L17_216
+            L18_217(L19_218)
+          end
+        end
+      end
+    elseif L8_207 == "nat" then
+      L18_217 = L2_201.isStrNil
+      L19_218 = L16_215
+      L18_217 = L18_217(L19_218)
+      if L18_217 then
+        L18_217 = L2_201.isStrNil
+        L19_218 = L17_216
+        L18_217 = L18_217(L19_218)
+        if L18_217 then
+          L18_217 = L2_201.forkExec
+          L19_218 = "sleep 2; /etc/init.d/ipv6 nat"
+          L18_217(L19_218)
+        end
+      else
+        L18_217 = L2_201.isStrNil
+        L19_218 = L16_215
+        L18_217 = L18_217(L19_218)
+        if not L18_217 then
+          L18_217 = L2_201.isStrNil
+          L19_218 = L17_216
+          L18_217 = L18_217(L19_218)
+          if L18_217 then
+            L18_217 = L2_201.forkExec
+            L19_218 = "sleep 2; /etc/init.d/ipv6 nat "
+            L19_218 = L19_218 .. L16_215
+            L18_217(L19_218)
+          end
+        else
+          L18_217 = L2_201.isStrNil
+          L19_218 = L16_215
+          L18_217 = L18_217(L19_218)
+          if L18_217 then
+            L18_217 = L2_201.isStrNil
+            L19_218 = L17_216
+            L18_217 = L18_217(L19_218)
+            if not L18_217 then
+              L18_217 = L2_201.forkExec
+              L19_218 = "sleep 2; /etc/init.d/ipv6 nat "
+              L19_218 = L19_218 .. L17_216
+              L18_217(L19_218)
+            end
+          else
+            L18_217 = L2_201.forkExec
+            L19_218 = "sleep 2; /etc/init.d/ipv6 nat "
+            L19_218 = L19_218 .. L16_215 .. "," .. L17_216
+            L18_217(L19_218)
+          end
+        end
+      end
+    elseif L8_207 == "static" then
+      L18_217 = L2_201.isStrNil
+      L19_218 = L15_214
+      L18_217 = L18_217(L19_218)
+      if L18_217 then
+        L15_214 = "64"
+      end
+      L18_217 = nil
+      L19_218 = L14_213
+      L19_218 = L19_218 .. "1/" .. L15_214
+      if L2_201.isStrNil(L16_215) and L2_201.isStrNil(L17_216) then
+        L18_217 = string.format("sleep 2; /etc/init.d/ipv6 static %s %s %s %s", L12_211, L13_212, L19_218, L15_214)
+      elseif not L2_201.isStrNil(L16_215) and L2_201.isStrNil(L17_216) then
+        L18_217 = string.format("sleep 2; /etc/init.d/ipv6 static %s %s %s %s %s", L12_211, L13_212, L19_218, L15_214, L16_215)
+      elseif L2_201.isStrNil(L16_215) and not L2_201.isStrNil(L17_216) then
+        L18_217 = string.format("sleep 2; /etc/init.d/ipv6 static %s %s %s %s %s", L12_211, L13_212, L19_218, L15_214, L17_216)
+      else
+        L18_217 = string.format("sleep 2; /etc/init.d/ipv6 static %s %s %s %s %s,%s", L12_211, L13_212, L19_218, L15_214, L16_215, L17_216)
+      end
+      L2_201.forkExec(L18_217)
+    elseif L8_207 == "off" then
+      L18_217 = L2_201.forkExec
+      L19_218 = "sleep 2; /etc/init.d/ipv6 off"
+      L18_217(L19_218)
+    else
+      L6_205 = 1606
+    end
+    if L8_207 ~= "off" then
+      L19_218 = L5_204
+      L18_217 = L5_204.set
+      L18_217(L19_218, "ipv6", "settings", "ipv6_show", "1")
+      L19_218 = L5_204
+      L18_217 = L5_204.commit
+      L18_217(L19_218, "ipv6")
+      L19_218 = L5_204
+      L18_217 = L5_204.delete
+      L18_217(L19_218, "network", "vpn6")
+      L19_218 = L5_204
+      L18_217 = L5_204.commit
+      L18_217(L19_218, "network")
+    end
+  end
+  L7_206.code = L6_205
+  if L6_205 ~= 0 then
+    L18_217 = _UPVALUE1_
+    L18_217 = L18_217.getErrorMessage
+    L19_218 = L6_205
+    L18_217 = L18_217(L19_218)
+    L7_206.msg = L18_217
+  end
+  L18_217 = _UPVALUE0_
+  L18_217 = L18_217.write_json
+  L19_218 = L7_206
+  L18_217(L19_218)
+end
+function ipv6Status()
+  local L0_219, L1_220, L2_221
+  L0_219 = require
+  L1_220 = "xiaoqiang.util.XQLanWanUtil"
+  L0_219 = L0_219(L1_220)
+  L1_220 = L0_219.getWan6Info
+  L1_220 = L1_220()
+  L2_221 = {}
+  L2_221.code = 0
+  L2_221.info = L1_220
+  _UPVALUE0_.write_json(L2_221)
+end
+function setWanNew()
+  local L0_222, L1_223, L2_224, L3_225, L4_226, L5_227, L6_228, L7_229, L8_230, L9_231, L10_232, L11_233, L12_234, L13_235, L14_236, L15_237, L16_238, L17_239
+  L0_222 = require
+  L1_223 = "xiaoqiang.XQLog"
+  L0_222 = L0_222(L1_223)
+  L1_223 = require
+  L2_224 = "xiaoqiang.util.XQLanWanUtil"
+  L1_223 = L1_223(L2_224)
+  L2_224 = require
+  L3_225 = "xiaoqiang.common.XQFunction"
+  L2_224 = L2_224(L3_225)
+  L3_225 = 0
+  L4_226 = {}
+  L5_227 = _UPVALUE0_
+  L5_227 = L5_227.formvalue
+  L6_228 = "client"
+  L5_227 = L5_227(L6_228)
+  L6_228 = _UPVALUE0_
+  L6_228 = L6_228.formvalue
+  L7_229 = "wanType"
+  L6_228 = L6_228(L7_229)
+  L7_229 = _UPVALUE0_
+  L7_229 = L7_229.formvalue
+  L8_230 = "pppoeName"
+  L7_229 = L7_229(L8_230)
+  L8_230 = _UPVALUE0_
+  L8_230 = L8_230.formvalue
+  L9_231 = "pppoePwd"
+  L8_230 = L8_230(L9_231)
+  L9_231 = _UPVALUE0_
+  L9_231 = L9_231.formvalue
+  L10_232 = "staticIp"
+  L9_231 = L9_231(L10_232)
+  L10_232 = _UPVALUE0_
+  L10_232 = L10_232.formvalue
+  L11_233 = "staticMask"
+  L10_232 = L10_232(L11_233)
+  L11_233 = _UPVALUE0_
+  L11_233 = L11_233.formvalue
+  L12_234 = "staticGateway"
+  L11_233 = L11_233(L12_234)
+  L12_234 = _UPVALUE0_
+  L12_234 = L12_234.formvalue
+  L13_235 = "dns1"
+  L12_234 = L12_234(L13_235)
+  L13_235 = _UPVALUE0_
+  L13_235 = L13_235.formvalue
+  L14_236 = "dns2"
+  L13_235 = L13_235(L14_236)
+  L14_236 = _UPVALUE0_
+  L14_236 = L14_236.formvalue
+  L15_237 = "special"
+  L14_236 = L14_236(L15_237)
+  L14_236 = L14_236 or 0
+  L15_237 = _UPVALUE0_
+  L15_237 = L15_237.formvalue
+  L16_238 = "peerDns"
+  L15_237 = L15_237(L16_238)
+  L16_238 = tonumber
+  L17_239 = _UPVALUE0_
+  L17_239 = L17_239.formvalue
+  L17_239 = L17_239("mtu")
+  L16_238 = L16_238(L17_239, L17_239("mtu"))
+  L17_239 = _UPVALUE0_
+  L17_239 = L17_239.formvalue
+  L17_239 = L17_239("service")
+  if L2_224.isStrNil(L6_228) and L2_224.isStrNil(L7_229) and L2_224.isStrNil(L8_230) and L2_224.isStrNil(L9_231) and L2_224.isStrNil(L10_232) and L2_224.isStrNil(L11_233) and L2_224.isStrNil(L12_234) and L2_224.isStrNil(L13_235) and L2_224.isStrNil(L14_236) and L2_224.isStrNil(L15_237) then
+    L3_225 = 1502
+  elseif L6_228 == "pppoe" then
+    if L5_227 == "web" then
+      L0_222.check(0, L0_222.KEY_VALUE_NETWORK_PPPOE, 1)
+    end
+    if L2_224.isStrNil(L7_229) or L2_224.isStrNil(L8_230) then
+      L3_225 = 1528
+    elseif L16_238 and not L1_223.checkMTU(L16_238) then
+      L3_225 = 1590
+    elseif not L1_223.setWanPPPoE(L7_229, L8_230, L12_234, L13_235, L15_237, L16_238, L14_236, L17_239) then
+      L3_225 = 1529
+    end
+  elseif L6_228 == "dhcp" then
+    if L5_227 == "web" then
+      L0_222.check(0, L0_222.KEY_VALUE_NETWORK_DHCP, 1)
+    end
+    if not L1_223.setWanStaticOrDHCP(L6_228, nil, nil, nil, L12_234, L13_235, L15_237, L16_238) then
+      L3_225 = 1529
+    end
+  else
+    if L6_228 == "static" then
+      if L5_227 == "web" then
+        L0_222.check(0, L0_222.KEY_VALUE_NETWORK_STATIC, 1)
+      end
+      if not require("luci.cbi.datatypes").ipaddr(L9_231) then
+        L3_225 = 1530
+      elseif not L2_224.checkMask(L10_232) then
+        L3_225 = 1531
+      elseif not require("luci.cbi.datatypes").ipaddr(L11_233) then
+        L3_225 = 1532
+      else
+        L3_225 = L1_223.checkWanIp(L9_231)
+        if L3_225 == 0 and not L1_223.setWanStaticOrDHCP(L6_228, L9_231, L10_232, L11_233, L12_234, L13_235, L15_237, L16_238) then
+          L3_225 = 1529
+        end
+      end
+    else
+    end
+  end
+  L4_226.code = L3_225
+  if L3_225 ~= 0 then
+    L4_226.msg = _UPVALUE1_.getErrorMessage(L3_225)
+  end
+  _UPVALUE0_.write_json(L4_226)
+end
+function setLanDhcp()
+  local L0_240, L1_241, L2_242, L3_243, L4_244, L5_245, L6_246, L7_247, L8_248, L9_249, L10_250
+  L0_240 = require
+  L1_241 = "xiaoqiang.util.XQLanWanUtil"
+  L0_240 = L0_240(L1_241)
+  L1_241 = require
+  L2_242 = "luci.cbi.datatypes"
+  L1_241 = L1_241(L2_242)
+  L2_242 = require
+  L3_243 = "xiaoqiang.common.XQFunction"
+  L2_242 = L2_242(L3_243)
+  L3_243 = 0
+  L4_244 = {}
+  L5_245 = tonumber
+  L6_246 = _UPVALUE0_
+  L6_246 = L6_246.formvalue
+  L7_247 = "start"
+  L10_250 = L6_246(L7_247)
+  L5_245 = L5_245(L6_246, L7_247, L8_248, L9_249, L10_250, L6_246(L7_247))
+  L6_246 = tonumber
+  L7_247 = _UPVALUE0_
+  L7_247 = L7_247.formvalue
+  L8_248 = "end"
+  L10_250 = L7_247(L8_248)
+  L6_246 = L6_246(L7_247, L8_248, L9_249, L10_250, L7_247(L8_248))
+  L7_247 = _UPVALUE0_
+  L7_247 = L7_247.formvalue
+  L8_248 = "leasetime"
+  L7_247 = L7_247(L8_248)
+  L8_248 = _UPVALUE0_
+  L8_248 = L8_248.formvalue
+  L9_249 = "ignore"
+  L8_248 = L8_248(L9_249)
+  L9_249 = tonumber
+  L10_250 = L8_248
+  L9_249 = L9_249(L10_250)
+  if L9_249 == 1 then
+    L9_249 = L0_240.setLanDHCPService
+    L10_250 = nil
+    L9_249(L10_250, nil, nil, L8_248)
+  else
+    L9_249, L10_250 = nil, nil
+    if L7_247 then
+      L9_249, L10_250 = L7_247:match("^(%d+)(%S+)")
+    end
+    L9_249 = tonumber(L9_249)
+    if not L1_241.uinteger(L5_245) or not L1_241.integer(L6_246) or L9_249 == nil or L10_250 ~= "h" and L10_250 ~= "m" then
+      L3_243 = 1537
+    elseif L5_245 > L6_246 then
+      L3_243 = 1534
+    elseif L5_245 <= 1 or L6_246 > 254 or L6_246 <= 1 or L6_246 > 254 then
+      L3_243 = 1535
+    elseif L10_250 == "h" and (L9_249 < 1 or L9_249 > 48) or L10_250 == "m" and (L9_249 < 2 or L9_249 > 2880) then
+      L3_243 = 1536
+    else
+      L0_240.setLanDHCPService(L5_245, L6_246, L7_247, L8_248)
+    end
+  end
+  L4_244.code = L3_243
+  if L3_243 ~= 0 then
+    L9_249 = _UPVALUE1_
+    L9_249 = L9_249.getErrorMessage
+    L10_250 = L3_243
+    L9_249 = L9_249(L10_250)
+    L4_244.msg = L9_249
+  end
+  L9_249 = _UPVALUE0_
+  L9_249 = L9_249.write_json
+  L10_250 = L4_244
+  L9_249(L10_250)
+end
+function setWanMac()
+  local L0_251, L1_252, L2_253, L3_254, L4_255, L5_256
+  L0_251 = require
+  L1_252 = "xiaoqiang.XQLog"
+  L0_251 = L0_251(L1_252)
+  L1_252 = require
+  L2_253 = "xiaoqiang.util.XQLanWanUtil"
+  L1_252 = L1_252(L2_253)
+  L2_253 = require
+  L3_254 = "luci.cbi.datatypes"
+  L2_253 = L2_253(L3_254)
+  L3_254 = 0
+  L4_255 = {}
+  L5_256 = _UPVALUE0_
+  L5_256 = L5_256.formvalue
+  L5_256 = L5_256("mac")
+  if L5_256 and L2_253.macaddr(L5_256) then
+    if L5_256:match("^%d[1,3,5,7,9,B,D,E]") then
+      L3_254 = 1637
+    else
+      L0_251.check(0, L0_251.KEY_FUNC_MACCLONE, 1)
+      if not L1_252.setWanMac(L5_256) then
+        L3_254 = 1537
+      end
+    end
+  else
+    L3_254 = 1523
+  end
+  L4_255.code = L3_254
+  if L3_254 ~= 0 then
+    L4_255.msg = _UPVALUE1_.getErrorMessage(L3_254)
+  end
+  _UPVALUE0_.write_json(L4_255)
+end
+function getWifiMacfilterInfo()
+  local L0_257, L1_258, L2_259, L3_260, L4_261, L5_262, L6_263, L7_264, L8_265
+  L0_257 = require
+  L1_258 = "luci.util"
+  L0_257 = L0_257(L1_258)
+  L1_258 = require
+  L2_259 = "xiaoqiang.util.XQWifiUtil"
+  L1_258 = L1_258(L2_259)
+  L2_259 = require
+  L3_260 = "xiaoqiang.util.XQDeviceUtil"
+  L2_259 = L2_259(L3_260)
+  L3_260 = tonumber
+  L4_261 = _UPVALUE0_
+  L4_261 = L4_261.formvalue
+  L5_262 = "model"
+  L8_265 = L4_261(L5_262)
+  L3_260 = L3_260(L4_261, L5_262, L6_263, L7_264, L8_265, L4_261(L5_262))
+  L4_261 = 0
+  L5_262 = {}
+  L6_263 = L1_258.getWiFiMacfilterInfo
+  L7_264 = L3_260
+  L6_263 = L6_263(L7_264)
+  L7_264 = L2_259.getDeviceList
+  L8_265 = true
+  L7_264 = L7_264(L8_265, false)
+  L8_265 = L2_259.getDeviceList
+  L8_265 = L8_265(false, false)
+  L5_262.enable = L6_263.enable
+  L5_262.model = L6_263.model
+  if L6_263.maclist then
+    for _FORV_12_, _FORV_13_ in ipairs(L7_264) do
+      _FORV_13_.added = 0
+      for _FORV_17_, _FORV_18_ in ipairs(L6_263.maclist) do
+        if _FORV_18_.mac == _FORV_13_.mac then
+          _FORV_13_.added = 1
+          break
+        end
+      end
+    end
+    for _FORV_12_, _FORV_13_ in ipairs(L8_265) do
+      if L0_257.contains(L6_263.maclist, _FORV_13_.mac) then
+        _FORV_13_.added = 1
+      else
+        _FORV_13_.added = 0
+      end
+    end
+  end
+  L5_262.code = 0
+  L5_262.list = L7_264
+  L5_262.macfilter = L6_263.maclist
+  L5_262.weblist = L6_263.weblist
+  L5_262.flist = L8_265
+  _UPVALUE0_.write_json(L5_262)
+end
+function setWifiMacfilter()
+  local L0_266, L1_267, L2_268, L3_269, L4_270, L5_271, L6_272, L7_273, L8_274
+  L0_266 = require
+  L1_267 = "xiaoqiang.XQLog"
+  L0_266 = L0_266(L1_267)
+  L1_267 = require
+  L2_268 = "xiaoqiang.common.XQFunction"
+  L1_267 = L1_267(L2_268)
+  L2_268 = require
+  L3_269 = "xiaoqiang.util.XQWifiUtil"
+  L2_268 = L2_268(L3_269)
+  L3_269 = require
+  L4_270 = "xiaoqiang.util.XQPushUtil"
+  L3_269 = L3_269(L4_270)
+  L4_270 = require
+  L5_271 = "xiaoqiang.util.XQController"
+  L4_270 = L4_270(L5_271)
+  L5_271 = require
+  L6_272 = "xiaoqiang.util.XQSynchrodata"
+  L5_271 = L5_271(L6_272)
+  L6_272 = tonumber
+  L7_273 = _UPVALUE0_
+  L7_273 = L7_273.formvalue
+  L8_274 = "enable"
+  L8_274 = L7_273(L8_274)
+  L6_272 = L6_272(L7_273, L8_274, L7_273(L8_274))
+  if L6_272 == 1 then
+    L6_272 = true
+  else
+    L6_272 = L6_272 or false
+  end
+  L7_273 = tonumber
+  L8_274 = _UPVALUE0_
+  L8_274 = L8_274.formvalue
+  L8_274 = L8_274("model")
+  L7_273 = L7_273(L8_274, L8_274("model"))
+  L8_274 = L0_266.check
+  L8_274(0, L0_266.KEY_FUNC_WIRELESS_ACCESS, L6_272 and 0 or 1)
+  if L7_273 and L7_273 == 0 then
+    L8_274 = L0_266.check
+    L8_274(0, L0_266.KEY_FUNC_WIRELESS_BLACK, 1)
+  else
+    L8_274 = L0_266.check
+    L8_274(0, L0_266.KEY_FUNC_WIRELESS_WHITE, 1)
+  end
+  L8_274 = L3_269.pushConfig
+  L8_274("auth", L6_272 and "1" or "0")
+  L8_274 = L5_271.syncProtectionStatus
+  L8_274(L6_272 and "1" or "0", L7_273)
+  L8_274 = L2_268.setWiFiMacfilterModel
+  L8_274(L6_272, L7_273)
+  L8_274 = L4_270.wifimacfilter
+  L8_274(nil, L6_272, L7_273)
+  L8_274 = L1_267.forkExec
+  L8_274("/sbin/notice_tbus_device_maclist.sh")
+  L8_274 = {}
+  L8_274.code = 0
+  _UPVALUE0_.write_json(L8_274)
+end
+function editDevice()
+  local L0_275, L1_276, L2_277, L3_278, L4_279, L5_280, L6_281, L7_282, L8_283, L9_284
+  L0_275 = require
+  L1_276 = "xiaoqiang.util.XQPushUtil"
+  L0_275 = L0_275(L1_276)
+  L1_276 = require
+  L2_277 = "xiaoqiang.util.XQWifiUtil"
+  L1_276 = L1_276(L2_277)
+  L2_277 = require
+  L3_278 = "xiaoqiang.util.XQController"
+  L2_277 = L2_277(L3_278)
+  L3_278 = require
+  L4_279 = "xiaoqiang.common.XQFunction"
+  L3_278 = L3_278(L4_279)
+  L4_279 = require
+  L5_280 = "luci.util"
+  L4_279 = L4_279(L5_280)
+  L5_280 = 0
+  L6_281 = {}
+  L7_282 = _UPVALUE0_
+  L7_282 = L7_282.formvalue
+  L8_283 = "mac"
+  L7_282 = L7_282(L8_283)
+  L8_283 = tonumber
+  L9_284 = _UPVALUE0_
+  L9_284 = L9_284.formvalue
+  L9_284 = L9_284("model")
+  L8_283 = L8_283(L9_284, L9_284("model"))
+  L9_284 = tonumber
+  L9_284 = L9_284(_UPVALUE0_.formvalue("option"))
+  if L1_276.editWiFiMacfilterList(L8_283, L4_279.split(L7_282, ";"), L9_284) and L1_276.editWiFiMacfilterList(L8_283, L4_279.split(L7_282, ";"), L9_284) == 1 then
+    L5_280 = 1591
+  end
+  L6_281.code = L5_280
+  if L5_280 ~= 0 then
+    L6_281.msg = _UPVALUE1_.getErrorMessage(L5_280)
+  else
+    L0_275.pushConfig("auth", "1")
+    require("xiaoqiang.util.XQSynchrodata").syncProtectionStatus("1", L8_283)
+    L3_278.forkExec("/sbin/notice_tbus_device_maclist.sh")
+  end
+  _UPVALUE0_.write_json(L6_281)
+end
+function manuallyAdd()
+  local L0_285, L1_286, L2_287, L3_288, L4_289, L5_290, L6_291, L7_292, L8_293
+  L0_285 = require
+  L1_286 = "xiaoqiang.util.XQPushUtil"
+  L0_285 = L0_285(L1_286)
+  L1_286 = require
+  L2_287 = "xiaoqiang.util.XQWifiUtil"
+  L1_286 = L1_286(L2_287)
+  L2_287 = require
+  L3_288 = "xiaoqiang.common.XQFunction"
+  L2_287 = L2_287(L3_288)
+  L3_288 = require
+  L4_289 = "xiaoqiang.util.XQSecureUtil"
+  L3_288 = L3_288(L4_289)
+  L4_289 = 0
+  L5_290 = {}
+  L6_291 = _UPVALUE0_
+  L6_291 = L6_291.formvalue
+  L7_292 = "mac"
+  L6_291 = L6_291(L7_292)
+  L6_291 = L6_291 or ""
+  L7_292 = L3_288.hackCharsCheck
+  L8_293 = _UPVALUE0_
+  L8_293 = L8_293.formvalue
+  L8_293 = L8_293("name")
+  L7_292 = L7_292(L8_293, L8_293("name"))
+  L7_292 = L7_292 or ""
+  L8_293 = tonumber
+  L8_293 = L8_293(_UPVALUE0_.formvalue("model"))
+  if L1_286.addDevice(L8_293, L6_291, L7_292) and L1_286.addDevice(L8_293, L6_291, L7_292) == 1 then
+    L4_289 = 1591
+  elseif L1_286.addDevice(L8_293, L6_291, L7_292) and L1_286.addDevice(L8_293, L6_291, L7_292) == 3 then
+    L4_289 = 1658
+  end
+  L5_290.code = L4_289
+  if L4_289 ~= 0 then
+    L5_290.msg = _UPVALUE1_.getErrorMessage(L4_289)
+  else
+    L0_285.pushConfig("auth", "1")
+    require("xiaoqiang.util.XQSynchrodata").syncProtectionStatus("1", L8_293)
+    L2_287.forkExec("/sbin/notice_tbus_device_maclist.sh")
+  end
+  _UPVALUE0_.write_json(L5_290)
+end
+function macBind()
+  local L0_294, L1_295, L2_296, L3_297, L4_298, L5_299, L6_300
+  L0_294 = require
+  L1_295 = "xiaoqiang.module.XQMacBind"
+  L0_294 = L0_294(L1_295)
+  L1_295 = require
+  L2_296 = "xiaoqiang.util.XQSecureUtil"
+  L1_295 = L1_295(L2_296)
+  L2_296 = require
+  L3_297 = "json"
+  L2_296 = L2_296(L3_297)
+  L3_297 = 0
+  L4_298 = 0
+  L5_299 = {}
+  L6_300 = L1_295.xssCheck
+  L6_300 = L6_300(_UPVALUE0_.formvalue("data"))
+  if L6_300 then
+    L6_300 = L2_296.decode(L6_300)
+    L4_298 = L0_294.addBinds(L6_300)
+  else
+    L3_297 = 1523
+  end
+  if L4_298 == 1 then
+    L3_297 = 1593
+  elseif L4_298 == 2 then
+    L3_297 = 1592
+  elseif L4_298 == 3 then
+    L3_297 = 1613
+  end
+  L5_299.code = L3_297
+  if L3_297 ~= 0 then
+    L5_299.msg = _UPVALUE1_.getErrorMessage(L3_297)
+  else
+    L0_294.reload()
+  end
+  _UPVALUE0_.write_json(L5_299)
+end
+function macUnbind()
+  local L0_301, L1_302, L2_303, L3_304, L4_305, L5_306, L6_307
+  L0_301 = require
+  L1_302 = "luci.util"
+  L0_301 = L0_301(L1_302)
+  L1_302 = require
+  L2_303 = "xiaoqiang.module.XQMacBind"
+  L1_302 = L1_302(L2_303)
+  L2_303 = 0
+  L3_304 = {}
+  L4_305 = _UPVALUE0_
+  L4_305 = L4_305.formvalue
+  L5_306 = "mac"
+  L4_305 = L4_305(L5_306)
+  L5_306 = nil
+  if L4_305 then
+    L6_307 = L0_301.split
+    L6_307 = L6_307(L4_305, ";")
+    if #L6_307 > 1 then
+      L5_306 = L1_302.removeBinds(L6_307)
+    else
+      L5_306 = L1_302.removeBind(L4_305)
+    end
+  end
+  if not L5_306 then
+    L2_303 = 1594
+  end
+  L3_304.code = L2_303
+  if L2_303 ~= 0 then
+    L6_307 = _UPVALUE1_
+    L6_307 = L6_307.getErrorMessage
+    L6_307 = L6_307(L2_303)
+    L3_304.msg = L6_307
+  else
+    L6_307 = L1_302.reload
+    L6_307()
+  end
+  L6_307 = _UPVALUE0_
+  L6_307 = L6_307.write_json
+  L6_307(L3_304)
+end
+function saveBind()
+  local L0_308, L1_309, L2_310
+  L0_308 = require
+  L1_309 = "xiaoqiang.common.XQFunction"
+  L0_308 = L0_308(L1_309)
+  L1_309 = require
+  L2_310 = "xiaoqiang.module.XQMacBind"
+  L1_309 = L1_309(L2_310)
+  L2_310 = {}
+  L2_310.code = 0
+  L1_309.saveBindInfo()
+  L1_309.reload()
+  _UPVALUE0_.write_json(L2_310)
+end
+function unbindAll()
+  local L0_311, L1_312, L2_313
+  L0_311 = require
+  L1_312 = "xiaoqiang.common.XQFunction"
+  L0_311 = L0_311(L1_312)
+  L1_312 = require
+  L2_313 = "xiaoqiang.module.XQMacBind"
+  L1_312 = L1_312(L2_313)
+  L2_313 = {}
+  L2_313.code = 0
+  L1_312.unbindAll()
+  L1_312.reload()
+  _UPVALUE0_.write_json(L2_313)
+end
+function getMacBindInfo()
+  local L0_314, L1_315, L2_316, L3_317, L4_318, L5_319, L6_320, L7_321, L8_322, L9_323, L10_324, L11_325
+  L0_314 = require
+  L1_315 = "xiaoqiang.util.XQDeviceUtil"
+  L0_314 = L0_314(L1_315)
+  L1_315 = require
+  L2_316 = "xiaoqiang.module.XQMacBind"
+  L1_315 = L1_315(L2_316)
+  L2_316 = {}
+  L2_316.code = 0
+  L3_317 = {}
+  L4_318 = L1_315.macBindInfo
+  L4_318 = L4_318()
+  L5_319 = L0_314.getDeviceList
+  L6_320 = true
+  L5_319 = L5_319(L6_320, L7_321)
+  L5_319 = L5_319 or {}
+  L6_320 = {}
+  for L10_324, L11_325 in L7_321(L8_322) do
+    if L4_318[string.lower(L11_325.mac)] then
+      L11_325.tag = L4_318[string.lower(L11_325.mac)].tag
+    else
+      L11_325.tag = 0
+    end
+    if L11_325.port and L11_325.port ~= 3 then
+      table.insert(L6_320, L11_325)
+    end
+  end
+  for L10_324, L11_325 in L7_321(L8_322) do
+    table.insert(L3_317, {
+      name = L11_325.name,
+      mac = string.upper(L11_325.mac),
+      ip = L11_325.ip,
+      tag = L11_325.tag
+    })
+  end
+  L2_316.list = L3_317
+  L2_316.devicelist = L6_320
+  L7_321(L8_322)
+end
+function pppoeStatus()
+  local L0_326, L1_327, L2_328
+  L0_326 = require
+  L1_327 = "xiaoqiang.util.XQLanWanUtil"
+  L0_326 = L0_326(L1_327)
+  L1_327 = 0
+  L2_328 = {}
+  if L0_326.getPPPoEStatus() then
+    L2_328 = L0_326.getPPPoEStatus()
+    if L2_328.errtype == 1 then
+      L1_327 = 1603
+    elseif L2_328.errtype == 2 then
+      L1_327 = 1604
+    elseif L2_328.errtype == 3 then
+      L1_327 = 1605
+    end
+  else
+    L1_327 = 1602
+  end
+  if L1_327 ~= 0 then
+    if L1_327 ~= 1602 then
+      L2_328.msg = string.format("%s(%s)", _UPVALUE0_.getErrorMessage(L1_327), tostring(L2_328.errcode))
+    else
+      L2_328.msg = _UPVALUE0_.getErrorMessage(L1_327)
+    end
+  end
+  L2_328.code = L1_327
+  _UPVALUE1_.write_json(L2_328)
+end
+function pppoeStop()
+  local L0_329, L1_330
+  L0_329 = require
+  L1_330 = "xiaoqiang.util.XQLanWanUtil"
+  L0_329 = L0_329(L1_330)
+  L1_330 = {}
+  L1_330.code = 0
+  L0_329.pppoeStop()
+  _UPVALUE0_.write_json(L1_330)
+end
+function pppoeStart()
+  local L0_331, L1_332
+  L0_331 = require
+  L1_332 = "xiaoqiang.util.XQLanWanUtil"
+  L0_331 = L0_331(L1_332)
+  L1_332 = {}
+  L1_332.code = 0
+  L0_331.pppoeStart()
+  _UPVALUE0_.write_json(L1_332)
+end
+function getQosInfo()
+  local L0_333, L1_334, L2_335
+  L0_333 = require
+  L1_334 = "xiaoqiang.util.XQQoSUtil"
+  L0_333 = L0_333(L1_334)
+  L1_334 = require
+  L2_335 = "xiaoqiang.XQPreference"
+  L1_334 = L1_334(L2_335)
+  L2_335 = {}
+  L2_335.code = 0
+  L2_335.status = L0_333.qosStatus()
+  if L0_333.qosStatus().on == 1 then
+    L2_335.band = L0_333.qosBand()
+    L2_335.list = L0_333.qosList()
+    L2_335.guest = L0_333.guestQoSInfo()
+  else
+    L2_335.band = L0_333.qosBandinConf()
+  end
+  _UPVALUE0_.write_json(L2_335)
+end
+function qosSwitch()
+  local L0_336, L1_337, L2_338, L3_339
+  L0_336 = require
+  L1_337 = "xiaoqiang.XQLog"
+  L0_336 = L0_336(L1_337)
+  L1_337 = require
+  L2_338 = "xiaoqiang.util.XQQoSUtil"
+  L1_337 = L1_337(L2_338)
+  L2_338 = {}
+  L2_338.code = 0
+  L3_339 = tonumber
+  L3_339 = L3_339(_UPVALUE0_.formvalue("on"))
+  if L3_339 == 1 then
+    L3_339 = true
+  else
+    L3_339 = L3_339 or false
+  end
+  L0_336.check(0, L0_336.KEY_FUNC_QOS, L3_339 and 0 or 1)
+  if not L1_337.qosSwitch(L3_339) then
+    L2_338.code = 1606
+  end
+  if L2_338.code ~= 0 then
+    L2_338.msg = _UPVALUE1_.getErrorMessage(L2_338.code)
+  end
+  _UPVALUE0_.write_json(L2_338)
+end
+function qosMode()
+  local L0_340, L1_341, L2_342, L3_343, L4_344
+  L0_340 = require
+  L1_341 = "xiaoqiang.util.XQQoSUtil"
+  L0_340 = L0_340(L1_341)
+  L1_341 = {}
+  L1_341.code = 0
+  L2_342 = tonumber
+  L3_343 = _UPVALUE0_
+  L3_343 = L3_343.formvalue
+  L4_344 = "mode"
+  L4_344 = L3_343(L4_344)
+  L2_342 = L2_342(L3_343, L4_344, L3_343(L4_344))
+  L3_343 = L0_340.qosStatus
+  L3_343 = L3_343()
+  L4_344 = nil
+  if L3_343 and L3_343.on == 1 then
+    L4_344 = L0_340.setQoSMode(L2_342)
+  else
+    L1_341.code = 1607
+  end
+  if not L4_344 and L1_341.code == 0 then
+    L1_341.code = 1606
+  end
+  if L1_341.code ~= 0 then
+    L1_341.msg = _UPVALUE1_.getErrorMessage(L1_341.code)
+  else
+    require("xiaoqiang.util.XQSynchrodata").syncQosInfo()
+  end
+  _UPVALUE0_.write_json(L1_341)
+end
+function qosLimit()
+  local L0_345, L1_346, L2_347, L3_348, L4_349, L5_350, L6_351
+  L0_345 = require
+  L1_346 = "xiaoqiang.util.XQQoSUtil"
+  L0_345 = L0_345(L1_346)
+  L1_346 = {}
+  L1_346.code = 0
+  L2_347 = _UPVALUE0_
+  L2_347 = L2_347.formvalue
+  L3_348 = "mac"
+  L2_347 = L2_347(L3_348)
+  L3_348 = tonumber
+  L4_349 = _UPVALUE0_
+  L4_349 = L4_349.formvalue
+  L5_350 = "upload"
+  L6_351 = L4_349(L5_350)
+  L3_348 = L3_348(L4_349, L5_350, L6_351, L4_349(L5_350))
+  L4_349 = tonumber
+  L5_350 = _UPVALUE0_
+  L5_350 = L5_350.formvalue
+  L6_351 = "download"
+  L6_351 = L5_350(L6_351)
+  L4_349 = L4_349(L5_350, L6_351, L5_350(L6_351))
+  L5_350 = tonumber
+  L6_351 = _UPVALUE0_
+  L6_351 = L6_351.formvalue
+  L6_351 = L6_351("level")
+  L5_350 = L5_350(L6_351, L6_351("level"))
+  L6_351 = nil
+  if L0_345.qosStatus() and L0_345.qosStatus().on == 1 then
+    if L2_347 and L3_348 and L4_349 and L5_350 then
+      L6_351 = L0_345.qosOnLimit(L2_347, L3_348 / 100, L4_349 / 100, L5_350, L5_350)
+    else
+      L1_346.code = 1523
+    end
+  else
+    L1_346.code = 1607
+  end
+  if not L6_351 and L1_346.code == 0 then
+    L1_346.code = 1606
+  end
+  if L1_346.code ~= 0 then
+    L1_346.msg = _UPVALUE1_.getErrorMessage(L1_346.code)
+  end
+  _UPVALUE0_.write_json(L1_346)
+end
+function qosOffLimit()
+  local L0_352, L1_353, L2_354, L3_355, L4_356
+  L0_352 = require
+  L1_353 = "xiaoqiang.util.XQQoSUtil"
+  L0_352 = L0_352(L1_353)
+  L1_353 = {}
+  L1_353.code = 0
+  L2_354 = _UPVALUE0_
+  L2_354 = L2_354.formvalue
+  L3_355 = "mac"
+  L2_354 = L2_354(L3_355)
+  L3_355 = L0_352.qosStatus
+  L3_355 = L3_355()
+  L4_356 = nil
+  if L3_355 and L3_355.on == 1 then
+    L4_356 = L0_352.qosOffLimit(L2_354)
+  else
+    L1_353.code = 1607
+  end
+  if not L4_356 and L1_353.code == 0 then
+    L1_353.code = 1606
+  end
+  if L1_353.code ~= 0 then
+    L1_353.msg = _UPVALUE1_.getErrorMessage(L1_353.code)
+  end
+  _UPVALUE0_.write_json(L1_353)
+end
+function setBand()
+  local L0_357, L1_358, L2_359, L3_360, L4_361
+  L0_357 = require
+  L1_358 = "xiaoqiang.util.XQQoSUtil"
+  L0_357 = L0_357(L1_358)
+  L1_358 = {}
+  L1_358.code = 0
+  L2_359 = tonumber
+  L3_360 = _UPVALUE0_
+  L3_360 = L3_360.formvalue
+  L4_361 = "upload"
+  L4_361 = L3_360(L4_361)
+  L2_359 = L2_359(L3_360, L4_361, L3_360(L4_361))
+  L3_360 = tonumber
+  L4_361 = _UPVALUE0_
+  L4_361 = L4_361.formvalue
+  L4_361 = L4_361("download")
+  L3_360 = L3_360(L4_361, L4_361("download"))
+  L4_361 = nil
+  if L2_359 and L3_360 then
+    L4_361 = L0_357.setQosBand(L2_359, L3_360)
+    L4_361 = L4_361 or L0_357.setQosBandinConf(L2_359, L3_360)
+  else
+    L1_358.code = 1523
+  end
+  if not L4_361 and L1_358.code == 0 then
+    L1_358.code = 1606
+  end
+  if L1_358.code ~= 0 then
+    L1_358.msg = _UPVALUE1_.getErrorMessage(L1_358.code)
+  end
+  _UPVALUE0_.write_json(L1_358)
+end
+function portForward()
+  local L0_362, L1_363, L2_364
+  L0_362 = require
+  L1_363 = "xiaoqiang.module.XQPortForward"
+  L0_362 = L0_362(L1_363)
+  L1_363 = {}
+  L1_363.code = 0
+  L2_364 = tonumber
+  L2_364 = L2_364(_UPVALUE0_.formvalue("ftype"))
+  L2_364 = L2_364 or 0
+  L1_363.status = L0_362.portForwardInfo().status
+  L1_363.list = L0_362.portForwards(L2_364)
+  _UPVALUE0_.write_json(L1_363)
+end
+function addRedirect()
+  local L0_365, L1_366, L2_367, L3_368, L4_369, L5_370, L6_371, L7_372, L8_373
+  L0_365 = require
+  L1_366 = "xiaoqiang.XQLog"
+  L0_365 = L0_365(L1_366)
+  L1_366 = require
+  L2_367 = "xiaoqiang.module.XQPortForward"
+  L1_366 = L1_366(L2_367)
+  L2_367 = require
+  L3_368 = "xiaoqiang.util.XQSecureUtil"
+  L2_367 = L2_367(L3_368)
+  L3_368 = {}
+  L3_368.code = 0
+  L4_369 = L2_367.xssCheck
+  L5_370 = _UPVALUE0_
+  L5_370 = L5_370.formvalue
+  L6_371 = "ip"
+  L8_373 = L5_370(L6_371)
+  L4_369 = L4_369(L5_370, L6_371, L7_372, L8_373, L5_370(L6_371))
+  L5_370 = _UPVALUE0_
+  L5_370 = L5_370.formvalue
+  L6_371 = "name"
+  L5_370 = L5_370(L6_371)
+  L6_371 = tonumber
+  L7_372 = _UPVALUE0_
+  L7_372 = L7_372.formvalue
+  L8_373 = "proto"
+  L8_373 = L7_372(L8_373)
+  L6_371 = L6_371(L7_372, L8_373, L7_372(L8_373))
+  L7_372 = tonumber
+  L8_373 = _UPVALUE0_
+  L8_373 = L8_373.formvalue
+  L8_373 = L8_373("sport")
+  L7_372 = L7_372(L8_373, L8_373("sport"))
+  L8_373 = tonumber
+  L8_373 = L8_373(_UPVALUE0_.formvalue("dport"))
+  L0_365.check(0, L0_365.KEY_FUNC_PORTFADD, 1)
+  if L1_366.setPortForward(L5_370, L4_369, L7_372, L8_373, L6_371) == 1 then
+    L3_368.code = 1537
+  elseif L1_366.setPortForward(L5_370, L4_369, L7_372, L8_373, L6_371) == 2 then
+    L3_368.code = 1608
+  elseif L1_366.setPortForward(L5_370, L4_369, L7_372, L8_373, L6_371) == 3 then
+    L3_368.code = 1609
+  end
+  if L3_368.code ~= 0 then
+    L3_368.msg = _UPVALUE1_.getErrorMessage(L3_368.code)
+  end
+  _UPVALUE0_.write_json(L3_368)
+end
+function addRangeRedirect()
+  local L0_374, L1_375, L2_376, L3_377, L4_378, L5_379, L6_380, L7_381, L8_382
+  L0_374 = require
+  L1_375 = "xiaoqiang.XQLog"
+  L0_374 = L0_374(L1_375)
+  L1_375 = require
+  L2_376 = "xiaoqiang.module.XQPortForward"
+  L1_375 = L1_375(L2_376)
+  L2_376 = require
+  L3_377 = "xiaoqiang.util.XQSecureUtil"
+  L2_376 = L2_376(L3_377)
+  L3_377 = {}
+  L3_377.code = 0
+  L4_378 = L2_376.xssCheck
+  L5_379 = _UPVALUE0_
+  L5_379 = L5_379.formvalue
+  L6_380 = "ip"
+  L8_382 = L5_379(L6_380)
+  L4_378 = L4_378(L5_379, L6_380, L7_381, L8_382, L5_379(L6_380))
+  L5_379 = _UPVALUE0_
+  L5_379 = L5_379.formvalue
+  L6_380 = "name"
+  L5_379 = L5_379(L6_380)
+  L6_380 = tonumber
+  L7_381 = _UPVALUE0_
+  L7_381 = L7_381.formvalue
+  L8_382 = "proto"
+  L8_382 = L7_381(L8_382)
+  L6_380 = L6_380(L7_381, L8_382, L7_381(L8_382))
+  L7_381 = tonumber
+  L8_382 = _UPVALUE0_
+  L8_382 = L8_382.formvalue
+  L8_382 = L8_382("fport")
+  L7_381 = L7_381(L8_382, L8_382("fport"))
+  L8_382 = tonumber
+  L8_382 = L8_382(_UPVALUE0_.formvalue("tport"))
+  L0_374.check(0, L0_374.KEY_FUNC_RANGEFADD, 1)
+  if L1_375.setRangePortForward(L5_379, L4_378, L7_381, L8_382, L6_380) == 1 then
+    L3_377.code = 1537
+  elseif L1_375.setRangePortForward(L5_379, L4_378, L7_381, L8_382, L6_380) == 2 then
+    L3_377.code = 1608
+  elseif L1_375.setRangePortForward(L5_379, L4_378, L7_381, L8_382, L6_380) == 3 then
+    L3_377.code = 1609
+  end
+  if L3_377.code ~= 0 then
+    L3_377.msg = _UPVALUE1_.getErrorMessage(L3_377.code)
+  end
+  _UPVALUE0_.write_json(L3_377)
+end
+function deleteRedirect()
+  local L0_383, L1_384, L2_385, L3_386
+  L0_383 = require
+  L1_384 = "xiaoqiang.module.XQPortForward"
+  L0_383 = L0_383(L1_384)
+  L1_384 = {}
+  L1_384.code = 0
+  L2_385 = tonumber
+  L3_386 = _UPVALUE0_
+  L3_386 = L3_386.formvalue
+  L3_386 = L3_386("port")
+  L2_385 = L2_385(L3_386, L3_386("port"))
+  L2_385 = L2_385 or 0
+  L3_386 = tonumber
+  L3_386 = L3_386(_UPVALUE0_.formvalue("proto"))
+  L3_386 = L3_386 or 3
+  if L2_385 == 0 then
+    L0_383.deleteAllPortForward()
+  else
+    L0_383.deletePortForward(L2_385, L3_386)
+  end
+  _UPVALUE0_.write_json(L1_384)
+end
+function redirectApply()
+  local L0_387, L1_388, L2_389
+  L0_387 = require
+  L1_388 = "xiaoqiang.XQLog"
+  L0_387 = L0_387(L1_388)
+  L1_388 = require
+  L2_389 = "xiaoqiang.module.XQPortForward"
+  L1_388 = L1_388(L2_389)
+  L2_389 = {}
+  L2_389.code = 0
+  L0_387.check(0, L0_387.KEY_FUNC_PORTENABLE, 1)
+  L1_388.restart()
+  _UPVALUE0_.write_json(L2_389)
+end
+function getDMZInfo()
+  local L0_390, L1_391
+  L0_390 = require
+  L1_391 = "xiaoqiang.module.XQDMZModule"
+  L0_390 = L0_390(L1_391)
+  L1_391 = {}
+  L1_391.code = 0
+  L1_391.status = L0_390.getDMZInfo().status
+  L1_391.ip = L0_390.getDMZInfo().ip
+  L1_391.lanip = L0_390.getDMZInfo().lanip
+  _UPVALUE0_.write_json(L1_391)
+end
+function setDMZ()
+  local L0_392, L1_393, L2_394, L3_395, L4_396, L5_397
+  L0_392 = require
+  L1_393 = "xiaoqiang.XQLog"
+  L0_392 = L0_392(L1_393)
+  L1_393 = require
+  L2_394 = "xiaoqiang.module.XQDMZModule"
+  L1_393 = L1_393(L2_394)
+  L2_394 = {}
+  L2_394.code = 0
+  L3_395 = _UPVALUE0_
+  L3_395 = L3_395.formvalue
+  L4_396 = "ip"
+  L3_395 = L3_395(L4_396)
+  L4_396 = _UPVALUE0_
+  L4_396 = L4_396.formvalue
+  L5_397 = "mac"
+  L4_396 = L4_396(L5_397)
+  L5_397 = tonumber
+  L5_397 = L5_397(_UPVALUE0_.formvalue("mode"))
+  L5_397 = L5_397 or 0
+  if L1_393.setDMZ(L5_397, L3_395, L4_396) == 1 then
+    L2_394.code = 1593
+  elseif L1_393.setDMZ(L5_397, L3_395, L4_396) == 2 then
+    L2_394.code = 1592
+  elseif L1_393.setDMZ(L5_397, L3_395, L4_396) == 3 then
+    L2_394.code = 1611
+  elseif L1_393.setDMZ(L5_397, L3_395, L4_396) == 4 then
+    L2_394.code = 1610
+  end
+  L0_392.check(0, L0_392.KEY_FUNC_DMZ, 0)
+  if L2_394.code ~= 0 then
+    L2_394.msg = _UPVALUE1_.getErrorMessage(L2_394.code)
+  else
+    L1_393.dmzReload(L5_397)
+  end
+  _UPVALUE0_.write_json(L2_394)
+end
+function closeDMZ()
+  local L0_398, L1_399, L2_400, L3_401
+  L0_398 = require
+  L1_399 = "xiaoqiang.XQLog"
+  L0_398 = L0_398(L1_399)
+  L1_399 = require
+  L2_400 = "xiaoqiang.module.XQDMZModule"
+  L1_399 = L1_399(L2_400)
+  L2_400 = {}
+  L2_400.code = 0
+  L3_401 = tonumber
+  L3_401 = L3_401(_UPVALUE0_.formvalue("mode"))
+  L3_401 = L3_401 or 0
+  L0_398.check(0, L0_398.KEY_FUNC_DMZ, 1)
+  L1_399.unsetDMZ(L3_401)
+  _UPVALUE0_.write_json(L2_400)
+end
+function reloadDMZ()
+  local L0_402, L1_403, L2_404
+  L0_402 = require
+  L1_403 = "xiaoqiang.module.XQDMZModule"
+  L0_402 = L0_402(L1_403)
+  L1_403 = {}
+  L1_403.code = 0
+  L2_404 = tonumber
+  L2_404 = L2_404(_UPVALUE0_.formvalue("mode"))
+  L2_404 = L2_404 or 0
+  L0_402.dmzReload(L2_404)
+  _UPVALUE0_.write_json(L1_403)
+end
+function ddnsStatus()
+  local L0_405, L1_406, L2_407
+  L0_405 = require
+  L1_406 = "xiaoqiang.XQPreference"
+  L0_405 = L0_405(L1_406)
+  L1_406 = require
+  L2_407 = "xiaoqiang.module.XQDDNS"
+  L1_406 = L1_406(L2_407)
+  L2_407 = {}
+  L2_407.code = 0
+  if L0_405.get("DDNS_FLAG") then
+    L2_407.flag = 0
+  else
+    L2_407.flag = 1
+    L0_405.set("DDNS_FLAG", "1")
+  end
+  L2_407.on = L1_406.ddnsInfo().on
+  L2_407.list = L1_406.ddnsInfo().list
+  _UPVALUE0_.write_json(L2_407)
+end
+function ddnsSwitch()
+  local L0_408, L1_409, L2_410
+  L0_408 = require
+  L1_409 = "xiaoqiang.module.XQDDNS"
+  L0_408 = L0_408(L1_409)
+  L1_409 = {}
+  L1_409.code = 0
+  L2_410 = tonumber
+  L2_410 = L2_410(_UPVALUE0_.formvalue("on"))
+  if L2_410 == 1 then
+    L2_410 = true
+  else
+    L2_410 = L2_410 or false
+  end
+  L0_408.ddnsSwitch(L2_410)
+  _UPVALUE0_.write_json(L1_409)
+end
+function addServer()
+  local L0_411, L1_412, L2_413, L3_414, L4_415, L5_416, L6_417, L7_418, L8_419
+  L0_411 = require
+  L1_412 = "xiaoqiang.module.XQDDNS"
+  L0_411 = L0_411(L1_412)
+  L1_412 = {}
+  L1_412.code = 0
+  L2_413 = tonumber
+  L3_414 = _UPVALUE0_
+  L3_414 = L3_414.formvalue
+  L4_415 = "id"
+  L8_419 = L3_414(L4_415)
+  L2_413 = L2_413(L3_414, L4_415, L5_416, L6_417, L7_418, L8_419, L3_414(L4_415))
+  L3_414 = tonumber
+  L4_415 = _UPVALUE0_
+  L4_415 = L4_415.formvalue
+  L5_416 = "enable"
+  L8_419 = L4_415(L5_416)
+  L3_414 = L3_414(L4_415, L5_416, L6_417, L7_418, L8_419, L4_415(L5_416))
+  if L3_414 == 1 then
+    L3_414 = 1
+  else
+    L3_414 = L3_414 or 0
+  end
+  L4_415 = _UPVALUE0_
+  L4_415 = L4_415.formvalue
+  L5_416 = "domain"
+  L4_415 = L4_415(L5_416)
+  L4_415 = L4_415 or ""
+  L5_416 = _UPVALUE0_
+  L5_416 = L5_416.formvalue
+  L6_417 = "username"
+  L5_416 = L5_416(L6_417)
+  L5_416 = L5_416 or ""
+  L6_417 = _UPVALUE0_
+  L6_417 = L6_417.formvalue
+  L7_418 = "password"
+  L6_417 = L6_417(L7_418)
+  L6_417 = L6_417 or ""
+  L7_418 = tonumber
+  L8_419 = _UPVALUE0_
+  L8_419 = L8_419.formvalue
+  L8_419 = L8_419("checkinterval")
+  L7_418 = L7_418(L8_419, L8_419("checkinterval"))
+  L8_419 = tonumber
+  L8_419 = L8_419(_UPVALUE0_.formvalue("forceinterval"))
+  if not L2_413 or not L7_418 or not L8_419 then
+    L1_412.code = 1612
+  elseif L7_418 <= 0 or L8_419 <= 0 then
+    L1_412.code = 1523
+  elseif not L0_411.setDdns(L2_413, L3_414, L5_416, L6_417, L7_418, L8_419, L4_415) then
+    L1_412.code = 1606
+  end
+  if L1_412.code ~= 0 then
+    L1_412.msg = _UPVALUE1_.getErrorMessage(L1_412.code)
+  end
+  _UPVALUE0_.write_json(L1_412)
+end
+function deleteServer()
+  local L0_420, L1_421, L2_422
+  L0_420 = require
+  L1_421 = "xiaoqiang.module.XQDDNS"
+  L0_420 = L0_420(L1_421)
+  L1_421 = {}
+  L1_421.code = 0
+  L2_422 = tonumber
+  L2_422 = L2_422(_UPVALUE0_.formvalue("id"))
+  if not L2_422 then
+    L1_421.code = 1612
+  elseif not L0_420.deleteDdns(L2_422) then
+    L1_421.code = 1606
+  end
+  if L1_421.code ~= 0 then
+    L1_421.msg = _UPVALUE1_.getErrorMessage(L1_421.code)
+  end
+  _UPVALUE0_.write_json(L1_421)
+end
+function serverSwitch()
+  local L0_423, L1_424, L2_425, L3_426
+  L0_423 = require
+  L1_424 = "xiaoqiang.module.XQDDNS"
+  L0_423 = L0_423(L1_424)
+  L1_424 = {}
+  L1_424.code = 0
+  L2_425 = tonumber
+  L3_426 = _UPVALUE0_
+  L3_426 = L3_426.formvalue
+  L3_426 = L3_426("id")
+  L2_425 = L2_425(L3_426, L3_426("id"))
+  L3_426 = tonumber
+  L3_426 = L3_426(_UPVALUE0_.formvalue("on"))
+  if L3_426 == 1 then
+    L3_426 = true
+  else
+    L3_426 = L3_426 or false
+  end
+  if not L2_425 then
+    L1_424.code = 1612
+  elseif not L0_423.ddnsServerSwitch(L2_425, L3_426) then
+    L1_424.code = 1606
+  end
+  if L1_424.code ~= 0 then
+    L1_424.msg = _UPVALUE1_.getErrorMessage(L1_424.code)
+  end
+  _UPVALUE0_.write_json(L1_424)
+end
+function ddnsReload()
+  local L0_427, L1_428
+  L0_427 = require
+  L1_428 = "xiaoqiang.module.XQDDNS"
+  L0_427 = L0_427(L1_428)
+  L1_428 = {}
+  L1_428.code = 0
+  if not L0_427.reload() then
+    L1_428.code = 1606
+  end
+  if L1_428.code ~= 0 then
+    L1_428.msg = _UPVALUE0_.getErrorMessage(L1_428.code)
+  end
+  _UPVALUE1_.write_json(L1_428)
+end
+function getServer()
+  local L0_429, L1_430, L2_431
+  L0_429 = require
+  L1_430 = "xiaoqiang.module.XQDDNS"
+  L0_429 = L0_429(L1_430)
+  L1_430 = {}
+  L2_431 = tonumber
+  L2_431 = L2_431(_UPVALUE0_.formvalue("id"))
+  if L0_429.getDdns(L2_431) then
+    L1_430 = L0_429.getDdns(L2_431)
+    L1_430.code = 0
+  else
+    L1_430.code = 1614
+  end
+  if L1_430.code ~= 0 then
+    L1_430.msg = _UPVALUE1_.getErrorMessage(L1_430.code)
+  end
+  _UPVALUE0_.write_json(L1_430)
+end
+function ddnsEdit()
+  local L0_432, L1_433, L2_434, L3_435, L4_436, L5_437, L6_438, L7_439, L8_440
+  L0_432 = require
+  L1_433 = "xiaoqiang.module.XQDDNS"
+  L0_432 = L0_432(L1_433)
+  L1_433 = {}
+  L1_433.code = 0
+  L2_434 = tonumber
+  L3_435 = _UPVALUE0_
+  L3_435 = L3_435.formvalue
+  L4_436 = "id"
+  L8_440 = L3_435(L4_436)
+  L2_434 = L2_434(L3_435, L4_436, L5_437, L6_438, L7_439, L8_440, L3_435(L4_436))
+  L3_435 = tonumber
+  L4_436 = _UPVALUE0_
+  L4_436 = L4_436.formvalue
+  L5_437 = "enable"
+  L8_440 = L4_436(L5_437)
+  L3_435 = L3_435(L4_436, L5_437, L6_438, L7_439, L8_440, L4_436(L5_437))
+  if L3_435 == 1 then
+    L3_435 = 1
+  else
+    L3_435 = L3_435 or 0
+  end
+  L4_436 = _UPVALUE0_
+  L4_436 = L4_436.formvalue
+  L5_437 = "domain"
+  L4_436 = L4_436(L5_437)
+  L5_437 = _UPVALUE0_
+  L5_437 = L5_437.formvalue
+  L6_438 = "username"
+  L5_437 = L5_437(L6_438)
+  L6_438 = _UPVALUE0_
+  L6_438 = L6_438.formvalue
+  L7_439 = "password"
+  L6_438 = L6_438(L7_439)
+  L7_439 = tonumber
+  L8_440 = _UPVALUE0_
+  L8_440 = L8_440.formvalue
+  L8_440 = L8_440("checkinterval")
+  L7_439 = L7_439(L8_440, L8_440("checkinterval"))
+  L8_440 = tonumber
+  L8_440 = L8_440(_UPVALUE0_.formvalue("forceinterval"))
+  if not L0_432.editDdns(L2_434, L3_435, L5_437, L6_438, L7_439, L8_440, L4_436) then
+    L1_433.code = 1606
+  end
+  if L1_433.code ~= 0 then
+    L1_433.msg = _UPVALUE1_.getErrorMessage(L1_433.code)
+  end
+  _UPVALUE0_.write_json(L1_433)
+end
+function getWanSpeed()
+  local L0_441, L1_442, L2_443
+  L0_441 = require
+  L1_442 = "xiaoqiang.util.XQLanWanUtil"
+  L0_441 = L0_441(L1_442)
+  L1_442 = L0_441.getWanSpeed
+  L1_442 = L1_442()
+  L2_443 = {}
+  L2_443.code = 0
+  L2_443.speed = L1_442
+  _UPVALUE0_.write_json(L2_443)
+end
+function setWanSpeed()
+  local L0_444, L1_445, L2_446
+  L0_444 = require
+  L1_445 = "xiaoqiang.util.XQLanWanUtil"
+  L0_444 = L0_444(L1_445)
+  L1_445 = tonumber
+  L2_446 = _UPVALUE0_
+  L2_446 = L2_446.formvalue
+  L2_446 = L2_446("speed")
+  L1_445 = L1_445(L2_446, L2_446("speed"))
+  L2_446 = {}
+  L2_446.code = 0
+  if not L0_444.setWanSpeed(L1_445) then
+    L2_446.code = 1523
+  end
+  if L2_446.code ~= 0 then
+    L2_446.msg = _UPVALUE1_.getErrorMessage(L2_446.code)
+  end
+  _UPVALUE0_.write_json(L2_446)
+end
+function pppoeCatch()
+  local L0_447, L1_448
+  L0_447 = require
+  L1_448 = "xiaoqiang.util.XQLanWanUtil"
+  L0_447 = L0_447(L1_448)
+  L1_448 = {}
+  L1_448.code = 0
+  L1_448.service = ""
+  L1_448.name = ""
+  L1_448.passwd = ""
+  if L0_447.pppoeCatch(50).code == 0 then
+    L1_448.service = L0_447.pppoeCatch(50).service
+    L1_448.name = L0_447.pppoeCatch(50).pppoename
+    L1_448.passwd = L0_447.pppoeCatch(50).pppoepasswd
+  else
+    L1_448.code = 1621
+  end
+  if L1_448.code ~= 0 then
+    L1_448.msg = _UPVALUE0_.getErrorMessage(L1_448.code)
+  end
+  _UPVALUE1_.write_json(L1_448)
+end
+function getScanList()
+  local L0_449, L1_450, L2_451
+  L0_449 = require
+  L1_450 = "xiaoqiang.util.XQWifiUtil"
+  L0_449 = L0_449(L1_450)
+  L1_450 = {}
+  L1_450.code = 0
+  L2_451 = {}
+  L2_451.ssid = ""
+  L2_451.band = ""
+  L1_450.list = L0_449.apcli_get_scanlist(L2_451)
+  _UPVALUE0_.write_json(L1_450)
+end
+function disableap()
+  local L0_452, L1_453, L2_454, L3_455, L4_456, L5_457
+  L0_452 = require
+  L1_453 = "xiaoqiang.util.XQWifiUtil"
+  L0_452 = L0_452(L1_453)
+  L1_453 = require
+  L2_454 = "xiaoqiang.XQLog"
+  L1_453 = L1_453(L2_454)
+  L2_454 = require
+  L3_455 = "xiaoqiang.module.XQAPModule"
+  L2_454 = L2_454(L3_455)
+  L3_455 = require
+  L4_456 = "xiaoqiang.common.XQFunction"
+  L3_455 = L3_455(L4_456)
+  L4_456 = L0_452.apcli_get_active
+  L4_456 = L4_456()
+  L5_457 = {}
+  L5_457.code = 0
+  L1_453.check(0, L1_453.KEY_FUNC_WIFI_RELAY, 1)
+  L5_457.lanip, L5_457.ssid = L2_454.disableWifiAPMode(L4_456)
+  _UPVALUE0_.write_json(L5_457)
+end
+function getMode()
+  local L0_458, L1_459, L2_460, L3_461, L4_462, L5_463
+  L0_458 = require
+  L1_459 = "xiaoqiang.common.XQFunction"
+  L0_458 = L0_458(L1_459)
+  L1_459 = require
+  L2_460 = "xiaoqiang.XQPreference"
+  L1_459 = L1_459(L2_460)
+  L2_460 = require
+  L3_461 = "luci.model.network"
+  L2_460 = L2_460(L3_461)
+  L2_460 = L2_460.init
+  L2_460 = L2_460()
+  L3_461 = require
+  L4_462 = "xiaoqiang.util.XQWifiUtil"
+  L3_461 = L3_461(L4_462)
+  L4_462 = nil
+  L5_463 = {}
+  L5_463.code = 0
+  L5_463.mode = 0
+  if L0_458.getNetMode() == "lanapmode" then
+    L5_463.hostname, L5_463.hostip, L5_463.mode = L1_459.get("ap_hostname", ""), L2_460:get_network("lan"):gwaddr() or "", 2
+  elseif L0_458.getNetMode() == "wifiapmode" then
+    L5_463.hostname, L5_463.hostip, L5_463.mode = L1_459.get("ap_hostname", ""), L2_460:get_network("lan"):gwaddr() or "", 1
+    L4_462 = L3_461.apcli_get_active()
+    if L3_461.apcli_get_wifinet(L4_462) then
+      L5_463.ssid = L3_461.apcli_get_wifinet(L4_462):ssid()
+    else
+      L5_463.mode = 0
+    end
+  end
+  _UPVALUE0_.write_json(L5_463)
+end
+function getWanLinkStatus()
+  local L0_464, L1_465
+  L0_464 = require
+  L1_465 = "xiaoqiang.util.XQLanWanUtil"
+  L0_464 = L0_464(L1_465)
+  L1_465 = {}
+  L1_465.code = 0
+  L1_465.link = 0
+  if L0_464.getWanLink() then
+    L1_465.link = 1
+  end
+  _UPVALUE0_.write_json(L1_465)
+end
+function _savePassword(A0_466, A1_467, A2_468)
+  local L3_469, L4_470, L5_471
+  L3_469 = require
+  L4_470 = "xiaoqiang.util.XQSecureUtil"
+  L3_469 = L3_469(L4_470)
+  L4_470 = 0
+  L5_471 = luci
+  L5_471 = L5_471.dispatcher
+  L5_471 = L5_471.getremotemac
+  L5_471 = L5_471()
+  if L3_469.checkNonce(A0_466, L5_471) then
+    if L3_469.checkUser("admin", A0_466, A1_467) then
+      if L3_469.saveCiphertextPwd("admin", A2_468) then
+        L4_470 = 0
+      else
+        L4_470 = 1553
+      end
+    else
+      L4_470 = 1552
+    end
+  else
+    L4_470 = 1582
+  end
+  return L4_470
+end
+function setWifiApMode()
+  local L0_472, L1_473, L2_474, L3_475, L4_476, L5_477, L6_478, L7_479, L8_480, L9_481, L10_482, L11_483, L12_484, L13_485, L14_486, L15_487, L16_488, L17_489, L18_490, L19_491, L20_492
+  L0_472 = require
+  L1_473 = "xiaoqiang.XQLog"
+  L0_472 = L0_472(L1_473)
+  L1_473 = require
+  L2_474 = "xiaoqiang.common.XQFunction"
+  L1_473 = L1_473(L2_474)
+  L2_474 = require
+  L3_475 = "xiaoqiang.module.XQAPModule"
+  L2_474 = L2_474(L3_475)
+  L3_475 = require
+  L4_476 = "xiaoqiang.util.XQSysUtil"
+  L3_475 = L3_475(L4_476)
+  L4_476 = require
+  L5_477 = "xiaoqiang.util.XQWifiUtil"
+  L4_476 = L4_476(L5_477)
+  L5_477 = {}
+  L5_477.code = 0
+  L6_478 = _UPVALUE0_
+  L6_478 = L6_478.formvalue
+  L7_479 = "ssid"
+  L6_478 = L6_478(L7_479)
+  L7_479 = _UPVALUE0_
+  L7_479 = L7_479.formvalue
+  L8_480 = "password"
+  L7_479 = L7_479(L8_480)
+  L8_480 = _UPVALUE0_
+  L8_480 = L8_480.formvalue
+  L9_481 = "nssid"
+  L8_480 = L8_480(L9_481)
+  L9_481 = _UPVALUE0_
+  L9_481 = L9_481.formvalue
+  L10_482 = "nencryption"
+  L9_481 = L9_481(L10_482)
+  L10_482 = _UPVALUE0_
+  L10_482 = L10_482.formvalue
+  L11_483 = "npassword"
+  L10_482 = L10_482(L11_483)
+  L11_483 = _UPVALUE0_
+  L11_483 = L11_483.formvalue
+  L12_484 = "nssid5G"
+  L11_483 = L11_483(L12_484)
+  L12_484 = tonumber
+  L13_485 = _UPVALUE0_
+  L13_485 = L13_485.formvalue
+  L14_486 = "initialize"
+  L20_492 = L13_485(L14_486)
+  L12_484 = L12_484(L13_485, L14_486, L15_487, L16_488, L17_489, L18_490, L19_491, L20_492, L13_485(L14_486))
+  if L12_484 == 1 then
+    L12_484 = 1
+  else
+    L12_484 = L12_484 or 0
+  end
+  L13_485 = _UPVALUE0_
+  L13_485 = L13_485.formvalue
+  L14_486 = "nonce"
+  L13_485 = L13_485(L14_486)
+  L14_486 = _UPVALUE0_
+  L14_486 = L14_486.formvalue
+  L15_487 = "band"
+  L14_486 = L14_486(L15_487)
+  L15_487 = _UPVALUE0_
+  L15_487 = L15_487.formvalue
+  L16_488 = "newPwd"
+  L15_487 = L15_487(L16_488)
+  L16_488 = _UPVALUE0_
+  L16_488 = L16_488.formvalue
+  L17_489 = "oldPwd"
+  L16_488 = L16_488(L17_489)
+  L17_489 = _UPVALUE0_
+  L17_489 = L17_489.formvalue
+  L18_490 = "channel"
+  L17_489 = L17_489(L18_490)
+  L18_490 = _UPVALUE0_
+  L18_490 = L18_490.formvalue
+  L19_491 = "enctype"
+  L18_490 = L18_490(L19_491)
+  L19_491 = _UPVALUE0_
+  L19_491 = L19_491.formvalue
+  L20_492 = "encryption"
+  L19_491 = L19_491(L20_492)
+  L20_492 = nil
+  L0_472.check(0, L0_472.KEY_FUNC_WIFI_RELAY, 1)
+  if L6_478 then
+    L20_492 = L2_474.setWifiAPMode(L6_478, L7_479, L18_490, L19_491, L14_486, L17_489, bandwidth, L8_480, L9_481, L10_482, L11_483)
+    if not L20_492.scan then
+      L5_477.code = 1617
+    elseif L20_492.connected then
+      if L1_473.isStrNil(L20_492.ip) then
+        L5_477.code = 1615
+      else
+        L5_477.ip = L20_492.ip
+        L5_477.ssid = L20_492.ssid
+        L5_477.ssid5G = L20_492.ssid5G
+      end
+    else
+      L5_477.code = 1616
+      L5_477.msg = _UPVALUE1_.getErrorMessage(L5_477.code) .. "(" .. tostring(L20_492.conerrmsg) .. ")"
+    end
+  else
+    L5_477.code = 1523
+  end
+  if L5_477.code ~= 0 and L5_477.code ~= 1616 then
+    L5_477.msg = _UPVALUE1_.getErrorMessage(L5_477.code)
+  elseif L5_477.code == 0 then
+    if L12_484 == 1 and not L1_473.isStrNil(L20_492.ssid) then
+      L3_475.setRouterName(L20_492.ssid)
+      if L13_485 and L15_487 and L16_488 then
+        L5_477.code = _savePassword(L13_485, L16_488, L15_487)
+      end
+    end
+    L3_475.setInited()
+    L2_474.actionForEnableWifiAP()
+  end
+  _UPVALUE0_.write_json(L5_477)
+end
+function appSetWifiApMode()
+  local L0_493, L1_494, L2_495, L3_496, L4_497, L5_498, L6_499, L7_500, L8_501, L9_502, L10_503, L11_504, L12_505, L13_506, L14_507, L15_508, L16_509, L17_510, L18_511, L19_512, L20_513, L21_514, L22_515, L23_516, L24_517, L25_518
+  L0_493 = require
+  L1_494 = "xiaoqiang.XQLog"
+  L0_493 = L0_493(L1_494)
+  L1_494 = require
+  L2_495 = "xiaoqiang.common.XQFunction"
+  L1_494 = L1_494(L2_495)
+  L2_495 = require
+  L3_496 = "xiaoqiang.module.XQAPModule"
+  L2_495 = L2_495(L3_496)
+  L3_496 = require
+  L4_497 = "xiaoqiang.util.XQSysUtil"
+  L3_496 = L3_496(L4_497)
+  L4_497 = require
+  L5_498 = "xiaoqiang.util.XQWifiUtil"
+  L4_497 = L4_497(L5_498)
+  L5_498 = require
+  L6_499 = "luci.json"
+  L5_498 = L5_498(L6_499)
+  L6_499 = _UPVALUE0_
+  L6_499 = L6_499.formvalue
+  L7_500 = "ssid"
+  L6_499 = L6_499(L7_500)
+  L7_500 = _UPVALUE0_
+  L7_500 = L7_500.formvalue
+  L8_501 = "password"
+  L7_500 = L7_500(L8_501)
+  L8_501 = _UPVALUE0_
+  L8_501 = L8_501.formvalue
+  L9_502 = "nssid"
+  L8_501 = L8_501(L9_502)
+  L9_502 = _UPVALUE0_
+  L9_502 = L9_502.formvalue
+  L10_503 = "nencryption"
+  L9_502 = L9_502(L10_503)
+  L10_503 = _UPVALUE0_
+  L10_503 = L10_503.formvalue
+  L11_504 = "npassword"
+  L10_503 = L10_503(L11_504)
+  L11_504 = _UPVALUE0_
+  L11_504 = L11_504.formvalue
+  L12_505 = "nssid5G"
+  L11_504 = L11_504(L12_505)
+  L12_505 = tonumber
+  L13_506 = _UPVALUE0_
+  L13_506 = L13_506.formvalue
+  L14_507 = "initialize"
+  L25_518 = L13_506(L14_507)
+  L12_505 = L12_505(L13_506, L14_507, L15_508, L16_509, L17_510, L18_511, L19_512, L20_513, L21_514, L22_515, L23_516, L24_517, L25_518, L13_506(L14_507))
+  if L12_505 == 1 then
+    L12_505 = 1
+  else
+    L12_505 = L12_505 or 0
+  end
+  L13_506 = _UPVALUE0_
+  L13_506 = L13_506.formvalue
+  L14_507 = "nonce"
+  L13_506 = L13_506(L14_507)
+  L14_507 = _UPVALUE0_
+  L14_507 = L14_507.formvalue
+  L15_508 = "band"
+  L14_507 = L14_507(L15_508)
+  L15_508 = _UPVALUE0_
+  L15_508 = L15_508.formvalue
+  L16_509 = "newPwd"
+  L15_508 = L15_508(L16_509)
+  L16_509 = _UPVALUE0_
+  L16_509 = L16_509.formvalue
+  L17_510 = "oldPwd"
+  L16_509 = L16_509(L17_510)
+  L17_510 = _UPVALUE0_
+  L17_510 = L17_510.formvalue
+  L18_511 = "channel"
+  L17_510 = L17_510(L18_511)
+  L18_511 = _UPVALUE0_
+  L18_511 = L18_511.formvalue
+  L19_512 = "enctype"
+  L18_511 = L18_511(L19_512)
+  L19_512 = _UPVALUE0_
+  L19_512 = L19_512.formvalue
+  L20_513 = "encryption"
+  L19_512 = L19_512(L20_513)
+  L20_513 = nil
+  L21_514 = L0_493.check
+  L22_515 = 0
+  L23_516 = L0_493.KEY_FUNC_WIFI_RELAY
+  L24_517 = 1
+  L21_514(L22_515, L23_516, L24_517)
+  L21_514 = {}
+  L21_514.code = 0
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "band"
+  L22_515 = L22_515(L23_516)
+  L21_514.band = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "nonce"
+  L22_515 = L22_515(L23_516)
+  L21_514.nonce = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "newPwd"
+  L22_515 = L22_515(L23_516)
+  L21_514.newPwd = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "oldPwd"
+  L22_515 = L22_515(L23_516)
+  L21_514.oldPwd = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "nssid"
+  L22_515 = L22_515(L23_516)
+  L21_514.nssid = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "nencryption"
+  L22_515 = L22_515(L23_516)
+  L21_514.nencryption = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "npassword"
+  L22_515 = L22_515(L23_516)
+  L21_514.npassword = L22_515
+  L22_515 = _UPVALUE0_
+  L22_515 = L22_515.formvalue
+  L23_516 = "nssid5G"
+  L22_515 = L22_515(L23_516)
+  L21_514.nssid5G = L22_515
+  if L6_499 then
+    L22_515 = L2_495.appSetWifiAPMode
+    L23_516 = L6_499
+    L24_517 = L7_500
+    L25_518 = L18_511
+    L22_515 = L22_515(L23_516, L24_517, L25_518, L19_512, L14_507, L17_510, bandwidth, L8_501, L9_502, L10_503, L11_504)
+    L20_513 = L22_515
+    L22_515 = L20_513.scan
+    if not L22_515 then
+      L21_514.code = 1617
+    else
+      L22_515 = L20_513.connected
+      if L22_515 then
+        L22_515 = L20_513.ifname
+        L21_514.ifname = L22_515
+        L22_515 = L20_513.ssid
+        L21_514.ssid = L22_515
+        L22_515 = L20_513.password
+        L21_514.password = L22_515
+        L22_515 = L20_513.enctype
+        L21_514.enctype = L22_515
+        L22_515 = L20_513.encryption
+        L21_514.encryption = L22_515
+        L22_515 = L20_513.conerrmsg
+        L21_514.conerrmsg = L22_515
+        L22_515 = L20_513.oldlan
+        L21_514.oldlan = L22_515
+      else
+        L21_514.code = 1616
+        L22_515 = _UPVALUE1_
+        L22_515 = L22_515.getErrorMessage
+        L23_516 = L21_514.code
+        L22_515 = L22_515(L23_516)
+        L23_516 = "("
+        L24_517 = tostring
+        L25_518 = L20_513.ssid
+        L24_517 = L24_517(L25_518)
+        L25_518 = ")"
+        L22_515 = L22_515 .. L23_516 .. L24_517 .. L25_518
+        L21_514.msg = L22_515
+      end
+    end
+  else
+    L21_514.code = 1523
+  end
+  L22_515 = L21_514.code
+  if L22_515 ~= 0 then
+    L22_515 = L21_514.code
+    if L22_515 ~= 1616 then
+      L22_515 = _UPVALUE1_
+      L22_515 = L22_515.getErrorMessage
+      L23_516 = L21_514.code
+      L22_515 = L22_515(L23_516)
+      L21_514.msg = L22_515
+    end
+  end
+  L22_515 = io
+  L22_515 = L22_515.popen
+  L23_516 = "cat /proc/uptime | awk '{print $1}'"
+  L22_515 = L22_515(L23_516)
+  L23_516 = string
+  L23_516 = L23_516.trim
+  L25_518 = L22_515
+  L24_517 = L22_515.read
+  L25_518 = L24_517(L25_518, "*all")
+  L23_516 = L23_516(L24_517, L25_518, L24_517(L25_518, "*all"))
+  L21_514.uptime = L23_516
+  L23_516 = assert
+  L24_517 = io
+  L24_517 = L24_517.open
+  L25_518 = "/tmp/luci_set_wifi_ap_mode_result"
+  L25_518 = L24_517(L25_518, "w")
+  L23_516 = L23_516(L24_517, L25_518, L24_517(L25_518, "w"))
+  L24_517 = L5_498.encode
+  L25_518 = L21_514
+  L24_517 = L24_517(L25_518)
+  L25_518 = L23_516.write
+  L25_518(L23_516, L24_517)
+  L25_518 = L23_516.close
+  L25_518(L23_516)
+  L25_518 = L21_514.code
+  if L25_518 == 0 then
+    L25_518 = tonumber
+    L25_518 = L25_518(os.execute("sleep 2;dhcp_apclient.sh start " .. L21_514.ifname))
+    L0_493.log(6, "dhcpcode:", L25_518)
+    if L25_518 ~= 0 then
+      L25_518 = tonumber(os.execute("sleep 2;dhcp_apclient.sh start br-lan"))
+    end
+  end
+  L25_518 = _UPVALUE0_
+  L25_518 = L25_518.write_json
+  L25_518(L21_514)
+end
+function wifiAPserviceRestart()
+  local L0_519, L1_520, L2_521, L3_522, L4_523, L5_524, L6_525, L7_526, L8_527, L9_528, L10_529, L11_530, L12_531, L13_532
+  L0_519 = require
+  L1_520 = "xiaoqiang.XQLog"
+  L0_519 = L0_519(L1_520)
+  L1_520 = require
+  L2_521 = "xiaoqiang.util.XQSysUtil"
+  L1_520 = L1_520(L2_521)
+  L2_521 = require
+  L3_522 = "xiaoqiang.module.XQAPModule"
+  L2_521 = L2_521(L3_522)
+  L3_522 = tonumber
+  L4_523 = _UPVALUE0_
+  L4_523 = L4_523.formvalue
+  L5_524 = "initialize"
+  L13_532 = L4_523(L5_524)
+  L3_522 = L3_522(L4_523, L5_524, L6_525, L7_526, L8_527, L9_528, L10_529, L11_530, L12_531, L13_532, L4_523(L5_524))
+  if L3_522 == 1 then
+    L3_522 = 1
+  else
+    L3_522 = L3_522 or 0
+  end
+  L4_523 = require
+  L5_524 = "luci.json"
+  L4_523 = L4_523(L5_524)
+  L5_524 = {}
+  L5_524.code = ""
+  L6_525 = io
+  L6_525 = L6_525.open
+  L7_526 = "/tmp/luci_set_wifi_ap_mode_result"
+  L8_527 = "r"
+  L6_525 = L6_525(L7_526, L8_527)
+  if L6_525 == nil then
+    L5_524.code = 2
+  else
+    L8_527 = L6_525
+    L7_526 = L6_525.read
+    L9_528 = "*a"
+    L7_526 = L7_526(L8_527, L9_528)
+    L8_527 = L4_523.decode
+    L9_528 = L7_526
+    L8_527 = L8_527(L9_528)
+    L10_529 = L6_525
+    L9_528 = L6_525.close
+    L9_528(L10_529)
+    L9_528 = io
+    L9_528 = L9_528.popen
+    L10_529 = "cat /proc/uptime | awk '{print $1}'"
+    L9_528 = L9_528(L10_529)
+    L10_529 = string
+    L10_529 = L10_529.trim
+    L12_531 = L9_528
+    L11_530 = L9_528.read
+    L13_532 = "*all"
+    L13_532 = L11_530(L12_531, L13_532)
+    L10_529 = L10_529(L11_530, L12_531, L13_532, L11_530(L12_531, L13_532))
+    L11_530 = L8_527.uptime
+    L11_530 = L10_529 - L11_530
+    if L11_530 > 300 then
+      L5_524.code = 3
+    end
+    L11_530 = L8_527.code
+    if L11_530 then
+      L11_530 = L8_527.code
+      if L11_530 == 0 then
+        L5_524.code = 0
+        L11_530 = L5_524.nonce
+        L12_531 = L5_524.newPwd
+        L13_532 = L5_524.oldPwd
+        if L3_522 == 1 and not XQFunction.isStrNil(L5_524.ssid) then
+          L1_520.setRouterName(L5_524.ssid)
+          if L11_530 and L12_531 and L13_532 then
+            L5_524.code = _savePassword(L11_530, L13_532, L12_531)
+          end
+        end
+        L2_521.setWifiAPModeConfig()
+        L1_520.setInited()
+        L2_521.actionForEnableWifiAP()
+      end
+    end
+    L11_530 = L8_527.msg
+    L5_524.msg = L11_530
+  end
+  L7_526 = _UPVALUE0_
+  L7_526 = L7_526.write_json
+  L8_527 = L5_524
+  L7_526(L8_527)
+end
+function getModeStatus()
+  local L0_533, L1_534, L2_535, L3_536
+  L0_533 = require
+  L1_534 = "luci.json"
+  L0_533 = L0_533(L1_534)
+  L1_534 = {}
+  L1_534.code = ""
+  L2_535 = io
+  L2_535 = L2_535.open
+  L3_536 = "/tmp/luci_set_wifi_ap_mode_result"
+  L2_535 = L2_535(L3_536, "r")
+  if L2_535 == nil then
+    L1_534.code = 2
+  else
+    L3_536 = L2_535.read
+    L3_536 = L3_536(L2_535, "*a")
+    L2_535:close()
+    if L0_533.decode(L3_536).ipaddr and L0_533.decode(L3_536).code == 0 then
+      L1_534.code = 0
+    else
+      L1_534.code = 1
+    end
+  end
+  L3_536 = _UPVALUE0_
+  L3_536 = L3_536.write_json
+  L3_536(L1_534)
+end
+function write_json_tmpfile(A0_537)
+  local L1_538, L2_539
+  if A0_537 == nil then
+    return
+  else
+    L1_538 = type
+    L2_539 = A0_537
+    L1_538 = L1_538(L2_539)
+    if L1_538 == "table" then
+      L1_538 = require
+      L2_539 = "luci.json"
+      L1_538 = L1_538(L2_539)
+      L2_539 = "echo \""
+      L2_539 = L2_539 .. L1_538.decode(A0_537) .. "\" > /tmp/luci_set_auto_wifi_ap_mode_result"
+      os.execute(L2_539)
+    else
+      L1_538 = type
+      L2_539 = A0_537
+      L1_538 = L1_538(L2_539)
+      if L1_538 ~= "number" then
+        L1_538 = type
+        L2_539 = A0_537
+        L1_538 = L1_538(L2_539)
+      else
+        if L1_538 == "boolean" then
+          return
+      end
+      else
+        return
+      end
+    end
+  end
+end
+function setPeerWifiAutoAPMode()
+  local L0_540, L1_541, L2_542, L3_543, L4_544, L5_545, L6_546, L7_547, L8_548, L9_549, L10_550, L11_551, L12_552, L13_553, L14_554, L15_555, L16_556, L17_557, L18_558, L19_559, L20_560, L21_561, L22_562, L23_563, L24_564, L25_565, L26_566
+  L0_540 = require
+  L1_541 = "xiaoqiang.XQLog"
+  L0_540 = L0_540(L1_541)
+  L1_541 = require
+  L2_542 = "xiaoqiang.XQLog"
+  L1_541 = L1_541(L2_542)
+  L2_542 = require
+  L3_543 = "xiaoqiang.common.XQFunction"
+  L2_542 = L2_542(L3_543)
+  L3_543 = require
+  L4_544 = "xiaoqiang.module.XQAPModule"
+  L3_543 = L3_543(L4_544)
+  L4_544 = require
+  L5_545 = "xiaoqiang.util.XQSysUtil"
+  L4_544 = L4_544(L5_545)
+  L5_545 = require
+  L6_546 = "xiaoqiang.util.XQWifiUtil"
+  L5_545 = L5_545(L6_546)
+  L6_546 = require
+  L7_547 = "xiaoqiang.module.XQAPModule"
+  L6_546 = L6_546(L7_547)
+  L7_547 = require
+  L8_548 = "xiaoqiang.module.XQExtendWifi"
+  L7_547 = L7_547(L8_548)
+  L8_548 = require
+  L9_549 = "luci.model.uci"
+  L8_548 = L8_548(L9_549)
+  L8_548 = L8_548.cursor
+  L8_548 = L8_548()
+  L9_549 = {}
+  L9_549.code = 0
+  L10_550 = _UPVALUE0_
+  L10_550 = L10_550.formvalue
+  L11_551 = "ssid"
+  L10_550 = L10_550(L11_551)
+  L11_551 = _UPVALUE0_
+  L11_551 = L11_551.formvalue
+  L12_552 = "password"
+  L11_551 = L11_551(L12_552)
+  L12_552 = _UPVALUE0_
+  L12_552 = L12_552.formvalue
+  L13_553 = "band"
+  L12_552 = L12_552(L13_553)
+  L13_553 = _UPVALUE0_
+  L13_553 = L13_553.formvalue
+  L14_554 = "channel"
+  L13_553 = L13_553(L14_554)
+  L14_554 = _UPVALUE0_
+  L14_554 = L14_554.formvalue
+  L15_555 = "enctype"
+  L14_554 = L14_554(L15_555)
+  L15_555 = _UPVALUE0_
+  L15_555 = L15_555.formvalue
+  L16_556 = "encryption"
+  L15_555 = L15_555(L16_556)
+  L16_556, L17_557, L18_558 = nil, nil, nil
+  L19_559 = L1_541.log
+  L20_560 = 1
+  L21_561 = "ssid:"
+  L22_562 = L10_550
+  L23_563 = " password:"
+  L24_564 = L11_551
+  L25_565 = "band:"
+  L26_566 = L12_552
+  L21_561 = L21_561 .. L22_562 .. L23_563 .. L24_564 .. L25_565 .. L26_566 .. "channel:" .. L13_553 .. "enctype:" .. L14_554 .. "enctyption" .. L15_555
+  L19_559(L20_560, L21_561)
+  L19_559 = L5_545.getAllWifiInfo
+  L19_559 = L19_559()
+  L20_560 = L19_559[1]
+  if L20_560 then
+    L20_560 = L19_559[1]
+    L20_560 = L20_560.status
+    if L20_560 == "1" then
+      L20_560 = L19_559[1]
+      L20_560 = L20_560.ssid
+      self_ssid = L20_560
+      L20_560 = L19_559[1]
+      L17_557 = L20_560.password
+      if L17_557 == nil then
+        L17_557 = ""
+      end
+      L18_558 = "2g"
+    end
+  else
+    L20_560 = L19_559[2]
+    if L20_560 then
+      L20_560 = wifinfo
+      L20_560 = L20_560[2]
+      L20_560 = L20_560.status
+      if L20_560 == "1" then
+        L20_560 = L19_559[2]
+        L20_560 = L20_560.ssid
+        self_ssid = L20_560
+        L20_560 = L19_559[2]
+        L17_557 = L20_560.password
+        L18_558 = "5g"
+        L20_560 = L1_541.log
+        L21_561 = 1
+        L22_562 = "ssid:"
+        L23_563 = self_ssid
+        L24_564 = " password: "
+        L25_565 = L17_557
+        L26_566 = " admin_password: "
+        L22_562 = L22_562 .. L23_563 .. L24_564 .. L25_565 .. L26_566 .. admin_password .. " band" .. L18_558
+        L20_560(L21_561, L22_562)
+      end
+    else
+      L9_549.code = 1646
+      L20_560 = _UPVALUE1_
+      L20_560 = L20_560.getErrorMessage
+      L21_561 = L9_549.code
+      L20_560 = L20_560(L21_561)
+      L9_549.msg = L20_560
+      L20_560 = L1_541.log
+      L21_561 = "get self wifi info error"
+      L20_560(L21_561)
+      L20_560 = _UPVALUE0_
+      L20_560 = L20_560.write_json
+      L21_561 = L9_549
+      L20_560(L21_561)
+      return
+    end
+  end
+  L21_561 = L8_548
+  L20_560 = L8_548.get
+  L22_562 = "account"
+  L23_563 = "common"
+  L24_564 = "admin"
+  L20_560 = L20_560(L21_561, L22_562, L23_563, L24_564)
+  L21_561 = L6_546.extendwifi_set_connect
+  L22_562 = L10_550
+  L23_563 = L11_551
+  L24_564 = L14_554
+  L25_565 = L15_555
+  L26_566 = L12_552
+  L21_561 = L21_561(L22_562, L23_563, L24_564, L25_565, L26_566, L13_553)
+  L22_562 = L21_561.ip
+  if L22_562 ~= "" then
+    L9_549.code = 0
+    L9_549.msg = "connect succces!"
+  else
+    L22_562 = L21_561.connected
+    if L22_562 then
+      L22_562 = L21_561.dhcpcode
+      if L22_562 == 100 then
+        L9_549.code = 1646
+        L22_562 = _UPVALUE1_
+        L22_562 = L22_562.getErrorMessage
+        L23_563 = L9_549.code
+        L22_562 = L22_562(L23_563)
+        L9_549.msg = L22_562
+      else
+        L22_562 = L21_561.dhcpcode
+        if L22_562 == 2 then
+          L9_549.code = 1647
+          L22_562 = _UPVALUE1_
+          L22_562 = L22_562.getErrorMessage
+          L23_563 = L9_549.code
+          L22_562 = L22_562(L23_563)
+          L9_549.msg = L22_562
+        else
+          L22_562 = L21_561.dhcpcode
+          if L22_562 == 102 then
+            L9_549.code = 1648
+            L22_562 = _UPVALUE1_
+            L22_562 = L22_562.getErrorMessage
+            L23_563 = L9_549.code
+            L22_562 = L22_562(L23_563)
+            L9_549.msg = L22_562
+          else
+            L22_562 = L21_561.dhcpcode
+            if L22_562 ~= 105 then
+              L22_562 = L21_561.dhcpcode
+            else
+              if L22_562 == 106 then
+                L9_549.code = 1649
+                L22_562 = _UPVALUE1_
+                L22_562 = L22_562.getErrorMessage
+                L23_563 = L9_549.code
+                L22_562 = L22_562(L23_563)
+                L9_549.msg = L22_562
+            end
+            else
+              L22_562 = L21_561.dhcpcode
+              if L22_562 == 107 then
+                L9_549.code = 1650
+                L22_562 = _UPVALUE1_
+                L22_562 = L22_562.getErrorMessage
+                L23_563 = L9_549.code
+                L22_562 = L22_562(L23_563)
+                L9_549.msg = L22_562
+              else
+                L22_562 = L21_561.dhcpcode
+                if L22_562 ~= 110 then
+                  L22_562 = L21_561.dhcpcode
+                else
+                  if L22_562 == 111 then
+                    L9_549.code = 1651
+                    L22_562 = _UPVALUE1_
+                    L22_562 = L22_562.getErrorMessage
+                    L23_563 = L9_549.code
+                    L22_562 = L22_562(L23_563)
+                    L9_549.msg = L22_562
+                end
+                else
+                  L22_562 = L21_561.dhcpcode
+                  if L22_562 ~= 115 then
+                    L22_562 = L21_561.dhcpcode
+                  else
+                    if L22_562 == 116 then
+                      L9_549.code = 1652
+                      L22_562 = _UPVALUE1_
+                      L22_562 = L22_562.getErrorMessage
+                      L23_563 = L9_549.code
+                      L22_562 = L22_562(L23_563)
+                      L9_549.msg = L22_562
+                  end
+                  else
+                    L9_549.code = 1619
+                    L9_549.msg = "dhcp failed!"
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+      L22_562 = _UPVALUE0_
+      L22_562 = L22_562.write_json
+      L23_563 = L9_549
+      L22_562(L23_563)
+      L22_562 = L1_541.log
+      L23_563 = "dhcp failed"
+      L22_562(L23_563)
+      return
+    else
+      L9_549.code = 1616
+      L9_549.msg = "wifi connect faild!"
+      L22_562 = _UPVALUE0_
+      L22_562 = L22_562.write_json
+      L23_563 = L9_549
+      L22_562(L23_563)
+      L22_562 = L1_541.log
+      L23_563 = "wifi connect failed"
+      L22_562(L23_563)
+      return
+    end
+  end
+  L22_562 = L1_541.log
+  L23_563 = 1
+  L24_564 = "connect peer success"
+  L22_562(L23_563, L24_564)
+  L22_562 = "admin_password="
+  L23_563 = L20_560
+  L24_564 = "&ssid="
+  L25_565 = self_ssid
+  L26_566 = "&password="
+  L22_562 = L22_562 .. L23_563 .. L24_564 .. L25_565 .. L26_566 .. L17_557 .. "&band=" .. L18_558
+  L23_563 = L1_541.log
+  L24_564 = 1
+  L25_565 = "params:"
+  L26_566 = L22_562
+  L25_565 = L25_565 .. L26_566
+  L23_563(L24_564, L25_565)
+  L23_563 = L7_547.ExtendWifiRequestRemoteAPIForLua
+  L24_564 = "/api/xqnetwork/set_wifi_auto_ap_mode"
+  L25_565 = ""
+  L26_566 = L22_562
+  L23_563 = L23_563(L24_564, L25_565, L26_566)
+  L24_564 = L23_563.code
+  if L24_564 == 0 then
+    L24_564 = require
+    L25_565 = "cjson"
+    L24_564 = L24_564(L25_565)
+    L25_565 = L24_564.decode
+    L26_566 = L23_563.msg
+    L25_565 = L25_565(L26_566)
+    L26_566 = L25_565.code
+    if L26_566 == 0 then
+      L26_566 = L1_541.log
+      L26_566(1, "auto wifi ap mode success")
+      L26_566 = {}
+      L26_566.code = 0
+      L26_566.ssid_24g = self_ssid
+      L26_566.ssid_5g = self_ssid .. "_5G"
+      L26_566.password_24g = L17_557
+      L26_566.password_5g = L17_557
+      _UPVALUE0_.write_json(L26_566)
+    else
+      L26_566 = L1_541.log
+      L26_566(1, "auto wifi ap mode error")
+      L26_566 = _UPVALUE0_
+      L26_566 = L26_566.write
+      L26_566(L23_563.msg)
+    end
+  else
+    L24_564 = L1_541.log
+    L25_565 = 1
+    L26_566 = "auto wifi ap mode http request error"
+    L24_564(L25_565, L26_566)
+    L24_564 = _UPVALUE1_
+    L24_564 = L24_564.getErrorMessage
+    L25_565 = L9_549.code
+    L24_564 = L24_564(L25_565)
+    L23_563.msg = L24_564
+    L24_564 = _UPVALUE0_
+    L24_564 = L24_564.write_json
+    L25_565 = L23_563
+    L24_564(L25_565)
+  end
+  L24_564 = L6_546.extednwifi_disconnect
+  L25_565 = L18_558
+  L24_564(L25_565)
+end
+function setWifiAutoApMode()
+  local L0_567, L1_568, L2_569, L3_570, L4_571, L5_572, L6_573, L7_574, L8_575, L9_576, L10_577, L11_578
+  L0_567 = require
+  L1_568 = "xiaoqiang.XQLog"
+  L0_567 = L0_567(L1_568)
+  L1_568 = require
+  L2_569 = "xiaoqiang.common.XQFunction"
+  L1_568 = L1_568(L2_569)
+  L2_569 = require
+  L3_570 = "xiaoqiang.module.XQAPModule"
+  L2_569 = L2_569(L3_570)
+  L3_570 = require
+  L4_571 = "xiaoqiang.util.XQSysUtil"
+  L3_570 = L3_570(L4_571)
+  L4_571 = require
+  L5_572 = "xiaoqiang.util.XQWifiUtil"
+  L4_571 = L4_571(L5_572)
+  L5_572 = require
+  L6_573 = "luci.model.uci"
+  L5_572 = L5_572(L6_573)
+  L5_572 = L5_572.cursor
+  L5_572 = L5_572()
+  L6_573 = {}
+  L6_573.code = 0
+  L7_574 = _UPVALUE0_
+  L7_574 = L7_574.write_json
+  L8_575 = L6_573
+  L7_574(L8_575)
+  L7_574 = _UPVALUE0_
+  L7_574 = L7_574.formvalue
+  L8_575 = "ssid"
+  L7_574 = L7_574(L8_575)
+  L8_575 = _UPVALUE0_
+  L8_575 = L8_575.formvalue
+  L9_576 = "password"
+  L8_575 = L8_575(L9_576)
+  L9_576 = _UPVALUE0_
+  L9_576 = L9_576.formvalue
+  L10_577 = "admin_password"
+  L9_576 = L9_576(L10_577)
+  L10_577 = _UPVALUE0_
+  L10_577 = L10_577.formvalue
+  L11_578 = "band"
+  L10_577 = L10_577(L11_578)
+  L11_578 = L0_567.log
+  L11_578(1, "recv ssid:" .. L7_574 .. " password" .. L8_575 .. " band" .. L10_577)
+  L11_578 = "lua /usr/sbin/set_wifi_auto_ap_mode.lua "
+  L11_578 = L11_578 .. L7_574 .. " " .. L8_575 .. " " .. L10_577 .. " " .. L9_576
+  L0_567.log(1, "run cmd:" .. L11_578)
+  L1_568.forkExec(L11_578)
+end
+function apcli_get_signal()
+  local L0_579, L1_580, L2_581, L3_582, L4_583, L5_584
+  L0_579 = require
+  L1_580 = "xiaoqiang.common.XQFunction"
+  L0_579 = L0_579(L1_580)
+  L1_580 = require
+  L2_581 = "xiaoqiang.util.XQWifiUtil"
+  L1_580 = L1_580(L2_581)
+  L2_581 = {}
+  L2_581.code = 0
+  L2_581.ssid = ""
+  L2_581.signal = 0
+  L2_581.band = ""
+  L3_582 = nil
+  L4_583 = L0_579.getNetMode
+  L4_583 = L4_583()
+  if L4_583 == "wifiapmode" then
+    L5_584 = L1_580.apcli_get_active
+    L5_584 = L5_584()
+    if L1_580.apcli_get_wifinet(L5_584) and not L0_579.isStrNil(L1_580.apcli_get_wifinet(L5_584):signal()) then
+      L2_581.signal = L1_580.miwifiutil_rssi_to_signal(L1_580.apcli_get_wifinet(L5_584):signal())
+      if L1_580.apcli_get_connect(L5_584) == false then
+        L2_581.signal = 0
+      end
+    end
+    L2_581.ssid = L1_580.apcli_get_wifinet(L5_584):ssid()
+    if _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2350") then
+      L3_582 = L1_580.apcli_get_real_signal(L5_584)
+      L2_581.signal = L1_580.miwifiutil_rssi_to_signal(L3_582)
+    end
+  end
+  L5_584 = _UPVALUE1_
+  L5_584 = L5_584.write_json
+  L5_584(L2_581)
+end
+function serviceRestart()
+  local L0_585, L1_586
+  L0_585 = require
+  L1_586 = "xiaoqiang.module.XQAPModule"
+  L0_585 = L0_585(L1_586)
+  L1_586 = {}
+  L1_586.code = 0
+  L0_585.actionForEnableWifiAP()
+  _UPVALUE0_.write_json(L1_586)
+end
+function setLanAP()
+  local L0_587, L1_588, L2_589, L3_590, L4_591, L5_592, L6_593, L7_594, L8_595, L9_596, L10_597
+  L0_587 = require
+  L1_588 = "xiaoqiang.common.XQFunction"
+  L0_587 = L0_587(L1_588)
+  L1_588 = require
+  L2_589 = "xiaoqiang.module.XQAPModule"
+  L1_588 = L1_588(L2_589)
+  L2_589 = require
+  L3_590 = "xiaoqiang.util.XQSysUtil"
+  L2_589 = L2_589(L3_590)
+  L3_590 = require
+  L4_591 = "xiaoqiang.util.XQWifiUtil"
+  L3_590 = L3_590(L4_591)
+  L4_591 = _UPVALUE0_
+  L4_591 = L4_591.formvalue
+  L5_592 = "ssid"
+  L4_591 = L4_591(L5_592)
+  L5_592 = _UPVALUE0_
+  L5_592 = L5_592.formvalue
+  L6_593 = "password"
+  L5_592 = L5_592(L6_593)
+  L6_593 = _UPVALUE0_
+  L6_593 = L6_593.formvalue
+  L7_594 = "nonce"
+  L6_593 = L6_593(L7_594)
+  L7_594 = _UPVALUE0_
+  L7_594 = L7_594.formvalue
+  L8_595 = "newPwd"
+  L7_594 = L7_594(L8_595)
+  L8_595 = _UPVALUE0_
+  L8_595 = L8_595.formvalue
+  L9_596 = "oldPwd"
+  L8_595 = L8_595(L9_596)
+  L9_596 = tonumber
+  L10_597 = _UPVALUE0_
+  L10_597 = L10_597.formvalue
+  L10_597 = L10_597("initialize")
+  L9_596 = L9_596(L10_597, L10_597("initialize"))
+  if L9_596 == 1 then
+    L9_596 = 1
+  else
+    L9_596 = L9_596 or 0
+  end
+  L10_597 = {}
+  L10_597.code = 0
+  if L0_587.getNetMode() == "wifiapmode" then
+    L10_597.code = 1618
+  else
+    if L9_596 == 1 and L4_591 and L5_592 and L6_593 and L7_594 and L8_595 then
+      L10_597.code = _savePassword(L6_593, L8_595, L7_594)
+      if L10_597.code == 0 then
+        L3_590.setWifiBasicInfo(1, L4_591, L5_592, "mixed-psk", nil, nil, 0)
+        L3_590.setWifiBasicInfo(2, L4_591 .. "_5G", L5_592, "mixed-psk", nil, nil, 0)
+        L2_589.setInited()
+        L2_589.setRouterName(L4_591)
+      end
+    end
+    if L10_597.code == 0 then
+      if L1_588.setLanAPMode() then
+        L10_597.ip = L1_588.setLanAPMode()
+      else
+        L10_597.code = 1619
+      end
+    end
+  end
+  if L10_597.code ~= 0 then
+    L10_597.msg = _UPVALUE1_.getErrorMessage(L10_597.code)
+  else
+    L1_588.lanApServiceRestart(true, true)
+  end
+  _UPVALUE0_.write_json(L10_597)
+end
+function disableLanAP()
+  local L0_598, L1_599
+  L0_598 = require
+  L1_599 = "xiaoqiang.module.XQAPModule"
+  L0_598 = L0_598(L1_599)
+  L1_599 = {}
+  L1_599.code = 0
+  L1_599.ip = L0_598.disableLanAP()
+  L0_598.lanApServiceRestart(false, true)
+  _UPVALUE0_.write_json(L1_599)
+end
+function channelScanStart()
+  local L0_600, L1_601
+  L0_600 = require
+  L1_601 = "xiaoqiang.util.XQWifiUtil"
+  L0_600 = L0_600(L1_601)
+  L1_601 = {}
+  L1_601.code = 0
+  L0_600.wifiChannelQuality()
+  _UPVALUE0_.write_json(L1_601)
+end
+function getScanResult()
+  local L0_602, L1_603
+  L0_602 = require
+  L1_603 = "xiaoqiang.util.XQWifiUtil"
+  L0_602 = L0_602(L1_603)
+  L1_603 = {}
+  L1_603.code = 0
+  if L0_602.getAllWifiInfo()[1] and L0_602.getAllWifiInfo()[1].status == "1" then
+    L1_603["2G"] = L0_602.scanWifiChannel(1)
+  end
+  L1_603.status = 1
+  _UPVALUE0_.write_json(L1_603)
+end
+function setChannel()
+  local L0_604, L1_605, L2_606, L3_607
+  L0_604 = require
+  L1_605 = "xiaoqiang.util.XQWifiUtil"
+  L0_604 = L0_604(L1_605)
+  L1_605 = tonumber
+  L2_606 = _UPVALUE0_
+  L2_606 = L2_606.formvalue
+  L3_607 = "channel1"
+  L3_607 = L2_606(L3_607)
+  L1_605 = L1_605(L2_606, L3_607, L2_606(L3_607))
+  L2_606 = tonumber
+  L3_607 = _UPVALUE0_
+  L3_607 = L3_607.formvalue
+  L3_607 = L3_607("channel2")
+  L2_606 = L2_606(L3_607, L3_607("channel2"))
+  L3_607 = {}
+  L3_607.code = 0
+  L0_604.iwprivSetChannel(L1_605, L2_606)
+  _UPVALUE0_.write_json(L3_607)
+end
+function getDiagDeviceList()
+  local L0_608, L1_609, L2_610, L3_611, L4_612, L5_613, L6_614, L7_615, L8_616, L9_617, L10_618, L11_619, L12_620, L13_621, L14_622, L15_623, L16_624, L17_625, L18_626
+  L0_608 = require
+  L1_609 = "luci.util"
+  L0_608 = L0_608(L1_609)
+  L1_609 = require
+  L2_610 = "xiaoqiang.util.XQDeviceUtil"
+  L1_609 = L1_609(L2_610)
+  L2_610 = require
+  L3_611 = "xiaoqiang.util.XQWifiUtil"
+  L2_610 = L2_610(L3_611)
+  L3_611 = require
+  L4_612 = "luci.model.uci"
+  L3_611 = L3_611(L4_612)
+  L3_611 = L3_611.cursor
+  L3_611 = L3_611()
+  L4_612 = {}
+  L4_612.code = 0
+  L5_613 = io
+  L5_613 = L5_613.open
+  L6_614 = "/tmp/diag_sta_sig"
+  L7_615 = "w+"
+  L5_613 = L5_613(L6_614, L7_615)
+  L6_614 = L0_608.trim
+  L7_615 = L0_608.exec
+  L8_616 = string
+  L8_616 = L8_616.format
+  L18_626 = L8_616(L9_617)
+  L18_626 = L7_615(L8_616, L9_617, L10_618, L11_619, L12_620, L13_621, L14_622, L15_623, L16_624, L17_625, L18_626, L8_616(L9_617))
+  L6_614 = L6_614(L7_615, L8_616, L9_617, L10_618, L11_619, L12_620, L13_621, L14_622, L15_623, L16_624, L17_625, L18_626, L7_615(L8_616, L9_617, L10_618, L11_619, L12_620, L13_621, L14_622, L15_623, L16_624, L17_625, L18_626, L8_616(L9_617)))
+  L8_616 = L5_613
+  L7_615 = L5_613.write
+  L18_626 = L9_617(L10_618, L11_619)
+  L7_615(L8_616, L9_617, L10_618, L11_619, L12_620, L13_621, L14_622, L15_623, L16_624, L17_625, L18_626, L9_617(L10_618, L11_619))
+  L7_615 = L1_609.getDeviceList
+  L8_616 = true
+  L7_615 = L7_615(L8_616, L9_617)
+  L7_615 = L7_615 or {}
+  L8_616 = {}
+  for L12_620, L13_621 in L9_617(L10_618) do
+    L14_622 = 0
+    L15_623 = 0
+    L16_624 = 0
+    L17_625 = 0
+    L18_626 = tonumber
+    L18_626 = L18_626(L13_621.port)
+    if L18_626 ~= 1 then
+      L18_626 = tonumber
+      L18_626 = L18_626(L13_621.port)
+      if L18_626 ~= 2 then
+        L18_626 = tonumber
+        L18_626 = L18_626(L13_621.port)
+      end
+    elseif L18_626 == 3 then
+      L18_626 = L2_610.getWifiDeviceSignal
+      L18_626 = L18_626(string.upper(L13_621.mac))
+      L14_622 = L18_626
+      L18_626 = L2_610.getWifiDeviceSpeed
+      L18_626 = L18_626(string.upper(L13_621.mac))
+      L18_626 = L18_626.upspeed
+      L16_624 = L18_626 / 1000
+      L18_626 = L2_610.getWifiDeviceSpeed
+      L18_626 = L18_626(string.upper(L13_621.mac))
+      L18_626 = L18_626.downspeed
+      L17_625 = L18_626 / 1000
+      L18_626 = tonumber
+      L18_626 = L18_626(L3_611:get("diag", "config", "signal_thr") or "-60")
+      signal_thr = L18_626
+      L18_626 = signal_thr
+      if L14_622 < L18_626 then
+        L15_623 = 1
+      end
+    end
+    L18_626 = table
+    L18_626 = L18_626.insert
+    L18_626(L8_616, {
+      name = L13_621.name,
+      mac = string.upper(L13_621.mac),
+      ip = L13_621.ip,
+      port = L13_621.port,
+      signal = L14_622,
+      signal_warning = L15_623,
+      upspeed = L16_624,
+      downspeed = L17_625,
+      onlinetime = L13_621.statistics.online
+    })
+    L18_626 = "PASS"
+    if L15_623 == 1 then
+      L18_626 = "FAIL"
+    end
+    if L13_621.port ~= 0 then
+      L5_613:write(string.format("name:%s, mac: %s, signal:%s, result:%s\n", L13_621.name, string.upper(L13_621.mac), L14_622, L18_626))
+    end
+  end
+  L9_617(L10_618)
+  L9_617(L10_618)
+  L4_612.devicelist = L8_616
+  L9_617(L10_618)
+end
+function getDiagDiskInfo()
+  local L0_627, L1_628, L2_629, L3_630, L4_631, L5_632, L6_633, L7_634, L8_635, L9_636
+  L0_627 = require
+  L1_628 = "luci.util"
+  L0_627 = L0_627(L1_628)
+  L1_628 = {}
+  L1_628.code = 0
+  L2_629 = {}
+  L3_630 = L0_627.execl
+  L9_636 = L4_631(L5_632)
+  L3_630 = L3_630(L4_631, L5_632, L6_633, L7_634, L8_635, L9_636, L4_631(L5_632))
+  for L7_634, L8_635 in L4_631(L5_632) do
+    L9_636 = L0_627.trim
+    L9_636 = L9_636(L0_627.exec(string.format("basename %s", L8_635)))
+    table.insert(L2_629, {
+      diskname = L9_636,
+      disktype = L0_627.trim(L0_627.exec(string.format("getdisk bus %s", L9_636)))
+    })
+  end
+  L1_628.disklist = L2_629
+  return L1_628
+end
+function getDiagUdiskStatus()
+  local L0_637, L1_638, L2_639
+  L0_637 = {}
+  L0_637.code = 0
+  L0_637.status = 0
+  L1_638 = getDiagDiskInfo
+  L1_638 = L1_638()
+  L2_639 = L1_638.disklist
+  for _FORV_6_, _FORV_7_ in ipairs(L2_639) do
+    if _FORV_7_.disktype:match("^USB") then
+      L0_637.status = 1
+      break
+    end
+  end
+  _UPVALUE0_.write_json(L0_637)
+end
+function getDiagDiskStatus()
+  local L0_640, L1_641, L2_642
+  L0_640 = {}
+  L0_640.code = 0
+  L0_640.status = 0
+  L1_641 = getDiagDiskInfo
+  L1_641 = L1_641()
+  L2_642 = L1_641.disklist
+  for _FORV_6_, _FORV_7_ in ipairs(L2_642) do
+    if _FORV_7_.disktype:match("^SATA") then
+      L0_640.status = 1
+      break
+    end
+  end
+  _UPVALUE0_.write_json(L0_640)
+end
+function diagWifiTest()
+  local L0_643, L1_644, L2_645, L3_646, L4_647, L5_648, L6_649, L7_650, L8_651, L9_652, L10_653, L11_654, L12_655, L13_656, L14_657, L15_658, L16_659, L17_660, L18_661
+  L0_643 = require
+  L1_644 = "luci.util"
+  L0_643 = L0_643(L1_644)
+  L1_644 = require
+  L2_645 = "xiaoqiang.util.XQDeviceUtil"
+  L1_644 = L1_644(L2_645)
+  L2_645 = require
+  L3_646 = "luci.model.uci"
+  L2_645 = L2_645(L3_646)
+  L2_645 = L2_645.cursor
+  L2_645 = L2_645()
+  L3_646 = 8
+  L4_647 = 2 * L3_646
+  L4_647 = L4_647 + 2
+  L5_648 = nil
+  L7_650 = L2_645
+  L6_649 = L2_645.get
+  L8_651 = "diag"
+  L9_652 = "config"
+  L10_653 = "iperf_test_thr"
+  L6_649 = L6_649(L7_650, L8_651, L9_652, L10_653)
+  L6_649 = L6_649 or 25
+  L7_650 = 1
+  L8_651 = "/tmp/iperf_test_result"
+  L9_652 = {}
+  L9_652.code = 0
+  L10_653 = io
+  L10_653 = L10_653.open
+  L11_654 = "/tmp/diag_sta_iperf"
+  L12_655 = "w+"
+  L10_653 = L10_653(L11_654, L12_655)
+  L11_654 = L0_643.trim
+  L12_655 = L0_643.exec
+  L13_656 = string
+  L13_656 = L13_656.format
+  L14_657 = "date"
+  L18_661 = L13_656(L14_657)
+  L18_661 = L12_655(L13_656, L14_657, L15_658, L16_659, L17_660, L18_661, L13_656(L14_657))
+  L11_654 = L11_654(L12_655, L13_656, L14_657, L15_658, L16_659, L17_660, L18_661, L12_655(L13_656, L14_657, L15_658, L16_659, L17_660, L18_661, L13_656(L14_657)))
+  L13_656 = L10_653
+  L12_655 = L10_653.write
+  L14_657 = string
+  L14_657 = L14_657.format
+  L15_658 = "station iperf test at %s, result is:\n"
+  L16_659 = L11_654
+  L18_661 = L14_657(L15_658, L16_659)
+  L12_655(L13_656, L14_657, L15_658, L16_659, L17_660, L18_661, L14_657(L15_658, L16_659))
+  L12_655 = L1_644.getDeviceList
+  L13_656 = true
+  L14_657 = true
+  L12_655 = L12_655(L13_656, L14_657)
+  L12_655 = L12_655 or {}
+  L13_656 = {}
+  L14_657, L15_658, L16_659, L17_660, L18_661 = nil, nil, nil, nil, nil
+  for _FORV_22_, _FORV_23_ in ipairs(L12_655) do
+    L0_643.exec(string.format("timeout -t %d /usr/bin/iperf -c %s -d -t %d > %s.%d", L4_647, _FORV_23_.ip, L3_646, L8_651, L7_650))
+    L5_648 = L0_643.trim(L0_643.exec(string.format("cat %s.%d | grep \"Mbits/sec\" | wc -l", L8_651, L7_650)))
+    if tonumber(L5_648) == 2 then
+      L16_659 = L0_643.trim(L0_643.exec(string.format("cat %s.%d | awk -F 'Bytes' '/Bytes/{print $2}' | awk -F ' ' '{print $1}' | awk 'NR==1'", L8_651, L7_650)))
+      L17_660 = L0_643.trim(L0_643.exec(string.format("cat %s.%d | awk -F 'Bytes' '/Bytes/{print $2}' | awk -F ' ' '{print $1}' | awk 'NR==2'", L8_651, L7_650)))
+      if tonumber(L16_659) > tonumber(L6_649) and tonumber(L17_660) > tonumber(L6_649) then
+        L14_657 = "PASS"
+        L15_658 = "0"
+      else
+        L14_657 = "FAIL"
+        L15_658 = "2"
+      end
+    else
+      L14_657 = "FAIL"
+      L15_658 = "1"
+      L16_659 = "0"
+      L17_660 = "0"
+    end
+    table.insert(L13_656, {
+      name = _FORV_23_.name,
+      mac = string.upper(_FORV_23_.mac),
+      ip = _FORV_23_.ip,
+      testresult = L14_657,
+      testresultcode = L15_658,
+      downlink = L16_659,
+      uplink = L17_660
+    })
+    if tonumber(L15_658) == 2 then
+      L18_661 = "throughput not meet standards"
+    elseif tonumber(L15_658) == 1 then
+      L18_661 = "iperf server not start"
+    else
+      L18_661 = "success"
+    end
+    L10_653:write(string.format("name:%s, mac: %s, downlink:%s, uplink:%s, result:%s, reason:%s\n", _FORV_23_.name, string.upper(_FORV_23_.mac), L16_659, L17_660, L14_657, L18_661))
+    L7_650 = L7_650 + 1
+  end
+  L10_653:flush()
+  L10_653:close()
+  L9_652.devicetestlist = L13_656
+  _UPVALUE0_.write_json(L9_652)
+end
+function diagUsbTest()
+  local L0_662, L1_663, L2_664, L3_665, L4_666, L5_667, L6_668, L7_669, L8_670, L9_671, L10_672, L11_673, L12_674, L13_675, L14_676, L15_677, L16_678
+  L0_662 = require
+  L1_663 = "luci.util"
+  L0_662 = L0_662(L1_663)
+  L1_663 = require
+  L2_664 = "luci.model.uci"
+  L1_663 = L1_663(L2_664)
+  L1_663 = L1_663.cursor
+  L1_663 = L1_663()
+  L3_665 = L1_663
+  L2_664 = L1_663.get
+  L4_666 = "misc"
+  L5_667 = "hardware"
+  L6_668 = "model"
+  L2_664 = L2_664(L3_665, L4_666, L5_667, L6_668)
+  L2_664 = L2_664 or ""
+  if L2_664 then
+    L3_665 = string
+    L3_665 = L3_665.lower
+    L4_666 = L2_664
+    L3_665 = L3_665(L4_666)
+    L2_664 = L3_665
+  end
+  L3_665 = {}
+  L3_665.code = 0
+  L3_665.usbname = "none"
+  L3_665.usbtype = "none"
+  L3_665.usbspeed = "0"
+  L3_665.usbtestresult = "FAIL"
+  L4_666 = 0
+  L5_667 = nil
+  L6_668 = "/tmp/usbtestrst.txt"
+  L7_669 = tostring
+  L9_671 = L1_663
+  L8_670 = L1_663.get
+  L10_672 = "diag"
+  L11_673 = "config"
+  L12_674 = "usb_write_thr"
+  L8_670 = L8_670(L9_671, L10_672, L11_673, L12_674)
+  L8_670 = L8_670 or 2.561E-320
+  L7_669 = L7_669(L8_670)
+  L8_670 = tostring
+  L10_672 = L1_663
+  L9_671 = L1_663.get
+  L11_673 = "diag"
+  L12_674 = "config"
+  L13_675 = "usb_read_thr"
+  L9_671 = L9_671(L10_672, L11_673, L12_674, L13_675)
+  L9_671 = L9_671 or 1.0435E-320
+  L8_670 = L8_670(L9_671)
+  L9_671 = 1
+  L10_672 = 0
+  L11_673 = io
+  L11_673 = L11_673.open
+  L12_674 = "/tmp/diag_usb_test"
+  L13_675 = "w+"
+  L11_673 = L11_673(L12_674, L13_675)
+  L12_674 = L0_662.trim
+  L13_675 = L0_662.exec
+  L14_676 = string
+  L14_676 = L14_676.format
+  L14_676 = L14_676(L15_677)
+  L14_676 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677))
+  L12_674 = L12_674(L13_675, L14_676, L15_677, L16_678, L13_675(L14_676, L15_677, L16_678, L14_676(L15_677)))
+  L14_676 = L11_673
+  L13_675 = L11_673.write
+  L13_675(L14_676, L15_677, L16_678, L15_677(L16_678, L12_674))
+  L14_676 = L2_664
+  L13_675 = L2_664.match
+  L13_675 = L13_675(L14_676, L15_677)
+  if L13_675 then
+    L13_675 = L0_662.trim
+    L14_676 = L0_662.exec
+    L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+    L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+    L9_671 = L13_675
+    L13_675 = L0_662.trim
+    L14_676 = L0_662.exec
+    L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+    L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+    L10_672 = L13_675
+    L13_675 = tonumber
+    L14_676 = L10_672
+    L13_675 = L13_675(L14_676)
+    if L13_675 == 1 then
+      L3_665.usbtype = "3.0"
+      L13_675 = L0_662.trim
+      L14_676 = L0_662.exec
+      L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+      L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+      L3_665.usbspeed = L13_675
+    else
+      L13_675 = tonumber
+      L14_676 = L9_671
+      L13_675 = L13_675(L14_676)
+      if L13_675 == 1 then
+        L3_665.usbtype = "2.0"
+        L13_675 = L0_662.trim
+        L14_676 = L0_662.exec
+        L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+        L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+        L3_665.usbspeed = L13_675
+      end
+    end
+  else
+    L14_676 = L2_664
+    L13_675 = L2_664.match
+    L13_675 = L13_675(L14_676, L15_677)
+    if not L13_675 then
+      L14_676 = L2_664
+      L13_675 = L2_664.match
+      L13_675 = L13_675(L14_676, L15_677)
+    else
+      if L13_675 then
+        L13_675 = L0_662.trim
+        L14_676 = L0_662.exec
+        L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+        L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+        L9_671 = L13_675
+        L13_675 = L0_662.trim
+        L14_676 = L0_662.exec
+        L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+        L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+        L10_672 = L13_675
+        L13_675 = tonumber
+        L14_676 = L10_672
+        L13_675 = L13_675(L14_676)
+        if L13_675 == 1 then
+          L3_665.usbtype = "3.0"
+          L13_675 = L0_662.trim
+          L14_676 = L0_662.exec
+          L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+          L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+          L3_665.usbspeed = L13_675
+        else
+          L13_675 = tonumber
+          L14_676 = L9_671
+          L13_675 = L13_675(L14_676)
+          if L13_675 == 1 then
+            L3_665.usbtype = "2.0"
+            L13_675 = L0_662.trim
+            L14_676 = L0_662.exec
+            L14_676 = L14_676(L15_677, L16_678, L15_677(L16_678))
+            L13_675 = L13_675(L14_676, L15_677, L16_678, L14_676(L15_677, L16_678, L15_677(L16_678)))
+            L3_665.usbspeed = L13_675
+          end
+        end
+    end
+    else
+      L14_676 = L2_664
+      L13_675 = L2_664.match
+      L13_675 = L13_675(L14_676, L15_677)
+      if not L13_675 then
+        L14_676 = L2_664
+        L13_675 = L2_664.match
+        L13_675 = L13_675(L14_676, L15_677)
+        if not L13_675 then
+          L14_676 = L2_664
+          L13_675 = L2_664.match
+          L13_675 = L13_675(L14_676, L15_677)
+          if not L13_675 then
+            L14_676 = L2_664
+            L13_675 = L2_664.match
+            L13_675 = L13_675(L14_676, L15_677)
+          end
+        end
+      elseif L13_675 then
+        L3_665.usbtype = "2.0"
+        L3_665.usbspeed = "480"
+      end
+    end
+  end
+  L13_675 = getDiagDiskInfo
+  L13_675 = L13_675()
+  L14_676 = L13_675.disklist
+  for _FORV_18_, _FORV_19_ in L15_677(L16_678) do
+    if _FORV_19_.disktype:match("^USB") then
+      L4_666 = 1
+      L5_667 = _FORV_19_.diskname
+      break
+    end
+  end
+  if L15_677 == 1 then
+    L3_665.usbname = L15_677
+    L16_678(string.format("date > %s", L6_668))
+    L0_662.exec(string.format("echo 'wr_thr:%s, rd_thr:%s, result:%s' >> %s", L7_669, L8_670, L16_678, L6_668))
+    if L16_678:match("^PASS") then
+      L3_665.usbtestresult = "PASS"
+    end
+    L3_665.usbtestlog = L0_662.trim(L0_662.exec(string.format("cat %s", L6_668)))
+  end
+  L15_677(L16_678, string.format([[
+%s
+usbtype:%s, usbspeed:%s
+]], L3_665.usbtestresult, L3_665.usbtype, L3_665.usbspeed))
+  L15_677(L16_678)
+  L15_677(L16_678)
+  L15_677(L16_678)
+end
+function diagHddStatus()
+  local L0_679, L1_680, L2_681, L3_682, L4_683, L5_684, L6_685
+  L0_679 = require
+  L1_680 = "luci.util"
+  L0_679 = L0_679(L1_680)
+  L1_680 = {}
+  L1_680.code = 0
+  L1_680.diskname = "none"
+  L1_680.hddstatus = "PASS"
+  L2_681 = io
+  L2_681 = L2_681.open
+  L3_682 = "/tmp/diag_disk_smart"
+  L4_683 = "w+"
+  L2_681 = L2_681(L3_682, L4_683)
+  L3_682 = L0_679.trim
+  L4_683 = L0_679.exec
+  L5_684 = string
+  L5_684 = L5_684.format
+  L6_685 = "date"
+  L6_685 = L5_684(L6_685)
+  L6_685 = L4_683(L5_684, L6_685, L5_684(L6_685))
+  L3_682 = L3_682(L4_683, L5_684, L6_685, L4_683(L5_684, L6_685, L5_684(L6_685)))
+  L5_684 = L2_681
+  L4_683 = L2_681.write
+  L6_685 = string
+  L6_685 = L6_685.format
+  L6_685 = L6_685("disk smart info test at %s, result is:", L3_682)
+  L4_683(L5_684, L6_685, L6_685("disk smart info test at %s, result is:", L3_682))
+  L4_683 = 0
+  L5_684 = getDiagDiskInfo
+  L5_684 = L5_684()
+  L6_685 = L5_684.disklist
+  for _FORV_10_, _FORV_11_ in ipairs(L6_685) do
+    if _FORV_11_.disktype:match("^SATA") then
+      L4_683 = 1
+      L1_680.diskname = _FORV_11_.diskname
+      break
+    end
+  end
+  if tonumber(L4_683) == 1 and L0_679.trim(L0_679.exec(string.format("/usr/sbin/hddstatus && echo PASS || echo FAIL"))):match("^FAIL") then
+    L1_680.hddstatus = "FAIL"
+  end
+  L2_681:write(string.format("%s\n", L1_680.hddstatus))
+  L2_681:flush()
+  L2_681:close()
+  _UPVALUE0_.write_json(L1_680)
+end
+function diagDiskTest()
+  local L0_686, L1_687, L2_688, L3_689, L4_690, L5_691, L6_692, L7_693, L8_694, L9_695, L10_696, L11_697, L12_698, L13_699
+  L0_686 = require
+  L1_687 = "luci.util"
+  L0_686 = L0_686(L1_687)
+  L1_687 = require
+  L2_688 = "luci.model.uci"
+  L1_687 = L1_687(L2_688)
+  L1_687 = L1_687.cursor
+  L1_687 = L1_687()
+  L2_688 = {}
+  L2_688.code = 0
+  L2_688.diskname = "none"
+  L2_688.diskrdtestresult = "PASS"
+  L3_689 = nil
+  L4_690 = 0
+  L5_691 = "/tmp/disktestrst.txt"
+  L6_692 = tostring
+  L8_694 = L1_687
+  L7_693 = L1_687.get
+  L9_695 = "diag"
+  L10_696 = "config"
+  L11_697 = "disk_write_thr"
+  L7_693 = L7_693(L8_694, L9_695, L10_696, L11_697)
+  L7_693 = L7_693 or 3.573E-320
+  L6_692 = L6_692(L7_693)
+  L7_693 = tostring
+  L9_695 = L1_687
+  L8_694 = L1_687.get
+  L10_696 = "diag"
+  L11_697 = "config"
+  L8_694 = L8_694(L9_695, L10_696, L11_697, L12_698)
+  L8_694 = L8_694 or 3.573E-320
+  L7_693 = L7_693(L8_694)
+  L8_694 = io
+  L8_694 = L8_694.open
+  L9_695 = "/tmp/diag_disk_rd_test"
+  L10_696 = "w+"
+  L8_694 = L8_694(L9_695, L10_696)
+  L9_695 = L0_686.trim
+  L10_696 = L0_686.exec
+  L11_697 = string
+  L11_697 = L11_697.format
+  L11_697 = L11_697(L12_698)
+  L11_697 = L10_696(L11_697, L12_698, L13_699, L11_697(L12_698))
+  L9_695 = L9_695(L10_696, L11_697, L12_698, L13_699, L10_696(L11_697, L12_698, L13_699, L11_697(L12_698)))
+  L11_697 = L8_694
+  L10_696 = L8_694.write
+  L10_696(L11_697, L12_698, L13_699, L12_698(L13_699, L9_695))
+  L10_696 = getDiagDiskInfo
+  L10_696 = L10_696()
+  L11_697 = L10_696.disklist
+  for _FORV_15_, _FORV_16_ in L12_698(L13_699) do
+    if _FORV_16_.disktype:match("^SATA") then
+      L4_690 = 1
+      L3_689 = _FORV_16_.diskname
+      L2_688.diskname = L3_689
+      break
+    end
+  end
+  if L12_698 == 1 then
+    L13_699(string.format("date > %s", L5_691))
+    L0_686.exec(string.format("echo 'wr_thr:%s, rd_thr:%s, result:%s' >> %s", L6_692, L7_693, L13_699, L5_691))
+    if L13_699:match("^FAIL") then
+      L2_688.diskrdtestresult = "FAIL"
+    end
+  end
+  L12_698(L13_699, string.format("%s\n", L2_688.diskrdtestresult))
+  L12_698(L13_699)
+  L12_698(L13_699)
+  L12_698(L13_699)
+end
+function getDiagParas()
+  local L0_700, L1_701
+  L0_700 = require
+  L1_701 = "luci.model.uci"
+  L0_700 = L0_700(L1_701)
+  L0_700 = L0_700.cursor
+  L0_700 = L0_700()
+  L1_701 = {}
+  L1_701.code = 0
+  L1_701.signal_thr = L0_700:get("diag", "config", "signal_thr") or "-60"
+  L1_701.iperf_test_thr = L0_700:get("diag", "config", "iperf_test_thr") or 25
+  L1_701.usb_write_thr = L0_700:get("diag", "config", "usb_write_thr") or 0
+  L1_701.usb_read_thr = L0_700:get("diag", "config", "usb_read_thr") or 0
+  L1_701.disk_write_thr = L0_700:get("diag", "config", "disk_write_thr") or 0
+  L1_701.disk_read_thr = L0_700:get("diag", "config", "disk_read_thr") or 0
+  _UPVALUE0_.write_json(L1_701)
+end
+function setDiagParas()
+  local L0_702, L1_703, L2_704, L3_705, L4_706, L5_707, L6_708, L7_709, L8_710
+  L0_702 = require
+  L1_703 = "luci.model.uci"
+  L0_702 = L0_702(L1_703)
+  L0_702 = L0_702.cursor
+  L0_702 = L0_702()
+  L1_703 = _UPVALUE0_
+  L1_703 = L1_703.formvalue
+  L2_704 = "signal_thr"
+  L1_703 = L1_703(L2_704)
+  L2_704 = _UPVALUE0_
+  L2_704 = L2_704.formvalue
+  L3_705 = "iperf_test_thr"
+  L2_704 = L2_704(L3_705)
+  L3_705 = _UPVALUE0_
+  L3_705 = L3_705.formvalue
+  L4_706 = "usb_write_thr"
+  L3_705 = L3_705(L4_706)
+  L4_706 = _UPVALUE0_
+  L4_706 = L4_706.formvalue
+  L5_707 = "usb_read_thr"
+  L4_706 = L4_706(L5_707)
+  L5_707 = _UPVALUE0_
+  L5_707 = L5_707.formvalue
+  L6_708 = "disk_write_thr"
+  L5_707 = L5_707(L6_708)
+  L6_708 = _UPVALUE0_
+  L6_708 = L6_708.formvalue
+  L7_709 = "disk_read_thr"
+  L6_708 = L6_708(L7_709)
+  L7_709 = {}
+  L7_709.code = 0
+  L8_710 = "[`$|;&]"
+  if string.find(L3_705, L8_710) or string.find(L4_706, L8_710) or string.find(L5_707, L8_710) or string.find(L6_708, L8_710) then
+    L7_709.code = 4294967295
+    _UPVALUE0_.write_json(L7_709)
+    return
+  end
+  if L1_703 ~= nil then
+    L0_702:set("diag", "config", "signal_thr", L1_703)
+  end
+  if L2_704 ~= nil then
+    L0_702:set("diag", "config", "iperf_test_thr", L2_704)
+  end
+  if L3_705 ~= nil and L4_706 ~= nil and (L3_705 ~= 0 or L4_706 ~= 0) then
+    L0_702:set("diag", "config", "usb_write_thr", L3_705)
+    L0_702:set("diag", "config", "usb_read_thr", L4_706)
+  end
+  if L5_707 ~= nil and L6_708 ~= nil and (L5_707 ~= 0 or L6_708 ~= 0) then
+    L0_702:set("diag", "config", "disk_write_thr", L5_707)
+    L0_702:set("diag", "config", "disk_read_thr", L6_708)
+  end
+  if L1_703 ~= nil or L2_704 ~= nil or L3_705 ~= nil or L4_706 ~= nil then
+    L0_702:commit("diag")
+  end
+  _UPVALUE0_.write_json(L7_709)
+end
+function addtofile(A0_711, A1_712)
+  local L2_713
+  if io.open(A0_711, "r") then
+    L2_713 = io.open(A0_711, "r"):read("*a")
+    io.open(A0_711, "r"):close()
+    if L2_713 == nil then
+      return false
+    end
+  else
+    return false
+  end
+  if io.open(A1_712, "a") then
+    if io.open(A1_712, "a"):write(L2_713) == nil then
+      io.open(A1_712, "a"):close()
+      return false
+    end
+    io.open(A1_712, "a"):write(string.format("\n"))
+    io.open(A1_712, "a"):close()
+    return true
+  else
+    return false
+  end
+end
+function getDiagLog()
+  local L0_714, L1_715, L2_716, L3_717, L4_718, L5_719, L6_720, L7_721, L8_722, L9_723, L10_724, L11_725, L12_726, L13_727, L14_728
+  L0_714 = require
+  L1_715 = "xiaoqiang.util.XQNetUtil"
+  L0_714 = L0_714(L1_715)
+  L1_715 = require
+  L2_716 = "luci.util"
+  L1_715 = L1_715(L2_716)
+  L2_716 = require
+  L3_717 = "luci.model.uci"
+  L2_716 = L2_716(L3_717)
+  L2_716 = L2_716.cursor
+  L2_716 = L2_716()
+  L3_717 = require
+  L4_718 = "nixio.fs"
+  L3_717 = L3_717(L4_718)
+  L4_718 = require
+  L5_719 = "luci.sys"
+  L4_718 = L4_718(L5_719)
+  L5_719 = "/tmp/syslogbackup/"
+  L7_721 = L2_716
+  L6_720 = L2_716.get
+  L8_722 = "network"
+  L9_723 = "lan"
+  L10_724 = "ipaddr"
+  L6_720 = L6_720(L7_721, L8_722, L9_723, L10_724)
+  L6_720 = L6_720 or "192.168.31.1"
+  L7_721 = {}
+  L7_721.code = 0
+  L8_722 = "/tmp/diag_test.log"
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_net_spd"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_sta_sig"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_sta_iperf"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_usb_test"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_disk_smart"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  L9_723 = addtofile
+  L10_724 = "/tmp/diag_disk_rd_test"
+  L11_725 = L8_722
+  L9_723(L10_724, L11_725)
+  function L9_723()
+    return _UPVALUE0_.process.info("uid") == _UPVALUE1_.stat(_UPVALUE2_, "uid") and _UPVALUE1_.stat(_UPVALUE2_, "modestr") == "rwx------"
+  end
+  sane = L9_723
+  function L9_723()
+    _UPVALUE0_.mkdir(_UPVALUE1_, 700)
+  end
+  prepare = L9_723
+  L9_723 = sane
+  L9_723 = L9_723()
+  if not L9_723 then
+    L9_723 = prepare
+    L9_723()
+  else
+    L9_723 = os
+    L9_723 = L9_723.execute
+    L10_724 = "rm "
+    L11_725 = L5_719
+    L12_726 = "*.diag.log"
+    L10_724 = L10_724 .. L11_725 .. L12_726
+    L9_723(L10_724)
+  end
+  L9_723 = L3_717.access
+  L10_724 = L8_722
+  L9_723 = L9_723(L10_724)
+  if L9_723 then
+    L9_723 = L0_714.getSN
+    L9_723 = L9_723()
+    L10_724 = string
+    L10_724 = L10_724.find
+    L11_725 = L9_723
+    L12_726 = "/"
+    L11_725 = L10_724(L11_725, L12_726)
+    L12_726 = string
+    L12_726 = L12_726.sub
+    L13_727 = L9_723
+    L14_728 = 1
+    L12_726 = L12_726(L13_727, L14_728, L11_725 - 1)
+    L13_727 = string
+    L13_727 = L13_727.sub
+    L14_728 = L9_723
+    L13_727 = L13_727(L14_728, L11_725 + 1, string.len(L9_723))
+    L14_728 = L12_726
+    L14_728 = L14_728 .. "-" .. L13_727 .. "--" .. os.date("%Y-%m-%d--%X", os.time()) .. ".diag.log"
+    L1_715.exec("cp " .. L8_722 .. " " .. L5_719 .. L14_728)
+    L1_715.exec("rm " .. L8_722)
+    L7_721.logUrl = L6_720 .. "/backup/log/" .. L14_728
+  else
+    L7_721.code = 1
+    L7_721.msg = "There is no diag test log, not test yet?"
+  end
+  L9_723 = _UPVALUE0_
+  L9_723 = L9_723.write_json
+  L10_724 = L7_721
+  L9_723(L10_724)
+end
+function setWifiWeakInfo()
+  local L0_729, L1_730, L2_731, L3_732, L4_733, L5_734, L6_735, L7_736
+  L0_729 = require
+  L1_730 = "xiaoqiang.util.XQWifiUtil"
+  L0_729 = L0_729(L1_730)
+  L1_730 = require
+  L2_731 = "xiaoqiang.common.XQFunction"
+  L1_730 = L1_730(L2_731)
+  L2_731 = {}
+  L3_732 = 0
+  L4_733 = tonumber
+  L5_734 = _UPVALUE0_
+  L5_734 = L5_734.formvalue
+  L6_735 = "wifiIndex"
+  L7_736 = L5_734(L6_735)
+  L4_733 = L4_733(L5_734, L6_735, L7_736, L5_734(L6_735))
+  L5_734 = _UPVALUE0_
+  L5_734 = L5_734.formvalue
+  L6_735 = "weakenable"
+  L5_734 = L5_734(L6_735)
+  L6_735 = _UPVALUE0_
+  L6_735 = L6_735.formvalue
+  L7_736 = "weakthreshold"
+  L6_735 = L6_735(L7_736)
+  L7_736 = _UPVALUE0_
+  L7_736 = L7_736.formvalue
+  L7_736 = L7_736("kickthreshold")
+  if L0_729.setWifiWeakInfo(L4_733, L5_734, L6_735, L7_736) == false then
+    L3_732 = 1502
+  end
+  if L3_732 ~= 0 then
+    L2_731.msg = _UPVALUE1_.getErrorMessage(L3_732)
+  end
+  L2_731.code = L3_732
+  _UPVALUE0_.write_json(L2_731)
+  if L3_732 == 0 then
+    _UPVALUE0_.close()
+    L1_730.forkRestartWifi()
+  end
+end
+function getWifiWeakInfo()
+  local L0_737, L1_738
+  L0_737 = require
+  L1_738 = "xiaoqiang.util.XQWifiUtil"
+  L0_737 = L0_737(L1_738)
+  L1_738 = {}
+  L1_738.code, L1_738.info = 0, L0_737.getWifiWeakInfo()
+  _UPVALUE0_.write_json(L1_738)
+end
+function miscanSwitch()
+  local L0_739, L1_740, L2_741
+  L0_739 = require
+  L1_740 = "xiaoqiang.util.XQWifiUtil"
+  L0_739 = L0_739(L1_740)
+  L1_740 = {}
+  L1_740.code = 0
+  L2_741 = tonumber
+  L2_741 = L2_741(_UPVALUE0_.formvalue("on"))
+  if L2_741 == 1 then
+    L2_741 = true
+  else
+    L2_741 = L2_741 or false
+  end
+  if not L0_739.miscanSwitch(L2_741) then
+    L1_740.code = 1606
+  end
+  if L1_740.code ~= 0 then
+    L1_740.msg = _UPVALUE1_.getErrorMessage(L1_740.code)
+  end
+  _UPVALUE0_.write_json(L1_740)
+end
+function getMiscanSwitch()
+  local L0_742, L1_743
+  L0_742 = require
+  L1_743 = "xiaoqiang.util.XQWifiUtil"
+  L0_742 = L0_742(L1_743)
+  L1_743 = {}
+  L1_743.code = 0
+  L1_743.enabled = tonumber(L0_742.getMiscanSwitch())
+  _UPVALUE0_.write_json(L1_743)
+end

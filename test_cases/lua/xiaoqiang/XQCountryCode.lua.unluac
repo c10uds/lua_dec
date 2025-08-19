@@ -1,0 +1,197 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.XQCountryCode", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function _(A0_1)
+  return _UPVALUE0_.translate(A0_1)
+end
+COUNTRY_CODE = {
+  {
+    c = "CN",
+    n = _("\228\184\173\229\155\189\229\164\167\233\153\134"),
+    p = true
+  },
+  {
+    c = "HK",
+    n = _("\233\166\153\230\184\175\229\156\176\229\140\186"),
+    p = true
+  },
+  {
+    c = "TW",
+    n = _("\229\143\176\230\185\190\229\156\176\229\140\186"),
+    p = true
+  },
+  {
+    c = "KR",
+    n = _("\233\159\169\229\155\189"),
+    p = true
+  },
+  {
+    c = "US",
+    n = _("\231\190\142\229\155\189"),
+    p = false
+  },
+  {
+    c = "SG",
+    n = _("\230\150\176\229\138\160\229\157\161"),
+    p = false
+  },
+  {
+    c = "MY",
+    n = _("\233\169\172\230\157\165\232\165\191\228\186\154"),
+    p = false
+  },
+  {
+    c = "IN",
+    n = _("\229\141\176\229\186\166"),
+    p = false
+  },
+  {
+    c = "CA",
+    n = _("\229\138\160\230\139\191\229\164\167"),
+    p = false
+  },
+  {
+    c = "FR",
+    n = _("\230\179\149\229\155\189"),
+    p = false
+  },
+  {
+    c = "DE",
+    n = _("\229\190\183\229\155\189"),
+    p = false
+  },
+  {
+    c = "IT",
+    n = _("\230\132\143\229\164\167\229\136\169"),
+    p = false
+  },
+  {
+    c = "ES",
+    n = _("\232\165\191\231\143\173\231\137\153"),
+    p = false
+  },
+  {
+    c = "PH",
+    n = _("\232\143\178\229\190\139\229\174\190"),
+    p = false
+  },
+  {
+    c = "ID",
+    n = _("\229\141\176\229\186\166\229\176\188\232\165\191\228\186\154"),
+    p = false
+  },
+  {
+    c = "TH",
+    n = _("\230\179\176\229\155\189"),
+    p = false
+  },
+  {
+    c = "VN",
+    n = _("\232\182\138\229\141\151"),
+    p = false
+  },
+  {
+    c = "BR",
+    n = _("\229\183\180\232\165\191"),
+    p = false
+  },
+  {
+    c = "RU",
+    n = _("\228\191\132\231\189\151\230\150\175"),
+    p = false
+  },
+  {
+    c = "MX",
+    n = _("\229\162\168\232\165\191\229\147\165"),
+    p = false
+  },
+  {
+    c = "TR",
+    n = _("\229\156\159\232\128\179\229\133\182"),
+    p = false
+  },
+  {
+    c = "EU",
+    n = _("\230\172\167\230\180\178"),
+    p = true
+  }
+}
+REGION = {
+  CN = {region = 1, regionABand = 0},
+  TW = {region = 0, regionABand = 13},
+  HK = {region = 1, regionABand = 0},
+  US = {region = 0, regionABand = 10},
+  EU = {region = 1, regionABand = 6},
+  KR = {region = 1, regionABand = 23},
+  ID = {region = 1, regionABand = 5}
+}
+LANGUAGE = {
+  CN = "zh_cn",
+  TW = "zh_tw",
+  HK = "zh_hk",
+  US = "en",
+  EU = "en",
+  KR = "ko_kr",
+  ID = "en_id"
+}
+JLANGUAGE = {
+  zh_cn = "zh_CN",
+  zh_tw = "zh_TW",
+  zh_hk = "zh_HK",
+  en = "en_US",
+  ko_kr = "ko_KR",
+  en_id = "en_ID"
+}
+function getCountryCodeList()
+  local L0_2
+  L0_2 = {}
+  for _FORV_4_, _FORV_5_ in ipairs(COUNTRY_CODE) do
+    if _FORV_5_ and _FORV_5_.p then
+      table.insert(L0_2, {
+        name = _FORV_5_.n,
+        code = _FORV_5_.c
+      })
+    end
+  end
+  return L0_2
+end
+function getCurrentCountryCode()
+  local L0_3, L1_4
+  L0_3 = require
+  L1_4 = "xiaoqiang.util.XQSysUtil"
+  L0_3 = L0_3(L1_4)
+  L1_4 = _UPVALUE0_
+  L1_4 = L1_4.nvramGet
+  L1_4 = L1_4("CountryCode")
+  if _UPVALUE0_.isStrNil(L1_4) then
+    return "CN"
+  end
+  return L1_4
+end
+function getBDataCountryCode()
+  local L0_5, L1_6
+  L0_5 = require
+  L1_6 = "xiaoqiang.util.XQSysUtil"
+  L0_5 = L0_5(L1_6)
+  L1_6 = _UPVALUE0_
+  L1_6 = L1_6.bdataGet
+  L1_6 = L1_6("CountryCode")
+  if _UPVALUE0_.isStrNil(L1_6) then
+    return "CN"
+  end
+  return L1_6
+end
+function setCurrentCountryCode(A0_7)
+  if _UPVALUE0_.isStrNil(A0_7) or REGION[A0_7] == nil or LANGUAGE[A0_7] == nil then
+    return false
+  end
+  _UPVALUE0_.nvramSet("CountryCode", A0_7)
+  _UPVALUE0_.nvramCommit()
+  require("xiaoqiang.util.XQWifiUtil").setWifiRegion(A0_7, REGION[A0_7].region, REGION[A0_7].regionABand)
+  return true
+end
+function getCurrentJLan()
+  return JLANGUAGE[require("xiaoqiang.util.XQSysUtil").getLang() or "zh_cn"]
+end

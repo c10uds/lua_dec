@@ -1,0 +1,24 @@
+module("aeslua.buffer", package.seeall)
+aeslua.buffer = {}
+;({}).new = function()
+  local L0_0, L1_1
+  L0_0 = {}
+  return L0_0
+end
+;({}).addString = function(A0_2, A1_3)
+  table.insert(A0_2, A1_3)
+  for _FORV_5_ = #A0_2 - 1, 1, 4294967295 do
+    if #A0_2[_FORV_5_] > #A0_2[_FORV_5_ + 1] then
+      break
+    end
+    A0_2[_FORV_5_] = A0_2[_FORV_5_] .. table.remove(A0_2)
+  end
+end
+;({}).toString = function(A0_4)
+  local L2_5, L3_6, L4_7
+  for _FORV_4_ = L2_5 - 1, 1, 4294967295 do
+    A0_4[_FORV_4_] = A0_4[_FORV_4_] .. table.remove(A0_4)
+  end
+  return L2_5
+end
+return {}

@@ -1,0 +1,79 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15
+L2_2 = ...
+L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L3_3 = L1_1:taboption("general", Value, "username", translate("PAP/CHAP username"))
+L4_4 = L1_1:taboption("general", Value, "password", translate("PAP/CHAP password"))
+L4_4.password = true
+L5_5 = L1_1:taboption("general", Value, "ac", translate("Access Concentrator"), translate("Leave empty to autodetect"))
+L5_5.placeholder = translate("auto")
+L6_6 = L1_1:taboption("general", Value, "service", translate("Service Name"), translate("Leave empty to autodetect"))
+L6_6.placeholder = translate("auto")
+if luci.model.network:has_ipv6() then
+  L7_7 = L1_1:taboption("advanced", Flag, "ipv6", translate("Enable IPv6 negotiation on the PPP link"))
+  L7_7.default = L7_7.disabled
+end
+L8_8 = L1_1:taboption("advanced", Flag, "defaultroute", translate("Use default gateway"), translate("If unchecked, no default route is configured"))
+L8_8.default = L8_8.enabled
+L9_9 = L1_1:taboption("advanced", Value, "metric", translate("Use gateway metric"))
+L9_9.placeholder = "0"
+L9_9.datatype = "uinteger"
+L9_9:depends("defaultroute", L8_8.enabled)
+L10_10 = L1_1:taboption("advanced", Flag, "peerdns", translate("Use DNS servers advertised by peer"), translate("If unchecked, the advertised DNS server addresses are ignored"))
+L10_10.default = L10_10.enabled
+L11_11 = L1_1:taboption("advanced", DynamicList, "dns", translate("Use custom DNS servers"))
+L11_11:depends("peerdns", "")
+L11_11.datatype = "ipaddr"
+L11_11.cast = "string"
+L12_12 = L1_1:taboption("advanced", Value, "_keepalive_failure", translate("LCP echo failure threshold"), translate("Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures"))
+function L12_12.cfgvalue(A0_16, A1_17)
+  local L2_18
+  L2_18 = m
+  L2_18 = L2_18.get
+  L2_18 = L2_18(L2_18, A1_17, "keepalive")
+  if L2_18 and #L2_18 > 0 then
+    return tonumber(L2_18:match("^(%d+)[ ,]+%d+") or L2_18)
+  end
+end
+function L12_12.write()
+  local L0_19, L1_20
+end
+function L12_12.remove()
+  local L0_21, L1_22
+end
+L12_12.placeholder = "0"
+L12_12.datatype = "uinteger"
+L13_13 = L1_1:taboption("advanced", Value, "_keepalive_interval", translate("LCP echo interval"), translate("Send LCP echo requests at the given interval in seconds, only effective in conjunction with failure threshold"))
+function L13_13.cfgvalue(A0_23, A1_24)
+  if m:get(A1_24, "keepalive") and #m:get(A1_24, "keepalive") > 0 then
+    return tonumber(m:get(A1_24, "keepalive"):match("^%d+[ ,]+(%d+)"))
+  end
+end
+function L13_13.write(A0_25, A1_26, A2_27)
+  local L3_28, L4_29
+  L3_28 = tonumber
+  L4_29 = _UPVALUE0_
+  L4_29 = L4_29.formvalue
+  L4_29 = L4_29(L4_29, A1_26)
+  L3_28 = L3_28(L4_29, L4_29(L4_29, A1_26))
+  L3_28 = L3_28 or 0
+  L4_29 = tonumber
+  L4_29 = L4_29(A2_27)
+  L4_29 = L4_29 or 5
+  if L4_29 < 1 then
+    L4_29 = 1
+  end
+  if L3_28 > 0 then
+    m:set(A1_26, "keepalive", "%d %d" % {L3_28, L4_29})
+  else
+    m:del(A1_26, "keepalive")
+  end
+end
+L13_13.remove = L13_13.write
+L13_13.placeholder = "5"
+L13_13.datatype = "min(1)"
+L14_14 = L1_1:taboption("advanced", Value, "demand", translate("Inactivity timeout"), translate("Close inactive connection after the given amount of seconds, use 0 to persist connection"))
+L14_14.placeholder = "0"
+L14_14.datatype = "uinteger"
+L15_15 = L1_1:taboption("advanced", Value, "mtu", translate("Override MTU"))
+L15_15.placeholder = "1500"
+L15_15.datatype = "max(1500)"

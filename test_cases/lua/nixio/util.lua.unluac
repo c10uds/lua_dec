@@ -1,0 +1,331 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14
+L0_0 = require
+L1_1 = "table"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "nixio"
+L1_1 = L1_1(L2_2)
+L2_2 = getmetatable
+L3_3 = assert
+L4_4 = pairs
+L5_5 = type
+L6_6 = tostring
+L7_7 = module
+L8_8 = "nixio.util"
+L7_7(L8_8)
+L7_7 = L1_1.const
+L7_7 = L7_7.buffersize
+L8_8 = 65536
+L9_9 = L1_1.meta_socket
+L10_10 = L1_1.meta_tls_socket
+L11_11 = L1_1.meta_file
+L12_12 = L1_1.uname
+L12_12 = L12_12()
+L13_13 = L12_12.sysname
+L13_13 = L13_13 == "Linux" and L13_13 == "2.4"
+function L14_14(A0_15, A1_16)
+  local L2_17, L3_18, L4_19, L5_20, L7_21, L8_22
+  L2_17 = A1_16 or {}
+  if A0_15 then
+    for L7_21 in A0_15, nil, nil do
+      L8_22 = #L2_17
+      L8_22 = L8_22 + 1
+      L2_17[L8_22] = L7_21
+    end
+  end
+  return L2_17
+end
+consume = L14_14
+L14_14 = {}
+function L14_14.is_socket(A0_23)
+  return _UPVALUE0_(A0_23) == _UPVALUE1_
+end
+function L14_14.is_tls_socket(A0_24)
+  return _UPVALUE0_(A0_24) == _UPVALUE1_
+end
+function L14_14.is_file(A0_25)
+  return _UPVALUE0_(A0_25) == _UPVALUE1_
+end
+function L14_14.readall(A0_26, A1_27)
+  local L2_28, L3_29, L4_30, L5_31, L6_32, L7_33
+  L3_29 = A0_26
+  L2_28 = A0_26.read
+  L4_30 = A1_27 or _UPVALUE0_
+  L4_30 = L2_28(L3_29, L4_30)
+  if not L2_28 then
+    L5_31 = nil
+    L6_32 = L3_29
+    L7_33 = L4_30
+    return L5_31, L6_32, L7_33, ""
+  else
+    L5_31 = #L2_28
+    if L5_31 == 0 then
+      L5_31 = ""
+      L6_32, L7_33 = nil, nil
+      return L5_31, L6_32, L7_33, ""
+    end
+  end
+  L5_31 = {L6_32}
+  L6_32 = L2_28
+  L6_32 = #L2_28
+  while not A1_27 or A1_27 > L6_32 do
+    L7_33 = A0_26.read
+    L3_29, L4_30, L7_33 = A0_26, A1_27 and A1_27 - L6_32 or _UPVALUE0_, L7_33(A0_26, A1_27 and A1_27 - L6_32 or _UPVALUE0_)
+    L2_28 = L7_33
+    if not L2_28 then
+      L7_33 = nil
+      return L7_33, L3_29, L4_30, _UPVALUE1_.concat(L5_31)
+    else
+      L7_33 = #L2_28
+      if L7_33 == 0 then
+        break
+      end
+    end
+    L7_33 = #L5_31
+    L7_33 = L7_33 + 1
+    L5_31[L7_33], L6_32 = L2_28, L6_32 + #L2_28
+  end
+  L7_33 = #L5_31
+  if L7_33 > 1 then
+    L7_33 = _UPVALUE1_
+    L7_33 = L7_33.concat
+    L7_33 = L7_33(L5_31)
+  else
+    L7_33 = L7_33 or L5_31[1]
+  end
+  return L7_33, nil, nil, L7_33
+end
+L14_14.recvall = L14_14.readall
+function L14_14.writeall(A0_34, A1_35)
+  local L2_36, L3_37, L4_38, L5_39
+  L2_36 = _UPVALUE0_
+  L3_37 = A1_35
+  L2_36 = L2_36(L3_37)
+  A1_35 = L2_36
+  L3_37 = A0_34
+  L2_36 = A0_34.write
+  L4_38 = A1_35
+  L4_38 = L2_36(L3_37, L4_38)
+  if not L2_36 then
+    L5_39 = nil
+    return L5_39, L3_37, L4_38, 0
+  end
+  L5_39 = L2_36
+  while L5_39 < #A1_35 do
+    L2_36, L3_37, L4_38 = A0_34:write(A1_35, L5_39)
+    if not L2_36 then
+      return nil, L3_37, L4_38, L5_39
+    end
+    L5_39 = L5_39 + L2_36
+  end
+  return L5_39, nil, nil, L5_39
+end
+L14_14.sendall = L14_14.writeall
+function L14_14.linesource(A0_40, A1_41)
+  local L4_42
+  A1_41 = A1_41 or _UPVALUE0_
+  L4_42 = ""
+  return function(A0_43)
+    local L1_44, L2_45, L3_46, L4_47, L5_48, L6_49
+    if A0_43 then
+      L4_47 = _UPVALUE0_
+      L5_48 = L4_47
+      L4_47 = L4_47.sub
+      L6_49 = _UPVALUE1_
+      L6_49 = L6_49 + 1
+      L4_47 = L4_47(L5_48, L6_49)
+      L1_44 = L4_47
+      L4_47 = _UPVALUE2_
+      L5_48 = A0_43
+      L4_47 = L4_47(L5_48)
+      L4_47 = L4_47 == "string" and A0_43 or ""
+      _UPVALUE0_ = L4_47
+      L4_47 = 0
+      _UPVALUE1_ = L4_47
+      return L1_44
+    end
+    while not L1_44 do
+      L4_47 = _UPVALUE0_
+      L5_48 = L4_47
+      L4_47 = L4_47.find
+      L6_49 = "(.-)\r?\n"
+      L6_49 = L4_47(L5_48, L6_49, _UPVALUE1_ + 1)
+      L1_44 = L6_49
+      L2_45 = L5_48
+      L3_46 = L4_47
+      if L1_44 then
+        _UPVALUE1_ = L2_45
+        return L1_44
+      else
+        L4_47 = _UPVALUE0_
+        L4_47 = #L4_47
+        L5_48 = _UPVALUE3_
+        L6_49 = _UPVALUE1_
+        L5_48 = L5_48 + L6_49
+        if L4_47 < L5_48 then
+          L4_47 = _UPVALUE4_
+          L5_48 = L4_47
+          L4_47 = L4_47.read
+          L6_49 = _UPVALUE3_
+          L6_49 = L6_49 + _UPVALUE1_
+          L6_49 = L6_49 - #_UPVALUE0_
+          L6_49 = L4_47(L5_48, L6_49)
+          if not L4_47 then
+            return nil, L5_48, L6_49
+          elseif #L4_47 == 0 then
+            return nil
+          end
+          _UPVALUE0_ = _UPVALUE0_:sub(_UPVALUE1_ + 1) .. L4_47
+          _UPVALUE1_ = 0
+        else
+          L4_47 = nil
+          L5_48 = 0
+          return L4_47, L5_48
+        end
+      end
+    end
+  end
+end
+function L14_14.blocksource(A0_50, A1_51, A2_52)
+  local L3_53
+  A1_51 = A1_51 or _UPVALUE0_
+  function L3_53()
+    local L0_54, L1_55, L2_56, L3_57
+    L0_54 = _UPVALUE0_
+    L1_55 = _UPVALUE1_
+    if L1_55 then
+      L1_55 = _UPVALUE1_
+      if L1_55 < 1 then
+        L1_55 = nil
+        return L1_55
+      else
+        L1_55 = _UPVALUE1_
+        if L0_54 > L1_55 then
+          L0_54 = _UPVALUE1_
+        end
+      end
+    end
+    L1_55 = _UPVALUE2_
+    L2_56 = L1_55
+    L1_55 = L1_55.read
+    L3_57 = L0_54
+    L3_57 = L1_55(L2_56, L3_57)
+    if not L1_55 then
+      return nil, L2_56, L3_57
+    elseif #L1_55 == 0 then
+      return nil
+    else
+      if _UPVALUE1_ then
+        _UPVALUE1_ = _UPVALUE1_ - #L1_55
+      end
+      return L1_55
+    end
+  end
+  return L3_53
+end
+function L14_14.sink(A0_58, A1_59)
+  local L2_60
+  function L2_60(A0_61, A1_62)
+    if not A0_61 and not A1_62 and _UPVALUE0_ then
+      if _UPVALUE1_.shutdown then
+        _UPVALUE1_:shutdown()
+      end
+      _UPVALUE1_:close()
+    elseif A0_61 and #A0_61 > 0 then
+      return _UPVALUE1_:writeall(A0_61)
+    end
+    return true
+  end
+  return L2_60
+end
+function L14_14.copy(A0_63, A1_64, A2_65)
+  local L3_66, L4_67, L5_68, L6_69, L7_70, L8_71
+  L4_67 = A0_63
+  L3_66 = A0_63.blocksource
+  L5_68 = nil
+  L6_69 = A2_65
+  L3_66 = L3_66(L4_67, L5_68, L6_69)
+  L5_68 = A1_64
+  L4_67 = A1_64.sink
+  L4_67 = L4_67(L5_68)
+  L5_68 = 0
+  L6_69, L7_70, L8_71 = nil, nil, nil
+  repeat
+    L6_69, L7_70, L8_71 = L3_66()
+    L4_67(L6_69, L7_70, L8_71)
+    L5_68 = L6_69 and L5_68 + #L6_69 or L5_68
+  until not L6_69
+  if not L7_70 then
+  else
+  end
+  return L5_68 or nil, L7_70, L8_71, L5_68
+end
+function L14_14.copyz(A0_72, A1_73, A2_74)
+  local L3_75, L4_76, L5_77, L6_78, L7_79
+  L3_75 = 0
+  L4_76, L5_77, L6_78, L7_79 = nil, nil, nil, nil
+  if not _UPVALUE0_ and A0_72:is_file() then
+    if _UPVALUE1_.sendfile and A1_73:is_socket() and A0_72:stat("type") == "reg" then
+      repeat
+        L4_76, L5_77, L6_78 = _UPVALUE1_.sendfile(A1_73, A0_72, A2_74 or _UPVALUE2_)
+        if L4_76 then
+          L3_75 = L3_75 + L4_76
+          A2_74 = A2_74 and A2_74 - L4_76
+        end
+      until not L4_76 or L4_76 == 0 or A2_74 and A2_74 == 0
+      if L4_76 or not L4_76 and L3_75 == 0 and L5_77 ~= _UPVALUE1_.const.ENOSYS and L5_77 ~= _UPVALUE1_.const.EINVAL then
+        return L4_76 and L3_75, L5_77, L6_78, L3_75
+      end
+    elseif _UPVALUE1_.splice and not A1_73:is_tls_socket() and A0_72:stat("type") == "fifo" then
+      L7_79 = true
+    end
+  end
+  L7_79 = not _UPVALUE1_.splice or not A1_73:is_file() or L7_79 or not A0_72:is_tls_socket() and A1_73:stat("type") == "fifo"
+  if L7_79 then
+    repeat
+      L4_76, L5_77, L6_78 = _UPVALUE1_.splice(A0_72, A1_73, A2_74 or _UPVALUE2_)
+      if L4_76 then
+        L3_75 = L3_75 + L4_76
+        A2_74 = A2_74 and A2_74 - L4_76
+      end
+    until not L4_76 or L4_76 == 0 or A2_74 and A2_74 == 0
+    if L4_76 or not L4_76 and L3_75 == 0 and L5_77 ~= _UPVALUE1_.const.ENOSYS and L5_77 ~= _UPVALUE1_.const.EINVAL then
+      return L4_76 and L3_75, L5_77, L6_78, L3_75
+    end
+  end
+  return A0_72:copy(A1_73, A2_74)
+end
+if L10_10 then
+  function L10_10.close(A0_80)
+    return A0_80.socket:close()
+  end
+  function L10_10.getsockname(A0_81)
+    return A0_81.socket:getsockname()
+  end
+  function L10_10.getpeername(A0_82)
+    return A0_82.socket:getpeername()
+  end
+  function L10_10.getsockopt(A0_83, ...)
+    local L3_85, L4_86
+    L3_85 = A0_83.socket
+    L4_86 = L3_85
+    L3_85 = L3_85.getsockopt
+    return L3_85(L4_86, ...)
+  end
+  L10_10.getopt = L10_10.getsockopt
+  function L10_10.setsockopt(A0_87, ...)
+    local L3_89, L4_90
+    L3_89 = A0_87.socket
+    L4_90 = L3_89
+    L3_89 = L3_89.setsockopt
+    return L3_89(L4_90, ...)
+  end
+  L10_10.setopt = L10_10.setsockopt
+end
+for _FORV_18_, _FORV_19_ in L4_4(L14_14) do
+  L11_11[_FORV_18_] = _FORV_19_
+  L9_9[_FORV_18_] = _FORV_19_
+  if L10_10 then
+    L10_10[_FORV_18_] = _FORV_19_
+  end
+end

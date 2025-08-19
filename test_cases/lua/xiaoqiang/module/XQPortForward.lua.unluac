@@ -1,0 +1,316 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQPortForward", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function hookLanIPChangeEvent(A0_1)
+  if _UPVALUE0_.isStrNil(A0_1) then
+    return
+  end
+  require("luci.model.uci").cursor():foreach("firewall", "redirect", function(A0_2)
+    local L1_3, L2_4
+    L1_3 = tonumber
+    L2_4 = A0_2.ftype
+    L1_3 = L1_3(L2_4)
+    if L1_3 then
+      L2_4 = A0_2.dest_ip
+      L2_4 = _UPVALUE0_ .. "." .. L2_4:match(".(%d+)$")
+      _UPVALUE1_:set("firewall", A0_2[".name"], "dest_ip", L2_4)
+    end
+  end)
+  require("luci.model.uci").cursor():commit("firewall")
+end
+function _protoHelper(A0_5)
+  if A0_5 and type(A0_5) == "number" then
+    if A0_5 == 1 then
+      return "tcp"
+    elseif A0_5 == 2 then
+      return "udp"
+    elseif A0_5 == 3 then
+      return "tcpudp"
+    else
+      return "tcp"
+    end
+  end
+  if A0_5 and type("proto") == "string" then
+    if A0_5 == "tcp" then
+      return 1
+    elseif A0_5 == "udp" then
+      return 2
+    elseif A0_5 == "tcpudp" then
+      return 3
+    else
+      return 1
+    end
+  end
+  return nil
+end
+function _portCheck(A0_6)
+  if A0_6 and type(A0_6) == "number" and A0_6 > 0 then
+    return true
+  else
+    return false
+  end
+end
+function _portRangeOverlap(A0_7, A1_8)
+  if A0_7 and A1_8 then
+    A0_7 = tostring(A0_7)
+    A1_8 = tostring(A1_8)
+    if A0_7:match("-") then
+      ({}).f = tonumber(require("luci.util").split(A0_7, "-")[1])
+      ;({}).t = tonumber(require("luci.util").split(A0_7, "-")[2])
+    else
+      ({}).f = tonumber(A0_7)
+      ;({}).t = tonumber(A0_7)
+    end
+    if A1_8:match("-") then
+      ({}).f = tonumber(require("luci.util").split(A1_8, "-")[1])
+      ;({}).t = tonumber(require("luci.util").split(A1_8, "-")[2])
+    else
+      ({}).f = tonumber(A1_8)
+      ;({}).t = tonumber(A1_8)
+    end
+    if ({}).f >= ({}).f and ({}).f <= ({}).t or ({}).t >= ({}).f and ({}).t <= ({}).t or ({}).t >= ({}).t and ({}).f <= ({}).f then
+      return true
+    end
+  end
+  return false
+end
+function _portConflictCheck(A0_9)
+  require("luci.model.uci").cursor():foreach("firewall", "redirect", function(A0_10)
+    if _portRangeOverlap(_UPVALUE0_, A0_10.src_dport) then
+      _UPVALUE1_ = true
+    end
+  end)
+  return false
+end
+function _portConflictCheckWithProto(A0_11, A1_12)
+  require("luci.model.uci").cursor():foreach("firewall", "redirect", function(A0_13)
+    if (_protoHelper(A0_13.proto) == _UPVALUE0_ or _UPVALUE0_ == 3 or _protoHelper(A0_13.proto) == 3) and _portRangeOverlap(_UPVALUE1_, A0_13.src_dport) then
+      _UPVALUE2_ = true
+    end
+  end)
+  return false
+end
+function moduleOn()
+  return 0 < #portForwards(0)
+end
+function portForwardInfo()
+  if require("xiaoqiang.module.XQDMZModule").moduleOn() then
+    ({}).status = 2
+  else
+    ({}).status = moduleOn() and 1 or 0
+  end
+  return {}
+end
+function portForwards(A0_14)
+  require("luci.model.uci").cursor():foreach("firewall", "redirect", function(A0_15)
+    local L1_16, L2_17
+    L1_16 = tonumber
+    L2_17 = A0_15.ftype
+    L1_16 = L1_16(L2_17)
+    if L1_16 then
+      L2_17 = _UPVALUE0_
+    else
+      if L2_17 ~= 0 then
+        L2_17 = _UPVALUE0_
+    end
+    elseif L2_17 == L1_16 then
+      L2_17 = {}
+      L2_17.name = A0_15.name
+      L2_17.destip = A0_15.dest_ip
+      L2_17.proto = _protoHelper(A0_15.proto) or 1
+      if L1_16 == 1 then
+        L2_17.srcport = tonumber(A0_15.src_dport)
+        L2_17.destport = A0_15.dest_port
+        L2_17.ftype = 1
+      elseif L1_16 == 2 then
+        L2_17.ftype = 2
+        L2_17.srcport = {
+          f = tonumber(require("luci.util").split(A0_15.src_dport, "-")[1]),
+          t = tonumber(require("luci.util").split(A0_15.src_dport, "-")[2])
+        }
+      end
+      table.insert(_UPVALUE1_, L2_17)
+    end
+  end)
+  return {}
+end
+function setPortForward(A0_18, A1_19, A2_20, A3_21, A4_22)
+  local L5_23, L6_24, L7_25
+  L5_23 = _UPVALUE0_
+  L5_23 = L5_23.isStrNil
+  L6_24 = A1_19
+  L5_23 = L5_23(L6_24)
+  if not L5_23 then
+    L5_23 = _portCheck
+    L6_24 = tonumber
+    L7_25 = A2_20
+    L7_25 = L6_24(L7_25)
+    L5_23 = L5_23(L6_24, L7_25, L6_24(L7_25))
+    if L5_23 then
+      L5_23 = _portCheck
+      L6_24 = tonumber
+      L7_25 = A3_21
+      L7_25 = L6_24(L7_25)
+      L5_23 = L5_23(L6_24, L7_25, L6_24(L7_25))
+      if L5_23 then
+        L5_23 = require
+        L6_24 = "luci.model.uci"
+        L5_23 = L5_23(L6_24)
+        L5_23 = L5_23.cursor
+        L5_23 = L5_23()
+        L6_24 = portForwardInfo
+        L6_24 = L6_24()
+        L6_24 = L6_24.status
+        if L6_24 == 2 then
+          L6_24 = 3
+          return L6_24
+        end
+        L6_24 = _portConflictCheckWithProto
+        L7_25 = A2_20
+        L6_24 = L6_24(L7_25, A4_22)
+        if L6_24 then
+          L6_24 = 2
+          return L6_24
+        end
+        L6_24 = string
+        L6_24 = L6_24.format
+        L7_25 = "wan%srdr%s"
+        L6_24 = L6_24(L7_25, tostring(A2_20), tostring(A4_22))
+        L7_25 = {}
+        L7_25.src = "wan"
+        L7_25.src_dport = A2_20
+        L7_25.proto = _protoHelper(tonumber(A4_22)) or "tcp"
+        L7_25.target = "DNAT"
+        L7_25.dest = "lan"
+        L7_25.dest_port = A3_21
+        L7_25.dest_ip = A1_19
+        L7_25.ftype = 1
+        L7_25.name = A0_18 or ""
+        L5_23:section("firewall", "redirect", L6_24, L7_25)
+        L5_23:commit("firewall")
+        return 0
+      end
+    end
+  end
+  L5_23 = 1
+  return L5_23
+end
+function setRangePortForward(A0_26, A1_27, A2_28, A3_29, A4_30)
+  local L5_31, L6_32, L7_33, L8_34
+  L5_31 = _UPVALUE0_
+  L5_31 = L5_31.isStrNil
+  L6_32 = A1_27
+  L5_31 = L5_31(L6_32)
+  if not L5_31 then
+    L5_31 = _portCheck
+    L6_32 = tonumber
+    L7_33 = A2_28
+    L8_34 = L6_32(L7_33)
+    L5_31 = L5_31(L6_32, L7_33, L8_34, L6_32(L7_33))
+    if L5_31 then
+      L5_31 = _portCheck
+      L6_32 = tonumber
+      L7_33 = A3_29
+      L8_34 = L6_32(L7_33)
+      L5_31 = L5_31(L6_32, L7_33, L8_34, L6_32(L7_33))
+      if L5_31 then
+        L5_31 = tonumber
+        L6_32 = A2_28
+        L5_31 = L5_31(L6_32)
+        L6_32 = tonumber
+        L7_33 = A3_29
+        L6_32 = L6_32(L7_33)
+        if L5_31 > L6_32 then
+          L5_31 = 1
+          return L5_31
+        end
+        L5_31 = require
+        L6_32 = "luci.model.uci"
+        L5_31 = L5_31(L6_32)
+        L5_31 = L5_31.cursor
+        L5_31 = L5_31()
+        L6_32 = tostring
+        L7_33 = A2_28
+        L6_32 = L6_32(L7_33)
+        L7_33 = "-"
+        L8_34 = tostring
+        L8_34 = L8_34(A3_29)
+        L6_32 = L6_32 .. L7_33 .. L8_34
+        L7_33 = portForwardInfo
+        L7_33 = L7_33()
+        L7_33 = L7_33.status
+        if L7_33 == 2 then
+          L7_33 = 3
+          return L7_33
+        end
+        L7_33 = _portConflictCheckWithProto
+        L8_34 = L6_32
+        L7_33 = L7_33(L8_34, A4_30)
+        if L7_33 then
+          L7_33 = 2
+          return L7_33
+        end
+        L7_33 = string
+        L7_33 = L7_33.format
+        L8_34 = "wan%srdr%s"
+        L7_33 = L7_33(L8_34, tostring(A2_28), tostring(A4_30))
+        L8_34 = {}
+        L8_34.src = "wan"
+        L8_34.src_dport = L6_32
+        L8_34.proto = _protoHelper(tonumber(A4_30)) or "tcp"
+        L8_34.target = "DNAT"
+        L8_34.dest = "lan"
+        L8_34.dest_ip = A1_27
+        L8_34.ftype = 2
+        L8_34.name = A0_26 or ""
+        L5_31:section("firewall", "redirect", L7_33, L8_34)
+        L5_31:commit("firewall")
+        return 0
+      end
+    end
+  end
+  L5_31 = 1
+  return L5_31
+end
+function deletePortForward(A0_35, A1_36)
+  local L2_37, L3_38
+  L2_37 = _portCheck
+  L3_38 = tonumber
+  L3_38 = L3_38(A0_35)
+  L2_37 = L2_37(L3_38, L3_38(A0_35))
+  if L2_37 then
+    L2_37 = require
+    L3_38 = "luci.model.uci"
+    L2_37 = L2_37(L3_38)
+    L2_37 = L2_37.cursor
+    L2_37 = L2_37()
+    L3_38 = string
+    L3_38 = L3_38.format
+    L3_38 = L3_38("wan%srdr%s", tostring(A0_35), tostring(A1_36))
+    L2_37:delete("firewall", L3_38)
+    L2_37:commit("firewall")
+    return true
+  end
+  L2_37 = false
+  return L2_37
+end
+function deleteAllPortForward()
+  require("luci.model.uci").cursor():delete_all("firewall", "redirect", function(A0_39)
+    if A0_39.ftype then
+      return true
+    else
+      return false
+    end
+  end)
+  require("luci.model.uci").cursor():commit("firewall")
+  return true
+end
+function restart()
+  os.execute("/etc/init.d/firewall restart")
+  if require("luci.model.uci").cursor():get("upnpd", "config", "enable_upnp") or 0 then
+    os.execute(_UPVALUE0_.UPNP_DISABLE)
+    os.execute(_UPVALUE0_.UPNP_ENABLE)
+  end
+end

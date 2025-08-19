@@ -1,0 +1,573 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("json")
+require("miqos.common")
+;({}).on = function()
+  _UPVALUE0_(true)
+  if not cfg.enabled.started then
+    cfg.enabled.changed = true
+  end
+  cfg.enabled.started = true
+  if not read_network_conf() then
+    logger(3, "failed to read network config when `qos on`!")
+  end
+  _UPVALUE1_(1)
+  return {status = 0, data = "ok"}, true
+end
+;({}).off = function()
+  _UPVALUE0_(false)
+  cfg.enabled.started = true
+  if not read_network_conf() then
+    logger(3, "failed to read network config when `qos off`!")
+  end
+  _UPVALUE1_(0)
+  return {status = 0, data = "ok"}, true
+end
+;({}).shutdown = function()
+  cleanup_system()
+  logger(3, "QOS_VER: " .. QOS_VER .. " shutdown!")
+  _UPVALUE0_(0)
+  cfg.enabled.started = false
+  if not QOS_VER or QOS_VER == "FIX" or QOS_VER == "NOIFB" then
+    return {status = 0, data = "ok"}, false
+  else
+    return {status = 0, data = "ok"}, true
+  end
+end
+;({}).nprio = function(A0_1, A1_2, A2_3)
+  if not A0_1 or not A1_2 or not A2_3 then
+    logger(3, "ERROR: parameter lost for cmd `nprio`")
+    return {
+      status = 1,
+      data = "unkown error."
+    }, false
+  end
+  if g_debug then
+    logger(3, "nprio " .. A0_1 .. "," .. A1_2 .. "," .. A2_3)
+  end
+  if A0_1 == "add" then
+    if not special_host_list.host[A1_2] or A2_3 ~= special_host_list.host[A1_2] then
+      special_host_list.host[A1_2] = A2_3
+      special_host_list.changed = true
+      return {status = 0, data = "ok"}, false
+    else
+      return {
+        status = 0,
+        data = "already in list."
+      }, false
+    end
+  elseif A0_1 == "del" then
+    if special_host_list.host[A1_2] then
+      special_host_list.host[A1_2] = nil
+      special_host_list.changed = true
+      return {status = 0, data = "ok"}, false
+    else
+      return {
+        status = 0,
+        data = "not exist in list."
+      }, false
+    end
+  else
+    return {
+      status = 1,
+      data = "not supported action for cmd `nprio`."
+    }, false
+  end
+end
+;({}).reserve = function(A0_4, A1_5, A2_6)
+  if not A0_4 or not A1_5 or not A2_6 then
+    logger(3, "ERROR: parameter lost for cmd `reserve`")
+    return {
+      status = 1,
+      data = "unkown error."
+    }, false
+  end
+  if g_debug then
+    logger(3, "update_reserved_hosts, act:" .. A0_4 .. ", ip:" .. A1_5 .. ", type:" .. A2_6)
+  end
+  if A0_4 == "add" then
+    if not band_reserve_hosts[A2_6] then
+      band_reserve_hosts[A2_6] = {}
+    end
+    if band_reserve_hosts[A2_6] and band_reserve_hosts[A2_6][A1_5] then
+      return {
+        status = 0,
+        data = "already reserved."
+      }, false
+    end
+    band_reserve_hosts[A2_6][A1_5] = A2_6
+  elseif A0_4 == "del" then
+    if band_reserve_hosts[A2_6] and band_reserve_hosts[A2_6][A1_5] then
+      band_reserve_hosts[A2_6][A1_5] = nil
+    else
+      return {
+        status = 0,
+        data = "already delted."
+      }, false
+    end
+  else
+    logger(3, "do not support act: " .. A0_4)
+    return {
+      status = 1,
+      data = "not supported."
+    }, false
+  end
+  band_reserve_hosts.changed = true
+  return {status = 0, data = "ok"}, false
+end
+function update_bw(A0_7, A1_8)
+  local L2_9
+  L2_9 = tonumber
+  L2_9 = L2_9(A0_7)
+  if L2_9 >= 0 then
+    L2_9 = tonumber
+    L2_9 = L2_9(A1_8)
+    if L2_9 >= 0 then
+      L2_9 = get_cursor
+      L2_9 = L2_9()
+      L2_9:set("miqos", "settings", "upload", A0_7)
+      L2_9:set("miqos", "settings", "download", A1_8)
+      _UPVALUE0_(L2_9)
+      return true
+    end
+  end
+  L2_9 = false
+  return L2_9
+end
+;({}).change_band = function(A0_10, A1_11)
+  if (tonumber(cfg.bands.UP) <= 0 or 0 >= tonumber(cfg.bands.DOWN)) and tonumber(A0_10) > 0 and tonumber(A1_11) > 0 then
+    logger(3, "bands from zero to non zero, do cleanup_system")
+    cleanup_system()
+  end
+  if A0_10 and A1_11 and update_bw(A0_10, A1_11) then
+    return {status = 0, data = "ok"}, true
+  end
+  return {
+    status = 1,
+    data = "update bandwidth failed."
+  }, false
+end
+;({}).show_band = function()
+  local L0_12
+  L0_12 = {}
+  L0_12.uplink, L0_12.downlink = _UPVALUE0_()
+  return {status = 0, data = L0_12}, false
+end
+;({}).on_guest = function(A0_13, A1_14)
+  if A0_13 and A1_14 and _UPVALUE0_(A0_13, A1_14) then
+    return {status = 0, data = "ok"}, true
+  end
+  return {
+    status = 1,
+    data = "update guest limit failed."
+  }, false
+end
+;({}).show_guest = function()
+  local L0_15, L1_16
+  L0_15 = {}
+  L0_15.status = 0
+  L1_16 = cfg
+  L1_16 = L1_16.guest
+  L0_15.data = L1_16
+  L1_16 = false
+  return L0_15, L1_16
+end
+;({}).on_xq = function(A0_17, A1_18)
+  if A0_17 and A1_18 and _UPVALUE0_(A0_17, A1_18) then
+    return {status = 0, data = "ok"}, true
+  end
+  return {
+    status = 1,
+    data = "update xq limit failed."
+  }, false
+end
+;({}).show_xq = function()
+  local L0_19, L1_20
+  L0_19 = {}
+  L0_19.status = 0
+  L1_20 = cfg
+  L1_20 = L1_20.xq
+  L0_19.data = L1_20
+  L1_20 = false
+  return L0_19, L1_20
+end
+;({}).show_limit = function()
+  if QOS_VER == "FIX" or QOS_VER == "NOIFB" then
+    update_counters(nil)
+  end
+  return {
+    status = 0,
+    data = g_limit,
+    mode = cfg.qos_type.mode,
+    arrange_bandwidth = {
+      upload = cfg.bands.UP,
+      download = cfg.bands.DOWN
+    }
+  }, false
+end
+;({}).show_cfg = function()
+  local L0_21
+  L0_21 = {}
+  L0_21.status = 0
+  L0_21.data = _UPVALUE0_()
+  L0_21.mode = cfg.qos_type.mode
+  return L0_21
+end
+;({}).on_limit = function(A0_22, A1_23, A2_24, A3_25, A4_26, A5_27)
+  if A0_22 == "max" then
+    _UPVALUE0_(A1_23, A2_24, A3_25, nil, nil)
+  elseif A0_22 == "min" then
+    _UPVALUE0_(A1_23, nil, nil, A2_24, A3_25)
+  elseif A0_22 == "both" then
+    _UPVALUE0_(A1_23, A2_24, A3_25, A4_26, A5_27)
+  else
+    logger(3, "not supported on_limit mode.")
+    return {
+      status = 1,
+      data = "not supported on_limit mode."
+    }, false
+  end
+  cfg.group.changed = true
+  return {status = 0, data = "ok"}, true
+end
+;({}).set_limit = function(A0_28, A1_29, A2_30, A3_31, A4_32, A5_33)
+  if A0_28 == "max" then
+    _UPVALUE0_(A1_29, A2_30, A3_31, nil, nil)
+  elseif A0_28 == "min" then
+    _UPVALUE0_(A1_29, nil, nil, A2_30, A3_31)
+  elseif A0_28 == "both" then
+    _UPVALUE0_(A1_29, A2_30, A3_31, A4_32, A5_33)
+  else
+    logger(3, "not supported on_limit mode.")
+    return {
+      status = 1,
+      data = "not supported on_limit mode."
+    }, false
+  end
+  cfg.group.changed = true
+  return {status = 0, data = "ok"}, false
+end
+;({}).apply = function()
+  local L0_34, L1_35
+  L0_34 = {}
+  L0_34.status = 0
+  L0_34.data = "ok"
+  L1_35 = true
+  return L0_34, L1_35
+end
+;({}).off_limit = function(A0_36)
+  _UPVALUE0_(A0_36)
+  cfg.group.changed = true
+  return {status = 0, data = "ok"}, true
+end
+;({}).limit_flag = function(A0_37, A1_38)
+  if not A0_37 and not A1_38 then
+    return {
+      status = 1,
+      data = "parameters mac or on_flag is NULL."
+    }, false
+  end
+  if A1_38 ~= "on" and A1_38 ~= "off" then
+    return {
+      status = 1,
+      data = "parameters on_flag is not one of on/off."
+    }, false
+  end
+  if not g_group_def then
+    read_qos_group_config()
+  end
+  if g_group_def[A0_37] then
+    if g_group_def[A0_37].flag and g_group_def[A0_37].flag == A1_38 then
+      return {
+        status = 0,
+        data = "parameters on_flag with same value."
+      }, false
+    else
+      _UPVALUE0_(A0_37, nil, nil, nil, nil, A1_38)
+    end
+  else
+    _UPVALUE0_(A0_37, nil, nil, nil, nil, A1_38)
+  end
+  return {status = 0, data = "ok"}, true
+end
+;({}).set_type = function(A0_39)
+  if A0_39 == "auto" then
+    logger(3, "----->>set to auto-limit-mode.")
+  elseif A0_39 == "min" then
+    logger(3, "----->>set to min-limit-mode.")
+  elseif A0_39 == "max" then
+    logger(3, "----->>set to max-limit-mode.")
+  elseif A0_39 == "both" then
+    logger(3, "----->>set to both-limit-mode.")
+  else
+    logger(3, "----->>set to service-limit-mode.")
+    A0_39 = "service"
+  end
+  _UPVALUE0_(A0_39)
+  return {status = 0, data = "ok"}, true
+end
+;({}).set_seq = function(A0_40)
+  local L1_41
+  L1_41 = get_cursor
+  L1_41 = L1_41()
+  L1_41:set("miqos", "param", "seq_prio", A0_40)
+  _UPVALUE0_(L1_41)
+  return {status = 0, data = "ok"}, true
+end
+;({}).get_seq = function()
+  local L0_42, L1_43, L2_44
+  L0_42 = cfg
+  L0_42 = L0_42.flow
+  L0_42 = L0_42.seq
+  if L0_42 == "" then
+    L1_43 = cfg
+    L1_43 = L1_43.flow
+    L0_42 = L1_43.dft
+  end
+  L1_43 = {}
+  L1_43.status = 0
+  L2_44 = {}
+  L2_44.seq_prio = L0_42
+  L1_43.data = L2_44
+  L2_44 = false
+  return L1_43, L2_44
+end
+;({}).supress_host = function(A0_45)
+  local L1_46, L2_47
+  if A0_45 == "on" then
+    L1_46 = cfg
+    L1_46 = L1_46.supress_host
+    L1_46.enabled = true
+  elseif A0_45 == "off" then
+    L1_46 = cfg
+    L1_46 = L1_46.supress_host
+    L1_46.enabled = false
+  else
+    L1_46 = {}
+    L1_46.status = 1
+    L1_46.data = "not supported supress command."
+    L2_47 = false
+    return L1_46, L2_47
+  end
+  L1_46 = cfg
+  L1_46 = L1_46.supress_host
+  L1_46.changed = true
+  L1_46 = {}
+  L1_46.status = 0
+  L1_46.data = "ok"
+  L2_47 = true
+  return L1_46, L2_47
+end
+;({}).device_in = function(A0_48)
+  local L1_49
+  L1_49 = {}
+  L1_49.status = 0
+  L1_49.data = "ok"
+  return L1_49, _UPVALUE0_(A0_48)
+end
+;({}).device_out = function(A0_50)
+  local L1_51
+  L1_51 = {}
+  L1_51.status = 0
+  L1_51.data = "ok"
+  return L1_51, _UPVALUE0_(A0_50)
+end
+;({}).game_mode_on = function()
+  local L0_52, L1_53
+  L0_52 = cfg
+  L0_52 = L0_52.wangzhe
+  L0_52.changed = true
+  L0_52 = cfg
+  L0_52 = L0_52.wangzhe
+  L0_52.modeon = true
+  L0_52 = cfg
+  L0_52 = L0_52.wangzhe
+  L0_52.cleanflag = true
+  L0_52 = {}
+  L0_52.status = 0
+  L0_52.data = "ok"
+  L1_53 = true
+  return L0_52, L1_53
+end
+;({}).game_mode_off = function()
+  local L0_54, L1_55
+  L0_54 = cfg
+  L0_54 = L0_54.wangzhe
+  L0_54.modeon = false
+  L0_54 = cfg
+  L0_54 = L0_54.wangzhe
+  L0_54.cleanother = true
+  L0_54 = cfg
+  L0_54 = L0_54.enabled
+  L0_54.changed = true
+  L0_54 = {}
+  L0_54.status = 0
+  L0_54.data = "ok"
+  L1_55 = true
+  return L0_54, L1_55
+end
+;({}).wangzhe_plug_on = function()
+  local L0_56, L1_57
+  L0_56 = cfg
+  L0_56 = L0_56.wangzhe
+  L0_56.plugon = true
+  L0_56 = {}
+  L0_56.status = 0
+  L0_56.data = "ok"
+  L1_57 = true
+  return L0_56, L1_57
+end
+;({}).wangzhe_plug_off = function()
+  local L0_58, L1_59
+  L0_58 = cfg
+  L0_58 = L0_58.wangzhe
+  L0_58.plugon = false
+  L0_58 = {}
+  L0_58.status = 0
+  L0_58.data = "ok"
+  L1_59 = true
+  return L0_58, L1_59
+end
+;({}).game_dev_add = function(A0_60)
+  local L1_61, L2_62
+  L1_61 = cfg
+  L1_61 = L1_61.wangzhe
+  L1_61 = L1_61.iplist
+  L2_62 = {}
+  L2_62.devip = A0_60
+  L1_61[A0_60] = L2_62
+  L1_61 = cfg
+  L1_61 = L1_61.wangzhe
+  L1_61.changed = true
+  L1_61 = {}
+  L1_61.status = 0
+  L1_61.data = "ok"
+  L2_62 = true
+  return L1_61, L2_62
+end
+;({}).game_dev_del = function(A0_63)
+  local L1_64, L2_65
+  L1_64 = cfg
+  L1_64 = L1_64.wangzhe
+  L1_64 = L1_64.iplist
+  L1_64 = L1_64[A0_63]
+  if L1_64 then
+    L1_64 = cfg
+    L1_64 = L1_64.wangzhe
+    L1_64 = L1_64.iplist
+    L1_64 = L1_64[A0_63]
+    L1_64.devip = nil
+    L1_64 = cfg
+    L1_64 = L1_64.wangzhe
+    L1_64 = L1_64.iplist
+    L1_64[A0_63] = nil
+  end
+  L1_64 = cfg
+  L1_64 = L1_64.wangzhe
+  L1_64.changed = true
+  L1_64 = {}
+  L1_64.status = 0
+  L1_64.data = "ok"
+  L2_65 = true
+  return L1_64, L2_65
+end
+;({}).game_dev_band = function(A0_66, A1_67)
+  local L2_68
+  L2_68 = cfg
+  L2_68 = L2_68.wangzhe
+  L2_68 = L2_68.devbands
+  L2_68.UP = tonumber(A0_66)
+  L2_68 = cfg
+  L2_68 = L2_68.wangzhe
+  L2_68 = L2_68.devbands
+  L2_68.DOWN = tonumber(A1_67)
+  L2_68 = cfg
+  L2_68 = L2_68.wangzhe
+  L2_68.bandchanged = true
+  L2_68 = {}
+  L2_68.status = 0
+  L2_68.data = "ok"
+  return L2_68, true
+end
+;({}).game_mode_band = function(A0_69, A1_70)
+  local L2_71
+  L2_71 = cfg
+  L2_71 = L2_71.wangzhe
+  L2_71 = L2_71.bands
+  L2_71.UP = tonumber(A0_69)
+  L2_71 = cfg
+  L2_71 = L2_71.wangzhe
+  L2_71 = L2_71.bands
+  L2_71.DOWN = tonumber(A1_70)
+  L2_71 = cfg
+  L2_71 = L2_71.wangzhe
+  L2_71.bandchanged = true
+  L2_71 = {}
+  L2_71.status = 0
+  L2_71.data = "ok"
+  return L2_71, true
+end
+;({}).show_game_state = function()
+  local L0_72
+  L0_72 = {}
+  for _FORV_7_, _FORV_8_ in pairs(cfg.wangzhe.iplist) do
+    L0_72[_FORV_7_] = {
+      IP = _FORV_8_.devip
+    }
+  end
+  if cfg.wangzhe.modeon then
+  else
+  end
+  if cfg.wangzhe.plugon then
+  else
+  end
+  if cfg.wangzhe.changed then
+  else
+  end
+  return {
+    modeon = "False",
+    changed = "False",
+    devs = L0_72,
+    plugon = "False",
+    total_bands = {
+      upload = cfg.wangzhe.bands.UP,
+      download = cfg.wangzhe.bands.DOWN
+    },
+    dev_bands = {
+      upload = cfg.wangzhe.devbands.UP,
+      download = cfg.wangzhe.devbands.DOWN
+    }
+  }, false
+end
+;({}).show_wangzhe = function()
+  local L0_73, L1_74, L2_75
+  L0_73 = {}
+  L1_74 = cfg
+  L1_74 = L1_74.wangzhe
+  L1_74 = L1_74.plugon
+  if L1_74 then
+    L0_73.switch = 1
+  else
+    L0_73.switch = 0
+  end
+  L1_74 = {}
+  L1_74.status = 0
+  L1_74.data = L0_73
+  L2_75 = false
+  return L1_74, L2_75
+end
+function process_cmd(A0_76, ...)
+  if not A0_76 or not _UPVALUE0_[A0_76] then
+    if A0_76 then
+      logger(3, "cmd `" .. A0_76 .. "` is not defined.")
+    else
+      logger(3, "cmd is NULL. r u sure?")
+    end
+    return {
+      status = 1,
+      data = "cmd is not defined."
+    }
+  else
+    return _UPVALUE0_[A0_76](unpack(L1_77))
+  end
+end

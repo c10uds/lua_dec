@@ -1,0 +1,180 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQEBit", package.seeall)
+L0_0 = require
+L0_0 = L0_0("json")
+function genSecret()
+  local L0_1, L1_2, L2_3
+  L0_1 = require
+  L1_2 = "xiaoqiang.util.XQCryptoUtil"
+  L0_1 = L0_1(L1_2)
+  L1_2 = os
+  L1_2 = L1_2.time
+  L1_2 = L1_2()
+  L2_3 = _UPVALUE0_
+  L2_3 = L2_3 .. tostring(L1_2) .. _UPVALUE1_
+  return L1_2, L0_1.md5Str(L2_3)
+end
+function wanip()
+  if _UPVALUE0_.isStrNil(require("xiaoqiang.util.XQLanWanUtil").ubusWanStatus().ipv4.address) then
+    return nil
+  else
+    return require("xiaoqiang.util.XQLanWanUtil").ubusWanStatus().ipv4.address
+  end
+end
+function task_query(A0_4, A1_5, A2_6)
+  local L3_7, L4_8
+  L3_7 = {}
+  L4_8 = _UPVALUE0_
+  L3_7.app = L4_8
+  L3_7.timestamp = A0_4
+  L3_7.secret = A1_5
+  L3_7.task_id = A2_6
+  L4_8 = _UPVALUE1_
+  L4_8 = L4_8.httpPostRequest
+  L4_8 = L4_8(_UPVALUE2_, _UPVALUE3_.encode(L3_7), nil, "application/json")
+  if L4_8 and L4_8.code and L4_8.code == 200 then
+    return _UPVALUE3_.decode(L4_8.res)
+  else
+    _UPVALUE4_.log(4, "XQEBit task/query failed", L4_8)
+    return nil
+  end
+end
+function basic_info_query(A0_9)
+  local L1_10, L2_11, L3_12, L4_13, L5_14
+  L1_10 = genSecret
+  L2_11 = L1_10()
+  L3_12 = nil
+  if not A0_9 then
+    L4_13 = wanip
+    L4_13 = L4_13()
+    L3_12 = L4_13
+    if not L3_12 then
+      L4_13 = nil
+      return L4_13
+    end
+  else
+    L3_12 = A0_9
+  end
+  L4_13 = {}
+  L5_14 = _UPVALUE0_
+  L4_13.app = L5_14
+  L4_13.timestamp = L1_10
+  L4_13.secret = L2_11
+  L4_13._type = 0
+  L4_13.data = L3_12
+  L5_14 = _UPVALUE1_
+  L5_14 = L5_14.httpPostRequest
+  L5_14 = L5_14(_UPVALUE2_, _UPVALUE3_.encode(L4_13), nil, "application/json")
+  if L5_14 and L5_14.code and L5_14.code == 200 then
+    if _UPVALUE3_.decode(L5_14.res).task_id then
+      return task_query(L1_10, L2_11, _UPVALUE3_.decode(L5_14.res).task_id)
+    end
+  else
+    _UPVALUE4_.log(4, "XQEBit user/query failed", L5_14)
+  end
+  return nil
+end
+function speed_up_open(A0_15, A1_16, A2_17, A3_18, A4_19)
+  local L5_20, L6_21, L7_22, L8_23
+  if not A4_19 then
+    L5_20 = wanip
+    L5_20 = L5_20()
+    A4_19 = L5_20
+  end
+  L5_20 = genSecret
+  L6_21 = L5_20()
+  L7_22 = {}
+  L8_23 = _UPVALUE0_
+  L7_22.app = L8_23
+  L7_22.timestamp = L5_20
+  L7_22.secret = L6_21
+  L7_22.ip_addr = A4_19
+  L7_22.dial_acct = A3_18
+  L8_23 = {A0_15, A1_16}
+  L7_22.bandwidths = L8_23
+  L7_22.duration = A2_17
+  L8_23 = _UPVALUE1_
+  L8_23 = L8_23.httpPostRequest
+  L8_23 = L8_23(_UPVALUE2_, _UPVALUE3_.encode(L7_22), nil, "application/json")
+  if L8_23 and L8_23.code and L8_23.code == 200 then
+    if _UPVALUE3_.decode(L8_23.res).task_id then
+      return task_query(L5_20, L6_21, _UPVALUE3_.decode(L8_23.res).task_id)
+    end
+  else
+    _UPVALUE4_.log(4, "XQEBit speedup/open failed", L8_23)
+  end
+  return nil
+end
+function speed_up_close(A0_24)
+  local L1_25, L2_26, L3_27, L4_28
+  L1_25 = genSecret
+  L2_26 = L1_25()
+  L3_27 = {}
+  L4_28 = _UPVALUE0_
+  L3_27.app = L4_28
+  L3_27.timestamp = L1_25
+  L3_27.secret = L2_26
+  L3_27.channel_id = A0_24
+  L4_28 = _UPVALUE1_
+  L4_28 = L4_28.httpPostRequest
+  L4_28 = L4_28(_UPVALUE2_, _UPVALUE3_.encode(L3_27), nil, "application/json")
+  if L4_28 and L4_28.code and L4_28.code == 200 then
+    if _UPVALUE3_.decode(L4_28.res).task_id then
+      return task_query(L1_25, L2_26, _UPVALUE3_.decode(L4_28.res).task_id)
+    end
+  else
+    _UPVALUE4_.log(4, "XQEBit speedup/close failed", L4_28)
+  end
+  return nil
+end
+function speed_up_query(A0_29)
+  local L1_30, L2_31, L3_32, L4_33
+  L1_30 = genSecret
+  L2_31 = L1_30()
+  L3_32 = {}
+  L4_33 = _UPVALUE0_
+  L3_32.app = L4_33
+  L3_32.timestamp = L1_30
+  L3_32.secret = L2_31
+  L3_32.channel_id = A0_29
+  L4_33 = _UPVALUE1_
+  L4_33 = L4_33.httpPostRequest
+  L4_33 = L4_33(_UPVALUE2_, _UPVALUE3_.encode(L3_32), nil, "application/json")
+  if L4_33 and L4_33.code and L4_33.code == 200 then
+    if _UPVALUE3_.decode(L4_33.res).task_id then
+      return task_query(L1_30, L2_31, _UPVALUE3_.decode(L4_33.res).task_id)
+    end
+  else
+    _UPVALUE4_.log(4, "XQEBit speedup/query failed", L4_33)
+  end
+  return nil
+end
+function speed_up_check(A0_34, A1_35)
+  local L2_36, L3_37, L4_38, L5_39
+  if not A1_35 then
+    L2_36 = wanip
+    L2_36 = L2_36()
+    A1_35 = L2_36
+  end
+  L2_36 = genSecret
+  L3_37 = L2_36()
+  L4_38 = {}
+  L5_39 = _UPVALUE0_
+  L4_38.app = L5_39
+  L4_38.timestamp = L2_36
+  L4_38.secret = L3_37
+  L4_38.ip_addr = A1_35
+  L4_38.dial_acct = A0_34
+  L5_39 = _UPVALUE1_
+  L5_39 = L5_39.httpPostRequest
+  L5_39 = L5_39(_UPVALUE2_, _UPVALUE3_.encode(L4_38), nil, "application/json")
+  if L5_39 and L5_39.code and L5_39.code == 200 then
+    if _UPVALUE3_.decode(L5_39.res).task_id then
+      return task_query(L2_36, L3_37, _UPVALUE3_.decode(L5_39.res).task_id)
+    end
+  else
+    _UPVALUE4_.log(4, "XQEBit speedup/check failed", L5_39)
+  end
+  return nil
+end

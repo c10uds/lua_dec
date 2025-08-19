@@ -1,0 +1,4 @@
+module("luci.controller.firewall", package.seeall)
+function index()
+  local L0_0, L1_1
+end

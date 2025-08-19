@@ -1,0 +1,120 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("luci.dispatcher")
+m = Map("firewall", translate("Firewall - Port Forwards"), translate([[
+Port forwarding allows remote computers on the Internet to 
+	           connect to a specific computer or service within the 
+	           private LAN.]]))
+s = m:section(TypedSection, "redirect", translate("Port Forwards"))
+s.template = "cbi/tblsection"
+s.addremove = true
+s.anonymous = true
+s.sortable = true
+s.extedit = L0_0.build_url("admin/network/firewall/forwards/%s")
+s.template_addremove = "firewall/cbi_addforward"
+function s.create(A0_1, A1_2)
+  local L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9
+  L2_3 = m
+  L3_4 = L2_3
+  L2_3 = L2_3.formvalue
+  L4_5 = "_newfwd.name"
+  L2_3 = L2_3(L3_4, L4_5)
+  L3_4 = m
+  L4_5 = L3_4
+  L3_4 = L3_4.formvalue
+  L5_6 = "_newfwd.proto"
+  L3_4 = L3_4(L4_5, L5_6)
+  L4_5 = m
+  L5_6 = L4_5
+  L4_5 = L4_5.formvalue
+  L6_7 = "_newfwd.extzone"
+  L4_5 = L4_5(L5_6, L6_7)
+  L5_6 = m
+  L6_7 = L5_6
+  L5_6 = L5_6.formvalue
+  L7_8 = "_newfwd.extport"
+  L5_6 = L5_6(L6_7, L7_8)
+  L6_7 = m
+  L7_8 = L6_7
+  L6_7 = L6_7.formvalue
+  L8_9 = "_newfwd.intzone"
+  L6_7 = L6_7(L7_8, L8_9)
+  L7_8 = m
+  L8_9 = L7_8
+  L7_8 = L7_8.formvalue
+  L7_8 = L7_8(L8_9, "_newfwd.intaddr")
+  L8_9 = m
+  L8_9 = L8_9.formvalue
+  L8_9 = L8_9(L8_9, "_newfwd.intport")
+  if L3_4 == "other" or L3_4 and L7_8 then
+    created = TypedSection.create(A0_1, A1_2)
+    A0_1.map:set(created, "target", "DNAT")
+    A0_1.map:set(created, "src", L4_5 or "wan")
+    A0_1.map:set(created, "dest", L6_7 or "lan")
+    A0_1.map:set(created, "proto", L3_4 ~= "other" and L3_4 or "all")
+    A0_1.map:set(created, "src_dport", L5_6)
+    A0_1.map:set(created, "dest_ip", L7_8)
+    A0_1.map:set(created, "dest_port", L8_9)
+    A0_1.map:set(created, "name", L2_3)
+  end
+  if L3_4 ~= "other" then
+    created = nil
+  end
+end
+function s.parse(A0_10, ...)
+  TypedSection.parse(A0_10, ...)
+  if created then
+    m.uci:save("firewall")
+    luci.http.redirect(_UPVALUE0_.build_url("admin/network/firewall/redirect", created))
+  end
+end
+function s.filter(A0_12, A1_13)
+  return A0_12.map:get(A1_13, "target") ~= "SNAT"
+end
+require("luci.tools.firewall").opt_name(s, DummyValue, translate("Name"))
+match = s:option(DummyValue, "match", translate("Match"))
+match.rawhtml = true
+match.width = "50%"
+function match.cfgvalue(A0_14, A1_15)
+  return "<small>%s<br />%s<br />%s</small>" % {
+    _UPVALUE0_(A0_14, A1_15),
+    _UPVALUE1_(A0_14, A1_15),
+    _UPVALUE2_(A0_14, A1_15)
+  }
+end
+dest = s:option(DummyValue, "dest", translate("Forward to"))
+dest.rawhtml = true
+dest.width = "40%"
+function dest.cfgvalue(A0_16, A1_17)
+  local L2_18, L3_19, L4_20
+  L2_18 = _UPVALUE0_
+  L2_18 = L2_18.fmt_zone
+  L3_19 = A0_16.map
+  L4_20 = L3_19
+  L3_19 = L3_19.get
+  L3_19 = L3_19(L4_20, A1_17, "dest")
+  L4_20 = translate
+  L4_20 = L4_20("any zone")
+  L2_18 = L2_18(L3_19, L4_20, L4_20("any zone"))
+  L3_19 = _UPVALUE0_
+  L3_19 = L3_19.fmt_ip
+  L4_20 = A0_16.map
+  L4_20 = L4_20.get
+  L4_20 = L4_20(L4_20, A1_17, "dest_ip")
+  L3_19 = L3_19(L4_20, translate("any host"))
+  L4_20 = _UPVALUE0_
+  L4_20 = L4_20.fmt_port
+  L4_20 = L4_20(A0_16.map:get(A1_17, "dest_port"))
+  if not L4_20 then
+    L4_20 = _UPVALUE0_
+    L4_20 = L4_20.fmt_port
+    L4_20 = L4_20(A0_16.map:get(A1_17, "src_dport"))
+  end
+  if L4_20 then
+    return translatef("%s, %s in %s", L3_19, L4_20, L2_18)
+  else
+    return translatef("%s in %s", L3_19, L2_18)
+  end
+end
+require("luci.tools.firewall").opt_enabled(s, Flag, translate("Enable")).width = "1%"
+return m

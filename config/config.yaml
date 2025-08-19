@@ -1,0 +1,24 @@
+# OpenRouter API配置
+openrouter:
+  api_key: "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"
+  base_url: "https://openrouter.ai/api/v1"
+  model: "anthropic/claude-3.5-sonnet"
+
+# Lua模块路径配置
+lua_paths:
+  - "lua"
+  - "usr/lib/lua"
+  - "usr/local/lib/lua"
+  - "opt/lua"
+
+# 输出配置
+output:
+  format: "lua"
+  encoding: "utf-8"
+  backup: true
+
+# LLM配置
+llm:
+  max_tokens: 4000
+  temperature: 0.1
+  timeout: 60

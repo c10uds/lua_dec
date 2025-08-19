@@ -1,0 +1,7 @@
+module("xiaoqiang.XQEvent", package.seeall)
+function lanIPChange(A0_0)
+  require("xiaoqiang.module.XQDMZModule").hookLanIPChangeEvent(A0_0)
+  require("xiaoqiang.module.XQGuestWifi").hookLanIPChangeEvent(A0_0)
+  require("xiaoqiang.module.XQPortForward").hookLanIPChangeEvent(A0_0)
+  require("xiaoqiang.util.XQLanWanUtil").hookLanIPChangeEvent(A0_0)
+end

@@ -1,0 +1,19 @@
+module("service.util.ServiceErrorUtil", package.seeall)
+function getErrorMessage(A0_0)
+  local L1_1
+  L1_1 = {}
+  L1_1[0] = _("")
+  L1_1[1] = _("parameter missing")
+  L1_1[2] = _("Parameter empty")
+  L1_1[3] = _("Parameter format error")
+  L1_1[5] = _("invalid app id")
+  L1_1[1056] = _("invalid device id")
+  L1_1[1057] = _("resource is not ready")
+  L1_1[1559] = _("datacenter error")
+  L1_1[2010] = _("datacenter error")
+  if L1_1[A0_0] == nil then
+    return translate(_("\230\156\170\231\159\165\233\148\153\232\175\175"))
+  else
+    return translate(L1_1[A0_0])
+  end
+end

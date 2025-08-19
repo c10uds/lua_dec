@@ -1,0 +1,72 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.XQLog", package.seeall)
+L0_0 = require
+L0_0 = L0_0("posix")
+function run_cmd(A0_1)
+  if not A0_1 or A0_1 == "" then
+    return nil
+  end
+  io.popen(A0_1):close()
+  return (io.popen(A0_1):read("*line"))
+end
+function log(...)
+  local L1_3, L2_4
+  L1_3 = L0_2[1]
+  L2_4 = run_cmd
+  L2_4 = L2_4("uci -q get luci.debuglevel")
+  if not L2_4 or L2_4 == "" then
+    L2_4 = "7"
+  end
+  if L1_3 and tonumber(L1_3) and tonumber(L1_3) >= 0 and tonumber(L1_3) <= tonumber(L2_4) then
+    _UPVALUE0_.openlog("luci", LOG_NDELAY, LOG_USER)
+    for _FORV_7_ = 2, L0_2.n do
+      _UPVALUE0_.syslog(L1_3, require("luci.util").serialize_data(L0_2[_FORV_7_]))
+    end
+    _FOR_.closelog()
+  end
+end
+KEY_GEL_USE = "gel_use"
+KEY_REBOOT = "gel_restart_soft_count"
+KEY_DETECT_ERROR = "network_detect_error"
+KEY_VALUE_NETWORK_PPPOE = "network_method_pppoe"
+KEY_VALUE_NETWORK_DHCP = "network_method_dhcp"
+KEY_VALUE_NETWORK_STATIC = "network_method_static"
+KEY_GEL_INIT_ANDROID = "gel_init_android"
+KEY_GEL_INIT_IOS = "gel_init_ios"
+KEY_GEL_INIT_OTHER = "gel_init_other"
+KEY_GEL_INIT_APP = "gel_init_app"
+KEY_DISKSLEEP_OPEN = "disk_sleep_open"
+KEY_DISKSLEEP_CLOSE = "disk_sleep_close"
+KEY_FUNC_PPTP = "function_pptp_web"
+KEY_FUNC_L2TP = "function_l2tp_web"
+KEY_FUNC_APPQOS = "function_appqos"
+KEY_FUNC_MACCLONE = "function_clone"
+KEY_FUNC_QOS = "function_qos"
+KEY_FUNC_UPNP = "function_upnp"
+KEY_FUNC_DMZ = "function_dmz"
+KEY_FUNC_PLUGIN = "function_plugin"
+KEY_FUNC_PORTFADD = "function_port_forwarding_add"
+KEY_FUNC_RANGEFADD = "function_range_forwarding_add"
+KEY_FUNC_PORTENABLE = "function_port_forwarding_active"
+KEY_FUNC_WIRELESS_ACCESS = "function_wireless_access"
+KEY_FUNC_WIRELESS_BLACK = "function_wireless_access_blacklist"
+KEY_FUNC_WIRELESS_WHITE = "function_wireless_access_whitelist"
+KEY_FUNC_2G_CHANNEL = "function_channel_2g"
+KEY_FUNC_5G_CHANNEL = "function_channel_5g"
+KEY_FUNC_2G_SIGNAL = "function_channel_2g_signal"
+KEY_FUNC_5G_SIGNAL = "function_channel_5g_signal"
+KEY_FUNC_NOFLUSHED = "function_hdd_hibernation"
+KEY_FUNC_WIFI_RELAY = "function_relay"
+KEY_FUNC_WIFI_BSD = "function_wifi_bsd"
+function check(A0_5, A1_6, A2_7)
+  local L3_8
+  if A0_5 == 0 then
+    L3_8 = "stat_points_none"
+  else
+    L3_8 = "stat_points_instant"
+  end
+  _UPVALUE0_.openlog("luci", LOG_NDELAY, LOG_USER)
+  _UPVALUE0_.syslog(6, L3_8 .. " " .. A1_6 .. "=" .. tostring(A2_7))
+  _UPVALUE0_.closelog()
+end

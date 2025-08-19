@@ -1,0 +1,76 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQUPnPUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function getUPnPStatus()
+  if os.execute(_UPVALUE0_.UPNP_STATUS) == 0 then
+    return true
+  else
+    return false
+  end
+end
+function switchUPnP(A0_1)
+  if A0_1 then
+    os.execute("[ -f /etc/config/upnpd ] && sed -i 's/disable_upnp/enable_upnp/g' /etc/config/upnpd")
+    return os.execute(_UPVALUE0_.UPNP_ENABLE)
+  else
+    os.execute("[ -f /etc/config/upnpd ] && sed -i 's/enable_upnp/disable_upnp/g' /etc/config/upnpd")
+    return os.execute(_UPVALUE0_.UPNP_DISABLE)
+  end
+end
+function getUPnPList()
+  local L0_2, L1_3, L2_4, L3_5, L4_6, L5_7, L6_8, L7_9, L8_10
+  L0_2 = getUPnPStatus
+  L0_2 = L0_2()
+  if L0_2 then
+    L0_2 = _UPVALUE0_
+    L0_2 = L0_2.exec
+    L1_3 = _UPVALUE1_
+    L1_3 = L1_3.UPNP_LEASE_FILE
+    L0_2 = L0_2(L1_3)
+    if L0_2 then
+      L1_3 = _UPVALUE0_
+      L1_3 = L1_3.trim
+      L2_4 = L0_2
+      L1_3 = L1_3(L2_4)
+      L0_2 = L1_3
+      L1_3 = io
+      L1_3 = L1_3.open
+      L2_4 = L0_2
+      L1_3 = L1_3(L2_4, L3_5)
+      if L1_3 then
+        L2_4 = {}
+        for L6_8 in L3_5(L4_6) do
+          L7_9 = _UPVALUE2_
+          L7_9 = L7_9.isStrNil
+          L8_10 = L6_8
+          L7_9 = L7_9(L8_10)
+          if not L7_9 then
+            L7_9 = {}
+            L8_10 = _UPVALUE3_
+            L8_10 = L8_10.filter
+            L8_10 = L8_10(L8_10, L6_8)
+            if #_UPVALUE0_.split(L8_10, ":", 5) == 6 then
+              L7_9.protocol = _UPVALUE0_.split(L8_10, ":", 5)[1]
+              L7_9.rport = _UPVALUE0_.split(L8_10, ":", 5)[2]
+              L7_9.ip = _UPVALUE0_.split(L8_10, ":", 5)[3]
+              L7_9.cport = _UPVALUE0_.split(L8_10, ":", 5)[4]
+              L7_9.time = _UPVALUE0_.split(L8_10, ":", 5)[5]
+              if _UPVALUE0_.split(L8_10, ":", 5)[6] == "(null)" then
+                L7_9.name = "\230\156\170\231\159\165\231\168\139\229\186\143"
+              else
+                L7_9.name = _UPVALUE0_.split(L8_10, ":", 5)[6]
+              end
+              table.insert(L2_4, L7_9)
+            end
+          end
+        end
+        L3_5(L4_6)
+        return L2_4
+      end
+    end
+  end
+  L0_2 = nil
+  return L0_2
+end

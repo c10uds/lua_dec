@@ -1,0 +1,105 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10
+L0_0 = module
+L1_1 = "xiaoqiang.module.XQExWifiConfSyncUci"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "xiaoqiang.XQLog"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.common.XQFunction"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.uci"
+L2_2 = L2_2(L3_3)
+L2_2 = L2_2.cursor
+L3_3 = "/tmp/extendwifi/etc/config/"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.model.uci"
+L3_3 = L3_3(L4_4)
+L3_3 = L3_3.cursor
+L3_3 = L3_3()
+L4_4 = "/tmp/extendwifi/"
+L5_5 = "/etc/config/"
+L6_6 = 0
+L7_7 = 1
+L8_8 = 6
+L9_9 = require
+L10_10 = "luci.model.uci"
+L9_9 = L9_9(L10_10)
+L9_9 = L9_9.cursor
+L9_9 = L9_9()
+L10_10 = L9_9.get
+L10_10 = L10_10(L9_9, "misc", "hardware", "model")
+L10_10 = L10_10 or ""
+L10_10 = L10_10 and string.lower(L10_10)
+function config_merge()
+  _UPVALUE0_ = _UPVALUE1_()
+  _UPVALUE2_ = _UPVALUE3_()
+  _UPVALUE4_()
+  _UPVALUE5_()
+  _UPVALUE6_()
+  if _UPVALUE7_:match("^r2350") then
+  else
+    _UPVALUE8_()
+  end
+  _UPVALUE9_()
+  _UPVALUE10_()
+  _UPVALUE11_()
+  require("xiaoqiang.util.XQWifiUtil").extendwifi_tranlate_wireless_config()
+  if _UPVALUE7_:match("^r2350") then
+  elseif _UPVALUE2_ == 1 then
+    _UPVALUE12_()
+  end
+  _UPVALUE13_()
+  return 0
+end
+function hotspot_info()
+  local L0_11, L1_12, L2_13, L3_14
+  _UPVALUE0_.log(_UPVALUE1_, "get hotspot info")
+  _UPVALUE2_:foreach("wireless", "wifi-iface", function(A0_15)
+    local L1_16, L2_17
+    L1_16 = A0_15.ifname
+    L2_17 = _UPVALUE0_
+    if L1_16 == L2_17 then
+      L1_16 = A0_15.ssid
+      _UPVALUE1_ = L1_16
+      L1_16 = A0_15.key
+      _UPVALUE2_ = L1_16
+    end
+    L1_16 = A0_15.ifname
+    L2_17 = _UPVALUE3_
+    if L1_16 == L2_17 then
+      L1_16 = A0_15.ssid
+      _UPVALUE4_ = L1_16
+      L1_16 = A0_15.key
+      _UPVALUE5_ = L1_16
+    end
+  end)
+  if L0_11 then
+    _UPVALUE0_.log(_UPVALUE1_, "ssid_24g: " .. L0_11)
+  end
+  if L1_12 then
+    _UPVALUE0_.log(_UPVALUE1_, "passwd_24g: " .. L1_12)
+  end
+  if L2_13 then
+    _UPVALUE0_.log(_UPVALUE1_, "ssid_5g: " .. L2_13)
+  end
+  if L3_14 then
+    _UPVALUE0_.log(_UPVALUE1_, "passwd_5g: " .. L3_14)
+  end
+  return L0_11, L1_12, L2_13, L3_14
+end
+function hardware_info()
+  local L0_18
+  L0_18 = _UPVALUE0_
+  L0_18 = L0_18.get
+  L0_18 = L0_18(L0_18, "misc", "hardware", "model")
+  if L0_18 then
+    L0_18 = string.lower(L0_18)
+    return L0_18
+  end
+  return nil
+end

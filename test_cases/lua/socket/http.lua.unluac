@@ -1,0 +1,232 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("socket")
+L0_0.http = {}
+L0_0.http.TIMEOUT = 60
+L0_0.http.PORT = 80
+L0_0.http.USERAGENT = L0_0._VERSION
+L0_0.sourcet["http-chunked"] = function(A0_1, A1_2)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function()
+      local L0_3, L1_4, L2_5, L3_6, L4_7
+      L0_3 = _UPVALUE0_
+      L1_4 = L0_3
+      L0_3 = L0_3.receive
+      L1_4 = L0_3(L1_4)
+      if L1_4 then
+        L2_5 = nil
+        L3_6 = L1_4
+        return L2_5, L3_6
+      end
+      L2_5 = _UPVALUE1_
+      L2_5 = L2_5.tonumber
+      L3_6 = _UPVALUE2_
+      L3_6 = L3_6.gsub
+      L4_7 = L0_3
+      L3_6 = L3_6(L4_7, ";.*", "")
+      L4_7 = 16
+      L2_5 = L2_5(L3_6, L4_7)
+      if not L2_5 then
+        L3_6 = nil
+        L4_7 = "invalid chunk size"
+        return L3_6, L4_7
+      end
+      if L2_5 > 0 then
+        L3_6 = _UPVALUE0_
+        L4_7 = L3_6
+        L3_6 = L3_6.receive
+        L4_7 = L3_6(L4_7, L2_5)
+        if L3_6 then
+          _UPVALUE0_:receive()
+        end
+        return L3_6, L4_7
+      else
+        L3_6 = _UPVALUE4_
+        L4_7 = _UPVALUE0_
+        L4_7 = L3_6(L4_7, _UPVALUE3_)
+        L1_4 = L4_7
+        _UPVALUE3_ = L3_6
+        L3_6 = _UPVALUE3_
+        if not L3_6 then
+          L3_6 = nil
+          L4_7 = L1_4
+          return L3_6, L4_7
+        end
+      end
+    end
+  })
+end
+L0_0.sinkt["http-chunked"] = function(A0_8)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function(A0_9, A1_10, A2_11)
+      local L3_12
+      if not A1_10 then
+        L3_12 = _UPVALUE0_
+        L3_12 = L3_12.send
+        return L3_12(L3_12, "0\r\n\r\n")
+      end
+      L3_12 = _UPVALUE1_
+      L3_12 = L3_12.format
+      L3_12 = L3_12("%X\r\n", _UPVALUE1_.len(A1_10))
+      return _UPVALUE0_:send(L3_12 .. A1_10 .. "\r\n")
+    end
+  })
+end
+function L0_0.http.open(A0_13, A1_14, A2_15)
+  local L3_16
+  L3_16 = _UPVALUE0_
+  L3_16 = L3_16.try
+  L3_16 = L3_16((A2_15 or _UPVALUE0_.tcp)())
+  _UPVALUE1_.setmetatable({c = L3_16}, _UPVALUE2_).try = _UPVALUE0_.newtry(function()
+    _UPVALUE0_:close()
+  end)
+  _UPVALUE1_.setmetatable({c = L3_16}, _UPVALUE2_).try(L3_16:settimeout(_UPVALUE3_.TIMEOUT))
+  _UPVALUE1_.setmetatable({c = L3_16}, _UPVALUE2_).try(L3_16:connect(A0_13, A1_14 or _UPVALUE3_.PORT))
+  return (_UPVALUE1_.setmetatable({c = L3_16}, _UPVALUE2_))
+end
+;({
+  __index = {}
+}).__index.sendrequestline = function(A0_17, A1_18, A2_19)
+  local L3_20
+  L3_20 = _UPVALUE0_
+  L3_20 = L3_20.format
+  L3_20 = L3_20("%s %s HTTP/1.1\r\n", A1_18 or "GET", A2_19)
+  return A0_17.try(A0_17.c:send(L3_20))
+end
+;({
+  __index = {}
+}).__index.sendheaders = function(A0_21, A1_22)
+  local L2_23, L3_24, L4_25, L5_26, L6_27, L7_28, L8_29
+  L2_23 = _UPVALUE0_
+  L2_23 = L2_23.canonic
+  L3_24 = "\r\n"
+  for L7_28, L8_29 in L4_25(L5_26) do
+    L3_24 = (L2_23[L7_28] or L7_28) .. ": " .. L8_29 .. "\r\n" .. L3_24
+  end
+  L7_28 = L3_24
+  L8_29 = L5_26(L6_27, L7_28)
+  L4_25(L5_26, L6_27, L7_28, L8_29, L5_26(L6_27, L7_28))
+  return L4_25
+end
+;({
+  __index = {}
+}).__index.sendbody = function(A0_30, A1_31, A2_32, A3_33)
+  local L4_34
+  if not A2_32 then
+    L4_34 = _UPVALUE0_
+    L4_34 = L4_34.source
+    L4_34 = L4_34.empty
+    L4_34 = L4_34()
+    A2_32 = L4_34
+  end
+  if not A3_33 then
+    L4_34 = _UPVALUE0_
+    L4_34 = L4_34.pump
+    A3_33 = L4_34.step
+  end
+  L4_34 = "http-chunked"
+  if A1_31["content-length"] then
+    L4_34 = "keep-open"
+  end
+  return A0_30.try(_UPVALUE0_.pump.all(A2_32, _UPVALUE1_.sink(L4_34, A0_30.c), A3_33))
+end
+;({
+  __index = {}
+}).__index.receivestatusline = function(A0_35)
+  local L1_36, L2_37
+  L1_36 = A0_35.try
+  L2_37 = A0_35.c
+  L2_37 = L2_37.receive
+  L2_37 = L2_37(L2_37, 5)
+  L1_36 = L1_36(L2_37, L2_37(L2_37, 5))
+  if L1_36 ~= "HTTP/" then
+    L2_37 = nil
+    return L2_37, L1_36
+  end
+  L2_37 = A0_35.try
+  L2_37 = L2_37(A0_35.c:receive("*l", L1_36))
+  L1_36 = L2_37
+  L2_37 = _UPVALUE0_
+  L2_37 = L2_37.skip
+  L2_37 = L2_37(2, _UPVALUE1_.find(L1_36, "HTTP/%d*%.%d* (%d%d%d)"))
+  return A0_35.try(_UPVALUE2_.tonumber(L2_37), L1_36)
+end
+;({
+  __index = {}
+}).__index.receiveheaders = function(A0_38)
+  local L1_39
+  L1_39 = A0_38.try
+  return L1_39(_UPVALUE0_(A0_38.c))
+end
+;({
+  __index = {}
+}).__index.receivebody = function(A0_40, A1_41, A2_42, A3_43)
+  local L4_44, L5_45, L6_46
+  if not A2_42 then
+    L4_44 = _UPVALUE0_
+    L4_44 = L4_44.sink
+    L4_44 = L4_44.null
+    L4_44 = L4_44()
+    A2_42 = L4_44
+  end
+  if not A3_43 then
+    L4_44 = _UPVALUE0_
+    L4_44 = L4_44.pump
+    A3_43 = L4_44.step
+  end
+  L4_44 = _UPVALUE1_
+  L4_44 = L4_44.tonumber
+  L5_45 = A1_41["content-length"]
+  L4_44 = L4_44(L5_45)
+  L5_45 = A1_41["transfer-encoding"]
+  L6_46 = "default"
+  if L5_45 and L5_45 ~= "identity" then
+    L6_46 = "http-chunked"
+  elseif _UPVALUE1_.tonumber(A1_41["content-length"]) then
+    L6_46 = "by-length"
+  end
+  return A0_40.try(_UPVALUE0_.pump.all(_UPVALUE2_.source(L6_46, A0_40.c, L4_44), A2_42, A3_43))
+end
+;({
+  __index = {}
+}).__index.receive09body = function(A0_47, A1_48, A2_49, A3_50)
+  local L4_51, L5_52
+  L4_51 = _UPVALUE0_
+  L4_51 = L4_51.source
+  L4_51 = L4_51.rewind
+  L5_52 = _UPVALUE1_
+  L5_52 = L5_52.source
+  L5_52 = L5_52("until-closed", A0_47.c)
+  L4_51 = L4_51(L5_52, L5_52("until-closed", A0_47.c))
+  L5_52 = L4_51
+  L5_52(A1_48)
+  L5_52 = A0_47.try
+  return L5_52(_UPVALUE0_.pump.all(L4_51, A2_49, A3_50))
+end
+;({
+  __index = {}
+}).__index.close = function(A0_53)
+  return A0_53.c:close()
+end
+L0_0.http.request = L0_0.protect(function(A0_54, A1_55)
+  if _UPVALUE0_.type(A0_54) == "string" then
+    return _UPVALUE1_(A0_54, A1_55)
+  else
+    return _UPVALUE2_(A0_54)
+  end
+end)
+return L0_0.http

@@ -1,0 +1,584 @@
+local L0_0
+L0_0 = module
+L0_0("luci.ip", package.seeall)
+L0_0 = require
+L0_0("nixio")
+L0_0 = nixio
+L0_0 = L0_0.bit
+LITTLE_ENDIAN = not require("luci.util").bigendian()
+BIG_ENDIAN = not LITTLE_ENDIAN
+FAMILY_INET4 = 4
+FAMILY_INET6 = 6
+function htons(A0_1)
+  local L1_2
+  L1_2 = LITTLE_ENDIAN
+  if L1_2 then
+    L1_2 = _UPVALUE0_
+    L1_2 = L1_2.bor
+    return L1_2(_UPVALUE0_.rshift(A0_1, 8), _UPVALUE0_.band(_UPVALUE0_.lshift(A0_1, 8), 65280))
+  else
+    return A0_1
+  end
+end
+function htonl(A0_3)
+  local L1_4
+  L1_4 = LITTLE_ENDIAN
+  if L1_4 then
+    L1_4 = _UPVALUE0_
+    L1_4 = L1_4.bor
+    return L1_4(_UPVALUE0_.lshift(htons(_UPVALUE0_.band(A0_3, 65535)), 16), htons(_UPVALUE0_.rshift(A0_3, 16)))
+  else
+    return A0_3
+  end
+end
+ntohs = htons
+ntohl = htonl
+function IPv4(A0_5, A1_6)
+  local L2_7, L3_8, L4_9, L5_10, L6_11, L7_12, L8_13
+  A0_5 = A0_5 or "0.0.0.0/0"
+  L2_7 = _UPVALUE0_
+  L3_8 = {L4_9}
+  L4_9 = FAMILY_INET4
+  L2_7 = L2_7(L3_8)
+  L3_8 = {}
+  L5_10 = A0_5
+  L4_9 = A0_5.match
+  L6_11 = "/(.+)"
+  L4_9 = L4_9(L5_10, L6_11)
+  L6_11 = A0_5
+  L5_10 = A0_5.gsub
+  L7_12 = "/.+"
+  L8_13 = ""
+  L5_10 = L5_10(L6_11, L7_12, L8_13)
+  A0_5 = L5_10
+  L6_11 = A0_5
+  L5_10 = A0_5.gsub
+  L7_12 = "^%[(.*)%]$"
+  L8_13 = "%1"
+  L5_10 = L5_10(L6_11, L7_12, L8_13)
+  L6_11 = L5_10
+  L5_10 = L5_10.upper
+  L5_10 = L5_10(L6_11)
+  L6_11 = L5_10
+  L5_10 = L5_10.gsub
+  L7_12 = "^::FFFF:"
+  L8_13 = ""
+  L5_10 = L5_10(L6_11, L7_12, L8_13)
+  A0_5 = L5_10
+  if A1_6 then
+    L6_11 = L2_7
+    L5_10 = L2_7.prefix
+    L7_12 = A1_6
+    L5_10 = L5_10(L6_11, L7_12)
+    L4_9 = L5_10
+  elseif L4_9 then
+    L5_10 = tonumber
+    L6_11 = L4_9
+    L5_10 = L5_10(L6_11)
+    L4_9 = L5_10
+    if not L4_9 or L4_9 < 0 or L4_9 > 32 then
+      L5_10 = nil
+      return L5_10
+    end
+  else
+    L4_9 = 32
+  end
+  L6_11 = A0_5
+  L5_10 = A0_5.match
+  L7_12 = "^(%d+)%.(%d+)%.(%d+)%.(%d+)$"
+  L8_13 = L5_10(L6_11, L7_12)
+  L5_10 = tonumber(L5_10)
+  L6_11 = tonumber(L6_11)
+  L7_12 = tonumber(L7_12)
+  L8_13 = tonumber(L8_13)
+  if L5_10 and L5_10 <= 255 and L6_11 and L6_11 <= 255 and L7_12 and L7_12 <= 255 and L8_13 and L8_13 <= 255 and L4_9 then
+    table.insert(L2_7, {
+      L5_10 * 256 + L6_11,
+      L7_12 * 256 + L8_13
+    })
+    table.insert(L2_7, L4_9)
+    return L2_7
+  end
+end
+function IPv6(A0_14, A1_15)
+  local L2_16, L3_17, L4_18, L5_19, L6_20, L7_21, L8_22, L9_23
+  A0_14 = A0_14 or "::/0"
+  L2_16 = _UPVALUE0_
+  L3_17 = {L4_18}
+  L4_18 = FAMILY_INET6
+  L2_16 = L2_16(L3_17)
+  L3_17 = {}
+  L5_19 = A0_14
+  L4_18 = A0_14.match
+  L6_20 = "/(.+)"
+  L4_18 = L4_18(L5_19, L6_20)
+  L6_20 = A0_14
+  L5_19 = A0_14.gsub
+  L7_21 = "/.+"
+  L8_22 = ""
+  L5_19 = L5_19(L6_20, L7_21, L8_22)
+  A0_14 = L5_19
+  L6_20 = A0_14
+  L5_19 = A0_14.gsub
+  L7_21 = "^%[(.*)%]$"
+  L8_22 = "%1"
+  L5_19 = L5_19(L6_20, L7_21, L8_22)
+  A0_14 = L5_19
+  if A1_15 then
+    L6_20 = L2_16
+    L5_19 = L2_16.prefix
+    L7_21 = A1_15
+    L5_19 = L5_19(L6_20, L7_21)
+    L4_18 = L5_19
+  elseif L4_18 then
+    L5_19 = tonumber
+    L6_20 = L4_18
+    L5_19 = L5_19(L6_20)
+    L4_18 = L5_19
+    if not L4_18 or L4_18 < 0 or L4_18 > 128 then
+      L5_19 = nil
+      return L5_19
+    end
+  else
+    L4_18 = 128
+  end
+  L6_20 = A0_14
+  L5_19 = A0_14.sub
+  L7_21 = 1
+  L8_22 = 1
+  L5_19 = L5_19(L6_20, L7_21, L8_22)
+  if L5_19 == ":" then
+    L5_19 = 2
+  else
+    L5_19 = L5_19 or 1
+  end
+  L6_20, L7_21, L8_22, L9_23 = nil, nil, nil, nil
+  if #A0_14 > 45 then
+    return nil
+  end
+  repeat
+    L6_20 = A0_14:find(":", L5_19, true)
+    if not L6_20 then
+      break
+    end
+    L9_23 = tonumber(A0_14:sub(L5_19, L6_20 - 1), 16)
+    if L9_23 and L9_23 <= 65535 then
+      L3_17[#L3_17 + 1] = L9_23
+    else
+      if L7_21 or L6_20 - L5_19 > 1 then
+        return nil
+      end
+      L7_21 = #L3_17 + 1
+    end
+    L5_19 = L6_20 + 1
+  until #L3_17 == 7
+  L8_22 = A0_14:sub(L5_19)
+  if #L8_22 > 0 and #L8_22 <= 4 then
+    L9_23 = tonumber(L8_22, 16)
+    if not L9_23 or L9_23 > 65535 then
+      return nil
+    end
+    L3_17[#L3_17 + 1] = L9_23
+  elseif #L8_22 > 4 then
+    if #L3_17 == 7 or #L8_22 > 15 then
+      return nil
+    end
+    L5_19 = 1
+    for _FORV_14_ = 1, 4 do
+      L6_20 = L8_22:find(".", L5_19, true)
+      if not L6_20 and _FORV_14_ < 4 then
+        return nil
+      end
+      L6_20 = L6_20 and L6_20 - 1
+      L9_23 = tonumber(L8_22:sub(L5_19, L6_20))
+      if not L9_23 or L9_23 > 255 then
+        return nil
+      end
+      if _FORV_14_ == 1 or _FORV_14_ == 3 then
+        L3_17[#L3_17 + 1] = L9_23 * 256
+      else
+        L3_17[#L3_17] = L3_17[#L3_17] + L9_23
+      end
+      L5_19 = L6_20 and L6_20 + 2
+    end
+  end
+  if L7_21 then
+    if #L3_17 == 8 then
+      return nil
+    end
+    while #L3_17 < 8 do
+      table.insert(L3_17, L7_21, 0)
+    end
+  end
+  if #L3_17 == 8 and L4_18 then
+    table.insert(L2_16, L3_17)
+    table.insert(L2_16, L4_18)
+    return L2_16
+  end
+end
+function Hex(A0_24, A1_25, A2_26, A3_27)
+  local L4_28, L5_29, L6_30, L7_31, L8_32, L9_33, L10_34, L11_35
+  if A2_26 == nil or not A2_26 then
+    A2_26 = FAMILY_INET4
+  end
+  if A3_27 == nil then
+    L4_28 = true
+    A3_27 = L4_28 or A3_27
+  end
+  if not A1_25 then
+    L4_28 = _UPVALUE0_
+    L5_29 = A2_26
+    L4_28 = L4_28(L5_29)
+    A1_25 = L4_28
+  end
+  L4_28 = _UPVALUE0_
+  L5_29 = A2_26
+  L4_28 = L4_28(L5_29)
+  L5_29 = ""
+  L6_30 = {}
+  L7_31 = nil
+  for L11_35 = 1, L9_33 - L10_34 do
+    L5_29 = L5_29 .. "0"
+  end
+  if A3_27 then
+    if L8_32 then
+      for L11_35 = #A0_24, 1, 4294967294 do
+        L5_29 = L5_29 .. A0_24:sub(L11_35 - 1, L11_35)
+      end
+    end
+  else
+    L5_29 = L8_32 .. L9_33
+  end
+  A0_24 = L5_29
+  for L11_35 = 1, L4_28 / 4, 4 do
+    if tonumber(A0_24:sub(L11_35, L11_35 + 3), 16) then
+      L6_30[#L6_30 + 1] = tonumber(A0_24:sub(L11_35, L11_35 + 3), 16)
+    else
+      return nil
+    end
+  end
+  L11_35 = L6_30
+  return L8_32(L9_33)
+end
+cidr = require("luci.util").class()
+function cidr.is4(A0_36)
+  return A0_36[1] == FAMILY_INET4
+end
+function cidr.is4rfc1918(A0_37)
+  local L1_38
+  L1_38 = A0_37[1]
+  if L1_38 == FAMILY_INET4 then
+    L1_38 = A0_37[2]
+    L1_38 = L1_38[1]
+    if L1_38 >= 2560 then
+      L1_38 = A0_37[2]
+      L1_38 = L1_38[1]
+    L1_38 = L1_38 <= 2815 or L1_38[1]
+    return L1_38
+  end
+  L1_38 = false
+  return L1_38
+end
+function cidr.is4linklocal(A0_39)
+  local L1_40
+  L1_40 = A0_39[1]
+  if L1_40 == FAMILY_INET4 then
+    L1_40 = A0_39[2]
+    L1_40 = L1_40[1]
+    L1_40 = L1_40 == 43518
+    return L1_40
+  end
+  L1_40 = false
+  return L1_40
+end
+function cidr.is6(A0_41)
+  return A0_41[1] == FAMILY_INET6
+end
+function cidr.is6linklocal(A0_42)
+  local L1_43
+  L1_43 = A0_42[1]
+  if L1_43 == FAMILY_INET6 then
+    L1_43 = A0_42[2]
+    L1_43 = L1_43[1]
+    L1_43 = L1_43 >= 65152 and L1_43 <= 65215
+    return L1_43
+  end
+  L1_43 = false
+  return L1_43
+end
+function cidr.string(A0_44)
+  local L1_45
+  if A0_44:is4() then
+    L1_45 = string.format("%d.%d.%d.%d", _UPVALUE0_.rshift(A0_44[2][1], 8), _UPVALUE0_.band(A0_44[2][1], 255), _UPVALUE0_.rshift(A0_44[2][2], 8), _UPVALUE0_.band(A0_44[2][2], 255))
+    if A0_44[3] < 32 then
+      L1_45 = L1_45 .. "/" .. A0_44[3]
+    end
+  elseif A0_44:is6() then
+    L1_45 = string.format("%X:%X:%X:%X:%X:%X:%X:%X", unpack(A0_44[2]))
+    if A0_44[3] < 128 then
+      L1_45 = L1_45 .. "/" .. A0_44[3]
+    end
+  end
+  return L1_45
+end
+function cidr.lower(A0_46, A1_47)
+  assert(A0_46[1] == A1_47[1], "Can't compare IPv4 and IPv6 addresses")
+  for _FORV_6_ = 1, #A0_46[2] do
+    if A0_46[2][_FORV_6_] ~= A1_47[2][_FORV_6_] then
+      return A0_46[2][_FORV_6_] < A1_47[2][_FORV_6_]
+    end
+  end
+  return _FOR_
+end
+function cidr.higher(A0_48, A1_49)
+  assert(A0_48[1] == A1_49[1], "Can't compare IPv4 and IPv6 addresses")
+  for _FORV_6_ = 1, #A0_48[2] do
+    if A0_48[2][_FORV_6_] ~= A1_49[2][_FORV_6_] then
+      return A0_48[2][_FORV_6_] > A1_49[2][_FORV_6_]
+    end
+  end
+  return _FOR_
+end
+function cidr.equal(A0_50, A1_51)
+  assert(A0_50[1] == A1_51[1], "Can't compare IPv4 and IPv6 addresses")
+  for _FORV_6_ = 1, #A0_50[2] do
+    if A0_50[2][_FORV_6_] ~= A1_51[2][_FORV_6_] then
+      return false
+    end
+  end
+  return _FOR_
+end
+function cidr.prefix(A0_52, A1_53)
+  local L2_54, L3_55, L4_56, L5_57, L6_58, L7_59, L8_60, L9_61, L10_62, L11_63, L12_64
+  L2_54 = A0_52[3]
+  if A1_53 then
+    L2_54 = 0
+    L3_55 = false
+    L4_56 = type
+    L5_57 = A1_53
+    L4_56 = L4_56(L5_57)
+    if L4_56 ~= "table" then
+      L5_57 = A0_52
+      L4_56 = A0_52.is4
+      L4_56 = L4_56(L5_57)
+      if L4_56 then
+        L4_56 = IPv4
+        L5_57 = A1_53
+        L4_56 = L4_56(L5_57)
+      elseif not L4_56 then
+        L4_56 = IPv6
+        L5_57 = A1_53
+        L4_56 = L4_56(L5_57)
+      end
+    else
+      L4_56 = L4_56 or A1_53
+    end
+    if not L4_56 then
+      L5_57 = nil
+      return L5_57
+    end
+    L5_57, L6_58 = nil, nil
+    for L10_62, L11_63 in L7_59(L8_60) do
+      if L11_63 == 65535 then
+        L2_54 = L2_54 + 16
+      else
+        L12_64 = _UPVALUE0_
+        L12_64 = L12_64.lshift
+        L12_64 = L12_64(1, 15)
+        while _UPVALUE0_.band(L11_63, L12_64) == L12_64 do
+          L2_54 = L2_54 + 1
+          L12_64 = _UPVALUE0_.lshift(1, 15 - L2_54 % 16)
+        end
+        break
+      end
+    end
+  end
+  return L2_54
+end
+function cidr.network(A0_65, A1_66)
+  local L2_67, L3_68
+  L2_67 = {}
+  A1_66 = A1_66 or A0_65[3]
+  L3_68 = nil
+  for _FORV_7_ = 1, math.floor(A1_66 / 16) do
+    L2_67[#L2_67 + 1] = A0_65[2][_FORV_7_]
+  end
+  if #L2_67 < #A0_65[2] then
+    L2_67[#L2_67 + 1] = _UPVALUE0_.band(A0_65[2][1 + #L2_67], _UPVALUE1_(A1_66))
+    for _FORV_7_ = #L2_67 + 1, #A0_65[2] do
+      L2_67[#L2_67 + 1] = 0
+    end
+  end
+  return _UPVALUE2_({
+    A0_65[1],
+    L2_67,
+    _UPVALUE3_(A0_65[1])
+  })
+end
+function cidr.host(A0_69)
+  return _UPVALUE0_({
+    A0_69[1],
+    A0_69[2],
+    _UPVALUE1_(A0_69[1])
+  })
+end
+function cidr.mask(A0_70, A1_71)
+  local L2_72
+  L2_72 = {}
+  A1_71 = A1_71 or A0_70[3]
+  for _FORV_6_ = 1, math.floor(A1_71 / 16) do
+    L2_72[#L2_72 + 1] = 65535
+  end
+  if #L2_72 < #A0_70[2] then
+    L2_72[#L2_72 + 1] = _UPVALUE0_(A1_71)
+    for _FORV_6_ = #L2_72 + 1, #A0_70[2] do
+      L2_72[#L2_72 + 1] = 0
+    end
+  end
+  return _UPVALUE1_({
+    A0_70[1],
+    L2_72,
+    _UPVALUE2_(A0_70[1])
+  })
+end
+function cidr.broadcast(A0_73)
+  local L1_74
+  L1_74 = A0_73[1]
+  if L1_74 == FAMILY_INET4 then
+    L1_74 = {
+      unpack(A0_73[2])
+    }
+    if math.floor(A0_73[3] / 16) + 1 <= #L1_74 then
+      L1_74[math.floor(A0_73[3] / 16) + 1] = _UPVALUE0_.bor(L1_74[math.floor(A0_73[3] / 16) + 1], _UPVALUE1_(A0_73[3]))
+      for _FORV_6_ = math.floor(A0_73[3] / 16) + 1 + 1, #L1_74 do
+        L1_74[_FORV_6_] = 65535
+      end
+      return _UPVALUE2_({
+        A0_73[1],
+        L1_74,
+        _UPVALUE3_(A0_73[1])
+      })
+    end
+  end
+end
+function cidr.contains(A0_75, A1_76)
+  assert(A0_75[1] == A1_76[1], "Can't compare IPv4 and IPv6 addresses")
+  if A0_75:prefix() <= A1_76:prefix() then
+    return A0_75:network() == A1_76:network(A0_75:prefix())
+  end
+  return false
+end
+function cidr.add(A0_77, A1_78, A2_79)
+  local L3_80, L4_81, L5_82
+  L4_81 = {
+    [2] = L5_82(A0_77[2])
+  }
+  L5_82 = unpack
+  L5_82 = L5_82(A0_77[2])
+  ;({
+    [2] = L5_82(A0_77[2])
+  })[1] = L5_82
+  L5_82 = _UPVALUE0_
+  L5_82 = L5_82(A1_78, A0_77[1])
+  for _FORV_9_ = #L4_81, 1, 4294967295 do
+    if L4_81[_FORV_9_] + (#L5_82 > 0 and table.remove(L5_82, #L5_82) or 0) > 65535 then
+      L4_81[_FORV_9_] = (L4_81[_FORV_9_] + (#L5_82 > 0 and table.remove(L5_82, #L5_82) or 0)) % 65535
+      if _FORV_9_ > 1 then
+        L4_81[_FORV_9_ - 1] = L4_81[_FORV_9_ - 1] + ((#L5_82 > 0 and table.remove(L5_82, #L5_82) or 0) - L4_81[_FORV_9_])
+      else
+        return nil
+      end
+    else
+      L4_81[_FORV_9_] = L4_81[_FORV_9_] + (#L5_82 > 0 and table.remove(L5_82, #L5_82) or 0)
+    end
+  end
+  if A2_79 then
+    A0_77[2] = L4_81
+    return A0_77
+  else
+    return _UPVALUE1_({
+      A0_77[1],
+      L4_81,
+      A0_77[3]
+    })
+  end
+end
+function cidr.sub(A0_83, A1_84, A2_85)
+  local L3_86, L4_87, L5_88
+  L4_87 = {
+    [2] = L5_88(A0_83[2])
+  }
+  L5_88 = unpack
+  L5_88 = L5_88(A0_83[2])
+  ;({
+    [2] = L5_88(A0_83[2])
+  })[1] = L5_88
+  L5_88 = _UPVALUE0_
+  L5_88 = L5_88(A1_84, A0_83[1])
+  for _FORV_9_ = #L4_87, 1, 4294967295 do
+    if 0 > L4_87[_FORV_9_] - (#L5_88 > 0 and table.remove(L5_88, #L5_88) or 0) then
+      L4_87[_FORV_9_] = ((#L5_88 > 0 and table.remove(L5_88, #L5_88) or 0) - L4_87[_FORV_9_]) % 65535
+      if _FORV_9_ > 1 then
+        L4_87[_FORV_9_ - 1] = L4_87[_FORV_9_ - 1] - ((#L5_88 > 0 and table.remove(L5_88, #L5_88) or 0) + L4_87[_FORV_9_])
+      else
+        return nil
+      end
+    else
+      L4_87[_FORV_9_] = L4_87[_FORV_9_] - (#L5_88 > 0 and table.remove(L5_88, #L5_88) or 0)
+    end
+  end
+  if A2_85 then
+    A0_83[2] = L4_87
+    return A0_83
+  else
+    return _UPVALUE1_({
+      A0_83[1],
+      L4_87,
+      A0_83[3]
+    })
+  end
+end
+function cidr.minhost(A0_89)
+  if A0_89[3] <= _UPVALUE0_(A0_89[1]) then
+    return A0_89:network():add(1, true)
+  end
+end
+function cidr.maxhost(A0_90)
+  local L1_91, L2_92
+  L1_91 = A0_90[3]
+  L2_92 = _UPVALUE0_
+  L2_92 = L2_92(A0_90[1])
+  if L1_91 <= L2_92 then
+    L1_91 = nil
+    L2_92 = {
+      unpack(A0_90[2])
+    }
+    L2_92[math.floor(A0_90[3] / 16) + 1] = _UPVALUE1_.bor(L2_92[math.floor(A0_90[3] / 16) + 1], _UPVALUE2_(A0_90[3]))
+    for _FORV_7_ = math.floor(A0_90[3] / 16) + 1 + 1, #L2_92 do
+      L2_92[_FORV_7_] = 65535
+    end
+    L2_92 = _UPVALUE3_({
+      A0_90[1],
+      L2_92,
+      _UPVALUE4_(A0_90[1])
+    })
+    if L2_92[1] == FAMILY_INET4 then
+      L2_92:sub(1, true)
+    end
+    return L2_92
+  end
+end
+function iptonl(A0_93)
+  local L1_94, L2_95, L3_96
+  L2_95 = A0_93
+  L1_94 = A0_93.match
+  L3_96 = "^(%d+).(%d+).(%d+).(%d+)"
+  L3_96 = L1_94(L2_95, L3_96)
+  return _UPVALUE0_.lshift(L1_94, 24) + _UPVALUE0_.lshift(L2_95, 16) + _UPVALUE0_.lshift(L3_96, 8) + L1_94(L2_95, L3_96)
+end
+function ipnot(A0_97)
+  local L1_98
+  L1_98 = iptonl
+  L1_98 = L1_98(A0_97)
+  return _UPVALUE0_.band(_UPVALUE0_.bnot(L1_98), 4294967295)
+end

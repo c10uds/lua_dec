@@ -1,0 +1,1864 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQLanWanUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function getDefaultMacAddress()
+  local L0_1, L1_2
+  L0_1 = require
+  L1_2 = "luci.util"
+  L0_1 = L0_1(L1_2)
+  L1_2 = L0_1.exec
+  L1_2 = L1_2(_UPVALUE0_.GET_DEFAULT_MACADDRESS)
+  if _UPVALUE1_.isStrNil(L1_2) then
+    L1_2 = nil
+    return "null"
+  else
+    L1_2 = L0_1.trim(L1_2):match("(%S-),")
+    return string.upper(L1_2)
+  end
+end
+function getDefaultWanMacAddress()
+  local L0_3, L1_4
+  L0_3 = require
+  L1_4 = "luci.util"
+  L0_3 = L0_3(L1_4)
+  L1_4 = L0_3.exec
+  L1_4 = L1_4(_UPVALUE0_.GET_DEFAULT_WAN_MACADDRESS)
+  if _UPVALUE1_.isStrNil(L1_4) then
+    L1_4 = nil
+    return "null"
+  else
+    L1_4 = L0_3.trim(L1_4)
+    return string.upper(L1_4)
+  end
+end
+function getLanLinkList()
+  local L0_5, L1_6, L2_7, L3_8, L4_9, L5_10, L6_11, L7_12, L8_13, L9_14, L10_15
+  L0_5 = require
+  L1_6 = "luci.util"
+  L0_5 = L0_5(L1_6)
+  L1_6 = require
+  L2_7 = "luci.model.uci"
+  L1_6 = L1_6(L2_7)
+  L1_6 = L1_6.cursor
+  L1_6 = L1_6()
+  L3_8 = L1_6
+  L2_7 = L1_6.get
+  L4_9 = "misc"
+  L2_7 = L2_7(L3_8, L4_9, L5_10, L6_11)
+  L3_8 = {}
+  L4_9 = "/sbin/ethstatus"
+  L10_15 = L6_11(L7_12)
+  for L8_13, L9_14 in L5_10(L6_11, L7_12, L8_13, L9_14, L10_15, L6_11(L7_12)) do
+    L10_15 = L9_14.match
+    L10_15 = L10_15(L9_14, "port (%d):(%S+)")
+    if L10_15(L9_14, "port (%d):(%S+)") and string.match(L2_7, L10_15) ~= nil then
+      L3_8[L8_13] = L10_15(L9_14, "port (%d):(%S+)") == "up" and 1 or 0
+    end
+  end
+  return L3_8
+end
+function getWanLink()
+  local L0_16, L1_17, L2_18, L3_19, L4_20, L5_21, L6_22, L7_23, L8_24, L9_25
+  L0_16 = require
+  L1_17 = "luci.util"
+  L0_16 = L0_16(L1_17)
+  L1_17 = require
+  L2_18 = "luci.model.uci"
+  L1_17 = L1_17(L2_18)
+  L1_17 = L1_17.cursor
+  L1_17 = L1_17()
+  L3_19 = L1_17
+  L2_18 = L1_17.get
+  L2_18 = L2_18(L3_19, L4_20, L5_21, L6_22)
+  L2_18 = L2_18 or 4
+  L3_19 = "/sbin/ethstatus"
+  L9_25 = L5_21(L6_22)
+  for L7_23, L8_24 in L4_20(L5_21, L6_22, L7_23, L8_24, L9_25, L5_21(L6_22)) do
+    L9_25 = L8_24.match
+    L9_25 = L9_25(L8_24, "port (%d):(%S+)")
+    if L9_25(L8_24, "port (%d):(%S+)") and L9_25(L8_24, "port (%d):(%S+)") == "up" and tonumber(L9_25) == tonumber(L2_18) then
+      return true
+    end
+  end
+  return L4_20
+end
+function getLanIp()
+  return require("luci.model.uci").cursor():get_all("network", "lan").ipaddr
+end
+function getWanMonitorStat()
+  local L0_26, L1_27
+  L0_26 = require
+  L1_27 = "nixio.fs"
+  L0_26 = L0_26(L1_27)
+  L1_27 = L0_26.readfile
+  L1_27 = L1_27(_UPVALUE0_.WAN_MONITOR_STAT_FILEPATH)
+  if L1_27 ~= nil then
+    for _FORV_6_ in string.gmatch(L1_27, [[
+[^
+]+]]) do
+      key, value = _FORV_6_:match("(%S+)=(%S+)")
+      ;({})[key] = value
+    end
+  end
+  return {}
+end
+function getAutoWanType()
+  local L0_28, L1_29, L2_30, L3_31, L4_32, L5_33, L6_34, L7_35
+  L0_28 = require
+  L1_29 = "luci.util"
+  L0_28 = L0_28(L1_29)
+  L1_29 = require
+  L2_30 = "luci.model.uci"
+  L1_29 = L1_29(L2_30)
+  L1_29 = L1_29.cursor
+  L1_29 = L1_29()
+  L3_31 = L1_29
+  L2_30 = L1_29.get
+  L4_32 = "misc"
+  L5_33 = "hardware"
+  L6_34 = "model"
+  L2_30 = L2_30(L3_31, L4_32, L5_33, L6_34)
+  L2_30 = L2_30 or ""
+  if L2_30 then
+    L3_31 = string
+    L3_31 = L3_31.lower
+    L4_32 = L2_30
+    L3_31 = L3_31(L4_32)
+    L2_30 = L3_31
+  end
+  L4_32 = L1_29
+  L3_31 = L1_29.get
+  L5_33 = "xiaoqiang"
+  L6_34 = "common"
+  L7_35 = "INITTED"
+  L3_31 = L3_31(L4_32, L5_33, L6_34, L7_35)
+  L3_31 = L3_31 or ""
+  L5_33 = L2_30
+  L4_32 = L2_30.match
+  L6_34 = "^d01"
+  L4_32 = L4_32(L5_33, L6_34)
+  if L4_32 and L3_31 ~= "YES" then
+    L4_32 = L0_28.execi
+    L5_33 = "/usr/sbin/autowancheck 6"
+    L4_32 = L4_32(L5_33)
+    L5_33, L6_34, L7_35 = nil, nil, nil
+    if L4_32 then
+      for _FORV_11_ in L4_32, nil, nil do
+        if _FORV_11_:match("^LINK=(%S+)") ~= nil then
+          L5_33 = _FORV_11_:match("^LINK=(%S+)")
+        elseif _FORV_11_:match("^PPPOE=(%S+)") ~= nil then
+          L6_34 = _FORV_11_:match("^PPPOE=(%S+)")
+        elseif _FORV_11_:match("^DHCP=(%S+)") ~= nil then
+          L7_35 = _FORV_11_:match("^DHCP=(%S+)")
+        end
+      end
+    end
+    if L6_34 == "YES" then
+      return 1
+    elseif L7_35 == "YES" then
+      return 2
+    elseif L5_33 ~= "YES" then
+      return 99
+    else
+      return 0
+    end
+  else
+    L4_32 = L0_28.execi
+    L5_33 = "/usr/sbin/wanlinkprobe 4 WAN pppoe dhcp"
+    L4_32 = L4_32(L5_33)
+    L5_33, L6_34, L7_35 = nil, nil, nil
+    if L4_32 then
+      for _FORV_11_ in L4_32, nil, nil do
+        if _FORV_11_:match("^LINK=(%S+)") ~= nil then
+          L5_33 = _FORV_11_:match("^LINK=(%S+)")
+        elseif _FORV_11_:match("^PPPOE=(%S+)") ~= nil then
+          L6_34 = _FORV_11_:match("^PPPOE=(%S+)")
+        elseif _FORV_11_:match("^DHCP=(%S+)") ~= nil then
+          L7_35 = _FORV_11_:match("^DHCP=(%S+)")
+        end
+      end
+    end
+    if L6_34 == "YES" then
+      return 1
+    elseif L7_35 == "YES" then
+      return 2
+    elseif L5_33 ~= "YES" then
+      return 99
+    else
+      return 0
+    end
+  end
+end
+function ubusWanStatus()
+  if require("ubus").connect():call("network.interface.wan", "status", {})["ipv4-address"] and #require("ubus").connect():call("network.interface.wan", "status", {})["ipv4-address"] > 0 then
+    ({}).ipv4 = require("ubus").connect():call("network.interface.wan", "status", {})["ipv4-address"][1]
+  else
+    ({}).ipv4 = {mask = 0, address = ""}
+  end
+  ;({}).dns = require("ubus").connect():call("network.interface.wan", "status", {})["dns-server"] or {}
+  ;({}).proto = string.lower(require("ubus").connect():call("network.interface.wan", "status", {}).proto or "dhcp")
+  ;({}).up = require("ubus").connect():call("network.interface.wan", "status", {}).up
+  ;({}).uptime = require("ubus").connect():call("network.interface.wan", "status", {}).uptime or 0
+  ;({}).pending = require("ubus").connect():call("network.interface.wan", "status", {}).pending
+  ;({}).autostart = require("ubus").connect():call("network.interface.wan", "status", {}).autostart
+  return {}
+end
+function _pppoeStatusCheck()
+  local L0_36, L1_37, L2_38, L3_39
+  L0_36 = require
+  L1_37 = "json"
+  L0_36 = L0_36(L1_37)
+  L1_37 = require
+  L2_38 = "luci.util"
+  L1_37 = L1_37(L2_38)
+  L2_38 = "lua /usr/sbin/pppoe.lua status"
+  L3_39 = L1_37.exec
+  L3_39 = L3_39(L2_38)
+  if L3_39 then
+    L3_39 = L1_37.trim(L3_39)
+    if _UPVALUE0_.isStrNil(L3_39) then
+      return false
+    end
+    L3_39 = L0_36.decode(L3_39)
+    return L3_39
+  else
+    return false
+  end
+end
+function _pppoeErrorCodeHelper(A0_40)
+  local L1_41, L2_42, L3_43
+  L1_41 = {}
+  L1_41["507"] = 1
+  L1_41["691"] = 1
+  L1_41["509"] = 1
+  L1_41["514"] = 1
+  L1_41["520"] = 1
+  L1_41["646"] = 1
+  L1_41["647"] = 1
+  L1_41["648"] = 1
+  L1_41["649"] = 1
+  L1_41["691"] = 1
+  L1_41["646"] = 1
+  L1_41["678"] = 1
+  L2_42 = {}
+  L2_42["516"] = 1
+  L2_42["650"] = 1
+  L2_42["601"] = 1
+  L2_42["510"] = 1
+  L2_42["530"] = 1
+  L2_42["531"] = 1
+  L3_43 = {}
+  L3_43["501"] = 1
+  L3_43["502"] = 1
+  L3_43["503"] = 1
+  L3_43["504"] = 1
+  L3_43["505"] = 1
+  L3_43["506"] = 1
+  L3_43["507"] = 1
+  L3_43["508"] = 1
+  L3_43["511"] = 1
+  L3_43["512"] = 1
+  L3_43["515"] = 1
+  L3_43["517"] = 1
+  L3_43["518"] = 1
+  L3_43["519"] = 1
+  if tostring(A0_40) then
+    if L1_41[tostring(A0_40)] then
+      return 1
+    end
+    if L2_42[tostring(A0_40)] then
+      return 2
+    end
+    if L3_43[tostring(A0_40)] then
+      return 3
+    end
+    return 1
+  end
+end
+function _pppoeError(A0_44)
+  local L1_45, L2_46, L3_47, L4_48, L5_49, L6_50
+  L1_45 = require
+  L2_46 = "luci.model.uci"
+  L1_45 = L1_45(L2_46)
+  L1_45 = L1_45.cursor
+  L1_45 = L1_45()
+  L2_46 = require
+  L3_47 = "xiaoqiang.util.XQCryptoUtil"
+  L2_46 = L2_46(L3_47)
+  L4_48 = L1_45
+  L3_47 = L1_45.get
+  L5_49 = "network"
+  L6_50 = "wan"
+  L3_47 = L3_47(L4_48, L5_49, L6_50, "username")
+  L5_49 = L1_45
+  L4_48 = L1_45.get
+  L6_50 = "network"
+  L4_48 = L4_48(L5_49, L6_50, "wan", "password")
+  L5_49 = 0
+  if L3_47 and L4_48 then
+    L6_50 = L2_46.md5Str
+    L6_50 = L6_50(L3_47 .. L4_48)
+    if L1_45:get_all("xiaoqiang", L6_50) and L1_45:get_all("xiaoqiang", L6_50).status and tonumber(L1_45:get_all("xiaoqiang", L6_50).status) then
+      L5_49 = tonumber(L1_45:get_all("xiaoqiang", L6_50).status)
+    else
+      L5_49 = 0
+    end
+    if A0_44 == 691 then
+      if L5_49 == 0 then
+        return 33
+      else
+        return 34
+      end
+    elseif A0_44 == 678 then
+      if L5_49 == 0 then
+        return 35
+      else
+        return 36
+      end
+    end
+  end
+  L6_50 = nil
+  return L6_50
+end
+function getPPPoEStatus()
+  local L0_51, L1_52, L2_53, L3_54, L4_55, L5_56, L6_57
+  L0_51 = {}
+  L1_52 = ubusWanStatus
+  L1_52 = L1_52()
+  if L1_52 then
+    L2_53 = require
+    L3_54 = "luci.model.network"
+    L2_53 = L2_53(L3_54)
+    L2_53 = L2_53.init
+    L2_53 = L2_53()
+    L4_55 = L2_53
+    L3_54 = L2_53.get_network
+    L5_56 = "wan"
+    L3_54 = L3_54(L4_55, L5_56)
+    L4_55 = require
+    L5_56 = "luci.util"
+    L4_55 = L4_55(L5_56)
+    L5_56 = L1_52.proto
+    if L5_56 == "pppoe" then
+      L5_56 = getWanLink
+      L5_56 = L5_56()
+      if not L5_56 then
+        L6_57 = getWanLink
+        L6_57 = L6_57()
+        L5_56 = L6_57
+      end
+      if not L5_56 then
+        L0_51.status = 3
+        L0_51.errcode = 678
+        L0_51.errtype = 2
+        L0_51.perror = 35
+      else
+        L6_57 = L1_52.up
+        if L6_57 then
+          L0_51.status = 2
+        else
+          L6_57 = _pppoeStatusCheck
+          L6_57 = L6_57()
+          if L6_57 then
+            if L6_57.process == "down" then
+              L0_51.status = 4
+            elseif L6_57.process == "up" then
+              L0_51.status = 2
+            elseif L6_57.process == "connecting" then
+              if L6_57.code == nil or L6_57.code == 0 then
+                L0_51.status = 1
+              else
+                L0_51.status = 3
+                L0_51.errcode = L6_57.msg or ""
+                L0_51.errtype = _pppoeErrorCodeHelper(tostring(L6_57.code))
+                L0_51.perror = _pppoeError(L6_57.msg)
+              end
+            end
+          else
+            L0_51.status = 0
+          end
+        end
+      end
+      L6_57 = L3_54.get_option_value
+      L6_57 = L6_57(L3_54, "dns")
+      if not _UPVALUE0_.isStrNil(L6_57) then
+        L0_51.cdns = luci.util.split(L6_57, " ")
+      end
+      L0_51.pppoename = L3_54:get_option_value("username")
+      L0_51.password = L3_54:get_option_value("password")
+      L0_51.peerdns = L3_54:get_option_value("peerdns")
+    else
+      L0_51.status = 0
+    end
+    L6_57 = L3_54
+    L5_56 = L3_54.get_interface
+    L5_56 = L5_56(L6_57)
+    L6_57 = L5_56.ipaddrs
+    L6_57 = L6_57(L5_56)
+    if L6_57 and #L6_57 > 0 then
+      ({address = "", mask = ""}).address = L6_57[1]:host():string()
+      ;({address = "", mask = ""}).mask = L6_57[1]:mask():string()
+    end
+    L0_51.ip = {address = "", mask = ""}
+    L0_51.dns = L1_52.dns
+    L0_51.proto = L1_52.proto
+    L0_51.gw = L3_54:gwaddr() or ""
+    return L0_51
+  else
+    L2_53 = false
+    return L2_53
+  end
+end
+function pppoeStop()
+  os.execute("lua /usr/sbin/pppoe.lua down")
+end
+function pppoeStart()
+  _UPVALUE0_.forkExec("lua /usr/sbin/pppoe.lua up")
+end
+function getLanWanInfo(A0_58)
+  local L1_59, L2_60, L3_61, L4_62, L5_63, L6_64, L7_65, L8_66, L9_67, L10_68, L11_69
+  L1_59 = require
+  L2_60 = "cjson"
+  L1_59 = L1_59(L2_60)
+  if A0_58 ~= "lan" and A0_58 ~= "wan" then
+    L2_60 = false
+    return L2_60
+  end
+  L2_60 = require
+  L3_61 = "luci.util"
+  L2_60 = L2_60(L3_61)
+  L3_61 = require
+  L4_62 = "luci.model.network"
+  L3_61 = L3_61(L4_62)
+  L3_61 = L3_61.init
+  L3_61 = L3_61()
+  L4_62 = luci
+  L4_62 = L4_62.model
+  L4_62 = L4_62.uci
+  L4_62 = L4_62.cursor
+  L4_62 = L4_62()
+  L5_63 = {}
+  L7_65 = L3_61
+  L6_64 = L3_61.get_network
+  L8_66 = A0_58
+  L6_64 = L6_64(L7_65, L8_66)
+  if L6_64 then
+    L8_66 = L6_64
+    L7_65 = L6_64.get_interface
+    L7_65 = L7_65(L8_66)
+    L9_67 = L7_65
+    L8_66 = L7_65.ipaddrs
+    L8_66 = L8_66(L9_67)
+    L10_68 = L4_62
+    L9_67 = L4_62.get
+    L11_69 = "ipv6"
+    L9_67 = L9_67(L10_68, L11_69, "settings", "enabled")
+    L11_69 = L4_62
+    L10_68 = L4_62.get
+    L10_68 = L10_68(L11_69, "ipv6", "settings", "mode")
+    L10_68 = L10_68 or "none"
+    if L10_68 == "none" then
+      L9_67 = "0"
+    end
+    if A0_58 == "wan" then
+      L11_69 = getWanDetails
+      L11_69 = L11_69()
+      L5_63.details = L11_69
+      L11_69 = nil
+      if L5_63.details and L5_63.details.wanType == "pppoe" then
+        L11_69 = L5_63.details.mru
+      else
+        L11_69 = L6_64:get_option_value("mtu")
+      end
+      if _UPVALUE0_.isStrNil(L11_69) then
+        L11_69 = "1480"
+      end
+      L5_63.mtu = tostring(L11_69)
+      if L5_63.details and L5_63.details.wanType == "pppoe" then
+        if L6_64:get_option_value("special") and L6_64:get_option_value("special") == "1" then
+          L5_63.special = 1
+        else
+          L5_63.special = 0
+        end
+      end
+      if L9_67 == "1" then
+        L5_63.ipv6_info = getIp6Details()
+        if L5_63.ipv6_info == nil then
+          L5_63.ipv6_info = {}
+        end
+        L5_63.ipv6_info.wanType = L10_68
+      else
+        L5_63.ipv6_info = {}
+        L5_63.ipv6_info.wanType = L10_68
+      end
+      L5_63.link = getWanLink() and 1 or 0
+      L5_63.ipv6_show = tonumber(L4_62:get("ipv6", "settings", "ipv6_show") or "0")
+    end
+    if L7_65 then
+      L11_69 = #L8_66
+      if L11_69 > 0 then
+        L11_69 = {}
+        for _FORV_15_, _FORV_16_ in ipairs(L8_66) do
+          L11_69[#L11_69 + 1] = {}
+          L11_69[#L11_69].ip = _FORV_16_:host():string()
+          L11_69[#L11_69].mask = _FORV_16_:mask():string()
+        end
+        L5_63.ipv4 = L11_69
+      end
+    end
+    L11_69 = L6_64.gwaddr
+    L11_69 = L11_69(L6_64)
+    L5_63.gateWay = L11_69
+    L11_69 = L6_64.dnsaddrs
+    L11_69 = L11_69(L6_64)
+    if L11_69 then
+      L11_69 = L6_64.dnsaddrs
+      L11_69 = L11_69(L6_64)
+      L11_69 = L11_69[1]
+      L11_69 = L11_69 or ""
+      L5_63.dnsAddrs = L11_69
+      L11_69 = L6_64.dnsaddrs
+      L11_69 = L11_69(L6_64)
+      L11_69 = L11_69[2]
+      L11_69 = L11_69 or ""
+      L5_63.dnsAddrs1 = L11_69
+    else
+      L5_63.dnsAddrs = ""
+      L5_63.dnsAddrs1 = ""
+    end
+    if L7_65 then
+      L11_69 = L7_65.mac
+      L11_69 = L11_69(L7_65)
+      if L11_69 ~= "00:00:00:00:00:00" then
+        L11_69 = L7_65.mac
+        L11_69 = L11_69(L7_65)
+        L5_63.mac = L11_69
+      end
+    end
+    L11_69 = L5_63.mac
+    if L11_69 == nil then
+      L11_69 = getWanMac
+      L11_69 = L11_69()
+      L5_63.mac = L11_69
+    end
+    L11_69 = L6_64.uptime
+    L11_69 = L11_69(L6_64)
+    if L11_69 > 0 then
+      L11_69 = L6_64.uptime
+      L11_69 = L11_69(L6_64)
+      L5_63.uptime = L11_69
+    else
+      L5_63.uptime = 0
+    end
+    L11_69 = L6_64.status
+    L11_69 = L11_69(L6_64)
+    if L11_69 == "down" then
+      L5_63.status = 0
+    elseif L11_69 == "up" then
+      L5_63.status = 1
+      if L5_63.details and L5_63.details.wanType == "pppoe" then
+        wanMonitor = getWanMonitorStat()
+        if wanMonitor.WANLINKSTAT ~= "UP" then
+          L5_63.status = 0
+        end
+      end
+    elseif L11_69 == "connection" then
+      L5_63.status = 2
+    end
+  else
+    L5_63 = false
+  end
+  return L5_63
+end
+function getWan6Info()
+  if require("luci.model.network").init():get_network("wan") then
+    ({}).details = getWanDetails()
+    if "0" == "1" then
+      ({}).ipv6_info = getIp6Details()
+      if ({}).ipv6_info == nil then
+        ({}).ipv6_info = {}
+      end
+      ;({}).ipv6_info.wanType = luci.model.uci.cursor():get("ipv6", "settings", "mode") or "none"
+    else
+      ({}).ipv6_info = {}
+      ;({}).ipv6_info.wanType = luci.model.uci.cursor():get("ipv6", "settings", "mode") or "none"
+    end
+    ;({}).ipv6_show = tonumber(luci.model.uci.cursor():get("ipv6", "settings", "ipv6_show"))
+    ;({}).gateWay = require("luci.model.network").init():get_network("wan"):gwaddr()
+    if require("luci.model.network").init():get_network("wan"):dnsaddrs() then
+      ({}).dnsAddrs = require("luci.model.network").init():get_network("wan"):dnsaddrs()[1] or ""
+      ;({}).dnsAddrs1 = require("luci.model.network").init():get_network("wan"):dnsaddrs()[2] or ""
+    else
+      ({}).dnsAddrs = ""
+      ;({}).dnsAddrs1 = ""
+    end
+  else
+  end
+  return false
+end
+function getDefaultGWDev(A0_70)
+  local L1_71, L2_72, L3_73, L4_74, L5_75
+  L1_71 = require
+  L2_72 = "luci.util"
+  L1_71 = L1_71(L2_72)
+  L2_72 = require
+  L3_73 = "cjson"
+  L2_72 = L2_72(L3_73)
+  L3_73 = {}
+  if A0_70 == nil then
+    L4_74 = L1_71.exec
+    L5_75 = "ubus call trafficd hw"
+    L4_74 = L4_74(L5_75)
+    L5_75 = L2_72.decode
+    L5_75 = L5_75(L4_74)
+    L3_73 = L5_75
+  else
+    L3_73 = A0_70
+  end
+  L4_74 = nil
+  L5_75 = L1_71.exec
+  L5_75 = L5_75("route -n | awk '{if($1 == \"0.0.0.0\") print $2}' | head -1")
+  L5_75 = string.gsub(L5_75, "\n", "")
+  for _FORV_9_, _FORV_10_ in pairs(L3_73) do
+    if _FORV_10_.ip_list ~= nil then
+      for _FORV_14_, _FORV_15_ in pairs(_FORV_10_.ip_list) do
+        if _FORV_15_.ip == L5_75 then
+          L4_74 = _FORV_15_.ifname
+          break
+        end
+      end
+    end
+  end
+  return L4_74
+end
+function getWanEth()
+  return require("luci.model.network").init():get_network("wan"):get_option_value("ifname")
+end
+function getWanMac()
+  local L0_76, L1_77
+  L0_76 = require
+  L1_77 = "luci.util"
+  L0_76 = L0_76(L1_77)
+  L1_77 = L0_76.exec
+  L1_77 = L1_77("ifconfig " .. getWanEth())
+  if not _UPVALUE0_.isStrNil(L1_77) then
+    return L1_77:match("HWaddr (%S+)") or ""
+  else
+    return nil
+  end
+end
+function getLanWanIp(A0_78)
+  local L1_79, L2_80, L3_81, L4_82, L5_83
+  if A0_78 ~= "lan" and A0_78 ~= "wan" then
+    L1_79 = false
+    return L1_79
+  end
+  L1_79 = require
+  L2_80 = "luci.model.network"
+  L1_79 = L1_79(L2_80)
+  L1_79 = L1_79.init
+  L1_79 = L1_79()
+  L2_80 = {}
+  L4_82 = L1_79
+  L3_81 = L1_79.get_network
+  L5_83 = A0_78
+  L3_81 = L3_81(L4_82, L5_83)
+  if L3_81 then
+    L5_83 = L3_81
+    L4_82 = L3_81.get_interface
+    L4_82 = L4_82(L5_83)
+    L5_83 = L4_82.ipaddrs
+    L5_83 = L5_83(L4_82)
+    if L4_82 and #L5_83 > 0 then
+      for _FORV_9_, _FORV_10_ in ipairs(L5_83) do
+        L2_80[#L2_80 + 1] = {}
+        L2_80[#L2_80].ip = _FORV_10_:host():string()
+        L2_80[#L2_80].mask = _FORV_10_:mask():string()
+      end
+    end
+  end
+  return L2_80
+end
+function checkLanIp(A0_84)
+  if require("luci.ip").iptonl(A0_84) >= require("luci.ip").iptonl("10.0.0.0") and require("luci.ip").iptonl(A0_84) <= require("luci.ip").iptonl("10.255.255.255") or require("luci.ip").iptonl(A0_84) >= require("luci.ip").iptonl("172.16.0.0") and require("luci.ip").iptonl(A0_84) <= require("luci.ip").iptonl("172.31.255.255") or require("luci.ip").iptonl(A0_84) >= require("luci.ip").iptonl("192.168.0.0") and require("luci.ip").iptonl(A0_84) <= require("luci.ip").iptonl("192.168.255.255") then
+    return 0
+  else
+    return 1527
+  end
+end
+function setLanIp(A0_85, A1_86)
+  require("luci.model.network").init():get_network("lan"):set("ipaddr", A0_85)
+  require("luci.model.network").init():get_network("lan"):set("netmask", A1_86)
+  require("luci.model.network").init():commit("network")
+  require("luci.model.network").init():save("network")
+  require("xiaoqiang.XQEvent").lanIPChange(A0_85)
+  return true
+end
+function getIPv6Addrs()
+  local L0_87, L1_88, L2_89, L3_90, L4_91, L5_92, L6_93, L7_94, L8_95, L9_96
+  L0_87 = require
+  L1_88 = "luci.ip"
+  L0_87 = L0_87(L1_88)
+  L1_88 = require
+  L2_89 = "luci.util"
+  L1_88 = L1_88(L2_89)
+  L2_89 = "ifconfig|grep inet6"
+  L3_90 = L1_88.execi
+  L4_91 = L2_89
+  L3_90 = L3_90(L4_91)
+  L4_91 = {}
+  for L8_95 in L3_90, nil, nil do
+    L9_96 = luci
+    L9_96 = L9_96.util
+    L9_96 = L9_96.trim
+    L9_96 = L9_96(L8_95)
+    L8_95 = L9_96
+    L9_96 = L8_95.match
+    L9_96 = L9_96(L8_95, "inet6 addr: ([^%s]+)/([^%s]+)%s+Scope:([^%s]+)")
+    if L9_96 then
+      L9_96 = L0_87.IPv6(L9_96, "ffff:ffff:ffff:ffff::")
+      L9_96 = L9_96:host():string()
+      L4_91[L9_96] = {}
+      L4_91[L9_96].ip = L9_96
+      L4_91[L9_96].mask = L9_96(L8_95, "inet6 addr: ([^%s]+)/([^%s]+)%s+Scope:([^%s]+)")
+      L4_91[L9_96].type = L9_96(L8_95, "inet6 addr: ([^%s]+)/([^%s]+)%s+Scope:([^%s]+)")
+    end
+  end
+  return L4_91
+end
+function getLanIPv6Addrs()
+  local L0_97, L1_98, L2_99, L3_100, L4_101, L5_102, L6_103, L7_104, L8_105
+  L0_97 = require
+  L1_98 = "luci.util"
+  L0_97 = L0_97(L1_98)
+  L1_98 = "ip addr show dev br-lan | grep inet6 | grep -v fe80 | grep -v deprecated"
+  L2_99 = L0_97.execi
+  L3_100 = L1_98
+  L2_99 = L2_99(L3_100)
+  L3_100 = {}
+  for L7_104 in L2_99, nil, nil do
+    L8_105 = luci
+    L8_105 = L8_105.util
+    L8_105 = L8_105.trim
+    L8_105 = L8_105(L7_104)
+    L7_104 = L8_105
+    L8_105 = L7_104.match
+    L8_105 = L8_105(L7_104, "inet6 ([^%s]+/[^%s]+)%s+")
+    if L8_105 then
+      table.insert(L3_100, L8_105)
+    end
+  end
+  return L3_100
+end
+function getLanIPv6Prefix()
+  local L0_106, L1_107, L2_108, L3_109, L4_110, L5_111, L6_112, L7_113, L8_114
+  L0_106 = require
+  L1_107 = "luci.util"
+  L0_106 = L0_106(L1_107)
+  L1_107 = "ip addr show dev br-lan | grep inet6 | grep -v fe80 | grep -v deprecated"
+  L2_108 = L0_106.execi
+  L3_109 = L1_107
+  L2_108 = L2_108(L3_109)
+  L3_109 = {}
+  for L7_113 in L2_108, nil, nil do
+    L8_114 = luci
+    L8_114 = L8_114.util
+    L8_114 = L8_114.trim
+    L8_114 = L8_114(L7_113)
+    L7_113 = L8_114
+    L8_114 = L7_113.match
+    L8_114 = L8_114(L7_113, "inet6 ([^%s]+)1/[^%s]+")
+    if L8_114 then
+      table.insert(L3_109, L8_114)
+    end
+  end
+  return L3_109
+end
+function getLanDHCPService()
+  ({}).lanIp = getLanWanIp("lan")
+  ;({}).start = require("luci.model.uci").cursor():get("dhcp", "lan", "start")
+  ;({}).ignore, ({}).leasetimeUnit, ({}).leasetimeNum, ({}).leasetime, ({}).limit = "0", require("luci.model.uci").cursor():get("dhcp", "lan", "leasetime"):match("^(%d+)([^%d]+)")
+  return {}
+end
+function setLanDHCPService(A0_115, A1_116, A2_117, A3_118)
+  local L4_119, L5_120, L6_121, L7_122
+  L4_119 = require
+  L5_120 = "luci.model.uci"
+  L4_119 = L4_119(L5_120)
+  L5_120 = require
+  L6_121 = "luci.util"
+  L5_120 = L5_120(L6_121)
+  L6_121 = L4_119.cursor
+  L6_121 = L6_121()
+  if A3_118 == "1" then
+    L7_122 = L6_121.set
+    L7_122(L6_121, "dhcp", "lan", "ignore", tonumber(A3_118))
+  else
+    L7_122 = tonumber
+    L7_122 = L7_122(A1_116)
+    L7_122 = L7_122 - tonumber(A0_115)
+    L7_122 = L7_122 + 1
+    if L7_122 < 0 then
+      return false
+    end
+    L6_121:set("dhcp", "lan", "start", tonumber(A0_115))
+    L6_121:set("dhcp", "lan", "limit", tonumber(L7_122))
+    L6_121:set("dhcp", "lan", "leasetime", A2_117)
+    L6_121:delete("dhcp", "lan", "ignore")
+  end
+  L7_122 = L6_121.save
+  L7_122(L6_121, "dhcp")
+  L7_122 = L6_121.load
+  L7_122(L6_121, "dhcp")
+  L7_122 = L6_121.commit
+  L7_122(L6_121, "dhcp")
+  L7_122 = L6_121.load
+  L7_122(L6_121, "dhcp")
+  L7_122 = L5_120.exec
+  L7_122("/etc/init.d/dnsmasq restart > /dev/null")
+  L7_122 = true
+  return L7_122
+end
+function wanDown()
+  require("luci.util").exec("env -i /sbin/ifdown wan")
+end
+function wanRestart()
+  require("luci.util").exec("env -i /sbin/ifup wan")
+  _UPVALUE0_.forkExec("/etc/init.d/filetunnel restart")
+end
+function dnsmsqRestart()
+  require("luci.util").exec("ubus call network reload; sleep 1; /etc/init.d/dnsmasq restart > /dev/null")
+end
+function getWanDetails()
+  if require("luci.model.network").init():get_network("wan") then
+    if require("luci.model.network").init():get_network("wan"):proto() == "mobile" or require("luci.model.network").init():get_network("wan"):proto() == "3g" then
+    elseif "mobile" == "static" then
+      ({}).ipaddr = require("luci.model.network").init():get_network("wan"):get_option_value("ipaddr")
+      ;({}).netmask = require("luci.model.network").init():get_network("wan"):get_option_value("netmask")
+      ;({}).gateway = require("luci.model.network").init():get_network("wan"):get_option_value("gateway")
+    elseif "mobile" == "pppoe" then
+      ({}).username = require("luci.model.network").init():get_network("wan"):get_option_value("username")
+      ;({}).password = require("luci.model.network").init():get_network("wan"):get_option_value("password")
+      ;({}).peerdns = require("luci.model.network").init():get_network("wan"):get_option_value("peerdns")
+      ;({}).service = require("luci.model.network").init():get_network("wan"):get_option_value("service")
+      ;({}).mru = require("luci.model.network").init():get_network("wan"):get_option_value("mru")
+    elseif "mobile" == "dhcp" then
+      ({}).peerdns = require("luci.model.network").init():get_network("wan"):get_option_value("peerdns")
+    end
+    if not _UPVALUE0_.isStrNil(require("luci.model.network").init():get_network("wan"):get_option_value("dns")) then
+      ({}).dns = luci.util.split(require("luci.model.network").init():get_network("wan"):get_option_value("dns"), " ")
+    end
+    ;({}).wanType = "mobile"
+    ;({}).ifname = require("luci.model.network").init():get_network("wan"):get_option_value("ifname")
+    return {}
+  else
+    return nil
+  end
+end
+function getIp6Details()
+  local L0_123, L1_124, L2_125, L3_126, L4_127, L5_128, L6_129, L7_130, L8_131, L9_132, L10_133
+  L0_123 = require
+  L1_124 = "luci.model.network"
+  L0_123 = L0_123(L1_124)
+  L0_123 = L0_123.init
+  L0_123 = L0_123()
+  L1_124 = require
+  L2_125 = "luci.util"
+  L1_124 = L1_124(L2_125)
+  L2_125 = require
+  L3_126 = "cjson"
+  L2_125 = L2_125(L3_126)
+  L4_127 = L0_123
+  L3_126 = L0_123.get_network
+  L5_128 = "wan"
+  L3_126 = L3_126(L4_127, L5_128)
+  L5_128 = L3_126
+  L4_127 = L3_126.proto
+  L4_127 = L4_127(L5_128)
+  L5_128 = luci
+  L5_128 = L5_128.model
+  L5_128 = L5_128.uci
+  L5_128 = L5_128.cursor
+  L5_128 = L5_128()
+  L6_129 = {}
+  L8_131 = L5_128
+  L7_130 = L5_128.get
+  L9_132 = "ipv6"
+  L7_130 = L7_130(L8_131, L9_132, L10_133, "mode")
+  L7_130 = L7_130 or "none"
+  L9_132 = L5_128
+  L8_131 = L5_128.get
+  L8_131 = L8_131(L9_132, L10_133, "settings", "ip6assign")
+  L6_129.assign = L8_131
+  L9_132 = L5_128
+  L8_131 = L5_128.get
+  L8_131 = L8_131(L9_132, L10_133, "dns", "peerdns")
+  L6_129.peerdns = L8_131
+  L8_131 = _UPVALUE0_
+  L8_131 = L8_131.isStrNil
+  L9_132 = L5_128.get
+  L9_132 = L9_132(L10_133, "ipv6", "dns", "dns")
+  L8_131 = L8_131(L9_132, L10_133, L9_132(L10_133, "ipv6", "dns", "dns"))
+  if not L8_131 then
+    L8_131 = luci
+    L8_131 = L8_131.util
+    L8_131 = L8_131.split
+    L9_132 = L5_128.get
+    L9_132 = L9_132(L10_133, "ipv6", "dns", "dns")
+    L8_131 = L8_131(L9_132, L10_133)
+    L6_129.dns_conf = L8_131
+  end
+  L8_131 = "ubus call network.interface.wan_6 status"
+  L9_132 = L1_124.exec
+  L9_132 = L9_132(L10_133)
+  if not L10_133 then
+    L9_132 = L10_133
+    if L10_133 then
+      for _FORV_13_ = 1, #L9_132.route do
+        if L9_132.route[_FORV_13_].nexthop ~= "::" then
+          L6_129.ip6gw = L9_132.route[_FORV_13_].nexthop
+          break
+        end
+      end
+      L6_129.dns = L10_133
+    end
+    if L10_133 then
+      for _FORV_14_, _FORV_15_ in ipairs(L9_132["ipv6-address"]) do
+        table.insert(L10_133, _FORV_15_.address .. "/" .. _FORV_15_.mask)
+      end
+      L6_129.ip6addr = L10_133
+    end
+  end
+  L6_129.lan_ip6addr = L10_133
+  L6_129.lan_ip6prefix = L10_133
+  L6_129.wanType = L7_130
+  L6_129.ifname = L10_133
+  return L6_129
+end
+function generateDns(A0_134, A1_135, A2_136)
+  local L3_137
+  if not _UPVALUE0_.isStrNil(A0_134) and not _UPVALUE0_.isStrNil(A1_135) then
+    L3_137 = {A0_134, A1_135}
+  elseif not _UPVALUE0_.isStrNil(A0_134) then
+    L3_137 = A0_134
+  elseif not _UPVALUE0_.isStrNil(A1_135) then
+    L3_137 = A1_135
+  end
+  return L3_137
+end
+function checkMTU(A0_138)
+  if tonumber(A0_138) and tonumber(A0_138) >= 576 and tonumber(A0_138) <= 1492 then
+    return true
+  else
+    return false
+  end
+end
+function setWanPPPoE(A0_139, A1_140, A2_141, A3_142, A4_143, A5_144, A6_145, A7_146)
+  local L8_147, L9_148, L10_149, L11_150, L12_151, L13_152, L14_153, L15_154, L16_155, L17_156, L18_157, L19_158, L20_159, L21_160, L22_161, L23_162, L24_163, L25_164
+  L8_147 = require
+  L9_148 = "xiaoqiang.XQPreference"
+  L8_147 = L8_147(L9_148)
+  L9_148 = require
+  L10_149 = "luci.model.network"
+  L9_148 = L9_148(L10_149)
+  L9_148 = L9_148.init
+  L9_148 = L9_148()
+  L10_149 = require
+  L11_150 = "luci.model.uci"
+  L10_149 = L10_149(L11_150)
+  L10_149 = L10_149.cursor
+  L10_149 = L10_149()
+  L12_151 = L10_149
+  L11_150 = L10_149.get
+  L13_152 = "network"
+  L14_153 = "wan"
+  L15_154 = "macaddr"
+  L11_150 = L11_150(L12_151, L13_152, L14_153, L15_154)
+  L12_151 = "wan"
+  L13_152 = getWanEth
+  L13_152 = L13_152()
+  L15_154 = L10_149
+  L14_153 = L10_149.get_all
+  L16_155 = "network"
+  L17_156 = "wan"
+  L14_153 = L14_153(L15_154, L16_155, L17_156)
+  L14_153 = L14_153 or {}
+  L15_154 = true
+  L16_155 = true
+  L17_156 = require
+  L18_157 = "luci.util"
+  L17_156 = L17_156(L18_157)
+  L19_158 = L10_149
+  L18_157 = L10_149.get
+  L20_159 = "misc"
+  L21_160 = "hardware"
+  L22_161 = "model"
+  L18_157 = L18_157(L19_158, L20_159, L21_160, L22_161)
+  L18_157 = L18_157 or ""
+  if L18_157 then
+    L19_158 = string
+    L19_158 = L19_158.lower
+    L20_159 = L18_157
+    L19_158 = L19_158(L20_159)
+    L18_157 = L19_158
+  end
+  L19_158 = L14_153.username
+  if L19_158 == A0_139 then
+    L19_158 = L14_153.password
+    if L19_158 == A1_140 then
+      L19_158 = tonumber
+      L20_159 = L14_153.mru
+      L19_158 = L19_158(L20_159)
+      L20_159 = tonumber
+      L21_160 = A5_144
+      L20_159 = L20_159(L21_160)
+      if L19_158 == L20_159 then
+        L19_158 = _UPVALUE0_
+        L19_158 = L19_158.isStrNil
+        L20_159 = L14_153.service
+        L19_158 = L19_158(L20_159)
+        if L19_158 then
+          L19_158 = _UPVALUE0_
+          L19_158 = L19_158.isStrNil
+          L20_159 = A7_146
+          L19_158 = L19_158(L20_159)
+        else
+          if not L19_158 then
+            L19_158 = L14_153.service
+        end
+        elseif L19_158 == A7_146 then
+          L19_158 = tonumber
+          L20_159 = L14_153.special
+          L19_158 = L19_158(L20_159)
+          L20_159 = tonumber
+          L21_160 = A6_145
+          L20_159 = L20_159(L21_160)
+          if L19_158 ~= L20_159 then
+            L19_158 = L14_153.special
+            if not L19_158 then
+              L19_158 = tonumber
+              L20_159 = A6_145
+              L19_158 = L19_158(L20_159)
+            end
+          elseif L19_158 == 0 then
+            L15_154 = false
+          end
+        end
+      end
+    end
+  end
+  if A0_139 and A1_140 then
+    L19_158 = require
+    L20_159 = "xiaoqiang.util.XQCryptoUtil"
+    L19_158 = L19_158(L20_159)
+    L20_159 = require
+    L21_160 = "xiaoqiang.util.XQSynchrodata"
+    L20_159 = L20_159(L21_160)
+    L21_160 = require
+    L22_161 = "xiaoqiang.util.XQSysUtil"
+    L21_160 = L21_160(L22_161)
+    L22_161 = L21_160.doConfUpload
+    L23_162 = {}
+    L23_162.pppoe_name = A0_139
+    L23_162.pppoe_password = A1_140
+    L22_161(L23_162)
+    L22_161 = L19_158.md5Str
+    L23_162 = A0_139
+    L23_162 = L23_162 .. L24_163
+    L22_161 = L22_161(L23_162)
+    L23_162 = L10_149.get_all
+    L23_162 = L23_162(L24_163, L25_164, L22_161)
+    if not L23_162 then
+      L24_163(L25_164, "xiaoqiang", "record", L22_161, {
+        username = A0_139,
+        password = A1_140,
+        status = 0
+      })
+      L24_163(L25_164, "xiaoqiang")
+    end
+  end
+  L19_158 = {}
+  L20_159 = {}
+  L21_160 = L14_153.dns
+  if L21_160 then
+    L21_160 = type
+    L22_161 = L14_153.dns
+    L21_160 = L21_160(L22_161)
+    if L21_160 == "string" then
+      L21_160 = {L22_161}
+      L22_161 = L14_153.dns
+      L20_159 = L21_160
+    end
+  else
+    L21_160 = L14_153.dns
+    if L21_160 then
+      L21_160 = type
+      L22_161 = L14_153.dns
+      L21_160 = L21_160(L22_161)
+      if L21_160 == "table" then
+        L20_159 = L14_153.dns
+      end
+    end
+  end
+  L21_160 = _UPVALUE0_
+  L21_160 = L21_160.isStrNil
+  L22_161 = A2_141
+  L21_160 = L21_160(L22_161)
+  if not L21_160 then
+    L21_160 = table
+    L21_160 = L21_160.insert
+    L22_161 = L19_158
+    L23_162 = A2_141
+    L21_160(L22_161, L23_162)
+  end
+  L21_160 = _UPVALUE0_
+  L21_160 = L21_160.isStrNil
+  L22_161 = A3_142
+  L21_160 = L21_160(L22_161)
+  if not L21_160 then
+    L21_160 = table
+    L21_160 = L21_160.insert
+    L22_161 = L19_158
+    L23_162 = A3_142
+    L21_160(L22_161, L23_162)
+  end
+  L21_160 = #L19_158
+  if L21_160 > 0 then
+    L21_160 = "0"
+  else
+    L21_160 = L21_160 or nil
+  end
+  L22_161 = #L19_158
+  L23_162 = #L20_159
+  if L22_161 == L23_162 then
+    L22_161 = #L19_158
+    if L22_161 == 0 then
+      L16_155 = false
+    else
+      L22_161 = {}
+      L23_162 = 0
+      for _FORV_27_, _FORV_28_ in L24_163(L25_164) do
+        L22_161[_FORV_28_] = 1
+      end
+      for _FORV_27_, _FORV_28_ in L24_163(L25_164) do
+        if L22_161[_FORV_28_] == 1 then
+          L23_162 = L23_162 + 1
+        end
+      end
+      if L23_162 == L24_163 then
+        L16_155 = false
+      end
+    end
+  end
+  L23_162 = L9_148
+  L22_161 = L9_148.del_network
+  L22_161 = L22_161(L23_162, L24_163)
+  L23_162 = nil
+  if A5_144 then
+    if L24_163 then
+      L23_162 = L24_163
+    else
+      return L24_163
+    end
+  else
+    L23_162 = 1480
+  end
+  L22_161 = L24_163
+  if not L24_163 then
+    L24_163(L25_164, A2_141)
+  else
+    L24_163(L25_164, "")
+  end
+  if not L24_163 then
+    L24_163(L25_164, A3_142)
+  else
+    L24_163(L25_164, "")
+  end
+  if not L24_163 then
+    L24_163(L25_164, A0_139)
+    L24_163(L25_164, A0_139)
+  end
+  if not L24_163 then
+    L24_163(L25_164, A1_140)
+    L24_163(L25_164, A1_140)
+  end
+  if not L24_163 then
+    L24_163(L25_164, A7_146)
+  end
+  L24_163(L25_164, "pppoe")
+  L24_163()
+  if L22_161 then
+    L24_163(L25_164, "network")
+    L24_163(L25_164, "network")
+    if L24_163 then
+      L24_163(L25_164)
+    end
+    if L16_155 then
+      L24_163()
+    end
+    if L15_154 then
+      L24_163()
+    elseif L24_163 then
+      if L25_164 == 4 then
+        L25_164()
+      end
+    end
+    if L24_163 and L24_163 == "1" then
+      if L25_164 == "off" or L25_164 == "none" then
+        _UPVALUE0_.forkExec("/etc/init.d/ipv6 off")
+      else
+        _UPVALUE0_.forkExec("/etc/init.d/ipv6 start_ipv6 " .. L25_164)
+      end
+    end
+    return L25_164
+  else
+    return L24_163
+  end
+end
+function checkWanIp(A0_165)
+  if require("luci.ip").iptonl(A0_165) >= require("luci.ip").iptonl("1.0.0.0") and require("luci.ip").iptonl(A0_165) <= require("luci.ip").iptonl("126.255.255.255") or require("luci.ip").iptonl(A0_165) >= require("luci.ip").iptonl("128.0.0.0") and require("luci.ip").iptonl(A0_165) <= require("luci.ip").iptonl("223.255.255.255") then
+    return 0
+  else
+    return 1533
+  end
+end
+function setWanStaticOrDHCP(A0_166, A1_167, A2_168, A3_169, A4_170, A5_171, A6_172, A7_173)
+  local L8_174, L9_175, L10_176, L11_177, L12_178, L13_179, L14_180, L15_181, L16_182, L17_183, L18_184, L19_185, L20_186, L21_187, L22_188, L23_189, L24_190, L25_191
+  L8_174 = require
+  L9_175 = "luci.model.network"
+  L8_174 = L8_174(L9_175)
+  L8_174 = L8_174.init
+  L8_174 = L8_174()
+  L9_175 = require
+  L10_176 = "luci.model.uci"
+  L9_175 = L9_175(L10_176)
+  L9_175 = L9_175.cursor
+  L9_175 = L9_175()
+  L11_177 = L9_175
+  L10_176 = L9_175.get
+  L12_178 = "network"
+  L13_179 = "wan"
+  L14_180 = "macaddr"
+  L10_176 = L10_176(L11_177, L12_178, L13_179, L14_180)
+  L12_178 = L9_175
+  L11_177 = L9_175.get_all
+  L13_179 = "network"
+  L14_180 = "wan"
+  L11_177 = L11_177(L12_178, L13_179, L14_180)
+  L11_177 = L11_177 or {}
+  L12_178 = "wan"
+  L13_179 = getWanEth
+  L13_179 = L13_179()
+  L14_180 = true
+  L15_181 = true
+  L16_182 = {}
+  L17_183 = {}
+  L18_184 = require
+  L19_185 = "luci.util"
+  L18_184 = L18_184(L19_185)
+  L20_186 = L9_175
+  L19_185 = L9_175.get
+  L21_187 = "misc"
+  L22_188 = "hardware"
+  L19_185 = L19_185(L20_186, L21_187, L22_188, L23_189)
+  L19_185 = L19_185 or ""
+  if L19_185 then
+    L20_186 = string
+    L20_186 = L20_186.lower
+    L21_187 = L19_185
+    L20_186 = L20_186(L21_187)
+    L19_185 = L20_186
+  end
+  L20_186 = L11_177.dns
+  if L20_186 then
+    L20_186 = type
+    L21_187 = L11_177.dns
+    L20_186 = L20_186(L21_187)
+    if L20_186 == "string" then
+      L20_186 = {L21_187}
+      L21_187 = L11_177.dns
+      L17_183 = L20_186
+    end
+  else
+    L20_186 = L11_177.dns
+    if L20_186 then
+      L20_186 = type
+      L21_187 = L11_177.dns
+      L20_186 = L20_186(L21_187)
+      if L20_186 == "table" then
+        L17_183 = L11_177.dns
+      end
+    end
+  end
+  L20_186 = _UPVALUE0_
+  L20_186 = L20_186.isStrNil
+  L21_187 = A4_170
+  L20_186 = L20_186(L21_187)
+  if not L20_186 then
+    L20_186 = table
+    L20_186 = L20_186.insert
+    L21_187 = L16_182
+    L22_188 = A4_170
+    L20_186(L21_187, L22_188)
+  end
+  L20_186 = _UPVALUE0_
+  L20_186 = L20_186.isStrNil
+  L21_187 = A5_171
+  L20_186 = L20_186(L21_187)
+  if not L20_186 then
+    L20_186 = table
+    L20_186 = L20_186.insert
+    L21_187 = L16_182
+    L22_188 = A5_171
+    L20_186(L21_187, L22_188)
+  end
+  L20_186 = #L16_182
+  if L20_186 > 0 then
+    L20_186 = "0"
+  else
+    L20_186 = L20_186 or nil
+  end
+  L21_187 = #L16_182
+  L22_188 = #L17_183
+  if L21_187 == L22_188 then
+    L21_187 = #L16_182
+    if L21_187 == 0 then
+      L14_180 = false
+    else
+      L21_187 = {}
+      L22_188 = 0
+      for _FORV_26_, _FORV_27_ in L23_189(L24_190) do
+        L21_187[_FORV_27_] = 1
+      end
+      for _FORV_26_, _FORV_27_ in L23_189(L24_190) do
+        if L21_187[_FORV_27_] == 1 then
+          L22_188 = L22_188 + 1
+        end
+      end
+      if L22_188 == L23_189 then
+        L14_180 = false
+      end
+    end
+  end
+  L22_188 = L8_174
+  L21_187 = L8_174.del_network
+  L21_187 = L21_187(L22_188, L23_189)
+  L22_188 = generateDns
+  L22_188 = L22_188(L23_189, L24_190, L25_191)
+  if A7_173 then
+  else
+  end
+  if A0_166 == "dhcp" then
+    if L24_190 == "dhcp" then
+      L15_181 = false
+    end
+    L24_190.proto = "dhcp"
+    L24_190.ifname = L13_179
+    L24_190.dns = L22_188
+    L24_190.macaddr = L10_176
+    L24_190.peerdns = L20_186
+    L24_190.mtu = L23_189
+    L21_187 = L25_191
+  elseif A0_166 == "static" then
+    if L24_190 == "static" then
+      if L24_190 == A1_167 then
+        if L24_190 == A2_168 then
+          if L24_190 == A3_169 then
+            if L24_190 == L23_189 then
+              L15_181 = false
+            end
+          end
+        end
+      end
+    end
+    L22_188 = L22_188 or A3_169
+    L24_190.proto = "static"
+    L24_190.ipaddr = A1_167
+    L24_190.netmask = A2_168
+    L24_190.gateway = A3_169
+    L24_190.dns = L22_188
+    L24_190.macaddr = L10_176
+    L24_190.ifname = L13_179
+    L24_190.mtu = L23_189
+    L21_187 = L25_191
+    if not L25_191 then
+      L25_191("nv_wan_ip", A1_167)
+    end
+    if not L25_191 then
+      L25_191("nv_wan_gateway", A3_169)
+    end
+    if not L25_191 then
+      L25_191("nv_wan_netmask", A2_168)
+    end
+    if not L25_191 then
+      L25_191("nv_wan_dns1", A4_170)
+    else
+      L25_191("nv_wan_dns1", "")
+    end
+    if not L25_191 then
+      L25_191("nv_wan_dns2", A5_171)
+    else
+      L25_191("nv_wan_dns2", "")
+    end
+  end
+  L24_190(L25_191, A0_166)
+  L24_190()
+  if L21_187 then
+    L24_190(L25_191, "network")
+    L24_190(L25_191, "network")
+    if L24_190 then
+      if A0_166 == "dhcp" then
+        L24_190(L25_191)
+      elseif A0_166 == "static" then
+        L24_190(L25_191)
+      end
+    end
+    if L14_180 then
+      L24_190()
+    end
+    if L15_181 then
+      L24_190()
+    end
+    if L24_190 and L24_190 == "1" then
+      if L25_191 == "off" or L25_191 == "none" then
+        _UPVALUE0_.forkExec("/etc/init.d/ipv6 off")
+      else
+        _UPVALUE0_.forkExec("/etc/init.d/ipv6 start_ipv6 " .. L25_191)
+      end
+    end
+    return L25_191
+  else
+    return L24_190
+  end
+end
+function setWanMac(A0_192)
+  local L1_193, L2_194, L3_195, L4_196, L5_197, L6_198, L7_199, L8_200, L9_201, L10_202, L11_203
+  L1_193 = require
+  L2_194 = "luci.model.network"
+  L1_193 = L1_193(L2_194)
+  L1_193 = L1_193.init
+  L1_193 = L1_193()
+  L2_194 = require
+  L3_195 = "luci.cbi.datatypes"
+  L2_194 = L2_194(L3_195)
+  L4_196 = L1_193
+  L3_195 = L1_193.get_network
+  L5_197 = "wan"
+  L3_195 = L3_195(L4_196, L5_197)
+  L5_197 = L3_195
+  L4_196 = L3_195.get_option_value
+  L6_198 = "macaddr"
+  L4_196 = L4_196(L5_197, L6_198)
+  L6_198 = L3_195
+  L5_197 = L3_195.get_option_value
+  L7_199 = "ifname"
+  L5_197 = L5_197(L6_198, L7_199)
+  L6_198 = nil
+  L7_199 = false
+  if L4_196 ~= A0_192 then
+    L8_200 = _UPVALUE0_
+    L8_200 = L8_200.isStrNil
+    L9_201 = A0_192
+    L8_200 = L8_200(L9_201)
+    if L8_200 then
+      L8_200 = getDefaultWanMacAddress
+      L8_200 = L8_200()
+      L8_200 = L8_200 or ""
+      L10_202 = L3_195
+      L9_201 = L3_195.set
+      L11_203 = "macaddr"
+      L9_201(L10_202, L11_203, L8_200)
+      L6_198 = L8_200
+      L7_199 = true
+    else
+      L8_200 = L2_194.macaddr
+      L9_201 = A0_192
+      L8_200 = L8_200(L9_201)
+      if L8_200 and A0_192 ~= "ff:ff:ff:ff:ff:ff" and A0_192 ~= "00:00:00:00:00:00" then
+        L9_201 = L3_195
+        L8_200 = L3_195.set
+        L10_202 = "macaddr"
+        L11_203 = A0_192
+        L8_200(L9_201, L10_202, L11_203)
+        L6_198 = A0_192
+        L7_199 = true
+      end
+    end
+  else
+    L6_198 = A0_192
+    L7_199 = true
+  end
+  if L7_199 then
+    L8_200 = require
+    L9_201 = "xiaoqiang.util.XQSysUtil"
+    L8_200 = L8_200(L9_201)
+    L9_201 = L8_200.getHardware
+    L9_201 = L9_201()
+    if L9_201 and L6_198 ~= nil and L9_201 == "R2350" then
+      L10_202 = require
+      L11_203 = "luci.model.uci"
+      L10_202 = L10_202(L11_203)
+      L10_202 = L10_202.cursor
+      L10_202 = L10_202()
+      L11_203 = _UPVALUE1_
+      L11_203 = L11_203(L5_197)
+      if L11_203 then
+        L10_202:set("network", L11_203, "macaddr", L6_198)
+        L10_202:save("network")
+        L10_202:commit("network")
+      end
+    end
+    L11_203 = L1_193
+    L10_202 = L1_193.save
+    L10_202(L11_203, "network")
+    L11_203 = L1_193
+    L10_202 = L1_193.commit
+    L10_202(L11_203, "network")
+    L10_202 = wanRestart
+    L10_202()
+  end
+  return L7_199
+end
+function _checkIP(A0_204)
+  if _UPVALUE0_.isStrNil(A0_204) then
+    return false
+  end
+  if require("luci.ip").iptonl(A0_204) >= require("luci.ip").iptonl("1.0.0.0") and require("luci.ip").iptonl(A0_204) <= require("luci.ip").iptonl("126.0.0.0") or require("luci.ip").iptonl(A0_204) >= require("luci.ip").iptonl("128.0.0.0") and require("luci.ip").iptonl(A0_204) <= require("luci.ip").iptonl("223.255.255.255") then
+    return true
+  else
+    return false
+  end
+end
+function _checkMac(A0_205)
+  if _UPVALUE0_.isStrNil(A0_205) then
+    return false
+  end
+  if require("luci.cbi.datatypes").macaddr(A0_205) and A0_205 ~= "ff:ff:ff:ff:ff:ff" and A0_205 ~= "00:00:00:00:00:00" then
+    return true
+  else
+    return false
+  end
+end
+function _parseMac(A0_206)
+  if A0_206 then
+    return string.lower(string.gsub(A0_206, "[:-]", ""))
+  else
+    return nil
+  end
+end
+function _parseDhcpLeases()
+  local L0_207, L1_208, L2_209, L3_210, L4_211, L5_212, L6_213, L7_214, L8_215, L9_216, L10_217
+  L0_207 = require
+  L1_208 = "nixio.fs"
+  L0_207 = L0_207(L1_208)
+  L1_208 = require
+  L2_209 = "luci.model.uci"
+  L1_208 = L1_208(L2_209)
+  L1_208 = L1_208.cursor
+  L1_208 = L1_208()
+  L2_209 = {}
+  L3_210 = _UPVALUE0_
+  L3_210 = L3_210.DHCP_LEASE_FILEPATH
+  L4_211 = L1_208.foreach
+  function L8_215(A0_218)
+    if A0_218.leasefile and _UPVALUE0_.access(A0_218.leasefile) then
+      _UPVALUE1_ = A0_218.leasefile
+      return false
+    end
+  end
+  L4_211(L5_212, L6_213, L7_214, L8_215)
+  L4_211 = io
+  L4_211 = L4_211.open
+  L4_211 = L4_211(L5_212, L6_213)
+  if L4_211 then
+    for L8_215 in L5_212(L6_213) do
+      if L8_215 then
+        L10_217 = L8_215
+        L9_216 = L8_215.match
+        L10_217 = L9_216(L10_217, "^(%d+) (%S+) (%S+) (%S+)")
+        if L9_216 and L10_217 and L9_216(L10_217, "^(%d+) (%S+) (%S+) (%S+)") and "" then
+          L2_209[L9_216(L10_217, "^(%d+) (%S+) (%S+) (%S+)")] = {
+            mac = string.lower(_UPVALUE1_.macFormat(L10_217)),
+            ip = L9_216(L10_217, "^(%d+) (%S+) (%S+) (%S+)")
+          }
+        end
+      end
+    end
+    L5_212(L6_213)
+  end
+  return L2_209
+end
+function hookLanIPChangeEvent(A0_219)
+  if _UPVALUE0_.isStrNil(A0_219) then
+    return
+  end
+  require("luci.model.uci").cursor():foreach("macbind", "host", function(A0_220)
+    local L1_221
+    L1_221 = A0_220.ip
+    L1_221 = _UPVALUE0_ .. "." .. L1_221:match(".(%d+)$")
+    _UPVALUE1_:set("macbind", A0_220[".name"], "ip", L1_221)
+  end)
+  require("luci.model.uci").cursor():foreach("dhcp", "host", function(A0_222)
+    local L1_223
+    L1_223 = A0_222.ip
+    L1_223 = _UPVALUE0_ .. "." .. L1_223:match(".(%d+)$")
+    _UPVALUE1_:set("dhcp", A0_222[".name"], "ip", L1_223)
+  end)
+  require("luci.model.uci").cursor():commit("dhcp")
+  require("luci.model.uci").cursor():commit("macbind")
+end
+function macBindInfo()
+  local L0_224
+  L0_224 = require
+  L0_224 = L0_224("luci.model.uci")
+  L0_224 = L0_224.cursor
+  L0_224 = L0_224()
+  L0_224:foreach("macbind", "host", function(A0_225)
+    local L1_226, L2_227
+    L1_226 = {}
+    L2_227 = A0_225.name
+    L1_226.name = L2_227
+    L2_227 = A0_225.mac
+    L1_226.mac = L2_227
+    L2_227 = A0_225.ip
+    L1_226.ip = L2_227
+    L1_226.tag = 1
+    L2_227 = _UPVALUE0_
+    L2_227[A0_225.mac] = L1_226
+  end)
+  L0_224:foreach("dhcp", "host", function(A0_228)
+    local L1_229, L2_230
+    L1_229 = {}
+    L2_230 = A0_228.name
+    L1_229.name = L2_230
+    L2_230 = A0_228.mac
+    L1_229.mac = L2_230
+    L2_230 = A0_228.ip
+    L1_229.ip = L2_230
+    L1_229.tag = 2
+    L2_230 = _UPVALUE0_
+    L2_230[A0_228.mac] = L1_229
+  end)
+  return {}
+end
+function addBind(A0_231, A1_232)
+  local L2_233, L3_234, L4_235, L5_236, L6_237
+  L2_233 = require
+  L3_234 = "luci.model.uci"
+  L2_233 = L2_233(L3_234)
+  L2_233 = L2_233.cursor
+  L2_233 = L2_233()
+  L3_234 = _checkIP
+  L4_235 = A1_232
+  L3_234 = L3_234(L4_235)
+  if L3_234 then
+    L3_234 = _checkMac
+    L4_235 = A0_231
+    L3_234 = L3_234(L4_235)
+    if L3_234 then
+      L3_234 = _parseDhcpLeases
+      L3_234 = L3_234()
+      L4_235 = string
+      L4_235 = L4_235.lower
+      L5_236 = _UPVALUE0_
+      L5_236 = L5_236.macFormat
+      L6_237 = A0_231
+      L6_237 = L5_236(L6_237)
+      L4_235 = L4_235(L5_236, L6_237, L5_236(L6_237))
+      A0_231 = L4_235
+      L4_235 = L3_234[A1_232]
+      if L4_235 then
+        L5_236 = L4_235.mac
+        if L5_236 ~= A0_231 then
+          L5_236 = 1
+          return L5_236
+        end
+      end
+      L5_236 = _parseMac
+      L6_237 = A0_231
+      L5_236 = L5_236(L6_237)
+      L6_237 = {}
+      L6_237.name = L5_236
+      L6_237.mac = A0_231
+      L6_237.ip = A1_232
+      L2_233:section("macbind", "host", L5_236, L6_237)
+      L2_233:commit("macbind")
+    end
+  else
+    L3_234 = 2
+    return L3_234
+  end
+  L3_234 = 0
+  return L3_234
+end
+function removeBind(A0_238)
+  local L1_239, L2_240
+  L1_239 = require
+  L2_240 = "luci.model.uci"
+  L1_239 = L1_239(L2_240)
+  L1_239 = L1_239.cursor
+  L1_239 = L1_239()
+  L2_240 = _checkMac
+  L2_240 = L2_240(A0_238)
+  if L2_240 then
+    L2_240 = _parseMac
+    L2_240 = L2_240(A0_238)
+    L1_239:delete("macbind", L2_240)
+    L1_239:delete("dhcp", L2_240)
+    L1_239:commit("macbind")
+    L1_239:commit("dhcp")
+    return true
+  else
+    L2_240 = false
+    return L2_240
+  end
+end
+function unbindAll()
+  require("luci.model.uci").cursor():delete_all("dhcp", "host")
+  require("luci.model.uci").cursor():delete_all("macbind", "host")
+  require("luci.model.uci").cursor():commit("dhcp")
+  require("luci.model.uci").cursor():commit("macbind")
+end
+function saveBindInfo()
+  local L0_241
+  L0_241 = require
+  L0_241 = L0_241("luci.model.uci")
+  L0_241 = L0_241.cursor
+  L0_241 = L0_241()
+  L0_241:delete_all("dhcp", "host")
+  L0_241:foreach("macbind", "host", function(A0_242)
+    local L1_243
+    L1_243 = {}
+    L1_243.name = A0_242.name
+    L1_243.mac = A0_242.mac
+    L1_243.ip = A0_242.ip
+    _UPVALUE0_:section("dhcp", "host", A0_242.name, L1_243)
+  end)
+  L0_241:commit("dhcp")
+end
+function getWanSpeed()
+  return tonumber(require("xiaoqiang.XQPreference").get("WAN_SPEED", 0)) or 0
+end
+function setWanSpeed(A0_244)
+  local L1_245, L2_246
+  L1_245 = require
+  L2_246 = "xiaoqiang.XQPreference"
+  L1_245 = L1_245(L2_246)
+  L2_246 = tonumber
+  L2_246 = L2_246(A0_244)
+  if L2_246 then
+    L1_245.set("WAN_SPEED", L2_246)
+    if L2_246 == 10 then
+      os.execute("/usr/bin/longloopd stop > /dev/null 2>&1")
+    else
+      os.execute("/usr/bin/longloopd start > /dev/null 2>&1")
+    end
+    os.execute("phyhelper swan " .. tostring(L2_246) .. " > /dev/null 2>&1")
+    return true
+  end
+  return false
+end
+function pppoeCatch(A0_247)
+  local L1_248, L2_249, L3_250, L4_251, L5_252, L6_253, L7_254, L8_255, L9_256, L10_257, L11_258
+  L1_248 = require
+  L2_249 = "luci.util"
+  L1_248 = L1_248(L2_249)
+  L2_249 = {}
+  L2_249.code = 0
+  L2_249.service = ""
+  L2_249.pppoename = ""
+  L2_249.pppoepasswd = ""
+  L3_250 = L1_248.execl
+  L3_250 = L3_250(L4_251)
+  if L3_250 then
+    if L4_251 == "table" then
+      for L7_254, L8_255 in L4_251(L5_252) do
+        L9_256 = _UPVALUE0_
+        L9_256 = L9_256.isStrNil
+        L10_257 = L8_255
+        L9_256 = L9_256(L10_257)
+        if not L9_256 then
+          L9_256 = L1_248.trim
+          L10_257 = L8_255
+          L9_256 = L9_256(L10_257)
+          L10_257 = L9_256
+          L9_256 = L9_256.match
+          L11_258 = "^Service%-Name:%s(.+)"
+          L9_256 = L9_256(L10_257, L11_258)
+          L10_257 = _UPVALUE0_
+          L10_257 = L10_257.isStrNil
+          L11_258 = L9_256
+          L10_257 = L10_257(L11_258)
+          if not L10_257 then
+            L2_249.service = L9_256
+          end
+          L10_257 = L1_248.trim
+          L11_258 = L8_255
+          L10_257 = L10_257(L11_258)
+          L11_258 = L10_257
+          L10_257 = L10_257.match
+          L10_257 = L10_257(L11_258, "PPPoE:")
+          if L10_257 then
+            L10_257 = L7_254 + 1
+            L10_257 = L3_250[L10_257]
+            L11_258 = L7_254 + 2
+            L11_258 = L3_250[L11_258]
+            if not _UPVALUE0_.isStrNil(L10_257) then
+              L2_249.pppoename = L1_248.trim(L10_257)
+            end
+            if not _UPVALUE0_.isStrNil(L11_258) then
+              L2_249.pppoepasswd = L1_248.trim(L11_258)
+            end
+            break
+          end
+        end
+      end
+    end
+  end
+  if L4_251 then
+    if L4_251 then
+      L2_249.code = 1
+    end
+  end
+  return L2_249
+end
+function setWan(A0_259, A1_260, A2_261, A3_262)
+  local L4_263, L5_264, L6_265
+  L4_263 = require
+  L5_264 = "luci.model.uci"
+  L4_263 = L4_263(L5_264)
+  L4_263 = L4_263.cursor
+  L4_263 = L4_263()
+  L6_265 = L4_263
+  L5_264 = L4_263.get_all
+  L5_264 = L5_264(L6_265, "network", "wan")
+  if A0_259 == "pppoe" then
+    L6_265 = {}
+    L6_265.ifname = L5_264.ifname
+    L6_265.proto = A0_259
+    L6_265.username = A1_260
+    L6_265.password = A2_261
+    L6_265.service = A3_262
+    L4_263:delete("network", "wan")
+    L4_263:section("network", "interface", "wan", L6_265)
+    L4_263:commit("network")
+    wanRestart()
+    pppoeStart()
+  elseif A0_259 == "dhcp" then
+    L6_265 = L5_264.proto
+    if L6_265 == "pppoe" then
+      L6_265 = {}
+      L6_265.ifname = L5_264.ifname
+      L6_265.proto = "dhcp"
+      pppoeStop()
+      L4_263:delete("network", "wan")
+      L4_263:section("network", "interface", "wan", L6_265)
+      L4_263:commit("network")
+      wanRestart()
+    end
+  end
+  L6_265 = true
+  return L6_265
+end

@@ -1,0 +1,788 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.service.datacenter", package.seeall)
+function L0_0()
+  node("service", "datacenter").target = firstchild()
+  node("service", "datacenter").title = ""
+  node("service", "datacenter").order = nil
+  node("service", "datacenter").sysauth = "admin"
+  node("service", "datacenter").sysauth_authenticator = "jsonauth"
+  node("service", "datacenter").index = true
+  entry({
+    "service",
+    "datacenter",
+    "download_file"
+  }, call("downloadFile"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "device_id"
+  }, call("getDeviceID"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "download_info"
+  }, call("getDownloadInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "upload_file"
+  }, call("uploadFile"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "batch_download_info"
+  }, call("getBatchDownloadInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "config_info"
+  }, call("getConfigInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "set_config"
+  }, call("setConfigInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "plugin_enable"
+  }, call("enablePlugin"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "plugin_download_info"
+  }, call("pluginDownloadInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "plugin_disable"
+  }, call("disablePlugin"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "plugin_control"
+  }, call("controlPlugin"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "feature_plugin_control"
+  }, call("controlFeaturePlugin"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "download_delete"
+  }, call("deleteDownload"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "get_plugin_status"
+  }, call("pluginStatus"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "get_connected_device"
+  }, call("connectedDevice"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "get_router_mac"
+  }, call("getMac"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "set_wan_access"
+  }, call("setWanAccess"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "get_router_info"
+  }, call("getRouterInfo"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "xunlei_notify"
+  }, call("xunleiNotify"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "get_routerIP"
+  }, call("getRouterIP"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "multi_create"
+  }, call("MultiCreate"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "run_command"
+  }, call("RunCommand"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "idforvendor"
+  }, call("idforvendor"), _(""), nil, 17)
+  entry({
+    "service",
+    "datacenter",
+    "media_delta"
+  }, call("mediaDelta"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "media_metadata"
+  }, call("mediaMetadata"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "share_miui_dir"
+  }, call("shareMiuiBackupDir"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "get_file_list"
+  }, call("getFileList"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "get_storage_info"
+  }, call("getStorageInfo"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "get_youku_status"
+  }, call("getYoukuStatus"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "get_camera_smbpath"
+  }, call("getCameraSmbPath"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "bind_youku_appid"
+  }, call("bindYoukuAppid"), _(""), nil, 1)
+  entry({
+    "service",
+    "datacenter",
+    "is_has_disk"
+  }, call("isHasDisk"), _(""), nil, 8)
+  entry({
+    "service",
+    "datacenter",
+    "set_sync_router_file"
+  }, call("setSyncRouterFile"), _(""), nil, 8)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function setSyncRouterFile()
+  local L0_1, L1_2, L2_3, L3_4
+  L0_1 = require
+  L1_2 = "cjson"
+  L0_1 = L0_1(L1_2)
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.formvalue
+  L2_3 = "sources"
+  L1_2 = L1_2(L2_3)
+  L2_3 = L0_1.decode
+  L3_4 = L1_2
+  L2_3 = L2_3(L3_4)
+  L3_4 = {}
+  L3_4.api = 118
+  L3_4.sources = L2_3
+  L3_4.remote_router_id = _UPVALUE0_.formvalue("remote_router_id")
+  tunnelRequestDatacenter(L3_4)
+end
+function isHasDisk()
+  local L0_5
+  L0_5 = {}
+  L0_5.api = 122
+  tunnelRequestDatacenter(L0_5)
+end
+function getCameraSmbPath()
+  local L0_6
+  L0_6 = {}
+  L0_6.api = 115
+  L0_6.mac = _UPVALUE0_.formvalue("mac")
+  tunnelRequestDatacenter(L0_6)
+end
+function getStorageInfo()
+  local L0_7
+  L0_7 = {}
+  L0_7.api = 17
+  tunnelRequestDatacenter(L0_7)
+end
+function getFileList()
+  local L0_8
+  L0_8 = {}
+  L0_8.api = 3
+  L0_8.path = _UPVALUE0_.formvalue("path")
+  L0_8.sharedOnly = true
+  tunnelRequestDatacenter(L0_8)
+end
+function idforvendor()
+  local L0_9
+  L0_9 = {}
+  L0_9.api = 629
+  L0_9.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_9)
+end
+function mediaMetadata()
+  local L0_10
+  L0_10 = {}
+  L0_10.api = 1202
+  L0_10.path = _UPVALUE0_.formvalue("path")
+  L0_10.thumb_size = _UPVALUE0_.formvalue("thumb_size")
+  tunnelRequestDatacenter(L0_10)
+end
+function mediaDelta()
+  local L0_11
+  L0_11 = {}
+  L0_11.api = 1201
+  L0_11.cursor = _UPVALUE0_.formvalue("cursor")
+  L0_11.len = _UPVALUE0_.formvalue("len")
+  tunnelRequestDatacenter(L0_11)
+end
+function getRouterIP()
+  local L0_12
+  L0_12 = {}
+  L0_12.api = 1112
+  L0_12.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_12)
+end
+function shareMiuiBackupDir()
+  local L0_13
+  L0_13 = {}
+  L0_13.api = 100
+  L0_13.mac = _UPVALUE0_.formvalue("mac")
+  tunnelRequestDatacenter(L0_13)
+end
+function xunleiNotify()
+  local L0_14
+  L0_14 = {}
+  L0_14.api = 519
+  L0_14.info = _UPVALUE0_.formvalue("tasks")
+  tunnelRequestDatacenter(L0_14)
+end
+function RunCommand()
+  local L0_15
+  L0_15 = {}
+  L0_15.api = 625
+  L0_15.appid = _UPVALUE0_.formvalue("appId")
+  L0_15.command = _UPVALUE0_.formvalue("command")
+  tunnelRequestDatacenter(L0_15)
+end
+function MultiCreate()
+  local L0_16
+  L0_16 = {}
+  L0_16.api = 520
+  L0_16.urls = _UPVALUE0_.formvalue("urls")
+  L0_16.pathForUserData = _UPVALUE0_.formvalue("pathForUserData")
+  tunnelRequestDatacenter(L0_16)
+end
+function tunnelRequestDatacenter(A0_17)
+  local L1_18, L2_19, L3_20, L4_21
+  L1_18 = require
+  L2_19 = "cjson"
+  L1_18 = L1_18(L2_19)
+  L2_19 = require
+  L3_20 = "luci.util"
+  L2_19 = L2_19(L3_20)
+  L3_20 = require
+  L4_21 = "xiaoqiang.util.XQCryptoUtil"
+  L3_20 = L3_20(L4_21)
+  L4_21 = L1_18.encode
+  L4_21 = L4_21(A0_17)
+  A0_17 = L4_21
+  L4_21 = L3_20.binaryBase64Enc
+  L4_21 = L4_21(A0_17)
+  A0_17 = L4_21
+  L4_21 = _UPVALUE0_
+  L4_21 = L4_21.THRIFT_TUNNEL_TO_DATACENTER
+  L4_21 = L4_21 % A0_17
+  _UPVALUE1_.write(L2_19.exec(L4_21))
+end
+function requestDatacenter(A0_22)
+  local L1_23, L2_24, L3_25, L4_26
+  L1_23 = require
+  L2_24 = "cjson"
+  L1_23 = L1_23(L2_24)
+  L2_24 = require
+  L3_25 = "luci.util"
+  L2_24 = L2_24(L3_25)
+  L3_25 = require
+  L4_26 = "xiaoqiang.util.XQCryptoUtil"
+  L3_25 = L3_25(L4_26)
+  L4_26 = L1_23.encode
+  L4_26 = L4_26(A0_22)
+  A0_22 = L4_26
+  L4_26 = L3_25.binaryBase64Enc
+  L4_26 = L4_26(A0_22)
+  A0_22 = L4_26
+  L4_26 = _UPVALUE0_
+  L4_26 = L4_26.THRIFT_TUNNEL_TO_DATACENTER
+  L4_26 = L4_26 % A0_22
+  return L2_24.exec(L4_26)
+end
+function downloadFile()
+  local L0_27
+  L0_27 = {}
+  L0_27.api = 1101
+  L0_27.appid = _UPVALUE0_.formvalue("appId")
+  L0_27.path = _UPVALUE0_.formvalue("path")
+  L0_27.url = _UPVALUE0_.formvalue("url")
+  L0_27.name = _UPVALUE0_.formvalue("downloadName")
+  L0_27.tag = _UPVALUE0_.formvalue("tag")
+  L0_27.hidden = false
+  if _UPVALUE0_.formvalue("hidden") == "true" then
+    L0_27.hidden = true
+  end
+  L0_27.redownload = 0
+  if _UPVALUE0_.formvalue("redownload") == "1" then
+    L0_27.redownload = 1
+  end
+  L0_27.dupId = _UPVALUE0_.formvalue("dupId")
+  L0_27.pathForUserData = _UPVALUE0_.formvalue("pathForUserData")
+  tunnelRequestDatacenter(L0_27)
+end
+function setWanAccess()
+  local L0_28
+  L0_28 = {}
+  L0_28.api = 618
+  L0_28.appid = _UPVALUE0_.formvalue("appId")
+  L0_28.mac = _UPVALUE0_.formvalue("mac")
+  L0_28.enable = false
+  if _UPVALUE0_.formvalue("enable") == "true" then
+    L0_28.enable = true
+  end
+  tunnelRequestDatacenter(L0_28)
+end
+function getDeviceID()
+  local L0_29
+  L0_29 = {}
+  L0_29.api = 1103
+  L0_29.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_29)
+end
+function getMac()
+  local L0_30
+  L0_30 = {}
+  L0_30.api = 617
+  L0_30.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_30)
+end
+function getRouterInfo()
+  local L0_31
+  L0_31 = {}
+  L0_31.api = 622
+  L0_31.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_31)
+end
+function getOperateDeviceID()
+  local L0_32, L1_33, L2_34, L3_35
+  L0_32 = {}
+  L0_32.api = 1103
+  L1_33 = _UPVALUE0_
+  L1_33 = L1_33.formvalue
+  L2_34 = "appId"
+  L1_33 = L1_33(L2_34)
+  L0_32.appid = L1_33
+  L1_33 = requestDatacenter
+  L2_34 = L0_32
+  L1_33 = L1_33(L2_34)
+  if L1_33 then
+    L2_34 = require
+    L3_35 = "cjson"
+    L2_34 = L2_34(L3_35)
+    L3_35 = L2_34.decode
+    L3_35 = L3_35(L1_33)
+    L1_33 = L3_35
+    if L1_33 then
+      L3_35 = L1_33.code
+      if L3_35 == 0 then
+        L3_35 = L1_33.deviceid
+        if L3_35 then
+          return 0, L3_35
+        end
+      else
+        L3_35 = L1_33.code
+        if L3_35 == 5 then
+          L3_35 = 5
+          return L3_35, nil
+        end
+      end
+    end
+  end
+  L2_34 = 1559
+  L3_35 = nil
+  return L2_34, L3_35
+end
+function urlEncode(A0_36)
+  if A0_36 then
+    A0_36 = string.gsub(A0_36, "\n", "\r\n")
+    A0_36 = string.gsub(A0_36, "([^0-9a-zA-Z/])", function(A0_37)
+      local L2_38
+      L2_38 = string
+      L2_38 = L2_38.format
+      return L2_38("%%%02X", string.byte(A0_37))
+    end)
+  end
+  return A0_36
+end
+function generateUrlFromPath(A0_39)
+  local L1_40, L2_41
+  if A0_39 then
+    L1_40 = urlEncode
+    L2_41 = A0_39
+    L1_40 = L1_40(L2_41)
+    A0_39 = L1_40
+    L1_40 = string
+    L1_40 = L1_40.gsub
+    L2_41 = A0_39
+    L2_41 = L1_40(L2_41, "^/userdisk/data/", "http://miwifi.com/api-third-party/download/public/")
+    if L2_41 == 1 then
+      return L1_40
+    end
+    L1_40, L2_41 = string.gsub(A0_39, "^/userdisk/appdata/", "http://miwifi.com/api-third-party/download/private/")
+    if L2_41 == 1 then
+      return L1_40
+    end
+    L1_40, L2_41 = string.gsub(A0_39, "^/extdisks/", "http://miwifi.com/api-third-party/download/extdisks/")
+    if L2_41 == 1 then
+      return L1_40
+    end
+  end
+  L1_40 = nil
+  return L1_40
+end
+function generateResponseFromCode(A0_42)
+  local L1_43
+  L1_43 = {}
+  L1_43.code = A0_42
+  L1_43.msg = _UPVALUE0_.getErrorMessage(A0_42)
+  return L1_43
+end
+function getDownloadInfo()
+  local L0_44, L1_45, L2_46, L3_47
+  L0_44 = require
+  L1_45 = "cjson"
+  L0_44 = L0_44(L1_45)
+  L1_45 = {}
+  L1_45.api = 1102
+  L2_46 = _UPVALUE0_
+  L2_46 = L2_46.formvalue
+  L3_47 = "appId"
+  L2_46 = L2_46(L3_47)
+  L1_45.appid = L2_46
+  L2_46 = _UPVALUE0_
+  L2_46 = L2_46.formvalue
+  L3_47 = "deviceId"
+  L2_46 = L2_46(L3_47)
+  L1_45.deviceId = L2_46
+  L2_46 = _UPVALUE0_
+  L2_46 = L2_46.formvalue
+  L3_47 = "downloadId"
+  L2_46 = L2_46(L3_47)
+  L1_45.downloadId = L2_46
+  L1_45.hidden = false
+  L2_46 = _UPVALUE0_
+  L2_46 = L2_46.formvalue
+  L3_47 = "hidden"
+  L2_46 = L2_46(L3_47)
+  if L2_46 == "true" then
+    L1_45.hidden = true
+  end
+  L2_46 = {}
+  L3_47 = requestDatacenter
+  L3_47 = L3_47(L1_45)
+  if L3_47 then
+    L3_47 = L0_44.decode(L3_47)
+    if L3_47 and L3_47.code == 0 then
+      if generateUrlFromPath(L3_47.path) then
+        L2_46.code = L3_47.code
+        L2_46.url, L2_46.msg = generateUrlFromPath(L3_47.path), L3_47.msg
+      else
+        L2_46 = generateResponseFromCode(1559)
+      end
+    else
+      L2_46 = L3_47
+    end
+  else
+    L2_46 = generateResponseFromCode(1559)
+  end
+  _UPVALUE0_.write_json(L2_46)
+  _UPVALUE0_.close()
+end
+function uploadFile()
+  local L0_48, L1_49, L2_50, L3_51, L4_52, L5_53, L6_54, L7_55, L8_56, L9_57, L10_58, L11_59, L12_60, L13_61, L14_62, L15_63, L16_64, L17_65, L18_66
+  L1_49 = require
+  L2_50 = "xiaoqiang.XQLog"
+  L1_49 = L1_49(L2_50)
+  L2_50 = require
+  L3_51 = "luci.fs"
+  L2_50 = L2_50(L3_51)
+  L3_51 = "/userdisk/data/upload.tmp"
+  L4_52 = L2_50.isfile
+  L5_53 = L3_51
+  L4_52 = L4_52(L5_53)
+  if L4_52 then
+    L4_52 = L2_50.unlink
+    L5_53 = L3_51
+    L4_52(L5_53)
+  end
+  L4_52 = nil
+  L5_53 = _UPVALUE0_
+  L5_53 = L5_53.setfilehandler
+  function L6_54(A0_67, A1_68, A2_69)
+    if not _UPVALUE0_ and A0_67 and A0_67.name == "file" then
+      _UPVALUE0_ = io.open(_UPVALUE1_, "w")
+      _UPVALUE2_ = A0_67.file
+      _UPVALUE2_ = string.gsub(_UPVALUE2_, "+", " ")
+      _UPVALUE2_ = string.gsub(_UPVALUE2_, "%%(%x%x)", function(A0_70)
+        return string.char(tonumber(A0_70, 16))
+      end)
+      _UPVALUE2_ = _UPVALUE2_.gsub(_UPVALUE2_, "\r\n", "\n")
+    end
+    if A1_68 then
+      _UPVALUE0_:write(A1_68)
+    end
+    if A2_69 then
+      _UPVALUE0_:close()
+    end
+  end
+  L5_53(L6_54)
+  L5_53 = getOperateDeviceID
+  L6_54 = L5_53()
+  if L5_53 ~= 0 then
+    L7_55 = _UPVALUE0_
+    L7_55 = L7_55.write_json
+    L8_56 = generateResponseFromCode
+    L9_57 = L5_53
+    L18_66 = L8_56(L9_57)
+    return L7_55(L8_56, L9_57, L10_58, L11_59, L12_60, L13_61, L14_62, L15_63, L16_64, L17_65, L18_66, L8_56(L9_57))
+  end
+  L7_55 = nil
+  L8_56 = _UPVALUE0_
+  L8_56 = L8_56.formvalue
+  L9_57 = "appId"
+  L8_56 = L8_56(L9_57)
+  L9_57 = _UPVALUE0_
+  L9_57 = L9_57.formvalue
+  L10_58 = "saveType"
+  L9_57 = L9_57(L10_58)
+  if L9_57 == "public" then
+    L7_55 = "/userdisk/data/\228\184\138\228\188\160/"
+  elseif L9_57 == "private" then
+    L10_58 = string
+    L10_58 = L10_58.find
+    L11_59 = L8_56
+    L12_60 = "/"
+    L10_58 = L10_58(L11_59, L12_60)
+    if L10_58 then
+      L11_59 = _UPVALUE0_
+      L11_59 = L11_59.write_json
+      L12_60 = generateResponseFromCode
+      L13_61 = 3
+      L18_66 = L12_60(L13_61)
+      return L11_59(L12_60, L13_61, L14_62, L15_63, L16_64, L17_65, L18_66, L12_60(L13_61))
+    end
+    L11_59 = "/userdisk/appdata/"
+    L12_60 = L8_56
+    L13_61 = "/"
+    L7_55 = L11_59 .. L12_60 .. L13_61
+  else
+    L10_58 = _UPVALUE0_
+    L10_58 = L10_58.write_json
+    L11_59 = generateResponseFromCode
+    L12_60 = 3
+    L18_66 = L11_59(L12_60)
+    return L10_58(L11_59, L12_60, L13_61, L14_62, L15_63, L16_64, L17_65, L18_66, L11_59(L12_60))
+  end
+  L10_58 = L2_50.mkdir
+  L11_59 = L7_55
+  L12_60 = true
+  L10_58(L11_59, L12_60)
+  L10_58 = L2_50.basename
+  L11_59 = L4_52
+  L10_58 = L10_58(L11_59)
+  L11_59 = L2_50.isfile
+  L12_60 = L7_55
+  L13_61 = L10_58
+  L12_60 = L12_60 .. L13_61
+  L11_59 = L11_59(L12_60)
+  if L11_59 then
+    L11_59 = L10_58
+    L13_61 = L11_59
+    L12_60 = L11_59.match
+    L12_60 = L12_60(L13_61, L14_62)
+    if L12_60 then
+      L13_61 = L11_59.sub
+      L13_61 = L13_61(L14_62, L15_63, L16_64)
+      L11_59 = L13_61
+    end
+    L13_61 = L10_58.match
+    L13_61 = L13_61(L14_62, L15_63)
+    for L17_65 = 1, 100 do
+      L18_66 = L11_59
+      L18_66 = L18_66 .. "(" .. L17_65 .. ")"
+      if L13_61 then
+        L18_66 = L18_66 .. "." .. L13_61
+      end
+      if not L2_50.isfile(L7_55 .. L18_66) then
+        L10_58 = L18_66
+        break
+      end
+    end
+  end
+  L11_59 = L7_55
+  L12_60 = L10_58
+  L11_59 = L11_59 .. L12_60
+  L12_60 = L1_49.log
+  L13_61 = "dest="
+  L13_61 = L13_61 .. L14_62
+  L12_60(L13_61)
+  L12_60 = L2_50.rename
+  L13_61 = L3_51
+  L12_60(L13_61, L14_62)
+  L12_60 = {}
+  L12_60.code = 0
+  L13_61 = generateUrlFromPath
+  L13_61 = L13_61(L14_62)
+  L12_60.url = L13_61
+  L12_60.deviceId = L6_54
+  L12_60.msg = ""
+  L13_61 = _UPVALUE0_
+  L13_61 = L13_61.write_json
+  L13_61(L14_62)
+  L13_61 = _UPVALUE0_
+  L13_61 = L13_61.close
+  L13_61()
+end
+function getBatchDownloadInfo()
+  local L0_71
+  L0_71 = {}
+  L0_71.api = 1105
+  L0_71.appid = _UPVALUE0_.formvalue("appId")
+  L0_71.ids = _UPVALUE0_.formvalue("ids")
+  L0_71.hidden = false
+  if _UPVALUE0_.formvalue("hidden") == "true" then
+    L0_71.hidden = true
+  end
+  tunnelRequestDatacenter(L0_71)
+end
+function getConfigInfo()
+  local L0_72
+  L0_72 = {}
+  L0_72.api = 1106
+  L0_72.appid = _UPVALUE0_.formvalue("appId")
+  L0_72.key = _UPVALUE0_.formvalue("key")
+  tunnelRequestDatacenter(L0_72)
+end
+function connectedDevice()
+  local L0_73
+  L0_73 = {}
+  L0_73.api = 616
+  L0_73.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_73)
+end
+function setConfigInfo()
+  local L0_74
+  L0_74 = {}
+  L0_74.api = 1107
+  L0_74.appid = _UPVALUE0_.formvalue("appId")
+  L0_74.key = _UPVALUE0_.formvalue("key")
+  L0_74.value = _UPVALUE0_.formvalue("value")
+  tunnelRequestDatacenter(L0_74)
+end
+function enablePlugin()
+  local L0_75
+  L0_75 = {}
+  L0_75.api = 1108
+  L0_75.appid = _UPVALUE0_.formvalue("appId")
+  L0_75.status = 5
+  tunnelRequestDatacenter(L0_75)
+end
+function disablePlugin()
+  local L0_76
+  L0_76 = {}
+  L0_76.api = 1108
+  L0_76.appid = _UPVALUE0_.formvalue("appId")
+  L0_76.status = 6
+  tunnelRequestDatacenter(L0_76)
+end
+function controlPlugin()
+  local L0_77
+  L0_77 = {}
+  L0_77.api = 600
+  L0_77.pluginID = _UPVALUE0_.formvalue("appId")
+  L0_77.info = _UPVALUE0_.formvalue("info")
+  tunnelRequestDatacenter(L0_77)
+end
+function controlFeaturePlugin()
+  local L0_78
+  L0_78 = {}
+  L0_78.api = 634
+  L0_78.pluginID = _UPVALUE0_.formvalue("appId")
+  L0_78.info = _UPVALUE0_.formvalue("info")
+  tunnelRequestDatacenter(L0_78)
+end
+function deleteDownload()
+  local L0_79
+  L0_79 = {}
+  L0_79.api = 1110
+  L0_79.appid = _UPVALUE0_.formvalue("appId")
+  L0_79.idList = _UPVALUE0_.formvalue("idList")
+  L0_79.deletefile = false
+  if _UPVALUE0_.formvalue("deletefile") == "true" then
+    L0_79.deletefile = true
+  end
+  tunnelRequestDatacenter(L0_79)
+end
+function pluginStatus()
+  local L0_80
+  L0_80 = {}
+  L0_80.api = 1111
+  L0_80.appid = _UPVALUE0_.formvalue("appId")
+  tunnelRequestDatacenter(L0_80)
+end
+function pluginDownloadInfo()
+  local L0_81
+  L0_81 = {}
+  L0_81.api = 1109
+  L0_81.appid = _UPVALUE0_.formvalue("appId")
+  L0_81.hidden = false
+  if _UPVALUE0_.formvalue("hidden") == "true" then
+    L0_81.hidden = true
+  end
+  L0_81.lite = false
+  if _UPVALUE0_.formvalue("lite") == "true" then
+    L0_81.lite = true
+  end
+  tunnelRequestDatacenter(L0_81)
+end
+function getYoukuStatus()
+  local L0_82, L1_83
+  L0_82 = {}
+  L0_82.api = 634
+  L0_82.pluginID = "2882303761517440411"
+  L1_83 = {}
+  L1_83.api = 4
+  L1_83.appid = _UPVALUE0_.formvalue("appid")
+  L0_82.info = L1_83
+  tunnelRequestDatacenter(L0_82)
+end
+function bindYoukuAppid()
+  local L0_84, L1_85
+  L0_84 = {}
+  L0_84.api = 634
+  L0_84.pluginID = "2882303761517440411"
+  L1_85 = {}
+  L1_85.api = 5
+  L1_85.appid = _UPVALUE0_.formvalue("appid")
+  L1_85.ip = _UPVALUE0_.formvalue("ip")
+  L1_85.token = _UPVALUE0_.formvalue("token")
+  L0_84.info = L1_85
+  tunnelRequestDatacenter(L0_84)
+end

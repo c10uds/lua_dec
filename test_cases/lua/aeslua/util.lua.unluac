@@ -1,0 +1,135 @@
+local L0_0
+L0_0 = module
+L0_0("aeslua.util", package.seeall)
+L0_0 = require
+L0_0 = L0_0("bit")
+aeslua.util = {}
+;({}).byteParity = function(A0_1)
+  A0_1 = _UPVALUE0_.bxor(A0_1, _UPVALUE0_.rshift(A0_1, 4))
+  A0_1 = _UPVALUE0_.bxor(A0_1, _UPVALUE0_.rshift(A0_1, 2))
+  A0_1 = _UPVALUE0_.bxor(A0_1, _UPVALUE0_.rshift(A0_1, 1))
+  return _UPVALUE0_.band(A0_1, 1)
+end
+;({}).getByte = function(A0_2, A1_3)
+  if A1_3 == 0 then
+    return _UPVALUE0_.band(A0_2, 255)
+  else
+    return _UPVALUE0_.band(_UPVALUE0_.rshift(A0_2, A1_3 * 8), 255)
+  end
+end
+;({}).putByte = function(A0_4, A1_5)
+  if A1_5 == 0 then
+    return _UPVALUE0_.band(A0_4, 255)
+  else
+    return _UPVALUE0_.lshift(_UPVALUE0_.band(A0_4, 255), A1_5 * 8)
+  end
+end
+;({}).bytesToInts = function(A0_6, A1_7, A2_8)
+  local L4_9, L6_10, L7_11
+  L4_9 = {}
+  for _FORV_7_ = 0, A2_8 - 1 do
+    L4_9[_FORV_7_] = _UPVALUE0_.putByte(A0_6[A1_7 + _FORV_7_ * 4], 3) + _UPVALUE0_.putByte(A0_6[A1_7 + _FORV_7_ * 4 + 1], 2) + _UPVALUE0_.putByte(A0_6[A1_7 + _FORV_7_ * 4 + 2], 1) + _UPVALUE0_.putByte(A0_6[A1_7 + _FORV_7_ * 4 + 3], 0)
+  end
+  return L4_9
+end
+;({}).intsToBytes = function(A0_12, A1_13, A2_14, A3_15)
+  local L4_16, L5_17, L6_18, L7_19, L8_20, L9_21, L10_22, L11_23, L12_24
+  A3_15 = A3_15 or #A0_12
+  for L7_19 = 0, A3_15 do
+    for L11_23 = 0, 3 do
+      L12_24 = L7_19 * 4
+      L12_24 = A2_14 + L12_24
+      L12_24 = L12_24 + (3 - L11_23)
+      A1_13[L12_24] = _UPVALUE0_.getByte(A0_12[L7_19], L11_23)
+    end
+  end
+  return A1_13
+end
+;({}).bytesToHex = function(A0_25)
+  local L1_26, L2_27, L3_28, L4_29, L5_30, L6_31
+  L1_26 = ""
+  for L5_30, L6_31 in L2_27(L3_28) do
+    L1_26 = L1_26 .. string.format("%02x ", L6_31)
+  end
+  return L1_26
+end
+;({}).toHexString = function(A0_32)
+  local L1_33, L2_34
+  L1_33 = type
+  L2_34 = A0_32
+  L1_33 = L1_33(L2_34)
+  if L1_33 == "number" then
+    L2_34 = string
+    L2_34 = L2_34.format
+    return L2_34("%08x", A0_32)
+  elseif L1_33 == "table" then
+    L2_34 = _UPVALUE0_
+    L2_34 = L2_34.bytesToHex
+    return L2_34(A0_32)
+  elseif L1_33 == "string" then
+    L2_34 = {
+      string.byte(A0_32, 1, #A0_32)
+    }
+    return _UPVALUE0_.bytesToHex(L2_34)
+  else
+    return A0_32
+  end
+end
+;({}).padByteString = function(A0_35)
+  local L1_36, L2_37, L3_38, L4_39, L5_40, L6_41
+  L1_36 = #A0_35
+  L2_37 = math
+  L2_37 = L2_37.random
+  L3_38 = 0
+  L4_39 = 255
+  L2_37 = L2_37(L3_38, L4_39)
+  L3_38 = math
+  L3_38 = L3_38.random
+  L4_39 = 0
+  L5_40 = 255
+  L3_38 = L3_38(L4_39, L5_40)
+  L4_39 = string
+  L4_39 = L4_39.char
+  L5_40 = L2_37
+  L6_41 = L3_38
+  L4_39 = L4_39(L5_40, L6_41, L2_37, L3_38, _UPVALUE0_.getByte(L1_36, 3), _UPVALUE0_.getByte(L1_36, 2), _UPVALUE0_.getByte(L1_36, 1), _UPVALUE0_.getByte(L1_36, 0))
+  L5_40 = L4_39
+  L6_41 = A0_35
+  A0_35 = L5_40 .. L6_41
+  L5_40 = math
+  L5_40 = L5_40.ceil
+  L6_41 = #A0_35
+  L6_41 = L6_41 / 16
+  L5_40 = L5_40(L6_41)
+  L5_40 = L5_40 * 16
+  L6_41 = #A0_35
+  L5_40 = L5_40 - L6_41
+  L6_41 = ""
+  for _FORV_10_ = 1, L5_40 do
+    L6_41 = L6_41 .. string.char(math.random(0, 255))
+  end
+  return A0_35 .. L6_41
+end
+;({}).properlyDecrypted = function(A0_42)
+  local L1_43
+  L1_43 = {
+    string.byte(A0_42, 1, 4)
+  }
+  if L1_43[1] == L1_43[3] and L1_43[2] == L1_43[4] then
+    return true
+  end
+  return false
+end
+;({}).unpadByteString = function(A0_44)
+  if not _UPVALUE0_.properlyDecrypted(A0_44) then
+    return nil
+  end
+  return string.sub(A0_44, 9, 8 + (_UPVALUE1_.putByte(string.byte(A0_44, 5), 3) + _UPVALUE1_.putByte(string.byte(A0_44, 6), 2) + _UPVALUE1_.putByte(string.byte(A0_44, 7), 1) + _UPVALUE1_.putByte(string.byte(A0_44, 8), 0)))
+end
+;({}).xorIV = function(A0_45, A1_46)
+  local L2_47, L3_48, L4_49, L5_50
+  for L5_50 = 1, 16 do
+    A0_45[L5_50] = _UPVALUE0_.bxor(A0_45[L5_50], A1_46[L5_50])
+  end
+end
+return {}

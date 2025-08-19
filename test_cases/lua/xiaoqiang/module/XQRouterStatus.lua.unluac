@@ -1,0 +1,29 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQRouterStatus", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.util")
+function getStatus(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10
+  L1_2 = {}
+  if L2_3 then
+    for L5_6, L6_7 in L2_3(L3_4) do
+      L7_8 = L6_7
+      L7_8 = L7_8()
+      L1_2[L5_6] = L7_8
+    end
+  elseif L2_3 then
+    for L6_7, L7_8 in L3_4(L4_5) do
+      L8_9 = nil
+      L9_10 = _UPVALUE1_
+      L9_10 = L9_10[L7_8]
+      if L9_10 then
+        L8_9 = L9_10()
+      end
+      if L8_9 then
+        L1_2[L7_8] = L8_9
+      end
+    end
+  end
+  return L1_2
+end

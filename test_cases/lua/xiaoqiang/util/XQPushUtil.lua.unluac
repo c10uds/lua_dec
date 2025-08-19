@@ -1,0 +1,649 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQPushUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function pushSettings()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11
+  L0_1 = require
+  L1_2 = "luci.model.uci"
+  L0_1 = L0_1(L1_2)
+  L0_1 = L0_1.cursor
+  L0_1 = L0_1()
+  L1_2 = {}
+  L1_2.auth = true
+  L1_2.quiet = false
+  L1_2.level = 2
+  L3_4 = L0_1
+  L2_3 = L0_1.get_all
+  L4_5 = "devicelist"
+  L5_6 = "settings"
+  L2_3 = L2_3(L3_4, L4_5, L5_6)
+  L4_5 = L0_1
+  L3_4 = L0_1.get_all
+  L5_6 = "devicelist"
+  L3_4 = L3_4(L4_5, L5_6, L6_7)
+  L5_6 = L0_1
+  L4_5 = L0_1.get_all
+  L4_5 = L4_5(L5_6, L6_7, L7_8)
+  L5_6 = 0
+  if L3_4 then
+    for L9_10, L10_11 in L6_7(L7_8) do
+      if L9_10 and tonumber(L10_11) and not L9_10:match("^%.") then
+        L5_6 = L5_6 + tonumber(L10_11)
+      end
+    end
+  end
+  if L4_5 then
+    for L9_10, L10_11 in L6_7(L7_8) do
+      if L9_10 and tonumber(L10_11) and not L9_10:match("^%.") then
+        L5_6 = L5_6 + tonumber(L10_11)
+      end
+    end
+  end
+  L1_2.count = L5_6
+  if L2_3 then
+    if L6_7 == 0 then
+      L1_2.auth = false
+    else
+      L1_2.auth = true
+    end
+    if L6_7 == 1 then
+    else
+    end
+    L1_2.quiet = L6_7
+    L1_2.level = L6_7
+  end
+  return L1_2
+end
+function pushConfig(A0_12, A1_13)
+  local L2_14, L3_15
+  L2_14 = require
+  L3_15 = "luci.model.uci"
+  L2_14 = L2_14(L3_15)
+  L2_14 = L2_14.cursor
+  L2_14 = L2_14()
+  L3_15 = L2_14.get_all
+  L3_15 = L3_15(L2_14, "devicelist", "settings")
+  if L3_15 then
+    L3_15[A0_12] = A1_13
+  else
+    L3_15 = {}
+    L3_15[A0_12] = A1_13
+  end
+  L2_14:section("devicelist", "core", "settings", L3_15)
+  L2_14:commit("devicelist")
+end
+function getTimestamp(A0_16)
+  local L1_17, L2_18
+  L1_17 = require
+  L2_18 = "luci.model.uci"
+  L1_17 = L1_17(L2_18)
+  L1_17 = L1_17.cursor
+  L1_17 = L1_17()
+  L2_18 = L1_17.get
+  L2_18 = L2_18(L1_17, "devicelist", "timestamp", A0_16)
+  return tonumber(L2_18) or 0
+end
+function setTimestamp(A0_19, A1_20)
+  local L2_21, L3_22
+  if not A0_19 or not A1_20 then
+    return
+  end
+  L2_21 = require
+  L3_22 = "luci.model.uci"
+  L2_21 = L2_21(L3_22)
+  L2_21 = L2_21.cursor
+  L2_21 = L2_21()
+  L3_22 = L2_21.get_all
+  L3_22 = L3_22(L2_21, "devicelist", "timestamp")
+  if not timestatmps then
+    L3_22 = {}
+  end
+  L3_22[A0_19] = A1_20
+  L2_21:section("devicelist", "record", "timestamp", L3_22)
+  if not L2_21:commit("devicelist") then
+    return false
+  end
+  return true
+end
+function getAuthenFailedTimesDict()
+  return require("luci.model.uci").cursor():get_all("devicelist", "authfail") or {}
+end
+function getwifiauthfailedserialtimes(A0_23)
+  local L1_24, L2_25, L3_26
+  L1_24 = _UPVALUE0_
+  L1_24 = L1_24.isStrNil
+  L2_25 = A0_23
+  L1_24 = L1_24(L2_25)
+  if L1_24 then
+    return
+  else
+    L1_24 = _UPVALUE0_
+    L1_24 = L1_24.macFormat
+    L2_25 = A0_23
+    L1_24 = L1_24(L2_25)
+    A0_23 = L1_24
+  end
+  L1_24 = require
+  L2_25 = "luci.model.uci"
+  L1_24 = L1_24(L2_25)
+  L1_24 = L1_24.cursor
+  L1_24 = L1_24()
+  L3_26 = A0_23
+  L2_25 = A0_23.gsub
+  L2_25 = L2_25(L3_26, ":", "")
+  L3_26 = L1_24.get_all
+  L3_26 = L3_26(L1_24, "devicelist", "authfailserial")
+  if not L3_26 then
+    L3_26 = L1_24.section
+    L3_26(L1_24, "devicelist", "record", "authfailserial", {})
+    L3_26 = L1_24.commit
+    L3_26(L1_24, "devicelist")
+    L3_26 = 0
+    return L3_26
+  else
+    L3_26 = L1_24.get
+    L3_26 = L3_26(L1_24, "devicelist", "authfailserial", L2_25)
+    if L3_26 and tonumber(L3_26) then
+      return tonumber(L3_26)
+    else
+      return 0
+    end
+  end
+end
+function setwifiauthfailedserialtimes(A0_27, A1_28)
+  local L2_29, L3_30, L4_31
+  L2_29 = _UPVALUE0_
+  L2_29 = L2_29.isStrNil
+  L3_30 = A0_27
+  L2_29 = L2_29(L3_30)
+  if not L2_29 then
+    L2_29 = tonumber
+    L3_30 = A1_28
+    L2_29 = L2_29(L3_30)
+  else
+    if not L2_29 then
+      return
+  end
+  else
+    L2_29 = _UPVALUE0_
+    L2_29 = L2_29.macFormat
+    L3_30 = A0_27
+    L2_29 = L2_29(L3_30)
+    A0_27 = L2_29
+  end
+  L2_29 = require
+  L3_30 = "luci.model.uci"
+  L2_29 = L2_29(L3_30)
+  L2_29 = L2_29.cursor
+  L2_29 = L2_29()
+  L4_31 = A0_27
+  L3_30 = A0_27.gsub
+  L3_30 = L3_30(L4_31, ":", "")
+  L4_31 = L2_29.get_all
+  L4_31 = L4_31(L2_29, "devicelist", "authfailserial")
+  L4_31 = L4_31 or {}
+  L4_31[L3_30] = A1_28
+  L2_29:section("devicelist", "record", "authfailserial", L4_31)
+  L2_29:commit("devicelist")
+end
+function getAuthenFailedTimes(A0_32)
+  local L1_33, L2_34, L3_35
+  L1_33 = _UPVALUE0_
+  L1_33 = L1_33.isStrNil
+  L2_34 = A0_32
+  L1_33 = L1_33(L2_34)
+  if L1_33 then
+    return
+  else
+    L1_33 = _UPVALUE0_
+    L1_33 = L1_33.macFormat
+    L2_34 = A0_32
+    L1_33 = L1_33(L2_34)
+    A0_32 = L1_33
+  end
+  L1_33 = require
+  L2_34 = "luci.model.uci"
+  L1_33 = L1_33(L2_34)
+  L1_33 = L1_33.cursor
+  L1_33 = L1_33()
+  L3_35 = A0_32
+  L2_34 = A0_32.gsub
+  L2_34 = L2_34(L3_35, ":", "")
+  L3_35 = L1_33.get_all
+  L3_35 = L3_35(L1_33, "devicelist", "authfail")
+  if not L3_35 then
+    L3_35 = L1_33.section
+    L3_35(L1_33, "devicelist", "record", "authfail", {})
+    L3_35 = L1_33.commit
+    L3_35(L1_33, "devicelist")
+    L3_35 = 0
+    return L3_35
+  else
+    L3_35 = L1_33.get
+    L3_35 = L3_35(L1_33, "devicelist", "authfail", L2_34)
+    if L3_35 and tonumber(L3_35) then
+      return tonumber(L3_35)
+    else
+      return 0
+    end
+  end
+end
+function setAuthenFailedTimes(A0_36, A1_37)
+  local L2_38, L3_39, L4_40
+  L2_38 = _UPVALUE0_
+  L2_38 = L2_38.isStrNil
+  L3_39 = A0_36
+  L2_38 = L2_38(L3_39)
+  if not L2_38 then
+    L2_38 = tonumber
+    L3_39 = A1_37
+    L2_38 = L2_38(L3_39)
+  else
+    if not L2_38 then
+      return
+  end
+  else
+    L2_38 = _UPVALUE0_
+    L2_38 = L2_38.macFormat
+    L3_39 = A0_36
+    L2_38 = L2_38(L3_39)
+    A0_36 = L2_38
+  end
+  L2_38 = require
+  L3_39 = "luci.model.uci"
+  L2_38 = L2_38(L3_39)
+  L2_38 = L2_38.cursor
+  L2_38 = L2_38()
+  L4_40 = A0_36
+  L3_39 = A0_36.gsub
+  L3_39 = L3_39(L4_40, ":", "")
+  L4_40 = L2_38.get_all
+  L4_40 = L4_40(L2_38, "devicelist", "authfail")
+  L4_40 = L4_40 or {}
+  L4_40[L3_39] = A1_37
+  L2_38:section("devicelist", "record", "authfail", L4_40)
+  L2_38:commit("devicelist")
+end
+function getWifiAuthenFailedFrequencyDict()
+  return require("luci.model.uci").cursor():get_all("devicelist", "wififrequency") or {}
+end
+function getWifiAuthenFailedFrequency(A0_41)
+  local L1_42, L2_43, L3_44
+  L1_42 = _UPVALUE0_
+  L1_42 = L1_42.isStrNil
+  L2_43 = A0_41
+  L1_42 = L1_42(L2_43)
+  if L1_42 then
+    return
+  else
+    L1_42 = _UPVALUE0_
+    L1_42 = L1_42.macFormat
+    L2_43 = A0_41
+    L1_42 = L1_42(L2_43)
+    A0_41 = L1_42
+  end
+  L1_42 = require
+  L2_43 = "luci.model.uci"
+  L1_42 = L1_42(L2_43)
+  L1_42 = L1_42.cursor
+  L1_42 = L1_42()
+  L3_44 = A0_41
+  L2_43 = A0_41.gsub
+  L2_43 = L2_43(L3_44, ":", "")
+  L3_44 = L1_42.get_all
+  L3_44 = L3_44(L1_42, "devicelist", "wififrequency")
+  if not L3_44 then
+    L3_44 = L1_42.section
+    L3_44(L1_42, "devicelist", "record", "wififrequency", {})
+    L3_44 = L1_42.commit
+    L3_44(L1_42, "devicelist")
+    L3_44 = 0
+    return L3_44
+  else
+    L3_44 = L1_42.get
+    L3_44 = L3_44(L1_42, "devicelist", "wififrequency", L2_43)
+    if L3_44 and tonumber(L3_44) then
+      return tonumber(L3_44)
+    else
+      return 0
+    end
+  end
+end
+function setWifiAuthenFailedFrequency(A0_45, A1_46)
+  local L2_47, L3_48, L4_49
+  L2_47 = _UPVALUE0_
+  L2_47 = L2_47.isStrNil
+  L3_48 = A0_45
+  L2_47 = L2_47(L3_48)
+  if not L2_47 then
+    L2_47 = tonumber
+    L3_48 = A1_46
+    L2_47 = L2_47(L3_48)
+  else
+    if not L2_47 then
+      return
+  end
+  else
+    L2_47 = _UPVALUE0_
+    L2_47 = L2_47.macFormat
+    L3_48 = A0_45
+    L2_47 = L2_47(L3_48)
+    A0_45 = L2_47
+  end
+  L2_47 = require
+  L3_48 = "luci.model.uci"
+  L2_47 = L2_47(L3_48)
+  L2_47 = L2_47.cursor
+  L2_47 = L2_47()
+  L4_49 = A0_45
+  L3_48 = A0_45.gsub
+  L3_48 = L3_48(L4_49, ":", "")
+  L4_49 = L2_47.get_all
+  L4_49 = L4_49(L2_47, "devicelist", "wififrequency")
+  L4_49 = L4_49 or {}
+  L4_49[L3_48] = A1_46
+  L2_47:section("devicelist", "record", "wififrequency", L4_49)
+  L2_47:commit("devicelist")
+end
+function getLoginAuthenFailedTimes(A0_50)
+  local L1_51, L2_52, L3_53
+  L1_51 = _UPVALUE0_
+  L1_51 = L1_51.isStrNil
+  L2_52 = A0_50
+  L1_51 = L1_51(L2_52)
+  if L1_51 then
+    return
+  else
+    L1_51 = _UPVALUE0_
+    L1_51 = L1_51.macFormat
+    L2_52 = A0_50
+    L1_51 = L1_51(L2_52)
+    A0_50 = L1_51
+  end
+  L1_51 = require
+  L2_52 = "luci.model.uci"
+  L1_51 = L1_51(L2_52)
+  L1_51 = L1_51.cursor
+  L1_51 = L1_51()
+  L3_53 = A0_50
+  L2_52 = A0_50.gsub
+  L2_52 = L2_52(L3_53, ":", "")
+  L3_53 = L1_51.get_all
+  L3_53 = L3_53(L1_51, "devicelist", "loginauthfail")
+  if not L3_53 then
+    L3_53 = L1_51.section
+    L3_53(L1_51, "devicelist", "record", "loginauthfail", {})
+    L3_53 = L1_51.commit
+    L3_53(L1_51, "devicelist")
+    L3_53 = 0
+    return L3_53
+  else
+    L3_53 = L1_51.get
+    L3_53 = L3_53(L1_51, "devicelist", "loginauthfail", L2_52)
+    if L3_53 and tonumber(L3_53) then
+      return tonumber(L3_53)
+    else
+      return 0
+    end
+  end
+end
+function setLoginAuthenFailedTimes(A0_54, A1_55)
+  local L2_56, L3_57, L4_58
+  L2_56 = _UPVALUE0_
+  L2_56 = L2_56.isStrNil
+  L3_57 = A0_54
+  L2_56 = L2_56(L3_57)
+  if not L2_56 then
+    L2_56 = tonumber
+    L3_57 = A1_55
+    L2_56 = L2_56(L3_57)
+  else
+    if not L2_56 then
+      return
+  end
+  else
+    L2_56 = _UPVALUE0_
+    L2_56 = L2_56.macFormat
+    L3_57 = A0_54
+    L2_56 = L2_56(L3_57)
+    A0_54 = L2_56
+  end
+  L2_56 = require
+  L3_57 = "luci.model.uci"
+  L2_56 = L2_56(L3_57)
+  L2_56 = L2_56.cursor
+  L2_56 = L2_56()
+  L4_58 = A0_54
+  L3_57 = A0_54.gsub
+  L3_57 = L3_57(L4_58, ":", "")
+  L4_58 = L2_56.get_all
+  L4_58 = L4_58(L2_56, "devicelist", "loginauthfail")
+  L4_58 = L4_58 or {}
+  L4_58[L3_57] = A1_55
+  L2_56:section("devicelist", "record", "loginauthfail", L4_58)
+  L2_56:commit("devicelist")
+end
+function getLoginAuthenFailedFrequency(A0_59)
+  local L1_60, L2_61, L3_62
+  L1_60 = _UPVALUE0_
+  L1_60 = L1_60.isStrNil
+  L2_61 = A0_59
+  L1_60 = L1_60(L2_61)
+  if L1_60 then
+    return
+  else
+    L1_60 = _UPVALUE0_
+    L1_60 = L1_60.macFormat
+    L2_61 = A0_59
+    L1_60 = L1_60(L2_61)
+    A0_59 = L1_60
+  end
+  L1_60 = require
+  L2_61 = "luci.model.uci"
+  L1_60 = L1_60(L2_61)
+  L1_60 = L1_60.cursor
+  L1_60 = L1_60()
+  L3_62 = A0_59
+  L2_61 = A0_59.gsub
+  L2_61 = L2_61(L3_62, ":", "")
+  L3_62 = L1_60.get_all
+  L3_62 = L3_62(L1_60, "devicelist", "loginfrequency")
+  if not L3_62 then
+    L3_62 = L1_60.section
+    L3_62(L1_60, "devicelist", "record", "loginfrequency", {})
+    L3_62 = L1_60.commit
+    L3_62(L1_60, "devicelist")
+    L3_62 = 0
+    return L3_62
+  else
+    L3_62 = L1_60.get
+    L3_62 = L3_62(L1_60, "devicelist", "loginfrequency", L2_61)
+    if L3_62 and tonumber(L3_62) then
+      return tonumber(L3_62)
+    else
+      return 0
+    end
+  end
+end
+function setLoginAuthenFailedFrequency(A0_63, A1_64)
+  local L2_65, L3_66, L4_67
+  L2_65 = _UPVALUE0_
+  L2_65 = L2_65.isStrNil
+  L3_66 = A0_63
+  L2_65 = L2_65(L3_66)
+  if not L2_65 then
+    L2_65 = tonumber
+    L3_66 = A1_64
+    L2_65 = L2_65(L3_66)
+  else
+    if not L2_65 then
+      return
+  end
+  else
+    L2_65 = _UPVALUE0_
+    L2_65 = L2_65.macFormat
+    L3_66 = A0_63
+    L2_65 = L2_65(L3_66)
+    A0_63 = L2_65
+  end
+  L2_65 = require
+  L3_66 = "luci.model.uci"
+  L2_65 = L2_65(L3_66)
+  L2_65 = L2_65.cursor
+  L2_65 = L2_65()
+  L4_67 = A0_63
+  L3_66 = A0_63.gsub
+  L3_66 = L3_66(L4_67, ":", "")
+  L4_67 = L2_65.get_all
+  L4_67 = L4_67(L2_65, "devicelist", "loginfrequency")
+  L4_67 = L4_67 or {}
+  L4_67[L3_66] = A1_64
+  L2_65:section("devicelist", "record", "loginfrequency", L4_67)
+  L2_65:commit("devicelist")
+end
+function specialNotify(A0_68)
+  local L1_69, L2_70, L3_71
+  L1_69 = _UPVALUE0_
+  L1_69 = L1_69.isStrNil
+  L2_70 = A0_68
+  L1_69 = L1_69(L2_70)
+  if L1_69 then
+    L1_69 = false
+    L2_70 = 0
+    return L1_69, L2_70
+  else
+    L1_69 = _UPVALUE0_
+    L1_69 = L1_69.macFormat
+    L2_70 = A0_68
+    L1_69 = L1_69(L2_70)
+    A0_68 = L1_69
+  end
+  L1_69 = require
+  L2_70 = "luci.model.uci"
+  L1_69 = L1_69(L2_70)
+  L1_69 = L1_69.cursor
+  L1_69 = L1_69()
+  L3_71 = A0_68
+  L2_70 = A0_68.gsub
+  L2_70 = L2_70(L3_71, ":", "")
+  L3_71 = L1_69.get
+  L3_71 = L3_71(L1_69, "devicelist", "notify", L2_70)
+  if L3_71 and tonumber(L3_71) then
+    return true, tonumber(L3_71)
+  end
+  return false, 0
+end
+function setSpecialNotify(A0_72, A1_73, A2_74)
+  local L3_75, L4_76
+  L3_75 = _UPVALUE0_
+  L3_75 = L3_75.isStrNil
+  L4_76 = A0_72
+  L3_75 = L3_75(L4_76)
+  if L3_75 then
+    L3_75 = tonumber
+    L4_76 = A2_74
+    L3_75 = L3_75(L4_76)
+    if L3_75 then
+      L3_75 = false
+      return L3_75
+    end
+  else
+    L3_75 = _UPVALUE0_
+    L3_75 = L3_75.macFormat
+    L4_76 = A0_72
+    L3_75 = L3_75(L4_76)
+    A0_72 = L3_75
+  end
+  L3_75 = require
+  L4_76 = "luci.model.uci"
+  L3_75 = L3_75(L4_76)
+  L3_75 = L3_75.cursor
+  L3_75 = L3_75()
+  L4_76 = A0_72.gsub
+  L4_76 = L4_76(A0_72, ":", "")
+  if not L3_75:get_all("devicelist", "notify") then
+    L3_75:section("devicelist", "record", "notify", {})
+    if not L3_75:commit("devicelist") then
+      return false
+    end
+  end
+  if A1_73 then
+    if not L3_75:get("devicelist", "notify", L4_76) then
+      L3_75:set("devicelist", "notify", L4_76, 1)
+      if not L3_75:commit("devicelist") then
+        return false
+      end
+    else
+      L3_75:set("devicelist", "notify", L4_76, A2_74)
+      if not L3_75:commit("devicelist") then
+        return false
+      end
+    end
+  else
+    L3_75:delete("devicelist", "notify", L4_76)
+    if not L3_75:commit("devicelist") then
+      return false
+    end
+  end
+  return true
+end
+function notifyDict()
+  local L0_77, L1_78, L2_79, L3_80, L4_81, L5_82, L6_83, L7_84
+  L0_77 = {}
+  L1_78 = require
+  L2_79 = "luci.model.uci"
+  L1_78 = L1_78(L2_79)
+  L1_78 = L1_78.cursor
+  L1_78 = L1_78()
+  L2_79 = L1_78.get_all
+  L2_79 = L2_79(L3_80, L4_81, L5_82)
+  if L2_79 then
+    for L6_83, L7_84 in L3_80(L4_81) do
+      if tonumber(L7_84) then
+        L0_77[L6_83] = 1
+      end
+    end
+  end
+  return L0_77
+end
+function getAdminDevice(A0_85)
+  if A0_85 then
+    return tonumber(require("luci.model.uci").cursor():get("devicelist", "admin", A0_85))
+  end
+  return nil
+end
+function getAdminDevices()
+  local L0_86, L1_87, L2_88, L3_89, L4_90, L5_91, L6_92, L7_93
+  L0_86 = {}
+  L1_87 = require
+  L2_88 = "luci.model.uci"
+  L1_87 = L1_87(L2_88)
+  L1_87 = L1_87.cursor
+  L1_87 = L1_87()
+  L2_88 = L1_87.get_all
+  L2_88 = L2_88(L3_89, L4_90, L5_91)
+  if L2_88 then
+    for L6_92, L7_93 in L3_89(L4_90) do
+      if tonumber(L7_93) then
+        L0_86[L6_92] = tonumber(L7_93)
+      end
+    end
+  end
+  return L0_86
+end
+function setAdminDevice(A0_94, A1_95)
+  if not require("luci.model.uci").cursor():get_all("devicelist", "admin") then
+    require("luci.model.uci").cursor():section("devicelist", "record", "admin", {})
+    require("luci.model.uci").cursor():commit("devicelist")
+  end
+  if require("luci.model.uci").cursor():get("devicelist", "admin", A0_94) then
+    if tonumber(A1_95) then
+      require("luci.model.uci").cursor():set("devicelist", "admin", A0_94, A1_95)
+    end
+  else
+    require("luci.model.uci").cursor():set("devicelist", "admin", A0_94, A1_95 or "0")
+  end
+  require("luci.model.uci").cursor():commit("devicelist")
+end

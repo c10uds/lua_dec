@@ -1,0 +1,57 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5
+L0_0 = require
+L1_1 = "luci.dispatcher"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "luci.model.firewall"
+L1_1 = L1_1(L2_2)
+L2_2, L3_3, L4_4, L5_5 = nil, nil, nil, nil
+L2_2 = Map("firewall", translate("Firewall - Zone Settings"), translate("The firewall creates zones over your network interfaces to control network traffic flow."))
+L1_1.init(L2_2.uci)
+L3_3 = L2_2:section(TypedSection, "defaults", translate("General Settings"))
+L3_3.anonymous = true
+L3_3.addremove = false
+L3_3:option(Flag, "syn_flood", translate("Enable SYN-flood protection"))
+L4_4 = L3_3:option(Flag, "drop_invalid", translate("Drop invalid packets"))
+L4_4.default = L4_4.disabled
+L5_5 = {
+  L3_3:option(ListValue, "input", translate("Input")),
+  L3_3:option(ListValue, "output", translate("Output")),
+  L3_3:option(ListValue, "forward", translate("Forward"))
+}
+for _FORV_11_, _FORV_12_ in ipairs(L5_5) do
+  _FORV_12_:value("REJECT", translate("reject"))
+  _FORV_12_:value("DROP", translate("drop"))
+  _FORV_12_:value("ACCEPT", translate("accept"))
+end
+L3_3 = L2_2:section(TypedSection, "zone", translate("Zones"))
+L3_3.template = "cbi/tblsection"
+L3_3.anonymous = true
+L3_3.addremove = true
+L3_3.extedit = L0_0.build_url("admin", "network", "firewall", "zones", "%s")
+function L3_3.create(A0_6)
+  if _UPVALUE0_:new_zone() then
+    luci.http.redirect(_UPVALUE1_.build_url("admin", "network", "firewall", "zones", _UPVALUE0_:new_zone().sid))
+  end
+end
+function L3_3.remove(A0_7, A1_8)
+  return _UPVALUE0_:del_zone(A1_8)
+end
+L4_4 = L3_3:option(DummyValue, "_info", translate("Zone \226\135\146 Forwardings"))
+L4_4.template = "cbi/firewall_zoneforwards"
+function L4_4.cfgvalue(A0_9, A1_10)
+  return A0_9.map:get(A1_10, "name")
+end
+L5_5 = {
+  L3_3:option(ListValue, "input", translate("Input")),
+  L3_3:option(ListValue, "output", translate("Output")),
+  L3_3:option(ListValue, "forward", translate("Forward"))
+}
+for _FORV_11_, _FORV_12_ in ipairs(L5_5) do
+  _FORV_12_:value("REJECT", translate("reject"))
+  _FORV_12_:value("DROP", translate("drop"))
+  _FORV_12_:value("ACCEPT", translate("accept"))
+end
+L3_3:option(Flag, "masq", translate("Masquerading"))
+L3_3:option(Flag, "mtu_fix", translate("MSS clamping"))
+return L2_2

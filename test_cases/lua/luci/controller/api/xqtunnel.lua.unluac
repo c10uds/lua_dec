@@ -1,0 +1,30 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.xqtunnel", package.seeall)
+function L0_0()
+  node("api", "xqtunnel").target = firstchild()
+  node("api", "xqtunnel").title = ""
+  node("api", "xqtunnel").order = 300
+  node("api", "xqtunnel").sysauth = "admin"
+  node("api", "xqtunnel").sysauth_authenticator = "jsonauth"
+  node("api", "xqtunnel").index = true
+  entry({
+    "api",
+    "xqtunnel",
+    "request"
+  }, call("tunnelRequest"), _(""), 301)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function tunnelRequest()
+  local L0_1, L1_2
+  L0_1 = _UPVALUE0_
+  L0_1 = L0_1.formvalue
+  L1_2 = "payloadB64"
+  L0_1 = L0_1(L1_2)
+  L1_2 = _UPVALUE1_
+  L1_2 = L1_2.TUNNEL_TOOL
+  L1_2 = L1_2 % _UPVALUE2_(L0_1)
+  _UPVALUE0_.write(require("luci.util").exec(L1_2))
+end

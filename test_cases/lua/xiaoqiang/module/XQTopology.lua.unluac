@@ -1,0 +1,309 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQTopology", package.seeall)
+L0_0 = require
+L0_0 = L0_0("cjson")
+function _recursive(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10
+  L1_2 = {}
+  L1_2.ip = ""
+  L2_3 = A0_1.router_name
+  if not L2_3 then
+    L2_3 = A0_1.hostname
+    L2_3 = L2_3 or ""
+  end
+  L1_2.name = L2_3
+  L2_3 = A0_1.locale
+  L2_3 = L2_3 or ""
+  L1_2.locale = L2_3
+  L1_2.hardware = ""
+  L1_2.channel = ""
+  L2_3 = tonumber
+  L3_4 = A0_1.is_ap
+  L3_4 = L3_4 or "0"
+  L2_3 = L2_3(L3_4)
+  L1_2.mode = L2_3
+  L2_3 = A0_1.version
+  L2_3 = L2_3 or ""
+  L1_2.version = L2_3
+  L1_2.ssid = ""
+  L1_2.color = 100
+  L2_3 = string
+  L2_3 = L2_3.lower
+  L3_4 = L1_2.name
+  L2_3 = L2_3(L3_4)
+  L3_4 = L2_3
+  L2_3 = L2_3.match
+  L4_5 = "^xiaomirepeater"
+  L2_3 = L2_3(L3_4, L4_5)
+  if L2_3 then
+    L1_2.name = "\229\176\143\231\177\179\228\184\173\231\187\167\229\153\168"
+  end
+  L2_3 = A0_1.description
+  function L3_4(A0_11)
+    _UPVALUE0_ = _UPVALUE1_.decode(A0_11)
+  end
+  L4_5 = _UPVALUE1_
+  L4_5 = L4_5.isStrNil
+  L4_5 = L4_5(L5_6)
+  if not L4_5 then
+    L4_5 = pcall
+    L4_5 = L4_5(L5_6, L6_7)
+    if L4_5 then
+      L4_5 = L2_3.hardware
+      L1_2.hardware = L4_5
+      L4_5 = L2_3.channel
+      L1_2.channel = L4_5
+      L4_5 = L2_3.color
+      L1_2.color = L4_5
+      L4_5 = L2_3.ssid
+      L1_2.ssid = L4_5
+      L4_5 = L2_3.ip
+      L1_2.ip = L4_5
+      L4_5 = L2_3.locale
+      L1_2.locale = L4_5
+    end
+  end
+  L4_5 = {}
+  if L5_6 then
+    if L5_6 then
+      if L5_6 > 0 then
+        for L9_10, _FORV_10_ in L6_7(L7_8) do
+          if (not L5_6:match("wl") or L5_6:match("wl") and tonumber(A0_1.assoc) == 1) and _FORV_10_.ageing_timer <= 300 and (_FORV_10_.tx_bytes ~= 0 or _FORV_10_.rx_bytes ~= 0) then
+            L1_2.ip = _FORV_10_.ip
+            break
+          end
+        end
+      end
+    end
+  end
+  if L5_6 then
+    if L5_6 > 0 then
+      for L8_9, L9_10 in L5_6(L6_7) do
+        if L9_10.is_ap ~= nil and L9_10.is_ap ~= 0 then
+          table.insert(L4_5, _recursive(L9_10))
+        end
+      end
+      if L5_6 > 0 then
+        L1_2.leafs = L4_5
+      end
+    end
+  end
+  return L1_2
+end
+function topologicalGraph()
+  local L0_12, L1_13, L2_14, L3_15, L4_16, L5_17, L6_18, L7_19, L8_20, L9_21, L10_22, L11_23, L12_24
+  L0_12 = require
+  L1_13 = "xiaoqiang.util.XQSysUtil"
+  L0_12 = L0_12(L1_13)
+  L1_13 = require
+  L2_14 = "xiaoqiang.util.XQLanWanUtil"
+  L1_13 = L1_13(L2_14)
+  L2_14 = require
+  L3_15 = "xiaoqiang.util.XQWifiUtil"
+  L2_14 = L2_14(L3_15)
+  L3_15 = L2_14.getWifiStatus
+  L4_16 = 1
+  L3_15 = L3_15(L4_16)
+  L3_15 = L3_15 or {}
+  L4_16 = "ubus call trafficd hw '{\"tree\":true}'"
+  L5_17 = _UPVALUE0_
+  L5_17 = L5_17.exec
+  L6_18 = L4_16
+  L5_17 = L5_17(L6_18)
+  L6_18 = {}
+  L7_19 = L1_13.getLanIp
+  L7_19 = L7_19()
+  L6_18.ip = L7_19
+  L7_19 = L0_12.getRouterName
+  L7_19 = L7_19()
+  L6_18.name = L7_19
+  L7_19 = L0_12.getRouterLocale
+  L7_19 = L7_19()
+  L6_18.locale = L7_19
+  L7_19 = L0_12.getHardware
+  L7_19 = L7_19()
+  L6_18.hardware = L7_19
+  L7_19 = L0_12.getChannel
+  L7_19 = L7_19()
+  L6_18.channel = L7_19
+  L7_19 = _UPVALUE1_
+  L7_19 = L7_19.getNetModeType
+  L7_19 = L7_19()
+  L6_18.mode = L7_19
+  L7_19 = L0_12.getColor
+  L7_19 = L7_19()
+  L6_18.color = L7_19
+  L7_19 = L3_15.ssid
+  L7_19 = L7_19 or ""
+  L6_18.ssid = L7_19
+  L7_19 = _UPVALUE1_
+  L7_19 = L7_19.isStrNil
+  L7_19 = L7_19(L8_20)
+  if L7_19 then
+    return L6_18
+  else
+    L7_19 = _UPVALUE2_
+    L7_19 = L7_19.decode
+    L7_19 = L7_19(L8_20)
+    L5_17 = L7_19
+  end
+  L7_19 = {}
+  for L11_23, L12_24 in L8_20(L9_21) do
+    if L12_24.is_ap ~= nil and L12_24.is_ap ~= 0 then
+      table.insert(L7_19, _recursive(L12_24))
+    end
+  end
+  if L8_20 > 0 then
+    L6_18.leafs = L7_19
+  end
+  return L6_18
+end
+function _simpleRecursive(A0_25)
+  local L1_26, L2_27, L3_28, L4_29, L5_30, L6_31, L7_32, L8_33, L9_34, L10_35
+  L1_26 = {}
+  L2_27 = _UPVALUE0_
+  L2_27 = L2_27.macFormat
+  L3_28 = A0_25.hw
+  L2_27 = L2_27(L3_28)
+  L1_26.mac = L2_27
+  L1_26.mac5G = ""
+  L2_27 = _UPVALUE0_
+  L2_27 = L2_27.isStrNil
+  L3_28 = A0_25.description
+  L2_27 = L2_27(L3_28)
+  if L2_27 then
+    L2_27 = nil
+    return L2_27
+  end
+  L2_27 = pcall
+  L3_28 = _UPVALUE1_
+  L3_28 = L3_28.decode
+  L4_29 = A0_25.description
+  L3_28 = L2_27(L3_28, L4_29)
+  if L2_27 and L3_28 then
+    L4_29 = L3_28.hardware
+    if L4_29 then
+      L4_29 = string
+      L4_29 = L4_29.lower
+      L4_29 = L4_29(L5_30)
+      if L4_29 ~= "r01" then
+        L4_29 = _UPVALUE0_
+        L4_29 = L4_29.isStrNil
+        L4_29 = L4_29(L5_30)
+      end
+    end
+  elseif L4_29 then
+    L4_29 = nil
+    return L4_29
+  end
+  L4_29 = _UPVALUE0_
+  L4_29 = L4_29.isStrNil
+  L4_29 = L4_29(L5_30)
+  if not L4_29 then
+    L4_29 = L3_28.bssid1
+    L1_26.mac = L4_29
+  end
+  L4_29 = _UPVALUE0_
+  L4_29 = L4_29.isStrNil
+  L4_29 = L4_29(L5_30)
+  if not L4_29 then
+    L4_29 = L3_28.bssid2
+    L1_26.mac5G = L4_29
+  end
+  L4_29 = L3_28.hardware
+  if L4_29 then
+    L4_29 = string
+    L4_29 = L4_29.lower
+    L4_29 = L4_29(L5_30)
+    if L4_29 == "r01" then
+      L4_29 = _UPVALUE0_
+      L4_29 = L4_29.isStrNil
+      L4_29 = L4_29(L5_30)
+      if L4_29 then
+        L1_26.needConvert = true
+      else
+        L4_29 = _UPVALUE0_
+        L4_29 = L4_29.macFormat
+        L4_29 = L4_29(L5_30)
+        L1_26.mac = L4_29
+      end
+    end
+  end
+  L4_29 = {}
+  if L5_30 then
+    if L5_30 > 0 then
+      for L9_34, L10_35 in L6_31(L7_32) do
+        if (not L5_30:match("wl") or L5_30:match("wl") and tonumber(A0_25.assoc) == 1) and L10_35.ageing_timer <= 300 and (L10_35.tx_bytes ~= 0 or L10_35.rx_bytes ~= 0) then
+          break
+        end
+      end
+    end
+  end
+  if L5_30 then
+    if L5_30 > 0 then
+      for L8_33, L9_34 in L5_30(L6_31) do
+        L10_35 = L9_34.is_ap
+        if L10_35 ~= nil then
+          L10_35 = L9_34.is_ap
+          if L10_35 ~= 0 then
+            L10_35 = _simpleRecursive
+            L10_35 = L10_35(L9_34)
+            if L10_35 then
+              table.insert(L4_29, L10_35)
+            end
+          end
+        end
+      end
+      if L5_30 > 0 then
+        L1_26.leafs = L4_29
+      end
+    end
+  end
+  return L1_26
+end
+function simpleTopoGraph()
+  local L0_36, L1_37, L2_38, L3_39, L4_40, L5_41, L6_42, L7_43, L8_44, L9_45, L10_46, L11_47
+  L0_36 = require
+  L1_37 = "xiaoqiang.util.XQWifiUtil"
+  L0_36 = L0_36(L1_37)
+  L1_37 = L0_36.getWifiBssid
+  L2_38 = L1_37()
+  L3_39 = {}
+  L3_39.mac = L1_37
+  L4_40 = L2_38 or ""
+  L3_39.mac5G = L4_40
+  L4_40 = _UPVALUE0_
+  L4_40 = L4_40.exec
+  L5_41 = "ubus call trafficd hw '{\"tree\":true}'"
+  L4_40 = L4_40(L5_41)
+  L5_41 = _UPVALUE1_
+  L5_41 = L5_41.isStrNil
+  L5_41 = L5_41(L6_42)
+  if L5_41 then
+    return L3_39
+  else
+    L5_41 = _UPVALUE2_
+    L5_41 = L5_41.decode
+    L5_41 = L5_41(L6_42)
+    L4_40 = L5_41
+  end
+  L5_41 = {}
+  for L9_45, L10_46 in L6_42(L7_43) do
+    L11_47 = L10_46.is_ap
+    if L11_47 ~= nil then
+      L11_47 = L10_46.is_ap
+      if L11_47 ~= 0 then
+        L11_47 = _simpleRecursive
+        L11_47 = L11_47(L10_46)
+        if L11_47 then
+          table.insert(L5_41, L11_47)
+        end
+      end
+    end
+  end
+  if L6_42 > 0 then
+    L3_39.leafs = L5_41
+  end
+  return L3_39
+end

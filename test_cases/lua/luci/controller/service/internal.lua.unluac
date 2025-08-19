@@ -1,0 +1,292 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.service.internal", package.seeall)
+function L0_0()
+  node("service", "internal").target = firstchild()
+  node("service", "internal").title = ""
+  node("service", "internal").order = nil
+  node("service", "internal").sysauth = "admin"
+  node("service", "internal").sysauth_authenticator = "jsonauth"
+  node("service", "internal").index = true
+  entry({
+    "service",
+    "internal",
+    "ccgame"
+  }, call("turbo_ccgame_call"), "", nil, 16)
+  entry({
+    "service",
+    "internal",
+    "ipv6"
+  }, call("turbo_ipv6_call"), "", nil, 16)
+  entry({
+    "service",
+    "internal",
+    "custom_host_get"
+  }, call("custom_host_get"), "", nil, 16)
+  entry({
+    "service",
+    "internal",
+    "custom_host_set"
+  }, call("custom_host_set"), "", nil, 16)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function check_and_run_ubus_ready(A0_1, A1_2, A2_3)
+  local L3_4, L4_5, L5_6, L6_7, L7_8
+  if not A0_1 then
+    return L3_4
+  end
+  for L6_7 = 1, 2 do
+    L7_8 = A0_1.objects
+    L7_8 = L7_8(A0_1)
+    for _FORV_12_, _FORV_13_ in ipairs(L7_8) do
+      if _FORV_13_ == A1_2 then
+        return true
+      end
+    end
+    _UPVALUE0_.forkExec(A2_3)
+    _UPVALUE1_.nanosleep(1)
+  end
+  return L3_4
+end
+function turbo_ccgame_call()
+  local L0_9, L1_10, L2_11, L3_12, L4_13, L5_14, L6_15, L7_16, L8_17
+  L0_9 = tonumber
+  L1_10 = _UPVALUE0_
+  L1_10 = L1_10.formvalue
+  L2_11 = "cmd"
+  L1_10 = L1_10(L2_11)
+  L1_10 = L1_10 or ""
+  L0_9 = L0_9(L1_10)
+  L1_10 = {}
+  L2_11 = require
+  L3_12 = "turbo.ccgame.ccgame_interface"
+  L2_11 = L2_11(L3_12)
+  if not L2_11 then
+    L1_10.code = 4294967295
+    L1_10.msg = "not support ccgame."
+  elseif L0_9 < 0 or L0_9 > 7 then
+    L1_10.code = 4294967295
+    L1_10.msg = "action id is not valid"
+  else
+    L3_12 = {}
+    L3_12.cmdid = L0_9
+    L4_13 = {}
+    L3_12.data = L4_13
+    L4_13 = _UPVALUE0_
+    L4_13 = L4_13.formvalue
+    L5_14 = "ip"
+    L4_13 = L4_13(L5_14)
+    L5_14 = _UPVALUE0_
+    L5_14 = L5_14.formvalue
+    L6_15 = "byvpn"
+    L5_14 = L5_14(L6_15)
+    L6_15 = _UPVALUE0_
+    L6_15 = L6_15.formvalue
+    L7_16 = "game"
+    L6_15 = L6_15(L7_16)
+    L7_16 = _UPVALUE0_
+    L7_16 = L7_16.formvalue
+    L8_17 = "region"
+    L7_16 = L7_16(L8_17)
+    L8_17 = _UPVALUE0_
+    L8_17 = L8_17.formvalue
+    L8_17 = L8_17("ubus")
+    if L4_13 then
+      L3_12.data.iplist = _UPVALUE1_._cmdformat(L4_13)
+    end
+    if L5_14 and L5_14 ~= "0" then
+      L3_12.data.byvpn = "0"
+    else
+      L3_12.data.byvpn = "1"
+    end
+    if L6_15 and L7_16 then
+      L3_12.data.gameid = _UPVALUE1_._cmdformat(L6_15)
+      L3_12.data.regionid = _UPVALUE1_._cmdformat(L7_16)
+    end
+    if L8_17 then
+      L3_12.ubus = _UPVALUE1_._cmdformat(L8_17)
+    end
+    L1_10 = L2_11.ccgame_call(L3_12)
+  end
+  L3_12 = _UPVALUE0_
+  L3_12 = L3_12.write_json
+  L4_13 = L1_10
+  L3_12(L4_13)
+end
+function turbo_ipv6_call()
+  local L0_18, L1_19, L2_20, L3_21, L4_22, L5_23, L6_24, L7_25, L8_26, L9_27, L10_28
+  L0_18 = tonumber
+  L1_19 = _UPVALUE0_
+  L1_19 = L1_19.formvalue
+  L2_20 = "cmd"
+  L1_19 = L1_19(L2_20)
+  L1_19 = L1_19 or ""
+  L0_18 = L0_18(L1_19)
+  L1_19 = {}
+  if L0_18 < 0 or L0_18 > 3 then
+    L1_19.code = 4294967295
+    L1_19.msg = "action id is not valid"
+  else
+    L2_20 = require
+    L3_21 = "ubus"
+    L2_20 = L2_20(L3_21)
+    L3_21 = L2_20.connect
+    L3_21 = L3_21()
+    if not L3_21 then
+      L1_19.code = 4294967295
+      L1_19.msg = "ubus cannot connected."
+    else
+      L4_22 = check_and_run_ubus_ready
+      L5_23 = L3_21
+      L6_24 = "turbo_ipv6"
+      L7_25 = "/etc/init.d/turbo start_ipv6"
+      L4_22 = L4_22(L5_23, L6_24, L7_25)
+      if not L4_22 then
+        L1_19.code = 4294967295
+        L1_19.msg = "ubus service is not running..."
+      else
+        L4_22 = nil
+        L5_23 = "turbo_ipv6"
+        L6_24 = {}
+        if L0_18 == 1 then
+          L7_25 = {}
+          L7_25.provider = "sellon"
+          L8_26 = "matool --method api_call_post --params /device/vip/account '"
+          L9_27 = _UPVALUE1_
+          L9_27 = L9_27.encode
+          L10_28 = L7_25
+          L9_27 = L9_27(L10_28)
+          L10_28 = "'"
+          L8_26 = L8_26 .. L9_27 .. L10_28
+          L9_27 = pcall
+          function L10_28()
+            return _UPVALUE0_.decode(_UPVALUE1_.trim(_UPVALUE1_.exec(_UPVALUE2_)))
+          end
+          L10_28 = L9_27(L10_28)
+          if not L9_27 or not L10_28 or type(L10_28) ~= "table" or L10_28.code ~= 0 then
+            L1_19.code = 4294967295
+            L1_19.msg = "active account failed. pls check if account binded or network is connected."
+            L4_22 = nil
+          else
+            L4_22 = "start"
+          end
+        elseif L0_18 == 2 then
+          L4_22 = "stop"
+        elseif L0_18 == 3 then
+          L4_22 = "status"
+        elseif L0_18 == 0 then
+          L7_25 = _UPVALUE3_
+          L7_25 = L7_25._cmdformat
+          L8_26 = _UPVALUE0_
+          L8_26 = L8_26.formvalue
+          L9_27 = "ubus"
+          L8_26 = L8_26(L9_27)
+          L8_26 = L8_26 or "nothing"
+          L7_25 = L7_25(L8_26)
+          L4_22 = L7_25
+        else
+          L4_22 = nil
+          L1_19.msg = "not supported command."
+        end
+        if L4_22 and L4_22 ~= "" then
+          L8_26 = L3_21
+          L7_25 = L3_21.call
+          L9_27 = L5_23
+          L10_28 = L4_22
+          L7_25 = L7_25(L8_26, L9_27, L10_28, L6_24)
+          L9_27 = L3_21
+          L8_26 = L3_21.close
+          L8_26(L9_27)
+          if L7_25 then
+            L1_19 = L7_25
+          else
+            L1_19.code = 4294967295
+            L1_19.msg = "call ubus failed."
+          end
+        else
+          L1_19.code = 4294967295
+        end
+      end
+    end
+  end
+  L2_20 = _UPVALUE0_
+  L2_20 = L2_20.write_json
+  L3_21 = L1_19
+  L2_20(L3_21)
+end
+function custom_host_get()
+  local L0_29, L1_30, L2_31, L3_32, L4_33, L5_34, L6_35, L7_36, L8_37, L9_38, L10_39
+  L0_29 = "/tmp/hosts/custom_hosts"
+  L1_30 = {}
+  L1_30.code = 0
+  L1_30.msg = "OK"
+  L2_31 = _UPVALUE0_
+  L2_31 = L2_31.access
+  L2_31 = L2_31(L3_32)
+  if L2_31 then
+    L2_31 = io
+    L2_31 = L2_31.open
+    L2_31 = L2_31(L3_32, L4_33)
+    hFile = L2_31
+    L2_31 = {}
+    for L6_35 in L3_32(L4_33) do
+      L7_36 = string
+      L7_36 = L7_36.find
+      L8_37 = L6_35
+      L9_38 = "^%s*([0-9A-Fa-f.:]+)%s*([^%s]+)%s*"
+      L10_39 = L7_36(L8_37, L9_38)
+      if L7_36 and L9_38 and L10_39 then
+        L2_31[#L2_31 + 1] = L9_38 .. " " .. L10_39
+      end
+    end
+    L3_32(L4_33)
+    L1_30.hosts = L2_31
+  else
+    L1_30.code = 4294967295
+    L1_30.msg = "read hosts file failure."
+  end
+  L2_31 = _UPVALUE1_
+  L2_31 = L2_31.write_json
+  L2_31(L3_32)
+end
+function custom_host_set()
+  local L0_40, L1_41, L2_42, L3_43, L4_44, L5_45, L6_46, L7_47, L8_48, L9_49, L10_50, L11_51, L12_52, L13_53, L14_54
+  L0_40 = _UPVALUE0_
+  L0_40 = L0_40.formvalue
+  L1_41 = "hosts"
+  L0_40 = L0_40(L1_41)
+  L0_40 = L0_40 or ""
+  L1_41 = {}
+  L1_41.code = 0
+  L1_41.msg = "OK"
+  L2_42 = pcall
+  function L3_43()
+    return _UPVALUE0_.decode(_UPVALUE1_.trim(_UPVALUE2_))
+  end
+  L3_43 = L2_42(L3_43)
+  L4_44 = "/etc/custom_hosts"
+  L5_45 = "/tmp/hosts/custom_hosts"
+  if L2_42 and L3_43 then
+    hFile = L6_46
+    L6_46(L7_47, L8_48)
+    for L9_49, L10_50 in L6_46(L7_47) do
+      L11_51 = string
+      L11_51 = L11_51.find
+      L12_52 = L10_50
+      L13_53 = "^%s*([0-9A-Fa-f.:]+)%s*([^%s]+)%s*"
+      L14_54 = L11_51(L12_52, L13_53)
+      if L11_51 and L13_53 and L14_54 then
+        hFile:write(L13_53, " ", L14_54, "\n")
+      end
+    end
+    L6_46(L7_47)
+    L6_46(L7_47, L8_48)
+    L6_46(L7_47)
+  else
+    L1_41.code = 4294967295
+    L1_41.msg = "parameter hosts lost or foramt invalid."
+  end
+  L6_46(L7_47)
+end

@@ -1,0 +1,185 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.xqsmarthome", package.seeall)
+function L0_0()
+  node("api", "xqsmarthome").target = firstchild()
+  node("api", "xqsmarthome").title = ""
+  node("api", "xqsmarthome").order = 500
+  node("api", "xqsmarthome").sysauth = "admin"
+  node("api", "xqsmarthome").sysauth_authenticator = "jsonauth"
+  node("api", "xqsmarthome").index = true
+  entry({
+    "api",
+    "xqsmarthome"
+  }, firstchild(), _(""), 500)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request"
+  }, call("tunnelSmartHomeRequest"), _(""), 501)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_smartcontroller"
+  }, call("tunnelSmartControllerRequest"), _(""), 502)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_miio"
+  }, call("tunnelMiioRequest"), _(""), 503)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_mitv"
+  }, call("requestMitv"), _(""), 504)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_yeelink"
+  }, call("tunnelYeelink"), _(""), 505)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_camera"
+  }, call("requestCamera"), _(""), 506)
+  entry({
+    "api",
+    "xqsmarthome",
+    "request_miiolist"
+  }, call("requestMiioList"), _(""), 507)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function tunnelSmartHomeRequest()
+  local L0_1, L1_2, L2_3
+  L0_1 = require
+  L1_2 = "xiaoqiang.util.XQCryptoUtil"
+  L0_1 = L0_1(L1_2)
+  L1_2 = L0_1.binaryBase64Enc
+  L2_3 = _UPVALUE0_
+  L2_3 = L2_3.formvalue
+  L2_3 = L2_3("payload")
+  L1_2 = L1_2(L2_3, L2_3("payload"))
+  L2_3 = _UPVALUE1_
+  L2_3 = L2_3.THRIFT_TUNNEL_TO_SMARTHOME
+  L2_3 = L2_3 % L1_2
+  _UPVALUE0_.write(require("luci.util").exec(L2_3))
+end
+function tunnelSmartControllerRequest()
+  local L0_4, L1_5, L2_6, L3_7, L4_8, L5_9, L6_10, L7_11, L8_12
+  L0_4 = require
+  L1_5 = "xiaoqiang.XQLog"
+  L0_4 = L0_4(L1_5)
+  L1_5 = require
+  L2_6 = "xiaoqiang.util.XQCryptoUtil"
+  L1_5 = L1_5(L2_6)
+  L2_6 = require
+  L3_7 = "json"
+  L2_6 = L2_6(L3_7)
+  L3_7 = L2_6.decode
+  L4_8 = _UPVALUE0_
+  L4_8 = L4_8.formvalue
+  L5_9 = "payload"
+  L8_12 = L4_8(L5_9)
+  L3_7 = L3_7(L4_8, L5_9, L6_10, L7_11, L8_12, L4_8(L5_9))
+  L4_8 = L1_5.binaryBase64Enc
+  L5_9 = _UPVALUE0_
+  L5_9 = L5_9.formvalue
+  L6_10 = "payload"
+  L8_12 = L5_9(L6_10)
+  L4_8 = L4_8(L5_9, L6_10, L7_11, L8_12, L5_9(L6_10))
+  L5_9 = require
+  L6_10 = "luci.util"
+  L5_9 = L5_9(L6_10)
+  L6_10 = require
+  L7_11 = "luci.model.uci"
+  L6_10 = L6_10(L7_11)
+  L6_10 = L6_10.cursor
+  L6_10 = L6_10()
+  L8_12 = L6_10
+  L7_11 = L6_10.get
+  L7_11 = L7_11(L8_12, "misc", "hardware", "model")
+  L7_11 = L7_11 or ""
+  if L7_11 then
+    L8_12 = string
+    L8_12 = L8_12.lower
+    L8_12 = L8_12(L7_11)
+    L7_11 = L8_12
+  end
+  L8_12 = L7_11.match
+  L8_12 = L8_12(L7_11, "^d01")
+  if L8_12 then
+    L8_12 = L3_7.action_list
+    if L8_12 then
+      L8_12 = L3_7.action_list
+      L8_12 = L8_12[1]
+      L8_12 = L8_12.type
+      if L8_12 == "normal_reboot" then
+        L8_12 = L5_9.exec
+        L8_12 = L8_12("ubus call trafficd send_smart '{\"msg\":\"" .. L4_8 .. "\"}'")
+        L0_4.log(6, "trafficd\239\188\154 " .. "ubus call trafficd send_smart '{\"msg\":\"" .. L4_8 .. "\"}'")
+        if L8_12 then
+        end
+        L5_9.exec("sleep 2")
+      end
+    end
+  end
+  L8_12 = _UPVALUE1_
+  L8_12 = L8_12.THRIFT_TUNNEL_TO_SMARTHOME_CONTROLLER
+  L8_12 = L8_12 % L4_8
+  _UPVALUE0_.write(require("luci.util").exec(L8_12))
+end
+function tunnelMiioRequest()
+  local L0_13, L1_14, L2_15
+  L0_13 = require
+  L1_14 = "xiaoqiang.util.XQCryptoUtil"
+  L0_13 = L0_13(L1_14)
+  L1_14 = L0_13.binaryBase64Enc
+  L2_15 = _UPVALUE0_
+  L2_15 = L2_15.formvalue
+  L2_15 = L2_15("payload")
+  L1_14 = L1_14(L2_15, L2_15("payload"))
+  L2_15 = _UPVALUE1_
+  L2_15 = L2_15.THRIFT_TUNNEL_TO_MIIO
+  L2_15 = L2_15 % L1_14
+  _UPVALUE0_.write(require("luci.util").exec(L2_15))
+end
+function tunnelYeelink()
+  local L0_16, L1_17, L2_18
+  L0_16 = require
+  L1_17 = "xiaoqiang.util.XQCryptoUtil"
+  L0_16 = L0_16(L1_17)
+  L1_17 = L0_16.binaryBase64Enc
+  L2_18 = _UPVALUE0_
+  L2_18 = L2_18.formvalue
+  L2_18 = L2_18("payload")
+  L1_17 = L1_17(L2_18, L2_18("payload"))
+  L2_18 = _UPVALUE1_
+  L2_18 = L2_18.THRIFT_TUNNEL_TO_MIIO
+  L2_18 = L2_18 % L1_17
+  _UPVALUE0_.write(require("luci.util").exec(L2_18))
+end
+function requestMitv()
+  local L0_19
+  L0_19 = _UPVALUE0_
+  L0_19 = L0_19.formvalue
+  L0_19 = L0_19("payload")
+  _UPVALUE0_.write(require("xiaoqiang.util.XQMitvUtil").request(L0_19))
+end
+function requestMiioList()
+  local L0_20, L1_21
+  L0_20 = require
+  L1_21 = "luci.util"
+  L0_20 = L0_20(L1_21)
+  L1_21 = L0_20.exec
+  L1_21 = L1_21("/usr/bin/matool --method api_call --params /device/miot_get_device_tokens")
+  _UPVALUE0_.write(L1_21)
+end
+function requestCamera()
+  local L0_22
+  L0_22 = _UPVALUE0_
+  L0_22 = L0_22.formvalue
+  L0_22 = L0_22("payload")
+  _UPVALUE0_.write(require("xiaoqiang.util.XQCameraUtil").request(L0_22))
+end

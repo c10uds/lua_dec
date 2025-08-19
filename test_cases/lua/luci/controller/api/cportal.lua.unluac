@@ -1,0 +1,39 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.cportal", package.seeall)
+function L0_0()
+  node("api", "cportal").target = firstchild()
+  node("api", "cportal").title = ""
+  node("api", "cportal").order = 200
+  node("api", "cportal").index = true
+  entry({"api", "cportal"}, firstchild(), "", 200)
+  entry({
+    "api",
+    "cportal",
+    "allow"
+  }, call("captivePortalAllow"), "", 201, 1)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function captivePortalAllow()
+  local L0_1, L1_2, L2_3, L3_4
+  L0_1 = {}
+  L0_1.code = 0
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.formvalue
+  L2_3 = "callback"
+  L1_2 = L1_2(L2_3)
+  L2_3 = luci
+  L2_3 = L2_3.dispatcher
+  L2_3 = L2_3.getremotemac
+  L2_3 = L2_3()
+  L3_4 = _UPVALUE0_
+  L3_4 = L3_4.formvalue
+  L3_4 = L3_4("interval")
+  if tonumber(L3_4) == nil then
+    L3_4 = ""
+  end
+  os.execute("/usr/sbin/captive_portal.sh allow " .. L2_3 .. " " .. L3_4)
+  _UPVALUE0_.write_jsonp(L0_1, L1_2)
+end

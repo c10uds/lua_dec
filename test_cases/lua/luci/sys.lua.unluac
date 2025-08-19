@@ -1,0 +1,741 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("io")
+;({}).util = require("luci.util")
+;({}).ip = require("luci.ip")
+module("luci.sys")
+function call(...)
+  local L1_2, L2_3
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.execute
+  L2_3 = ...
+  L1_2 = L1_2(L2_3)
+  L1_2 = L1_2 / 256
+  return L1_2
+end
+exec = ({}).util.exec
+function mounts()
+  local L0_4, L1_5, L2_6, L3_7, L4_8, L5_9, L6_10, L7_11
+  L0_4 = {}
+  L1_5 = {
+    L2_6,
+    L3_7,
+    L4_8,
+    L5_9,
+    L6_10,
+    L7_11
+  }
+  L2_6 = "fs"
+  L6_10 = "percent"
+  L7_11 = "mountpoint"
+  L2_6 = _UPVALUE0_
+  L2_6 = L2_6.util
+  L2_6 = L2_6.execi
+  L2_6 = L2_6(L3_7)
+  if not L2_6 then
+    return
+  else
+    L3_7()
+  end
+  for L6_10 in L2_6, nil, nil do
+    L7_11 = {}
+    for _FORV_12_ in L6_10:gmatch("[^%s]+") do
+      L7_11[L1_5[1]] = _FORV_12_
+    end
+    if L7_11[L1_5[1]] then
+      if not L7_11[L1_5[2]] then
+        L6_10 = L2_6()
+        for _FORV_12_ in L6_10:gmatch("[^%s]+") do
+          L7_11[L1_5[2]] = _FORV_12_
+        end
+      end
+      _UPVALUE1_.insert(L0_4, L7_11)
+    end
+  end
+  return L0_4
+end
+getenv = require("nixio").getenv
+function hostname(A0_12)
+  if _UPVALUE0_(A0_12) == "string" and #A0_12 > 0 then
+    _UPVALUE1_.writefile("/proc/sys/kernel/hostname", A0_12)
+    return A0_12
+  else
+    return _UPVALUE2_.uname().nodename
+  end
+end
+function httpget(A0_13, A1_14, A2_15)
+  local L3_16
+  if not A2_15 then
+    if A1_14 then
+      L3_16 = _UPVALUE0_
+      L3_16 = L3_16.popen
+    elseif not L3_16 then
+      L3_16 = _UPVALUE1_
+      L3_16 = L3_16.util
+      L3_16 = L3_16.exec
+    end
+    return L3_16("wget -qO- '" .. A0_13:gsub("'", "") .. "'")
+  else
+    L3_16 = _UPVALUE2_
+    L3_16 = L3_16.execute
+    return L3_16("wget -qO '%s' '%s'" % {
+      A2_15:gsub("'", ""),
+      A0_13:gsub("'", "")
+    })
+  end
+end
+function loadavg()
+  return _UPVALUE0_.sysinfo().loads[1], _UPVALUE0_.sysinfo().loads[2], _UPVALUE0_.sysinfo().loads[3]
+end
+function reboot()
+  return _UPVALUE0_.execute("reboot >/dev/null 2>&1")
+end
+function sysinfo()
+  local L0_17, L1_18, L2_19, L3_20, L4_21, L5_22, L6_23, L7_24, L8_25
+  L0_17 = _UPVALUE0_
+  L0_17 = L0_17.readfile
+  L1_18 = "/proc/cpuinfo"
+  L0_17 = L0_17(L1_18)
+  L1_18 = _UPVALUE0_
+  L1_18 = L1_18.readfile
+  L2_19 = "/proc/meminfo"
+  L1_18 = L1_18(L2_19)
+  L2_19 = _UPVALUE1_
+  L4_21 = L1_18
+  L3_20 = L1_18.match
+  L5_22 = "MemTotal:%s*(%d+)"
+  L8_25 = L3_20(L4_21, L5_22)
+  L2_19 = L2_19(L3_20, L4_21, L5_22, L6_23, L7_24, L8_25, L3_20(L4_21, L5_22))
+  L3_20 = _UPVALUE1_
+  L5_22 = L1_18
+  L4_21 = L1_18.match
+  L6_23 = [[
+
+Cached:%s*(%d+)]]
+  L8_25 = L4_21(L5_22, L6_23)
+  L3_20 = L3_20(L4_21, L5_22, L6_23, L7_24, L8_25, L4_21(L5_22, L6_23))
+  L4_21 = _UPVALUE1_
+  L6_23 = L1_18
+  L5_22 = L1_18.match
+  L7_24 = "MemFree:%s*(%d+)"
+  L8_25 = L5_22(L6_23, L7_24)
+  L4_21 = L4_21(L5_22, L6_23, L7_24, L8_25, L5_22(L6_23, L7_24))
+  L5_22 = _UPVALUE1_
+  L7_24 = L1_18
+  L6_23 = L1_18.match
+  L8_25 = "Buffers:%s*(%d+)"
+  L8_25 = L6_23(L7_24, L8_25)
+  L5_22 = L5_22(L6_23, L7_24, L8_25, L6_23(L7_24, L8_25))
+  L6_23 = _UPVALUE1_
+  L8_25 = L0_17
+  L7_24 = L0_17.match
+  L8_25 = L7_24(L8_25, [[
+[Bb]ogo[Mm][Ii][Pp][Ss].-: ([^
+]+)]])
+  L6_23 = L6_23(L7_24, L8_25, L7_24(L8_25, [[
+[Bb]ogo[Mm][Ii][Pp][Ss].-: ([^
+]+)]]))
+  L6_23 = L6_23 or 0
+  L8_25 = L0_17
+  L7_24 = L0_17.match
+  L7_24 = L7_24(L8_25, [[
+system type	+: ([^
+]+)]])
+  if not L7_24 then
+    L8_25 = L0_17
+    L7_24 = L0_17.match
+    L7_24 = L7_24(L8_25, [[
+Processor	+: ([^
+]+)]])
+    if not L7_24 then
+      L8_25 = L0_17
+      L7_24 = L0_17.match
+      L7_24 = L7_24(L8_25, [[
+model name	+: ([^
+]+)]])
+    end
+  end
+  L8_25 = _UPVALUE2_
+  L8_25 = L8_25.util
+  L8_25 = L8_25.pcdata
+  L8_25 = L8_25(_UPVALUE0_.readfile("/tmp/sysinfo/model"))
+  if not L8_25 then
+    L8_25 = L0_17.match
+    L8_25 = L8_25(L0_17, [[
+machine	+: ([^
+]+)]])
+    if not L8_25 then
+      L8_25 = L0_17.match
+      L8_25 = L8_25(L0_17, [[
+Hardware	+: ([^
+]+)]])
+      if not L8_25 then
+        L8_25 = _UPVALUE2_
+        L8_25 = L8_25.util
+        L8_25 = L8_25.pcdata
+        L8_25 = L8_25(_UPVALUE0_.readfile("/proc/diag/model"))
+        if not L8_25 then
+          L8_25 = _UPVALUE3_
+          L8_25 = L8_25.uname
+          L8_25 = L8_25()
+          L8_25 = L8_25.machine
+          L8_25 = L8_25 or L7_24
+        end
+      end
+    end
+  end
+  return L7_24, L8_25, L2_19, L3_20, L5_22, L4_21, L6_23
+end
+function syslog()
+  return _UPVALUE0_.util.exec("logread")
+end
+function dmesg()
+  return _UPVALUE0_.util.exec("dmesg")
+end
+function uniqueid(A0_26)
+  local L1_27
+  L1_27 = _UPVALUE0_
+  L1_27 = L1_27.readfile
+  L1_27 = L1_27("/dev/urandom", A0_26)
+  return L1_27 and _UPVALUE1_.bin.hexlify(L1_27)
+end
+function uptime()
+  return _UPVALUE0_.sysinfo().uptime
+end
+net = {}
+function net.arptable(A0_28)
+  local L1_29, L2_30, L3_31, L4_32, L5_33, L6_34, L7_35, L8_36, L9_37, L10_38
+  if L5_33 then
+    for L8_36 in L5_33(L6_34) do
+      L9_37 = {}
+      for _FORV_13_ in L10_38(L8_36, "%S+") do
+        L9_37[#L9_37 + 1] = _FORV_13_
+      end
+      if L10_38 ~= "IP" then
+        L10_38["IP address"] = L9_37[1]
+        L10_38["HW type"] = L9_37[2]
+        L10_38.Flags = L9_37[3]
+        L10_38["HW address"] = L9_37[4]
+        L10_38.Mask = L9_37[5]
+        L10_38.Device = L9_37[6]
+        if A0_28 then
+          A0_28(L10_38)
+        else
+          L1_29 = L1_29 or {}
+          L1_29[#L1_29 + 1] = L10_38
+        end
+      end
+    end
+  end
+  return L1_29
+end
+function net.mac_hints(A0_39)
+  if A0_39 then
+    _UPVALUE0_(1, function(A0_40, A1_41, A2_42, A3_43)
+      A3_43 = A3_43 or _UPVALUE0_.getnameinfo(A1_41 or A2_42, nil, 100) or A1_41
+      if A3_43 and A3_43 ~= A0_40 then
+        _UPVALUE1_(A0_40, A3_43 or _UPVALUE0_.getnameinfo(A1_41 or A2_42, nil, 100) or A1_41)
+      end
+    end)
+  else
+    _UPVALUE0_(1, function(A0_44, A1_45, A2_46, A3_47)
+      A3_47 = A3_47 or _UPVALUE0_.getnameinfo(A1_45 or A2_46, nil, 100) or A1_45
+      if A3_47 and A3_47 ~= A0_44 then
+        _UPVALUE1_[#_UPVALUE1_ + 1] = {
+          A0_44,
+          A3_47 or _UPVALUE0_.getnameinfo(A1_45 or A2_46, nil, 100) or A1_45
+        }
+      end
+    end)
+    return {}
+  end
+end
+function net.ipv4_hints(A0_48)
+  if A0_48 then
+    _UPVALUE0_(2, function(A0_49, A1_50, A2_51, A3_52)
+      A3_52 = A3_52 or _UPVALUE0_.getnameinfo(A1_50, nil, 100) or A0_49
+      if A3_52 and A3_52 ~= A1_50 then
+        _UPVALUE1_(A1_50, A3_52)
+      end
+    end)
+  else
+    _UPVALUE0_(2, function(A0_53, A1_54, A2_55, A3_56)
+      A3_56 = A3_56 or _UPVALUE0_.getnameinfo(A1_54, nil, 100) or A0_53
+      if A3_56 and A3_56 ~= A1_54 then
+        _UPVALUE1_[#_UPVALUE1_ + 1] = {A1_54, A3_56}
+      end
+    end)
+    return {}
+  end
+end
+function net.ipv6_hints(A0_57)
+  if A0_57 then
+    _UPVALUE0_(3, function(A0_58, A1_59, A2_60, A3_61)
+      A3_61 = A3_61 or _UPVALUE0_.getnameinfo(A2_60, nil, 100) or A0_58
+      if A3_61 and A3_61 ~= A2_60 then
+        _UPVALUE1_(A2_60, A3_61)
+      end
+    end)
+  else
+    _UPVALUE0_(3, function(A0_62, A1_63, A2_64, A3_65)
+      A3_65 = A3_65 or _UPVALUE0_.getnameinfo(A2_64, nil, 100) or A0_62
+      if A3_65 and A3_65 ~= A2_64 then
+        _UPVALUE1_[#_UPVALUE1_ + 1] = {A2_64, A3_65}
+      end
+    end)
+    return {}
+  end
+end
+function net.conntrack(A0_66)
+  local L1_67, L2_68, L3_69, L4_70, L5_71, L6_72
+  L1_67 = {}
+  if L2_68 then
+    for L5_71 in L2_68(L3_69) do
+      L6_72 = L5_71.match
+      L6_72 = L6_72(L5_71, "^(.-( [^ =]+=).-)%2")
+      L5_71 = L6_72
+      L6_72 = _parse_mixed_record
+      L6_72 = L6_72(L5_71, " +")
+      if L6_72(L5_71, " +")[6] ~= "TIME_WAIT" then
+        L6_72.layer3 = L6_72(L5_71, " +")[1]
+        L6_72.layer4 = L6_72(L5_71, " +")[3]
+        for _FORV_11_ = 1, #L6_72 do
+          L6_72[_FORV_11_] = nil
+        end
+        if A0_66 then
+          A0_66(L6_72)
+        else
+          L1_67[#L1_67 + 1] = L6_72
+        end
+      end
+    end
+  elseif L2_68 then
+    for L5_71 in L2_68(L3_69) do
+      L6_72 = L5_71.match
+      L6_72 = L6_72(L5_71, "^(.-( [^ =]+=).-)%2")
+      L5_71 = L6_72
+      L6_72 = _parse_mixed_record
+      L6_72 = L6_72(L5_71, " +")
+      if L6_72(L5_71, " +")[4] ~= "TIME_WAIT" then
+        L6_72.layer3 = "ipv4"
+        L6_72.layer4 = L6_72(L5_71, " +")[1]
+        for _FORV_11_ = 1, #L6_72 do
+          L6_72[_FORV_11_] = nil
+        end
+        if A0_66 then
+          A0_66(L6_72)
+        else
+          L1_67[#L1_67 + 1] = L6_72
+        end
+      end
+    end
+  else
+    return L2_68
+  end
+  return L1_67
+end
+function net.defaultroute()
+  local L0_73
+  net.routes(function(A0_74)
+    if A0_74.dest:prefix() == 0 and (not _UPVALUE0_ or _UPVALUE0_.metric > A0_74.metric) then
+      _UPVALUE0_ = A0_74
+    end
+  end)
+  return L0_73
+end
+function net.defaultroute6()
+  local L0_75
+  net.routes6(function(A0_76)
+    if A0_76.dest:prefix() == 0 and A0_76.device ~= "lo" and (not _UPVALUE0_ or _UPVALUE0_.metric > A0_76.metric) then
+      _UPVALUE0_ = A0_76
+    end
+  end)
+  if not L0_75 then
+    net.routes6(function(A0_77)
+      if A0_77.dest:equal(_UPVALUE0_) and (not _UPVALUE1_ or _UPVALUE1_.metric > A0_77.metric) then
+        _UPVALUE1_ = A0_77
+      end
+    end)
+  end
+  return L0_75
+end
+function net.devices()
+  local L0_78, L1_79
+  L0_78 = {}
+  for _FORV_4_, _FORV_5_ in L1_79(_UPVALUE1_.getifaddrs()) do
+    if _FORV_5_.family == "packet" then
+      L0_78[#L0_78 + 1] = _FORV_5_.name
+    end
+  end
+  return L0_78
+end
+function net.deviceinfo()
+  local L1_80
+  L1_80 = {}
+  for _FORV_4_, _FORV_5_ in _UPVALUE0_(_UPVALUE1_.getifaddrs()) do
+    if _FORV_5_.family == "packet" then
+      _FORV_5_.data[1] = _FORV_5_.data.rx_bytes
+      _FORV_5_.data[2] = _FORV_5_.data.rx_packets
+      _FORV_5_.data[3] = _FORV_5_.data.rx_errors
+      _FORV_5_.data[4] = _FORV_5_.data.rx_dropped
+      _FORV_5_.data[5] = 0
+      _FORV_5_.data[6] = 0
+      _FORV_5_.data[7] = 0
+      _FORV_5_.data[8] = _FORV_5_.data.multicast
+      _FORV_5_.data[9] = _FORV_5_.data.tx_bytes
+      _FORV_5_.data[10] = _FORV_5_.data.tx_packets
+      _FORV_5_.data[11] = _FORV_5_.data.tx_errors
+      _FORV_5_.data[12] = _FORV_5_.data.tx_dropped
+      _FORV_5_.data[13] = 0
+      _FORV_5_.data[14] = _FORV_5_.data.collisions
+      _FORV_5_.data[15] = 0
+      _FORV_5_.data[16] = 0
+      L1_80[_FORV_5_.name] = _FORV_5_.data
+    end
+  end
+  return L1_80
+end
+function net.ip4mac(A0_81)
+  net.arptable(function(A0_82)
+    local L1_83
+    L1_83 = A0_82["IP address"]
+    if L1_83 == _UPVALUE0_ then
+      L1_83 = A0_82["HW address"]
+      _UPVALUE1_ = L1_83
+    end
+  end)
+  return nil
+end
+function net.ip4mac_ex(A0_84)
+  return _UPVALUE0_("ubus").connect():call("trafficd", "ip", {ip = A0_84}) and _UPVALUE0_("ubus").connect():call("trafficd", "ip", {ip = A0_84}).hw or nil
+end
+function net.routes(A0_85)
+  local L1_86, L2_87, L3_88, L4_89, L5_90, L6_91, L7_92, L8_93, L9_94, L10_95, L11_96, L12_97, L13_98, L14_99, L15_100, L16_101, L17_102
+  L1_86 = {}
+  for L5_90 in L2_87(L3_88) do
+    L7_92 = L5_90
+    L6_91 = L5_90.match
+    L8_93 = "([^%s]+)\t([A-F0-9]+)\t([A-F0-9]+)\t([A-F0-9]+)\t"
+    L9_94 = "(%d+)\t(%d+)\t(%d+)\t([A-F0-9]+)\t(%d+)\t(%d+)\t(%d+)"
+    L8_93 = L8_93 .. L9_94
+    L16_101 = L6_91(L7_92, L8_93)
+    if L6_91 then
+      L17_102 = _UPVALUE1_
+      L17_102 = L17_102.ip
+      L17_102 = L17_102.Hex
+      L17_102 = L17_102(L8_93, 32, _UPVALUE1_.ip.FAMILY_INET4)
+      L8_93 = L17_102
+      L17_102 = _UPVALUE1_
+      L17_102 = L17_102.ip
+      L17_102 = L17_102.Hex
+      L17_102 = L17_102(L13_98, 32, _UPVALUE1_.ip.FAMILY_INET4)
+      L13_98 = L17_102
+      L17_102 = _UPVALUE1_
+      L17_102 = L17_102.ip
+      L17_102 = L17_102.Hex
+      L17_102 = L17_102(L7_92, L13_98:prefix(L13_98), _UPVALUE1_.ip.FAMILY_INET4)
+      L7_92 = L17_102
+      L17_102 = {}
+      L17_102.dest = L7_92
+      L17_102.gateway = L8_93
+      L17_102.metric = _UPVALUE2_(L12_97)
+      L17_102.refcount = _UPVALUE2_(L10_95)
+      L17_102.usecount = _UPVALUE2_(L11_96)
+      L17_102.mtu = _UPVALUE2_(L14_99)
+      L17_102.window = _UPVALUE2_(window)
+      L17_102.irtt = _UPVALUE2_(L16_101)
+      L17_102.flags = _UPVALUE2_(L9_94, 16)
+      L17_102.device = L6_91
+      if A0_85 then
+        A0_85(L17_102)
+      else
+        L1_86[#L1_86 + 1] = L17_102
+      end
+    end
+  end
+  return L1_86
+end
+function net.routes6(A0_103)
+  local L1_104, L2_105, L3_106, L4_107, L5_108, L6_109, L7_110, L8_111, L9_112, L10_113, L11_114, L12_115, L13_116, L14_117, L15_118, L16_119
+  L1_104 = _UPVALUE0_
+  L1_104 = L1_104.access
+  L1_104 = L1_104(L2_105, L3_106)
+  if L1_104 then
+    L1_104 = {}
+    for L5_108 in L2_105(L3_106) do
+      L7_110 = L5_108
+      L6_109 = L5_108.match
+      L8_111 = "([a-f0-9]+) ([a-f0-9]+) "
+      L9_112 = "([a-f0-9]+) ([a-f0-9]+) "
+      L10_113 = "([a-f0-9]+) ([a-f0-9]+) "
+      L11_114 = "([a-f0-9]+) ([a-f0-9]+) "
+      L12_115 = "([a-f0-9]+) +([^%s]+)"
+      L8_111 = L8_111 .. L9_112 .. L10_113 .. L11_114 .. L12_115
+      L15_118 = L6_109(L7_110, L8_111)
+      if L6_109 and L7_110 and L8_111 and L9_112 and L10_113 and L11_114 and L12_115 and L13_116 and L14_117 and L15_118 then
+        L16_119 = _UPVALUE2_
+        L16_119 = L16_119.ip
+        L16_119 = L16_119.Hex
+        L16_119 = L16_119(L8_111, _UPVALUE3_(L9_112, 16), _UPVALUE2_.ip.FAMILY_INET6, false)
+        L8_111 = L16_119
+        L16_119 = _UPVALUE2_
+        L16_119 = L16_119.ip
+        L16_119 = L16_119.Hex
+        L16_119 = L16_119(L6_109, _UPVALUE3_(L7_110, 16), _UPVALUE2_.ip.FAMILY_INET6, false)
+        L6_109 = L16_119
+        L16_119 = _UPVALUE2_
+        L16_119 = L16_119.ip
+        L16_119 = L16_119.Hex
+        L16_119 = L16_119(L10_113, 128, _UPVALUE2_.ip.FAMILY_INET6, false)
+        L10_113 = L16_119
+        L16_119 = {}
+        L16_119.source = L8_111
+        L16_119.dest = L6_109
+        L16_119.nexthop = L10_113
+        L16_119.metric = _UPVALUE3_(L11_114, 16)
+        L16_119.refcount = _UPVALUE3_(L12_115, 16)
+        L16_119.usecount = _UPVALUE3_(L13_116, 16)
+        L16_119.flags = _UPVALUE3_(L14_117, 16)
+        L16_119.device = L15_118
+        L16_119.metric_raw = L11_114
+        if A0_103 then
+          A0_103(L16_119)
+        else
+          L1_104[#L1_104 + 1] = L16_119
+        end
+      end
+    end
+    return L1_104
+  end
+end
+function net.pingtest(A0_120)
+  return _UPVALUE0_.execute("ping -c1 '" .. A0_120:gsub("'", "") .. "' >/dev/null 2>&1")
+end
+process = {}
+function process.info(A0_121)
+  local L1_122
+  L1_122 = {}
+  L1_122.uid = _UPVALUE0_.getuid()
+  L1_122.gid = _UPVALUE0_.getgid()
+  if not A0_121 then
+  else
+  end
+  return L1_122 or L1_122[A0_121]
+end
+function process.list()
+  local L0_123, L1_124, L2_125, L3_126, L4_127, L5_128, L6_129, L7_130
+  L0_123 = {}
+  L1_124 = nil
+  L2_125 = _UPVALUE0_
+  L2_125 = L2_125.util
+  L2_125 = L2_125.execi
+  L2_125 = L2_125(L3_126)
+  if not L2_125 then
+    return
+  end
+  for L6_129 in L2_125, nil, nil do
+    L7_130 = L6_129.match
+    L7_130 = L7_130(L6_129, "^ *(%d+) +(%d+) +(%S.-%S) +([RSDZTW][W ][<N ]) +(%d+) +(%d+%%) +(%d+%%) +(.+)")
+    if _UPVALUE1_(L7_130) then
+      L0_123[_UPVALUE1_(L7_130)] = {
+        ["PID"] = L7_130,
+        ["PPID"] = L7_130(L6_129, "^ *(%d+) +(%d+) +(%S.-%S) +([RSDZTW][W ][<N ]) +(%d+) +(%d+%%) +(%d+%%) +(.+)")
+      }
+    end
+  end
+  return L0_123
+end
+function process.setgroup(A0_131)
+  return _UPVALUE0_.setgid(A0_131)
+end
+function process.setuser(A0_132)
+  return _UPVALUE0_.setuid(A0_132)
+end
+process.signal = require("nixio").kill
+user = {}
+user.getuser = require("nixio").getpw
+function user.getpasswd(A0_133)
+  local L1_134, L2_135
+  if A0_133 then
+    L2_135 = A0_133
+    L1_134 = A0_133.lower
+    L1_134 = L1_134(L2_135)
+    if L1_134 == "admin" then
+      A0_133 = "root"
+    end
+  end
+  L1_134 = _UPVALUE0_
+  L1_134 = L1_134.getsp
+  if L1_134 then
+    L1_134 = _UPVALUE0_
+    L1_134 = L1_134.getsp
+    L2_135 = A0_133
+    L1_134 = L1_134(L2_135)
+  elseif not L1_134 then
+    L1_134 = _UPVALUE0_
+    L1_134 = L1_134.getpw
+    L2_135 = A0_133
+    L1_134 = L1_134(L2_135)
+  end
+  L2_135 = L1_134 and (L2_135 or L1_134.passwd)
+  if not L2_135 or #L2_135 < 1 or L2_135 == "!" or L2_135 == "x" then
+    return nil, L1_134
+  else
+    return L2_135, L1_134
+  end
+end
+function user.checkpasswd(A0_136, A1_137)
+  local L2_138
+  if A0_136 then
+    L2_138 = A0_136.lower
+    L2_138 = L2_138(A0_136)
+    if L2_138 == "admin" then
+      A0_136 = "root"
+    end
+  end
+  L2_138 = user
+  L2_138 = L2_138.getpasswd
+  L2_138 = L2_138(A0_136)
+  if L2_138(A0_136) then
+    return L2_138 == nil or _UPVALUE0_.crypt(A1_137, L2_138) == L2_138
+  end
+  return false
+end
+function user.setpasswd(A0_139, A1_140)
+  if A0_139 and A0_139:lower() == "admin" then
+    A0_139 = "root"
+  end
+  A1_140 = A1_140 and A1_140:gsub("'", "'\"'\"'")
+  A0_139 = A0_139 and A0_139:gsub("'", "'\"'\"'")
+  return _UPVALUE0_.execute("(echo '" .. A1_140 .. "'; sleep 1; echo '" .. A1_140 .. "') | " .. "passwd '" .. A0_139 .. "' >/dev/null 2>&1")
+end
+wifi = {}
+function wifi.getiwinfo(A0_141)
+  local L1_142, L2_143, L3_144, L4_145, L5_146, L6_147
+  L1_142 = _UPVALUE0_
+  L2_143 = _UPVALUE1_
+  L3_144 = "iwinfo"
+  L2_143 = L1_142(L2_143, L3_144)
+  if A0_141 then
+    L3_144 = 0
+    L4_145 = _UPVALUE2_
+    L4_145 = L4_145.cursor_state
+    L4_145 = L4_145()
+    L6_147 = A0_141
+    L5_146 = A0_141.match
+    L6_147 = L5_146(L6_147, "^(%w+)%.network(%d+)")
+    if L5_146 and L6_147 then
+      A0_141 = L5_146
+      L6_147 = _UPVALUE3_(L6_147)
+      L4_145:foreach("wireless", "wifi-iface", function(A0_148)
+        local L1_149, L2_150
+        L1_149 = A0_148.device
+        L2_150 = _UPVALUE0_
+        if L1_149 == L2_150 then
+          L1_149 = _UPVALUE1_
+          L1_149 = L1_149 + 1
+          _UPVALUE1_ = L1_149
+          L1_149 = _UPVALUE1_
+          L2_150 = _UPVALUE2_
+          if L1_149 == L2_150 then
+            L1_149 = A0_148.ifname
+            L1_149 = L1_149 or A0_148.device
+            _UPVALUE3_ = L1_149
+            L1_149 = false
+            return L1_149
+          end
+        end
+      end)
+    elseif L4_145:get("wireless", A0_141) == "wifi-device" then
+      L4_145:foreach("wireless", "wifi-iface", function(A0_151)
+        local L1_152
+        L1_152 = A0_151.device
+        if L1_152 == _UPVALUE0_ then
+          L1_152 = A0_151.ifname
+          if L1_152 then
+            L1_152 = A0_151.ifname
+            _UPVALUE0_ = L1_152
+            L1_152 = false
+            return L1_152
+          end
+        end
+      end)
+    end
+    return _UPVALUE4_({}, {
+      __index = function(A0_153, A1_154)
+        if A1_154 == "ifname" then
+          return _UPVALUE0_
+        elseif _UPVALUE1_[A1_154] then
+          return _UPVALUE1_[A1_154](_UPVALUE0_)
+        end
+      end
+    })
+  end
+end
+init = {}
+init.dir = "/etc/init.d/"
+function init.names()
+  local L0_155, L1_156, L2_157, L3_158, L4_159
+  L0_155 = {}
+  for L4_159 in L1_156(L2_157) do
+    L0_155[#L0_155 + 1] = _UPVALUE0_.basename(L4_159)
+  end
+  return L0_155
+end
+function init.index(A0_160)
+  if _UPVALUE0_.access(init.dir .. A0_160) then
+    return call("env -i sh -c 'source %s%s enabled; exit ${START:-255}' >/dev/null" % {
+      init.dir,
+      A0_160
+    })
+  end
+end
+function init.enabled(A0_161)
+  return _UPVALUE0_("enabled", A0_161) == 0
+end
+function init.enable(A0_162)
+  return _UPVALUE0_("enable", A0_162) == 1
+end
+function init.disable(A0_163)
+  return _UPVALUE0_("disable", A0_163) == 0
+end
+function init.start(A0_164)
+  return _UPVALUE0_("start", A0_164) == 0
+end
+function init.stop(A0_165)
+  return _UPVALUE0_("stop", A0_165) == 0
+end
+function _parse_mixed_record(A0_166, A1_167)
+  local L2_168, L3_169, L4_170, L5_171, L6_172, L7_173, L8_174, L9_175, L10_176, L11_177, L12_178, L13_179, L14_180
+  A1_167 = A1_167 or "  "
+  L2_168 = {}
+  L3_169 = {}
+  L7_173 = A0_166
+  L7_173 = "\n"
+  L14_180 = L5_171(L6_172, L7_173)
+  for L7_173, L8_174 in L4_170(L5_171, L6_172, L7_173, L8_174, L9_175, L10_176, L11_177, L12_178, L13_179, L14_180, L5_171(L6_172, L7_173)) do
+    L12_178 = L8_174
+    L12_178 = A1_167
+    L13_179 = nil
+    L14_180 = true
+    L14_180 = L10_176(L11_177, L12_178, L13_179, L14_180)
+    for L12_178, L13_179 in L9_175(L10_176, L11_177, L12_178, L13_179, L14_180, L10_176(L11_177, L12_178, L13_179, L14_180)) do
+      L14_180 = L13_179.match
+      L14_180 = L14_180(L13_179, [[
+([^%s][^:=]*) *([:=]*) *"*([^
+"]*)"*]])
+      if L14_180 then
+        if L14_180(L13_179, [[
+([^%s][^:=]*) *([:=]*) *"*([^
+"]*)"*]]) == "" then
+          _UPVALUE2_.insert(L3_169, L14_180)
+        else
+          L2_168[L14_180] = L14_180(L13_179, [[
+([^%s][^:=]*) *([:=]*) *"*([^
+"]*)"*]])
+        end
+      end
+    end
+  end
+  return L4_170, L5_171
+end

@@ -1,0 +1,5066 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9
+L0_0 = module
+L1_1 = "xiaoqiang.util.XQWifiUtil"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "xiaoqiang.common.XQFunction"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.common.XQConfigs"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.network"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.util"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "xiaoqiang.XQLog"
+L4_4 = L4_4(L5_5)
+L5_5 = require
+L6_6 = "luci.model.uci"
+L5_5 = L5_5(L6_6)
+L5_5 = L5_5.cursor
+L5_5 = L5_5()
+L7_7 = L5_5
+L6_6 = L5_5.get
+L8_8 = "misc"
+L9_9 = "wireless"
+L6_6 = L6_6(L7_7, L8_8, L9_9, "if_2G")
+L6_6 = L6_6 or ""
+L8_8 = L5_5
+L7_7 = L5_5.get
+L9_9 = "misc"
+L7_7 = L7_7(L8_8, L9_9, "wireless", "if_5G")
+L7_7 = L7_7 or ""
+L9_9 = L5_5
+L8_8 = L5_5.get
+L8_8 = L8_8(L9_9, "misc", "wireless", "ifname_guest_2G")
+L8_8 = L8_8 or ""
+L9_9 = L5_5.get
+L9_9 = L9_9(L5_5, "misc", "hardware", "model")
+L9_9 = L9_9 or ""
+L9_9 = L9_9 and string.lower(L9_9)
+function getWifiNames()
+  local L0_10, L1_11
+  L0_10 = _UPVALUE0_
+  L1_11 = _UPVALUE1_
+  return L0_10, L1_11
+end
+function _wifiNameForIndex(A0_12)
+  return _UPVALUE0_[A0_12]
+end
+function wifiNetworks()
+  local L0_13
+  L0_13 = {}
+  for _FORV_6_, _FORV_7_ in ipairs(_UPVALUE0_.init():get_wifidevs()) do
+    for _FORV_13_, _FORV_14_ in ipairs(_FORV_7_:get_wifinets()) do
+      ({
+        up = _FORV_7_:is_up(),
+        device = _FORV_7_:name(),
+        name = _FORV_7_:get_i18n(),
+        networks = {}
+      }).networks[#({
+        up = _FORV_7_:is_up(),
+        device = _FORV_7_:name(),
+        name = _FORV_7_:get_i18n(),
+        networks = {}
+      }).networks + 1] = {
+        name = _FORV_14_:shortname(),
+        up = _FORV_14_:is_up(),
+        mode = _FORV_14_:active_mode(),
+        ssid = _FORV_14_:active_ssid(),
+        bssid = _FORV_14_:active_bssid(),
+        cssid = _FORV_14_:ssid(),
+        encryption = _FORV_14_:active_encryption(),
+        frequency = _FORV_14_:frequency(),
+        channel = _FORV_14_:channel(),
+        cchannel = _FORV_14_:confchannel(),
+        bw = _FORV_14_:bw(),
+        cbw = _FORV_14_:confbw(),
+        signal = _FORV_14_:signal(),
+        quality = _FORV_14_:signal_percent(),
+        noise = _FORV_14_:noise(),
+        bitrate = _FORV_14_:bitrate(),
+        ifname = _FORV_14_:ifname(),
+        assoclist = _FORV_14_:assoclist(),
+        country = _FORV_14_:country(),
+        txpower = _FORV_14_:txpower(),
+        txpoweroff = _FORV_14_:txpower_offset(),
+        key = _FORV_14_:get("key"),
+        key1 = _FORV_14_:get("key1"),
+        encryption_src = _FORV_14_:get("encryption"),
+        hidden = _FORV_14_:get("hidden"),
+        txpwr = _FORV_14_:txpwr(),
+        bsd = _FORV_14_:get("bsd"),
+        txbf = _FORV_7_:get("txbf") or "0",
+        ax = _FORV_7_:get("ax") or "0",
+        weakenable = _FORV_14_:get("weakenable") or "0",
+        weakthreshold = _FORV_14_:get("weakthreshold") or "0",
+        kickthreshold = _FORV_14_:get("kickthreshold") or "0",
+        apcliband = _FORV_14_:get("apcliband"),
+        disabled = _FORV_14_:disabled(),
+        sae = _FORV_14_:get("sae") or "0",
+        sae_password = _FORV_14_:get("sae_password")
+      }
+      if _FORV_14_:disabled() == nil then
+        _FORV_14_:set("disabled", "0")
+        _UPVALUE1_.log(6, "init disabled =0 ifname: " .. _FORV_14_:ifname())
+        _UPVALUE0_.init():save("wireless")
+        _UPVALUE0_.init():commit("wireless")
+      end
+    end
+    L0_13[#L0_13 + 1] = {
+      up = _FORV_7_:is_up(),
+      device = _FORV_7_:name(),
+      name = _FORV_7_:get_i18n(),
+      networks = {}
+    }
+  end
+  return L0_13
+end
+function wifiNetwork(A0_14)
+  if _UPVALUE0_.init():get_wifinet(A0_14) and _UPVALUE0_.init():get_wifinet(A0_14):get_device() then
+    return {
+      id = A0_14,
+      name = _UPVALUE0_.init():get_wifinet(A0_14):shortname(),
+      up = _UPVALUE0_.init():get_wifinet(A0_14):is_up(),
+      mode = _UPVALUE0_.init():get_wifinet(A0_14):active_mode(),
+      ssid = _UPVALUE0_.init():get_wifinet(A0_14):active_ssid(),
+      bssid = _UPVALUE0_.init():get_wifinet(A0_14):active_bssid(),
+      cssid = _UPVALUE0_.init():get_wifinet(A0_14):ssid(),
+      encryption = _UPVALUE0_.init():get_wifinet(A0_14):active_encryption(),
+      encryption_src = _UPVALUE0_.init():get_wifinet(A0_14):get("encryption"),
+      frequency = _UPVALUE0_.init():get_wifinet(A0_14):frequency(),
+      channel = _UPVALUE0_.init():get_wifinet(A0_14):channel(),
+      cchannel = _UPVALUE0_.init():get_wifinet(A0_14):confchannel(),
+      bw = _UPVALUE0_.init():get_wifinet(A0_14):bw(),
+      cbw = _UPVALUE0_.init():get_wifinet(A0_14):confbw(),
+      signal = _UPVALUE0_.init():get_wifinet(A0_14):signal(),
+      quality = _UPVALUE0_.init():get_wifinet(A0_14):signal_percent(),
+      noise = _UPVALUE0_.init():get_wifinet(A0_14):noise(),
+      bitrate = _UPVALUE0_.init():get_wifinet(A0_14):bitrate(),
+      ifname = _UPVALUE0_.init():get_wifinet(A0_14):ifname(),
+      assoclist = _UPVALUE0_.init():get_wifinet(A0_14):assoclist(),
+      country = _UPVALUE0_.init():get_wifinet(A0_14):country(),
+      txpower = _UPVALUE0_.init():get_wifinet(A0_14):txpower(),
+      txpoweroff = _UPVALUE0_.init():get_wifinet(A0_14):txpower_offset(),
+      key = _UPVALUE0_.init():get_wifinet(A0_14):get("key"),
+      key1 = _UPVALUE0_.init():get_wifinet(A0_14):get("key1"),
+      hidden = _UPVALUE0_.init():get_wifinet(A0_14):get("hidden"),
+      txpwr = _UPVALUE0_.init():get_wifinet(A0_14):txpwr(),
+      bsd = _UPVALUE0_.init():get_wifinet(A0_14):get("bsd"),
+      disabled = _UPVALUE0_.init():get_wifinet(A0_14):disabled(),
+      txbf = _UPVALUE0_.init():get_wifinet(A0_14):get_device():get("txbf") or "0",
+      ax = _UPVALUE0_.init():get_wifinet(A0_14):get_device():get("ax") or "0",
+      sae = _UPVALUE0_.init():get_wifinet(A0_14):get("sae") or "0",
+      sae_password = _UPVALUE0_.init():get_wifinet(A0_14):get("sae_password"),
+      device = {
+        up = _UPVALUE0_.init():get_wifinet(A0_14):get_device():is_up(),
+        device = _UPVALUE0_.init():get_wifinet(A0_14):get_device():name(),
+        name = _UPVALUE0_.init():get_wifinet(A0_14):get_device():get_i18n()
+      }
+    }
+  end
+  return {}
+end
+function getWifissid()
+  return wifiNetwork(_wifiNameForIndex(1)).cssid, wifiNetwork(_wifiNameForIndex(2)).cssid
+end
+function getWifiBssid()
+  local L0_15, L1_16, L2_17, L3_18, L4_19
+  L0_15 = require
+  L1_16 = "luci.util"
+  L0_15 = L0_15(L1_16)
+  L1_16 = require
+  L2_17 = "xiaoqiang.util.XQSysUtil"
+  L1_16 = L1_16(L2_17)
+  L2_17 = L1_16.getHardware
+  L2_17 = L2_17()
+  if L2_17 and (L2_17 == "R3600" or L2_17 == "R1800" or L2_17 == "R2200" or L2_17 == "R2350") then
+    L3_18 = L0_15.exec
+    L4_19 = "getmac wl1"
+    L3_18 = L3_18(L4_19)
+    L4_19 = L0_15.exec
+    L4_19 = L4_19("getmac wl0")
+    return L0_15.trim(L3_18), L0_15.trim(L4_19)
+  end
+  L3_18 = L0_15.exec
+  L4_19 = "getmac"
+  L3_18 = L3_18(L4_19)
+  if L3_18 then
+    L4_19 = L0_15.trim
+    L4_19 = L4_19(L3_18)
+    L3_18 = L4_19
+    L4_19 = L0_15.split
+    L4_19 = L4_19(L3_18, ",")
+    if #L4_19 == 3 then
+      return L4_19[2], L4_19[3]
+    elseif #L4_19 == 2 then
+      return L4_19[2], nil
+    end
+  end
+  L4_19 = nil
+  return L4_19, nil
+end
+function getGuestWifiBssid()
+  local L0_20, L1_21, L2_22
+  L0_20 = _UPVALUE0_
+  L0_20 = L0_20.isStrNil
+  L1_21 = _UPVALUE1_
+  L0_20 = L0_20(L1_21)
+  if not L0_20 then
+    L0_20 = require
+    L1_21 = "luci.util"
+    L0_20 = L0_20(L1_21)
+    L1_21 = "cat /sys/class/net/"
+    L2_22 = _UPVALUE1_
+    L1_21 = L1_21 .. L2_22 .. "/address 2>/dev/null"
+    L2_22 = L0_20.exec
+    L2_22 = L2_22(L1_21)
+    if not _UPVALUE0_.isStrNil(L2_22) then
+      L2_22 = L0_20.trim(L2_22)
+      return _UPVALUE0_.macFormat(L2_22)
+    end
+  end
+  L0_20 = nil
+  return L0_20
+end
+function getChannels(A0_23)
+  local L1_24, L2_25, L3_26, L4_27
+  L1_24 = pcall
+  L2_25 = require
+  L3_26 = "iwinfo"
+  L2_25 = L1_24(L2_25, L3_26)
+  L3_26 = _wifiNameForIndex
+  L4_27 = A0_23
+  L3_26 = L3_26(L4_27)
+  L4_27 = nil
+  if L1_24 then
+    if L3_26 and L2_25.type(L3_26 or "") and L2_25[L2_25.type(L3_26 or "")] then
+      L4_27 = L2_25[L2_25.type(L3_26 or "")].freqlist(L3_26)
+    end
+  end
+  return L4_27
+end
+function getDefaultWifiChannels(A0_28)
+  local L1_29, L2_30, L3_31, L4_32, L5_33, L6_34, L7_35, L8_36, L9_37, L10_38, L11_39
+  L1_29 = tonumber
+  L2_30 = A0_28
+  L1_29 = L1_29(L2_30)
+  if L1_29 == 2 then
+    L1_29 = 2
+  else
+    L1_29 = L1_29 or 1
+  end
+  L2_30 = require
+  L3_31 = "xiaoqiang.XQCountryCode"
+  L2_30 = L2_30(L3_31)
+  L3_31 = L2_30.getCurrentCountryCode
+  L3_31 = L3_31()
+  L4_32 = _UPVALUE0_
+  L4_32 = L4_32[L3_31]
+  L5_33 = {}
+  if L4_32 then
+    L4_32 = L4_32[L1_29]
+    if L4_32 then
+      L4_32 = L6_34
+      for L9_37, L10_38 in L6_34(L7_35) do
+        L11_39 = {}
+        L11_39.c = L10_38
+        if tonumber(L10_38) <= 14 then
+          L11_39.b = _UPVALUE2_[2]
+        elseif tonumber(L10_38) == 165 then
+          L11_39.b = _UPVALUE2_[1]
+        else
+          L11_39.b = _UPVALUE2_[3]
+        end
+        table.insert(L5_33, L11_39)
+      end
+      return L5_33
+    end
+  end
+  return L6_34
+end
+function getWifiConnectDeviceList(A0_40)
+  local L1_41, L2_42, L3_43, L4_44, L5_45, L6_46, L7_47
+  L2_42 = {}
+  L3_43 = tonumber
+  L3_43 = L3_43(L4_44)
+  if L3_43 == 1 then
+    L3_43 = getWifiStatus
+    L3_43 = L3_43(L4_44)
+    L3_43 = L3_43.up
+    L1_41 = L3_43 == 1
+    L3_43 = wifiNetwork
+    L7_47 = L4_44(L5_45)
+    L3_43 = L3_43(L4_44, L5_45, L6_46, L7_47, L4_44(L5_45))
+    L3_43 = L3_43.assoclist
+    L2_42 = L3_43 or L3_43
+  else
+    L3_43 = getWifiStatus
+    L3_43 = L3_43(L4_44)
+    L3_43 = L3_43.up
+    L1_41 = L3_43 == 1
+    L3_43 = wifiNetwork
+    L7_47 = L4_44(L5_45)
+    L3_43 = L3_43(L4_44, L5_45, L6_46, L7_47, L4_44(L5_45))
+    L3_43 = L3_43.assoclist
+    L2_42 = L3_43 or L3_43
+  end
+  L3_43 = {}
+  if L1_41 then
+    for L7_47, _FORV_8_ in L4_44(L5_45) do
+      table.insert(L3_43, _UPVALUE0_.macFormat(L7_47))
+    end
+  end
+  return L3_43
+end
+function isDeviceWifiConnect(A0_48, A1_49)
+  local L2_50
+  L2_50 = getWifiConnectDeviceDict
+  L2_50 = L2_50(A1_49)
+  if type(L2_50) == "table" then
+    return L2_50[_UPVALUE0_.macFormat(A0_48)] ~= nil
+  else
+    return false
+  end
+end
+function getWifiConnectDeviceDict(A0_51)
+  local L1_52, L2_53, L3_54, L4_55, L5_56, L6_57, L7_58
+  L2_53 = {}
+  L3_54 = tonumber
+  L3_54 = L3_54(L4_55)
+  if L3_54 == 1 then
+    L3_54 = getWifiStatus
+    L3_54 = L3_54(L4_55)
+    L3_54 = L3_54.up
+    L1_52 = L3_54 == 1
+    L3_54 = wifiNetwork
+    L7_58 = L4_55(L5_56)
+    L3_54 = L3_54(L4_55, L5_56, L6_57, L7_58, L4_55(L5_56))
+    L3_54 = L3_54.assoclist
+    L2_53 = L3_54 or L3_54
+  else
+    L3_54 = getWifiStatus
+    L3_54 = L3_54(L4_55)
+    L3_54 = L3_54.up
+    L1_52 = L3_54 == 1
+    L3_54 = wifiNetwork
+    L7_58 = L4_55(L5_56)
+    L3_54 = L3_54(L4_55, L5_56, L6_57, L7_58, L4_55(L5_56))
+    L3_54 = L3_54.assoclist
+    L2_53 = L3_54 or L3_54
+  end
+  L3_54 = {}
+  if L1_52 then
+    for L7_58, _FORV_8_ in L4_55(L5_56) do
+      if L7_58 then
+        L3_54[_UPVALUE0_.macFormat(L7_58)] = 1
+      end
+    end
+  end
+  return L3_54
+end
+function _pauseChannel(A0_59)
+  if _UPVALUE0_.isStrNil(A0_59) then
+    return ""
+  end
+  if A0_59:match("l") then
+    return A0_59:gsub("l", "") .. "(40M)"
+  end
+  if A0_59:match("u") then
+    return A0_59:gsub("u", "") .. "(40M)"
+  end
+  if A0_59:match("/80") then
+    return A0_59:gsub("/80", "") .. "(80M)"
+  end
+  return A0_59 .. "(20M)"
+end
+function getWifiWorkChannel(A0_60)
+  local L1_61
+  L1_61 = ""
+  if _UPVALUE0_:match("^rm1800$") or _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2200") or _UPVALUE0_:match("^r2350") then
+    if tonumber(A0_60) == 1 then
+      L1_61 = _UPVALUE1_.trim(_UPVALUE1_.exec("iwlist wl1 channel | awk -F '[ )]+' '/Current Frequency/{print $6}'"))
+    else
+      L1_61 = _UPVALUE1_.trim(_UPVALUE1_.exec("iwlist wl0 channel | awk -F '[ )]+' '/Current Frequency/{print $6}'"))
+    end
+  elseif tonumber(A0_60) == 1 then
+    L1_61 = _UPVALUE1_.trim(_UPVALUE1_.exec(_UPVALUE2_.WIFI24_WORK_CHANNEL))
+  else
+    L1_61 = _UPVALUE1_.trim(_UPVALUE1_.exec(_UPVALUE2_.WIFI50_WORK_CHANNEL))
+  end
+  return _pauseChannel(L1_61)
+end
+function getDeviceWifiIndex(A0_62)
+  A0_62 = _UPVALUE0_.macFormat(A0_62)
+  if getWifiConnectDeviceDict(1) and getWifiConnectDeviceDict(1)[A0_62] == 1 then
+    return 1
+  end
+  if getWifiConnectDeviceDict(2) and getWifiConnectDeviceDict(2)[A0_62] == 1 then
+    return 2
+  end
+  return 0
+end
+function getWifiDeviceSignalDict(A0_63)
+  local L1_64, L2_65, L3_66, L4_67, L5_68, L6_69
+  L1_64 = {}
+  L2_65 = {}
+  if L3_66 ~= 1 then
+    return L1_64
+  end
+  if A0_63 == 1 then
+    L6_69 = L4_67(L5_68)
+    L2_65 = L3_66 or L3_66
+  else
+    L6_69 = L4_67(L5_68)
+    L2_65 = L3_66 or L3_66
+  end
+  for L6_69, _FORV_7_ in L3_66(L4_67) do
+    if L6_69 then
+      L1_64[_UPVALUE0_.macFormat(L6_69)] = 2 * math.abs(tonumber(_FORV_7_.signal) - tonumber(_FORV_7_.noise))
+    end
+  end
+  return L1_64
+end
+function getWifiDeviceSignal(A0_70)
+  local L1_71, L2_72
+  L1_71 = _UPVALUE0_
+  L1_71 = L1_71.isStrNil
+  L1_71 = L1_71(L2_72)
+  if L1_71 then
+    L1_71 = nil
+    return L1_71
+  end
+  L1_71 = wifiNetwork
+  L1_71 = L1_71(L2_72, L2_72(1))
+  L1_71 = L1_71.assoclist
+  L1_71 = L1_71 or {}
+  for _FORV_5_, _FORV_6_ in L2_72(L1_71) do
+    if A0_70 == _FORV_5_ then
+      return _FORV_6_.signal
+    end
+  end
+  for _FORV_6_, _FORV_7_ in pairs(L2_72) do
+    if A0_70 == _FORV_6_ then
+      return _FORV_7_.signal
+    end
+  end
+  return nil
+end
+function getWifiDeviceSpeed(A0_73)
+  local L1_74, L2_75, L3_76
+  L1_74 = {}
+  L2_75 = _UPVALUE0_
+  L2_75 = L2_75.isStrNil
+  L2_75 = L2_75(L3_76)
+  if L2_75 then
+    L2_75 = nil
+    return L2_75
+  end
+  L2_75 = wifiNetwork
+  L2_75 = L2_75(L3_76, L3_76(1))
+  L2_75 = L2_75.assoclist
+  L2_75 = L2_75 or {}
+  for _FORV_6_, _FORV_7_ in L3_76(L2_75) do
+    if A0_73 == _FORV_6_ then
+      L1_74.upspeed = _FORV_7_.rx_rate
+      L1_74.downspeed = _FORV_7_.tx_rate
+      return L1_74
+    end
+  end
+  for _FORV_7_, _FORV_8_ in pairs(L3_76) do
+    if A0_73 == _FORV_7_ then
+      L1_74.upspeed = _FORV_8_.rx_rate
+      L1_74.downspeed = _FORV_8_.tx_rate
+      return L1_74
+    end
+  end
+  return nil
+end
+function getAllWifiConnetDeviceList()
+  local L0_77, L1_78, L2_79, L3_80, L4_81, L5_82, L6_83, L7_84, L8_85, L9_86, L10_87, L11_88
+  L0_77 = {}
+  for L4_81 = 1, 2 do
+    L5_82 = getWifiDeviceSignalDict
+    L6_83 = L4_81
+    L5_82 = L5_82(L6_83)
+    L6_83 = getWifiConnectDeviceList
+    L6_83 = L6_83(L7_84)
+    for L10_87, L11_88 in L7_84(L8_85) do
+      table.insert(L0_77, {
+        mac = _UPVALUE0_.macFormat(L11_88),
+        signal = L5_82[L11_88],
+        wifiIndex = L4_81
+      })
+    end
+  end
+  return L0_77
+end
+function getAllWifiConnetDeviceDict()
+  local L0_89, L1_90, L2_91, L3_92, L4_93, L5_94, L6_95, L7_96, L8_97, L9_98, L10_99, L11_100
+  L0_89 = {}
+  for L4_93 = 1, 2 do
+    L5_94 = getWifiDeviceSignalDict
+    L6_95 = L4_93
+    L5_94 = L5_94(L6_95)
+    L6_95 = getWifiConnectDeviceList
+    L6_95 = L6_95(L7_96)
+    for L10_99, L11_100 in L7_96(L8_97) do
+      ({}).signal = L5_94[L11_100]
+      ;({}).wifiIndex = L4_93
+      L0_89[_UPVALUE0_.macFormat(L11_100)] = {}
+    end
+  end
+  return L0_89
+end
+function getWifiStatus(A0_101)
+  local L1_102
+  L1_102 = wifiNetwork
+  L1_102 = L1_102(_wifiNameForIndex(A0_101))
+  return {
+    ssid = L1_102.ssid,
+    up = L1_102.up and 1 or 0
+  }
+end
+function channelHelper(A0_103)
+  local L1_104, L2_105, L3_106, L4_107, L5_108, L6_109, L7_110
+  L1_104 = {}
+  L1_104.channel = ""
+  L1_104.bandwidth = ""
+  L2_105 = _UPVALUE0_
+  L2_105 = L2_105.isStrNil
+  L3_106 = A0_103
+  L2_105 = L2_105(L3_106)
+  if L2_105 then
+    return L1_104
+  end
+  L2_105 = string
+  L2_105 = L2_105.find
+  L3_106 = A0_103
+  L2_105 = L2_105(L3_106, L4_107)
+  if L2_105 ~= nil then
+    L3_106 = A0_103
+    L2_105 = A0_103.match
+    L2_105 = L2_105(L3_106, L4_107)
+    L1_104.channel = L2_105
+    L1_104.bandwidth = "40"
+  else
+    L2_105 = string
+    L2_105 = L2_105.find
+    L3_106 = A0_103
+    L2_105 = L2_105(L3_106, L4_107)
+    if L2_105 ~= nil then
+      L3_106 = A0_103
+      L2_105 = A0_103.match
+      L2_105 = L2_105(L3_106, L4_107)
+      L1_104.channel = L2_105
+      L1_104.bandwidth = "40"
+    else
+      L2_105 = string
+      L2_105 = L2_105.find
+      L3_106 = A0_103
+      L2_105 = L2_105(L3_106, L4_107)
+      if L2_105 ~= nil then
+        L3_106 = A0_103
+        L2_105 = A0_103.match
+        L2_105 = L2_105(L3_106, L4_107)
+        L1_104.channel = L2_105
+        L1_104.bandwidth = "80"
+      else
+        L2_105 = tostring
+        L3_106 = A0_103
+        L2_105 = L2_105(L3_106)
+        L1_104.channel = L2_105
+        L1_104.bandwidth = "20"
+      end
+    end
+  end
+  L2_105 = {}
+  L3_106 = L1_104.channel
+  if L3_106 then
+    L3_106 = _UPVALUE1_
+    L3_106 = L3_106[L4_107]
+    if not L3_106 then
+      L3_106 = _UPVALUE2_
+      L3_106 = L3_106[L4_107]
+    end
+    if L3_106 then
+      if L4_107 == "table" then
+        for L7_110, _FORV_8_ in L4_107(L5_108) do
+          table.insert(L2_105, L7_110)
+        end
+      end
+    end
+  end
+  L1_104.bandList = L2_105
+  return L1_104
+end
+function getBandList(A0_111)
+  local L1_112, L2_113, L3_114, L4_115
+  L1_112 = {}
+  L1_112.channel = ""
+  L1_112.bandwidth = ""
+  L2_113 = _UPVALUE0_
+  L2_113 = L2_113.isStrNil
+  L3_114 = A0_111
+  L2_113 = L2_113(L3_114)
+  if L2_113 then
+    return L1_112
+  end
+  L2_113 = {}
+  L3_114 = tonumber
+  L4_115 = A0_111
+  L3_114 = L3_114(L4_115)
+  if L3_114 ~= 0 then
+    L3_114 = getDefaultWifiChannels
+    L4_115 = 1
+    L3_114 = L3_114(L4_115)
+    L4_115 = getDefaultWifiChannels
+    L4_115 = L4_115(2)
+    table.foreachi(L4_115, function(A0_116, A1_117)
+      table.insert(_UPVALUE0_, A1_117)
+    end)
+    if L3_114 and type(L3_114) == "table" then
+      for _FORV_8_, _FORV_9_ in ipairs(L3_114) do
+        if _FORV_9_ and tonumber(_FORV_9_.c) == tonumber(A0_111) then
+          L2_113 = _FORV_9_.b
+          break
+        end
+      end
+    end
+  end
+  L1_112.bandList = L2_113
+  return L1_112
+end
+function _channelFix(A0_118)
+  if _UPVALUE0_.isStrNil(A0_118) then
+    return ""
+  end
+  A0_118 = string.gsub(A0_118, "l", "")
+  A0_118 = string.gsub(A0_118, "u", "")
+  A0_118 = string.gsub(A0_118, "/80", "")
+  return A0_118
+end
+function channelFormat(A0_119, A1_120, A2_121)
+  local L3_122, L4_123
+  L3_122 = {}
+  L4_123 = tonumber
+  L4_123 = L4_123(A0_119)
+  if L4_123 == 1 then
+    L4_123 = _UPVALUE0_
+    L3_122 = L4_123[tostring(A1_120)]
+  else
+    L4_123 = _UPVALUE1_
+    L3_122 = L4_123[tostring(A1_120)]
+  end
+  if L3_122 then
+    L4_123 = type
+    L4_123 = L4_123(L3_122)
+    if L4_123 == "table" then
+      L4_123 = tostring
+      L4_123 = L4_123(A2_121)
+      L4_123 = L3_122[L4_123]
+      if not _UPVALUE2_.isStrNil(L4_123) then
+        return L4_123
+      end
+    end
+  end
+  L4_123 = false
+  return L4_123
+end
+function getAllWifiInfo()
+  local L0_124, L1_125, L2_126, L3_127, L4_128, L5_129, L6_130, L7_131, L8_132, L9_133, L10_134, L11_135, L12_136
+  L0_124 = {}
+  L1_125 = {}
+  L2_126 = wifiNetworks
+  L2_126 = L2_126()
+  for L6_130, L7_131 in L3_127(L4_128) do
+    L8_132 = {}
+    L9_133 = 1
+    L10_134 = L7_131.networks
+    L10_134 = L10_134[L9_133]
+    L10_134 = L10_134.cchannel
+    if L10_134 == "auto" then
+      L10_134 = "0"
+    end
+    L8_132.channel = L10_134
+    L11_135 = L7_131.networks
+    L11_135 = L11_135[L9_133]
+    L11_135 = L11_135.cbw
+    L8_132.bandwidth = L11_135
+    L11_135 = getBandList
+    L12_136 = L10_134
+    L11_135 = L11_135(L12_136)
+    L8_132.channelInfo = L11_135
+    L11_135 = _UPVALUE0_
+    L11_135 = L11_135.log
+    L12_136 = 6
+    L11_135(L12_136, L7_131.up)
+    L11_135 = _UPVALUE0_
+    L11_135 = L11_135.log
+    L12_136 = 6
+    L11_135(L12_136, L7_131.networks[L9_133].disabled)
+    L11_135 = L7_131.networks
+    L11_135 = L11_135[L9_133]
+    L11_135 = L11_135.disabled
+    if L11_135 == nil then
+      L11_135 = L7_131.up
+      if L11_135 then
+        L8_132.status = "1"
+        L11_135 = L7_131.networks
+        L11_135 = L11_135[L9_133]
+        L11_135 = L11_135.ssid
+        L8_132.ssid = L11_135
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.channel
+        L11_135.channel = L12_136
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.bw
+        L11_135.bandwidth = L12_136
+      else
+        L8_132.status = "0"
+        L11_135 = L7_131.networks
+        L11_135 = L11_135[L9_133]
+        L11_135 = L11_135.cssid
+        L8_132.ssid = L11_135
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.cchannel
+        L11_135.channel = L12_136
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.cbw
+        L11_135.bandwidth = L12_136
+      end
+    else
+      L11_135 = L7_131.networks
+      L11_135 = L11_135[L9_133]
+      L11_135 = L11_135.disabled
+      if L11_135 == "1" then
+        L8_132.status = "0"
+        L11_135 = L7_131.networks
+        L11_135 = L11_135[L9_133]
+        L11_135 = L11_135.cssid
+        L8_132.ssid = L11_135
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.cchannel
+        L11_135.channel = L12_136
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.cbw
+        L11_135.bandwidth = L12_136
+      else
+        L8_132.status = "1"
+        L11_135 = L7_131.networks
+        L11_135 = L11_135[L9_133]
+        L11_135 = L11_135.ssid
+        L8_132.ssid = L11_135
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.channel
+        L11_135.channel = L12_136
+        L11_135 = L8_132.channelInfo
+        L12_136 = L7_131.networks
+        L12_136 = L12_136[L9_133]
+        L12_136 = L12_136.bw
+        L11_135.bandwidth = L12_136
+      end
+    end
+    L11_135 = L7_131.networks
+    L11_135 = L11_135[L9_133]
+    L11_135 = L11_135.encryption_src
+    L12_136 = L7_131.networks
+    L12_136 = L12_136[L9_133]
+    L12_136 = L12_136.key
+    if L11_135 == "wep-open" then
+      L12_136 = L7_131.networks[L9_133].key1
+      if L12_136:len() > 4 and L12_136:sub(0, 2) == "s:" then
+        L12_136 = L12_136:sub(3)
+      end
+    elseif L11_135 == "ccmp" then
+      L12_136 = L7_131.networks[L9_133].sae_password
+    end
+    L8_132.ifname = L7_131.networks[L9_133].ifname
+    L8_132.device = L7_131.device .. ".network" .. L9_133
+    L8_132.mode = L7_131.networks[L9_133].mode
+    L8_132.hidden = L7_131.networks[L9_133].hidden or 0
+    L8_132.signal = L7_131.networks[L9_133].signal
+    L8_132.password = L12_136
+    L8_132.encryption = L11_135
+    L8_132.txpwr = L7_131.networks[L9_133].txpwr
+    L8_132.bsd = L7_131.networks[L9_133].bsd
+    L8_132.txbf = L7_131.networks[L9_133].txbf
+    L8_132.ax = L7_131.networks[L9_133].ax
+    L8_132.weakenable = L7_131.networks[L9_133].weakenable or 0
+    L8_132.weakthreshold = L7_131.networks[L9_133].weakthreshold or 0
+    L8_132.kickthreshold = L7_131.networks[L9_133].kickthreshold or 0
+    L1_125[L7_131.device] = L8_132
+  end
+  if L3_127 then
+    L3_127(L4_128, L5_129)
+  end
+  if L3_127 then
+    L3_127(L4_128, L5_129)
+  end
+  return L0_124
+end
+function getDiagAllWifiInfo()
+  local L0_137, L1_138, L2_139, L3_140, L4_141, L5_142, L6_143, L7_144, L8_145, L9_146, L10_147, L11_148, L12_149
+  L0_137 = {}
+  L1_138 = {}
+  L2_139 = wifiNetworks
+  L2_139 = L2_139()
+  for L6_143, L7_144 in L3_140(L4_141) do
+    L8_145 = {}
+    L9_146 = 1
+    L10_147 = L7_144.networks
+    L10_147 = L10_147[L9_146]
+    L10_147 = L10_147.cchannel
+    L8_145.channel = L10_147
+    L11_148 = L7_144.networks
+    L11_148 = L11_148[L9_146]
+    L11_148 = L11_148.cbw
+    L8_145.bandwidth = L11_148
+    L11_148 = getBandList
+    L12_149 = L10_147
+    L11_148 = L11_148(L12_149)
+    L8_145.channelInfo = L11_148
+    L11_148 = L7_144.up
+    if L11_148 then
+      L8_145.status = "1"
+      L11_148 = L7_144.networks
+      L11_148 = L11_148[L9_146]
+      L11_148 = L11_148.ssid
+      L8_145.ssid = L11_148
+      L11_148 = L8_145.channelInfo
+      L12_149 = L7_144.networks
+      L12_149 = L12_149[L9_146]
+      L12_149 = L12_149.channel
+      L11_148.channel = L12_149
+      L11_148 = L8_145.channelInfo
+      L12_149 = L7_144.networks
+      L12_149 = L12_149[L9_146]
+      L12_149 = L12_149.bw
+      L11_148.bandwidth = L12_149
+    else
+      L8_145.status = "0"
+      L11_148 = L7_144.networks
+      L11_148 = L11_148[L9_146]
+      L11_148 = L11_148.cssid
+      L8_145.ssid = L11_148
+      L11_148 = L8_145.channelInfo
+      L12_149 = L7_144.networks
+      L12_149 = L12_149[L9_146]
+      L12_149 = L12_149.cchannel
+      L11_148.channel = L12_149
+      L11_148 = L8_145.channelInfo
+      L12_149 = L7_144.networks
+      L12_149 = L12_149[L9_146]
+      L12_149 = L12_149.cbw
+      L11_148.bandwidth = L12_149
+    end
+    L11_148 = L7_144.networks
+    L11_148 = L11_148[L9_146]
+    L11_148 = L11_148.encryption_src
+    L12_149 = L7_144.networks
+    L12_149 = L12_149[L9_146]
+    L12_149 = L12_149.key
+    if L11_148 == "wep-open" then
+      L12_149 = L7_144.networks[L9_146].key1
+      if L12_149:len() > 4 and L12_149:sub(0, 2) == "s:" then
+        L12_149 = L12_149:sub(3)
+      end
+    elseif L11_148 == "ccmp" then
+      L12_149 = L7_144.networks[L9_146].sae_password
+    end
+    L8_145.ifname = L7_144.networks[L9_146].ifname
+    L8_145.device = L7_144.device .. ".network" .. L9_146
+    L8_145.mode = L7_144.networks[L9_146].mode
+    L8_145.hidden = L7_144.networks[L9_146].hidden or 0
+    L8_145.signal = L7_144.networks[L9_146].signal
+    L8_145.password = L12_149
+    L8_145.encryption = L11_148
+    L8_145.txpwr = L7_144.networks[L9_146].txpwr
+    L8_145.bsd = L7_144.networks[L9_146].bsd
+    L8_145.txbf = L7_144.networks[L9_146].txbf
+    L8_145.ax = L7_144.networks[L9_146].ax
+    L1_138[L7_144.device] = L8_145
+  end
+  if L3_140 then
+    L3_140.iftype = 1
+    L3_140(L4_141, L5_142)
+  end
+  if L3_140 then
+    L3_140.iftype = 2
+    L3_140(L4_141, L5_142)
+  end
+  if L3_140 then
+    if L4_141 == 0 then
+      L3_140.iftype = 3
+      L6_143 = L3_140
+      L4_141(L5_142, L6_143)
+    end
+  end
+  return L0_137
+end
+function getWifiTxpwr(A0_150)
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_150)) then
+    return tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_150)):txpwr())
+  else
+    return nil
+  end
+end
+function getWifiChannel(A0_151)
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_151)) then
+    return tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_151)):channel())
+  else
+    return nil
+  end
+end
+function getWifiTxpwrList()
+  local L0_152
+  L0_152 = {}
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)) then
+    table.insert(L0_152, tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)):txpwr()))
+  end
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)) then
+    table.insert(L0_152, tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)):txpwr()))
+  end
+  return L0_152
+end
+function getWifiChannelList()
+  local L0_153
+  L0_153 = {}
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)) then
+    table.insert(L0_153, tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)):channel()))
+  end
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)) then
+    table.insert(L0_153, tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)):channel()))
+  end
+  return L0_153
+end
+function getWifiChannelTxpwrList()
+  local L0_154
+  L0_154 = {}
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)) then
+    table.insert(L0_154, {
+      channel = tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)):channel()),
+      txpwr = tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(1)):txpwr())
+    })
+  else
+    table.insert(L0_154, {})
+  end
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)) then
+    table.insert(L0_154, {
+      channel = tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)):channel()),
+      txpwr = tostring(_UPVALUE0_.init():get_wifinet(_wifiNameForIndex(2)):txpwr())
+    })
+  else
+    table.insert(L0_154, {})
+  end
+  return L0_154
+end
+function setWifiChannelTxpwr(A0_155, A1_156, A2_157, A3_158)
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]) then
+    if tonumber(A0_155) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]):set("channel", A0_155)
+    end
+    if not _UPVALUE2_.isStrNil(A1_156) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]):set("txpwr", A1_156)
+    end
+  end
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]) then
+    if tonumber(A2_157) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]):set("channel", A2_157)
+    end
+    if not _UPVALUE2_.isStrNil(A3_158) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]):set("txpwr", A3_158)
+    end
+  end
+  _UPVALUE0_.init():commit("wireless")
+  _UPVALUE0_.init():save("wireless")
+  return true
+end
+function setWifiTxpwr(A0_159)
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]) and not _UPVALUE2_.isStrNil(A0_159) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]):set("txpwr", A0_159)
+  end
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]) and not _UPVALUE2_.isStrNil(A0_159) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]):set("txpwr", A0_159)
+  end
+  _UPVALUE0_.init():commit("wireless")
+  _UPVALUE0_.init():save("wireless")
+  return true
+end
+function setWifiTxbf(A0_160)
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]) and not _UPVALUE2_.isStrNil(A0_160) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]):set("txbf", A0_160)
+  end
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]) and not _UPVALUE2_.isStrNil(A0_160) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]):set("txbf", A0_160)
+  end
+  _UPVALUE0_.init():commit("wireless")
+  _UPVALUE0_.init():save("wireless")
+  return true
+end
+function setWifiAx(A0_161)
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]) and not _UPVALUE2_.isStrNil(A0_161) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(1), ".")[1]):set("ax", A0_161)
+  end
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]) and not _UPVALUE2_.isStrNil(A0_161) then
+    _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(2), ".")[1]):set("ax", A0_161)
+  end
+  _UPVALUE0_.init():commit("wireless")
+  _UPVALUE0_.init():save("wireless")
+  return true
+end
+function checkWifiPasswd(A0_162, A1_163)
+  if _UPVALUE0_.isStrNil(A1_163) or A1_163 and A1_163 ~= "none" and _UPVALUE0_.isStrNil(A0_162) then
+    return 1502
+  end
+  if _UPVALUE0_.checkChineseChar(A0_162) then
+    return 1523
+  end
+  if A1_163 == "psk" or A1_163 == "psk2" then
+    if A0_162:len() < 8 then
+      return 1520
+    end
+  elseif A1_163 == "mixed-psk" then
+    if A0_162:len() < 8 or A0_162:len() > 63 then
+      return 1521
+    end
+  elseif A1_163 == "wep-open" and A0_162:len() ~= 5 and A0_162:len() ~= 13 then
+    return 1522
+  end
+  return 0
+end
+function checkSSID(A0_164, A1_165)
+  if _UPVALUE0_.isStrNil(A0_164) then
+    return 0
+  end
+  if string.len(A0_164) > tonumber(A1_165) then
+    return 1572
+  end
+  if not _UPVALUE0_.checkSSID(A0_164) then
+    return 1573
+  end
+  return 0
+end
+function getWifiBasicInfo(A0_166)
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)) and _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]) then
+    if ({
+      wifiIndex = A0_166,
+      channel = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("channel") or 0,
+      bandwidth = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("bw") or 0,
+      txpwr = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txpwr") or "mid",
+      on = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("disabled") or 0,
+      ssid = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ssid"),
+      encryption = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("encryption"),
+      password = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("key"),
+      hidden = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("hidden") or 0,
+      bsd = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("bsd") or 0,
+      txbf = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txbf") or 0,
+      ax = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ax") or 0
+    }).encryption == "ccmp" then
+      ({
+        wifiIndex = A0_166,
+        channel = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("channel") or 0,
+        bandwidth = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("bw") or 0,
+        txpwr = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txpwr") or "mid",
+        on = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("disabled") or 0,
+        ssid = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ssid"),
+        encryption = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("encryption"),
+        password = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("key"),
+        hidden = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("hidden") or 0,
+        bsd = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("bsd") or 0,
+        txbf = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txbf") or 0,
+        ax = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ax") or 0
+      }).password = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("sae_password")
+    end
+    return {
+      wifiIndex = A0_166,
+      channel = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("channel") or 0,
+      bandwidth = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("bw") or 0,
+      txpwr = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txpwr") or "mid",
+      on = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("disabled") or 0,
+      ssid = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ssid"),
+      encryption = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("encryption"),
+      password = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("key"),
+      hidden = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("hidden") or 0,
+      bsd = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("bsd") or 0,
+      txbf = _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_166), ".")[1]):get("txbf") or 0,
+      ax = _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_166)):get("ax") or 0
+    }
+  end
+  return nil
+end
+function backupWifiInfo(A0_167)
+  local L1_168, L2_169
+  L1_168 = require
+  L2_169 = "luci.model.uci"
+  L1_168 = L1_168(L2_169)
+  L1_168 = L1_168.cursor
+  L1_168 = L1_168()
+  L2_169 = getWifiBasicInfo
+  L2_169 = L2_169(A0_167)
+  if L2_169 then
+    L1_168:section("backup", "backup", "wifi" .. tostring(A0_167), L2_169)
+    L1_168:commit("backup")
+  end
+end
+function setWifiBasicInfo(A0_170, A1_171, A2_172, A3_173, A4_174, A5_175, A6_176, A7_177, A8_178, A9_179, A10_180, A11_181, A12_182, A13_183, A14_184)
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)) == nil then
+    return false
+  end
+  if _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]) then
+    if not _UPVALUE2_.isStrNil(A4_174) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("channel", A4_174)
+      if A4_174 == "0" then
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("autoch", "2")
+      else
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("autoch", "0")
+      end
+    end
+    if not _UPVALUE2_.isStrNil(A8_178) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("bw", A8_178)
+    end
+    if not _UPVALUE2_.isStrNil(A5_175) then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("txpwr", A5_175)
+    end
+    if A7_177 == 1 then
+      _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("disabled", "0")
+    end
+    if not _UPVALUE2_.isStrNil(A10_180) then
+      if tonumber(A10_180) == 3 then
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("txbf", "3")
+      elseif tonumber(A10_180) == 0 then
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("txbf", "0")
+      end
+    end
+    if not _UPVALUE2_.isStrNil(A14_184) then
+      if tonumber(A14_184) == 0 then
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("ax", "0")
+      else
+        _UPVALUE0_.init():get_wifidev(_UPVALUE1_.split(_wifiNameForIndex(A0_170), ".")[1]):set("ax", "1")
+      end
+    end
+  end
+  if A7_177 == 1 then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("disabled", "0")
+  elseif A7_177 == 0 then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("disabled", "1")
+  end
+  if A9_179 then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("bsd", tostring(A9_179))
+    require("luci.model.uci").cursor():set("lbd", "config", "Enable", tostring(A9_179))
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("rrm", tostring(A9_179))
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("wnm", tostring(A9_179))
+    require("luci.model.uci").cursor():commit("lbd")
+  end
+  if not _UPVALUE2_.isStrNil(A11_181) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("weakenable", A11_181)
+  end
+  if not _UPVALUE2_.isStrNil(A12_182) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("weakthreshold", A12_182)
+  end
+  if not _UPVALUE2_.isStrNil(A13_183) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("kickthreshold", A13_183)
+  end
+  if not _UPVALUE2_.isStrNil(A1_171) and _UPVALUE2_.checkSSID(A1_171) then
+    if A0_170 == 1 then
+      require("xiaoqiang.util.XQSynchrodata").syncWiFiSSID(A1_171, nil)
+      require("xiaoqiang.util.XQSysUtil").doConfUpload({ssid_24G = A1_171, wifi_24G_password = A2_172})
+    elseif A0_170 == 2 then
+      require("xiaoqiang.util.XQSynchrodata").syncWiFiSSID(nil, A1_171)
+    end
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ssid", A1_171)
+  end
+  if A3_173 then
+    if checkWifiPasswd(A2_172, A3_173) == 0 then
+      _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("encryption", A3_173)
+      _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key", A2_172)
+      if A3_173 == "none" then
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae_password", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ieee80211w", "")
+      elseif A3_173 == "wep-open" then
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key1", "s:" .. A2_172)
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key", 1)
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae_password", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ieee80211w", "")
+      elseif A3_173 == "ccmp" then
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae", "1")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae_password", A2_172)
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ieee80211w", "2")
+      elseif A3_173 == "psk2+ccmp" then
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae", "1")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("key", A2_172)
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae_password", A2_172)
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ieee80211w", "1")
+      elseif A3_173 == "psk2" or A3_173 == "mixed-psk" then
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("sae_password", "")
+        _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("ieee80211w", "")
+      end
+      if A0_170 == 1 then
+        _UPVALUE2_.nvramSet("nv_wifi_ssid", A1_171)
+        _UPVALUE2_.nvramSet("nv_wifi_enc", A3_173)
+        _UPVALUE2_.nvramSet("nv_wifi_pwd", A2_172)
+        _UPVALUE2_.nvramCommit()
+      else
+        _UPVALUE2_.nvramSet("nv_wifi_ssid1", A1_171)
+        _UPVALUE2_.nvramSet("nv_wifi_enc1", A3_173)
+        _UPVALUE2_.nvramSet("nv_wifi_pwd1", A2_172)
+        _UPVALUE2_.nvramCommit()
+      end
+    elseif checkWifiPasswd(A2_172, A3_173) > 1502 then
+      return false
+    end
+  end
+  if A6_176 == "1" then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("hidden", "1")
+  end
+  if A6_176 == "0" then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_170)):set("hidden", "0")
+  end
+  _UPVALUE0_.init():save("wireless")
+  _UPVALUE0_.init():commit("wireless")
+  return true
+end
+function setWifiRegion(A0_185, A1_186, A2_187)
+  if _UPVALUE0_.isStrNil(A0_185) or not tonumber(A1_186) or not tonumber(A2_187) then
+    return false
+  end
+  if _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]) then
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("country", A0_185)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("region", A1_186)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("aregion", A2_187)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("channel", "0")
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("bw", "0")
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(1), ".")[1]):set("autoch", "2")
+  end
+  if _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]) then
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("country", A0_185)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("region", A1_186)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("aregion", A2_187)
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("channel", "0")
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("bw", "0")
+    _UPVALUE1_.init():get_wifidev(_UPVALUE2_.split(_wifiNameForIndex(2), ".")[1]):set("autoch", "2")
+  end
+  _UPVALUE1_.init():commit("wireless")
+  _UPVALUE1_.init():save("wireless")
+  return true
+end
+function getBsdInfo(A0_188)
+  local L1_189, L2_190, L3_191, L4_192, L5_193, L6_194, L7_195, L8_196, L9_197, L10_198, L11_199, L12_200
+  L1_189 = _UPVALUE0_
+  L1_189 = L1_189.isStrNil
+  L2_190 = A0_188
+  L1_189 = L1_189(L2_190)
+  if L1_189 then
+    L1_189 = nil
+    return L1_189
+  end
+  L1_189 = {}
+  L1_189.bsd = 0
+  L1_189.mode = 0
+  L2_190 = _UPVALUE1_
+  L2_190 = L2_190.init
+  L2_190 = L2_190()
+  L4_192 = L2_190
+  L3_191 = L2_190.get_wifinet
+  L5_193 = _wifiNameForIndex
+  L6_194 = 1
+  L12_200 = L5_193(L6_194)
+  L3_191 = L3_191(L4_192, L5_193, L6_194, L7_195, L8_196, L9_197, L10_198, L11_199, L12_200, L5_193(L6_194))
+  L4_192 = tonumber
+  L6_194 = L3_191
+  L5_193 = L3_191.get
+  L7_195 = "bsd"
+  L5_193 = L5_193(L6_194, L7_195)
+  L5_193 = L5_193 or 0
+  L4_192 = L4_192(L5_193)
+  L5_193 = tonumber
+  L7_195 = L3_191
+  L6_194 = L3_191.get
+  L6_194 = L6_194(L7_195, L8_196)
+  L6_194 = L6_194 or 0
+  L5_193 = L5_193(L6_194)
+  if L4_192 == 1 then
+    L1_189.bsd = 1
+    if L5_193 == 0 then
+      L1_189.mode = 0
+    else
+      L7_195 = L3_191
+      L6_194 = L3_191.get
+      L6_194 = L6_194(L7_195, L8_196)
+      L7_195 = L3_191.get
+      L7_195 = L7_195(L8_196, L9_197)
+      if L6_194 then
+        if L8_196 == "table" then
+          for L11_199, L12_200 in L8_196(L9_197) do
+            if string.lower(A0_188) == string.lower(L12_200) then
+              L1_189.mode = 1
+              break
+            end
+          end
+        end
+      end
+      if L7_195 then
+        if L8_196 == "table" then
+          for L11_199, L12_200 in L8_196(L9_197) do
+            if string.lower(A0_188) == string.lower(L12_200) then
+              L1_189.mode = 2
+              break
+            end
+          end
+        end
+      end
+    end
+  end
+  return L1_189
+end
+function setBsdMaclist(A0_201, A1_202)
+  local L2_203, L3_204, L4_205, L5_206, L6_207, L7_208, L8_209, L9_210, L10_211, L11_212, L12_213, L13_214, L14_215, L15_216, L16_217
+  L2_203 = _UPVALUE0_
+  L2_203 = L2_203.isStrNil
+  L3_204 = A0_201
+  L2_203 = L2_203(L3_204)
+  if L2_203 or not A1_202 then
+    L2_203 = nil
+    return L2_203
+  end
+  L2_203 = {}
+  L2_203.bsd = 0
+  L2_203.mode = 0
+  L3_204 = _UPVALUE1_
+  L3_204 = L3_204.init
+  L3_204 = L3_204()
+  L5_206 = L3_204
+  L4_205 = L3_204.get_wifinet
+  L6_207 = _wifiNameForIndex
+  L7_208 = 1
+  L16_217 = L6_207(L7_208)
+  L4_205 = L4_205(L5_206, L6_207, L7_208, L8_209, L9_210, L10_211, L11_212, L12_213, L13_214, L14_215, L15_216, L16_217, L6_207(L7_208))
+  L6_207 = L3_204
+  L5_206 = L3_204.get_wifinet
+  L7_208 = _wifiNameForIndex
+  L8_209 = 2
+  L16_217 = L7_208(L8_209)
+  L5_206 = L5_206(L6_207, L7_208, L8_209, L9_210, L10_211, L11_212, L12_213, L13_214, L14_215, L15_216, L16_217, L7_208(L8_209))
+  L6_207 = tonumber
+  L8_209 = L4_205
+  L7_208 = L4_205.get
+  L9_210 = "bsd"
+  L7_208 = L7_208(L8_209, L9_210)
+  L7_208 = L7_208 or 0
+  L6_207 = L6_207(L7_208)
+  L7_208 = tonumber
+  L9_210 = L4_205
+  L8_209 = L4_205.get
+  L10_211 = "bsd_maclist_mode"
+  L8_209 = L8_209(L9_210, L10_211)
+  L8_209 = L8_209 or 0
+  L7_208 = L7_208(L8_209)
+  if L6_207 == 1 then
+    L2_203.bsd = 1
+    L2_203.mode = A1_202
+    if L4_205 then
+      L9_210 = L4_205
+      L8_209 = L4_205.set
+      L10_211 = "bsd_maclist_mode"
+      L11_212 = "1"
+      L8_209(L9_210, L10_211, L11_212)
+    end
+    if L5_206 then
+      L9_210 = L5_206
+      L8_209 = L5_206.set
+      L10_211 = "bsd_maclist_mode"
+      L11_212 = "1"
+      L8_209(L9_210, L10_211, L11_212)
+    end
+    L9_210 = L4_205
+    L8_209 = L4_205.get
+    L10_211 = "bsd_2g"
+    L8_209 = L8_209(L9_210, L10_211)
+    L10_211 = L4_205
+    L9_210 = L4_205.get
+    L11_212 = "bsd_5g"
+    L9_210 = L9_210(L10_211, L11_212)
+    L10_211, L11_212 = nil, nil
+    if L8_209 then
+      if L12_213 == "table" then
+        for L15_216, L16_217 in L12_213(L13_214) do
+          if string.lower(A0_201) == string.lower(L16_217) then
+            L10_211 = L15_216
+            break
+          end
+        end
+      end
+    else
+      L8_209 = L12_213
+    end
+    if L9_210 then
+      if L12_213 == "table" then
+        for L15_216, L16_217 in L12_213(L13_214) do
+          if string.lower(A0_201) == string.lower(L16_217) then
+            L11_212 = L15_216
+            break
+          end
+        end
+      end
+    else
+      L9_210 = L12_213
+    end
+    if A1_202 == 0 then
+      if L10_211 then
+        L12_213(L13_214, L14_215)
+      end
+      if L11_212 then
+        L12_213(L13_214, L14_215)
+      end
+    elseif A1_202 == 1 then
+      if not L10_211 then
+        L12_213(L13_214, L14_215)
+      end
+      if L11_212 then
+        L12_213(L13_214, L14_215)
+      end
+    elseif A1_202 == 2 then
+      if L10_211 then
+        L12_213(L13_214, L14_215)
+      end
+      if not L11_212 then
+        L12_213(L13_214, L14_215)
+      end
+    end
+    if L8_209 then
+      if L12_213 > 0 then
+        L15_216 = L8_209
+        L12_213(L13_214, L14_215, L15_216)
+        if L5_206 then
+          L15_216 = L8_209
+          L12_213(L13_214, L14_215, L15_216)
+        end
+      end
+    else
+      L15_216 = nil
+      L12_213(L13_214, L14_215, L15_216)
+      if L5_206 then
+        L15_216 = nil
+        L12_213(L13_214, L14_215, L15_216)
+      end
+    end
+    if L9_210 then
+      if L12_213 > 0 then
+        L15_216 = L9_210
+        L12_213(L13_214, L14_215, L15_216)
+        if L5_206 then
+          L15_216 = L9_210
+          L12_213(L13_214, L14_215, L15_216)
+        end
+      end
+    else
+      L15_216 = nil
+      L12_213(L13_214, L14_215, L15_216)
+      if L5_206 then
+        L15_216 = nil
+        L12_213(L13_214, L14_215, L15_216)
+      end
+    end
+    L12_213(L13_214, L14_215)
+  end
+  return L2_203
+end
+function turnWifiOn(A0_218)
+  local L1_219, L2_220, L3_221, L4_222
+  L1_219 = getWifiStatus
+  L2_220 = A0_218
+  L1_219 = L1_219(L2_220)
+  L2_220 = L1_219.up
+  if L2_220 == 1 then
+    L2_220 = true
+    return L2_220
+  end
+  L2_220 = _UPVALUE0_
+  L2_220 = L2_220.init
+  L2_220 = L2_220()
+  L4_222 = L2_220
+  L3_221 = L2_220.get_wifinet
+  L3_221 = L3_221(L4_222, _wifiNameForIndex(A0_218))
+  L4_222 = nil
+  if L3_221 ~= nil then
+    L4_222 = L3_221:get_device()
+  end
+  if L4_222 and L3_221 then
+    L4_222:set("disabled", "0")
+    L3_221:set("disabled", nil)
+    L2_220:commit("wireless")
+    _UPVALUE1_.forkRestartWifi()
+    return true
+  end
+  return false
+end
+function turnWifiOff(A0_223)
+  local L1_224, L2_225, L3_226, L4_227
+  L1_224 = getWifiStatus
+  L2_225 = A0_223
+  L1_224 = L1_224(L2_225)
+  L2_225 = L1_224.up
+  if L2_225 == 0 then
+    L2_225 = true
+    return L2_225
+  end
+  L2_225 = _UPVALUE0_
+  L2_225 = L2_225.init
+  L2_225 = L2_225()
+  L4_227 = L2_225
+  L3_226 = L2_225.get_wifinet
+  L3_226 = L3_226(L4_227, _wifiNameForIndex(A0_223))
+  L4_227 = nil
+  if L3_226 ~= nil then
+    L4_227 = L3_226:get_device()
+  end
+  if L4_227 and L3_226 then
+    L4_227:set("disabled", "1")
+    L3_226:set("disabled", nil)
+    L2_225:commit("wireless")
+    _UPVALUE1_.forkRestartWifi()
+    return true
+  end
+  return false
+end
+function getWifiWpsStatus()
+  local L0_228, L1_229
+  L0_228 = require
+  L1_229 = "luci.util"
+  L0_228 = L0_228(L1_229)
+  L1_229 = L0_228.exec
+  L1_229 = L1_229(_UPVALUE0_.GET_WPS_STATUS)
+  if not _UPVALUE1_.isStrNil(L1_229) then
+    L1_229 = L0_228.trim(L1_229)
+    return tonumber(L1_229)
+  end
+  return 0
+end
+function getWpsConDevMac()
+  local L0_230, L1_231
+  L0_230 = require
+  L1_231 = "luci.util"
+  L0_230 = L0_230(L1_231)
+  L1_231 = L0_230.exec
+  L1_231 = L1_231(_UPVALUE0_.GET_WPS_CONMAC)
+  if L1_231 then
+    return _UPVALUE1_.macFormat(L0_230.trim(L1_231))
+  end
+  return nil
+end
+function stopWps()
+  require("luci.util").exec(_UPVALUE0_.CLOSE_WPS)
+  return
+end
+function openWifiWps()
+  local L0_232, L1_233, L2_234
+  L0_232 = require
+  L1_233 = "luci.util"
+  L0_232 = L0_232(L1_233)
+  L1_233 = require
+  L2_234 = "xiaoqiang.XQPreference"
+  L1_233 = L1_233(L2_234)
+  L2_234 = L0_232.exec
+  L2_234(_UPVALUE0_.OPEN_WPS)
+  L2_234 = tostring
+  L2_234 = L2_234(os.time())
+  L1_233.set(_UPVALUE0_.PREF_WPS_TIMESTAMP, L2_234)
+  return L2_234
+end
+function miwifiutil_rssi_to_signal(A0_235)
+  A0_235 = tonumber(A0_235)
+  if A0_235 >= 0 then
+    return math.ceil(0)
+  end
+  if A0_235 >= 4294967246 and A0_235 < 0 then
+    A0_235 = 100
+  elseif A0_235 >= 4294967216 then
+    A0_235 = 24 + (A0_235 + 80) * 26 / 10
+  elseif A0_235 >= 4294967206 then
+    A0_235 = (A0_235 + 90) * 26 / 10
+  else
+    A0_235 = 0
+  end
+  return math.ceil(A0_235)
+end
+function apcli_set_scan(A0_236)
+  local L1_237, L2_238, L3_239
+  L1_237 = A0_236.scan_ifname
+  L2_238 = A0_236.ssid
+  L3_239 = _UPVALUE0_
+  L3_239 = L3_239.match
+  L3_239 = L3_239(L3_239, "^rm1800$")
+  if not L3_239 then
+    L3_239 = _UPVALUE0_
+    L3_239 = L3_239.match
+    L3_239 = L3_239(L3_239, "^r3600")
+    if not L3_239 then
+      L3_239 = _UPVALUE0_
+      L3_239 = L3_239.match
+      L3_239 = L3_239(L3_239, "^r2200")
+      if not L3_239 then
+        L3_239 = _UPVALUE0_
+        L3_239 = L3_239.match
+        L3_239 = L3_239(L3_239, "^r2350")
+      end
+    end
+  else
+    if L3_239 then
+      L3_239 = "iwlist "
+      L3_239 = L3_239 .. L1_237 .. " scanning"
+      return L3_239
+  end
+  else
+    L3_239 = _UPVALUE0_
+    L3_239 = L3_239.match
+    L3_239 = L3_239(L3_239, "^r1d")
+    if not L3_239 then
+      L3_239 = _UPVALUE0_
+      L3_239 = L3_239.match
+      L3_239 = L3_239(L3_239, "^r2d")
+      if L3_239 then
+      else
+        L3_239 = "iwpriv "
+        L3_239 = L3_239 .. L1_237 .. " set SiteSurvey=\"" .. L2_238 .. "\";sleep 1;"
+        os.execute(L3_239)
+        return L3_239
+      end
+    end
+  end
+end
+function apcli_get_connect(A0_240)
+  local L1_241
+  if _UPVALUE0_:match("^rm1800$") or _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2200") or _UPVALUE0_:match("^r2350") then
+    L1_241 = _UPVALUE1_.exec("wpa_cli -i " .. A0_240 .. " -p /var/run/wpa_supplicant-" .. A0_240 .. " status | grep ^wpa_state= | cut -f2- -d=")
+    if L1_241:match("COMPLETED") then
+      return true, L1_241
+    else
+      return false, L1_241
+    end
+  elseif _UPVALUE0_:match("^r1d") or _UPVALUE0_:match("^r2d") then
+  else
+    L1_241 = _UPVALUE1_.exec("iwpriv " .. A0_240 .. " Connstatus")
+    if L1_241:match("SSID:") then
+      return true, L1_241
+    else
+      return false, L1_241
+    end
+  end
+end
+function apcli_set_inactive(A0_242)
+  if _UPVALUE0_:match("^r1800") or _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2200") or _UPVALUE0_:match("^r2350") then
+    os.execute("killall -9 wpa_supplicant")
+    os.execute("ifconfig " .. A0_242 .. " down")
+    if _UPVALUE0_:match("^r3600") then
+      os.execute("wlanconfig " .. A0_242 .. " destroy -cfg80211")
+      os.execute("iw dev " .. A0_242 .. " del")
+    else
+      os.execute("wlanconfig " .. A0_242 .. " destroy")
+    end
+    os.execute("ifconfig " .. apcli_get_device(A0_242):name() .. " down up")
+  elseif _UPVALUE0_:match("^r1d") or _UPVALUE0_:match("^r2d") then
+    os.execute("wl -i " .. A0_242 .. " bss down")
+  else
+    os.execute("iwpriv " .. A0_242 .. " set ApCliEnable=0")
+    os.execute("iwpriv " .. A0_242 .. " set ApCliAutoConnect=0")
+    os.execute("ifconfig " .. A0_242 .. " down")
+  end
+end
+function apcli_set_connect(A0_243, A1_244)
+  local L2_245, L3_246, L4_247, L5_248, L6_249, L7_250, L8_251, L9_252, L10_253, L11_254, L12_255, L13_256, L14_257, L15_258, L16_259
+  L2_245 = require
+  L3_246 = "xiaoqiang.util.XQCryptoUtil"
+  L2_245 = L2_245(L3_246)
+  L3_246 = require
+  L4_247 = "xiaoqiang.util.XQSecureUtil"
+  L3_246 = L3_246(L4_247)
+  L4_247 = A0_243.cmdssid
+  L5_248 = A0_243.ifname
+  L6_249 = L3_246.parseCmdline
+  L7_250 = A0_243.encryption
+  L6_249 = L6_249(L7_250)
+  L7_250 = A0_243.cmdpassword
+  L8_251 = L3_246.parseCmdline
+  L9_252 = A0_243.enctype
+  L8_251 = L8_251(L9_252)
+  L9_252 = tonumber
+  L10_253 = A1_244
+  L9_252 = L9_252(L10_253)
+  L9_252 = L9_252 or 0
+  L10_253 = L2_245.binaryBase64Enc
+  L11_254 = A0_243.cmdssid
+  L10_253 = L10_253(L11_254)
+  L11_254 = L2_245.binaryBase64Enc
+  L12_255 = A0_243.cmdpassword
+  L11_254 = L11_254(L12_255)
+  L12_255 = _UPVALUE0_
+  L13_256 = L12_255
+  L12_255 = L12_255.match
+  L14_257 = "^rm1800"
+  L12_255 = L12_255(L13_256, L14_257)
+  if not L12_255 then
+    L12_255 = _UPVALUE0_
+    L13_256 = L12_255
+    L12_255 = L12_255.match
+    L14_257 = "^r3600"
+    L12_255 = L12_255(L13_256, L14_257)
+    if not L12_255 then
+      L12_255 = _UPVALUE0_
+      L13_256 = L12_255
+      L12_255 = L12_255.match
+      L14_257 = "^r2200"
+      L12_255 = L12_255(L13_256, L14_257)
+      if not L12_255 then
+        L12_255 = _UPVALUE0_
+        L13_256 = L12_255
+        L12_255 = L12_255.match
+        L14_257 = "^r2350"
+        L12_255 = L12_255(L13_256, L14_257)
+      end
+    end
+  else
+    if L12_255 then
+      L12_255 = string
+      L12_255 = L12_255.format
+      L13_256 = "/usr/sbin/check_apcli_connected \"%s\" \"%s\" \"%s\" \"%s\" \"%s\""
+      L14_257 = L10_253
+      L15_258 = L5_248
+      L16_259 = L8_251
+      L12_255 = L12_255(L13_256, L14_257, L15_258, L16_259, L6_249, L11_254)
+      L13_256 = _UPVALUE1_
+      L13_256 = L13_256.trim
+      L14_257 = _UPVALUE1_
+      L14_257 = L14_257.exec
+      L15_258 = L12_255
+      L16_259 = L14_257(L15_258)
+      L13_256 = L13_256(L14_257, L15_258, L16_259, L14_257(L15_258))
+      L14_257 = tonumber
+      L15_258 = L13_256
+      L14_257 = L14_257(L15_258)
+      if L14_257 == 1 then
+        return
+      end
+      L14_257 = A0_243.band
+      L15_258 = apcli_get_device
+      L16_259 = L5_248
+      L15_258 = L15_258(L16_259)
+      L16_259 = L15_258.name
+      L16_259 = L16_259(L15_258)
+      apcli_set_inactive(L5_248)
+      os.execute("sleep 1")
+      if _UPVALUE0_:match("^r3600") then
+        os.execute("wlanconfig " .. L5_248 .. " create wlandev " .. L16_259 .. " wlanmode sta -cfg80211")
+        os.execute("iw dev " .. L16_259 .. " interface add " .. L5_248 .. " type __ap")
+      else
+        os.execute("wlanconfig " .. L5_248 .. " create wlandev " .. L16_259 .. " wlanmode sta nosbeacon")
+      end
+      os.execute("iwpriv " .. L5_248 .. " extap 1")
+      os.execute("iwpriv " .. L5_248 .. " athnewind 0")
+      os.execute("killall -9 wpa_supplicant")
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("ctrl_interface=/var/run/wpa_supplicant-%s\n", L5_248))
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("network={\n"))
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        scan_ssid=1\n"))
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        ssid=\"%s\"\n", L4_247))
+      if A0_243.enctype:match("AES") then
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        key_mgmt=WPA-PSK\n"))
+        if L6_249:match("WPA2PSK") then
+          io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        proto=RSN\n"))
+        else
+          io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        proto=WPA\n"))
+        end
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        psk=\"%s\"\n", L7_250))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        pairwise=CCMP\n"))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        group=CCMP TKIP\n"))
+      elseif A0_243.enctype:match("TKIP") then
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        key_mgmt=WPA-PSK\n"))
+        if L6_249:match("WPA2PSK") then
+          io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        proto=RSN\n"))
+        else
+          io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        proto=WPA\n"))
+        end
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        psk=\"%s\"\n", L7_250))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        pairwise=TKIP\n"))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        group=CCMP TKIP\n"))
+      elseif A0_243.enctype:match("WEP") then
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        key_mgmt=NONE\n"))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        wep_key0=\"%s\"\n", L7_250))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        wep_tx_keyidx=0\n"))
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        auth_alg=OPEN\n"))
+      elseif A0_243.enctype:match("NONE") then
+        io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("        key_mgmt=NONE\n"))
+      end
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):write(string.format("}\n"))
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):flush()
+      io.open("/var/run/wpa_supplicant-" .. L5_248 .. ".conf", "w+"):close()
+      os.execute("wpa_supplicant -i " .. L5_248 .. " -Dathr -c /var/run/wpa_supplicant-" .. L5_248 .. ".conf -b br-lan -B")
+      if L9_252 == 0 then
+        os.execute("brctl addif br-lan " .. L5_248)
+      end
+      os.execute("ifconfig " .. L5_248 .. " up")
+  end
+  else
+    L12_255 = _UPVALUE0_
+    L13_256 = L12_255
+    L12_255 = L12_255.match
+    L14_257 = "^r1d"
+    L12_255 = L12_255(L13_256, L14_257)
+    if not L12_255 then
+      L12_255 = _UPVALUE0_
+      L13_256 = L12_255
+      L12_255 = L12_255.match
+      L14_257 = "^r2d"
+      L12_255 = L12_255(L13_256, L14_257)
+      if L12_255 then
+      else
+        L12_255 = os
+        L12_255 = L12_255.execute
+        L13_256 = "ifconfig "
+        L14_257 = L5_248
+        L15_258 = " up"
+        L13_256 = L13_256 .. L14_257 .. L15_258
+        L12_255(L13_256)
+        L12_255 = os
+        L12_255 = L12_255.execute
+        L13_256 = "sleep 2"
+        L12_255(L13_256)
+        L12_255 = os
+        L12_255 = L12_255.execute
+        L13_256 = "iwpriv "
+        L14_257 = L5_248
+        L15_258 = " set ApCliEnable=0"
+        L13_256 = L13_256 .. L14_257 .. L15_258
+        L12_255(L13_256)
+        L12_255 = A0_243.enctype
+        L13_256 = L12_255
+        L12_255 = L12_255.match
+        L14_257 = "AES"
+        L12_255 = L12_255(L13_256, L14_257)
+        if L12_255 then
+          L12_255 = os
+          L12_255 = L12_255.execute
+          L13_256 = "iwpriv "
+          L14_257 = L5_248
+          L15_258 = " set ApCliAuthMode=\""
+          L16_259 = L6_249
+          L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+          L12_255(L13_256)
+          L12_255 = os
+          L12_255 = L12_255.execute
+          L13_256 = "iwpriv "
+          L14_257 = L5_248
+          L15_258 = " set ApCliEncrypType=AES"
+          L13_256 = L13_256 .. L14_257 .. L15_258
+          L12_255(L13_256)
+          L12_255 = os
+          L12_255 = L12_255.execute
+          L13_256 = "iwpriv "
+          L14_257 = L5_248
+          L15_258 = " set bs64_ApCliSsid=\""
+          L16_259 = L10_253
+          L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+          L12_255(L13_256)
+          L12_255 = os
+          L12_255 = L12_255.execute
+          L13_256 = "iwpriv "
+          L14_257 = L5_248
+          L15_258 = " set bs64_ApCliWPAPSK=\""
+          L16_259 = L11_254
+          L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+          L12_255(L13_256)
+        else
+          L12_255 = A0_243.enctype
+          L13_256 = L12_255
+          L12_255 = L12_255.match
+          L14_257 = "TKIP"
+          L12_255 = L12_255(L13_256, L14_257)
+          if L12_255 then
+            L12_255 = os
+            L12_255 = L12_255.execute
+            L13_256 = "iwpriv "
+            L14_257 = L5_248
+            L15_258 = " set ApCliAuthMode=\""
+            L16_259 = L6_249
+            L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+            L12_255(L13_256)
+            L12_255 = os
+            L12_255 = L12_255.execute
+            L13_256 = "iwpriv "
+            L14_257 = L5_248
+            L15_258 = " set ApCliEncrypType=TKIP"
+            L13_256 = L13_256 .. L14_257 .. L15_258
+            L12_255(L13_256)
+            L12_255 = os
+            L12_255 = L12_255.execute
+            L13_256 = "iwpriv "
+            L14_257 = L5_248
+            L15_258 = " set bs64_ApCliSsid=\""
+            L16_259 = L10_253
+            L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+            L12_255(L13_256)
+            L12_255 = os
+            L12_255 = L12_255.execute
+            L13_256 = "iwpriv "
+            L14_257 = L5_248
+            L15_258 = " set bs64_ApCliWPAPSK=\""
+            L16_259 = L11_254
+            L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+            L12_255(L13_256)
+          else
+            L12_255 = A0_243.enctype
+            L13_256 = L12_255
+            L12_255 = L12_255.match
+            L14_257 = "WEP"
+            L12_255 = L12_255(L13_256, L14_257)
+            if L12_255 then
+              L12_255 = os
+              L12_255 = L12_255.execute
+              L13_256 = "iwpriv "
+              L14_257 = L5_248
+              L15_258 = " set ApCliAuthMode=OPEN"
+              L13_256 = L13_256 .. L14_257 .. L15_258
+              L12_255(L13_256)
+              L12_255 = os
+              L12_255 = L12_255.execute
+              L13_256 = "iwpriv "
+              L14_257 = L5_248
+              L15_258 = " set ApCliEncrypType=WEP"
+              L13_256 = L13_256 .. L14_257 .. L15_258
+              L12_255(L13_256)
+              L12_255 = os
+              L12_255 = L12_255.execute
+              L13_256 = "iwpriv "
+              L14_257 = L5_248
+              L15_258 = " set ApCliDefaultKeyID=1"
+              L13_256 = L13_256 .. L14_257 .. L15_258
+              L12_255(L13_256)
+              L12_255 = os
+              L12_255 = L12_255.execute
+              L13_256 = "iwpriv "
+              L14_257 = L5_248
+              L15_258 = " set bs64_ApCliKey1=\""
+              L16_259 = L11_254
+              L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+              L12_255(L13_256)
+              L12_255 = os
+              L12_255 = L12_255.execute
+              L13_256 = "iwpriv "
+              L14_257 = L5_248
+              L15_258 = " set bs64_ApCliSsid=\""
+              L16_259 = L10_253
+              L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+              L12_255(L13_256)
+            else
+              L12_255 = A0_243.enctype
+              L13_256 = L12_255
+              L12_255 = L12_255.match
+              L14_257 = "NONE"
+              L12_255 = L12_255(L13_256, L14_257)
+              if L12_255 then
+                L12_255 = os
+                L12_255 = L12_255.execute
+                L13_256 = "iwpriv "
+                L14_257 = L5_248
+                L15_258 = " set ApCliAuthMode=OPEN"
+                L13_256 = L13_256 .. L14_257 .. L15_258
+                L12_255(L13_256)
+                L12_255 = os
+                L12_255 = L12_255.execute
+                L13_256 = "iwpriv "
+                L14_257 = L5_248
+                L15_258 = " set ApCliEncrypType=NONE"
+                L13_256 = L13_256 .. L14_257 .. L15_258
+                L12_255(L13_256)
+                L12_255 = os
+                L12_255 = L12_255.execute
+                L13_256 = "iwpriv "
+                L14_257 = L5_248
+                L15_258 = " set bs64_ApCliSsid=\""
+                L16_259 = L10_253
+                L13_256 = L13_256 .. L14_257 .. L15_258 .. L16_259 .. "\""
+                L12_255(L13_256)
+              end
+            end
+          end
+        end
+        L12_255 = os
+        L12_255 = L12_255.execute
+        L13_256 = "iwpriv "
+        L14_257 = L5_248
+        L15_258 = " set ApCliEnable=1"
+        L13_256 = L13_256 .. L14_257 .. L15_258
+        L12_255(L13_256)
+        L12_255 = os
+        L12_255 = L12_255.execute
+        L13_256 = "iwpriv "
+        L14_257 = L5_248
+        L15_258 = " set ApCliAutoConnect=1"
+        L13_256 = L13_256 .. L14_257 .. L15_258
+        L12_255(L13_256)
+      end
+    end
+  end
+end
+function apcli_check_apcliitem(A0_260)
+  return _UPVALUE0_.isStrNil(A0_260.enctype) or _UPVALUE0_.isStrNil(A0_260.encryption) or _UPVALUE0_.isStrNil(A0_260.band) or _UPVALUE0_.isStrNil(A0_260.channel)
+end
+function apcli_get_wifinet(A0_261)
+  for _FORV_7_, _FORV_8_ in ipairs(_UPVALUE0_.init():get_wifidevs()) do
+    for _FORV_12_, _FORV_13_ in ipairs(_FORV_8_:get_wifinets()) do
+      if _FORV_13_ and _FORV_13_:ifname() == A0_261 then
+        _FORV_13_.dev = _FORV_8_
+        return _FORV_13_
+      end
+    end
+  end
+  return nil
+end
+function apcli_get_ifname_form_band(A0_262)
+  return require("luci.model.uci").cursor():get("misc", "wireless", "apclient_" .. string.upper(A0_262))
+end
+function apcli_get_device(A0_263)
+  local L1_264, L2_265, L3_266, L4_267
+  L2_265 = require
+  L3_266 = "luci.model.uci"
+  L2_265 = L2_265(L3_266)
+  L2_265 = L2_265.cursor
+  L2_265 = L2_265()
+  L3_266 = _UPVALUE0_
+  L3_266 = L3_266.init
+  L3_266 = L3_266()
+  L4_267 = apcli_get_wifinet
+  L4_267 = L4_267(A0_263)
+  L1_264 = _UPVALUE1_.isStrNil(L4_267) or L4_267:get("device") or ""
+  if _UPVALUE1_.isStrNil(L1_264) then
+    L1_264 = L2_265:get("misc", "wireless", A0_263 .. "_device")
+  end
+  return L3_266:get_wifidev(L1_264)
+end
+function apcli_get_scanifname(A0_268)
+  local L1_269, L2_270, L3_271
+  L1_269 = require
+  L2_270 = "luci.model.uci"
+  L1_269 = L1_269(L2_270)
+  L1_269 = L1_269.cursor
+  L1_269 = L1_269()
+  L2_270 = apcli_get_wifinet
+  L3_271 = A0_268
+  L2_270 = L2_270(L3_271)
+  L3_271 = _UPVALUE0_
+  L3_271 = L3_271.isStrNil
+  L3_271 = L3_271(L2_270)
+  if not L3_271 then
+    L3_271 = L2_270.get
+    L3_271 = L3_271(L2_270, "scanifname")
+    L3_271 = L3_271 or ""
+    if not _UPVALUE0_.isStrNil(L3_271) then
+      return L3_271
+    end
+  end
+  L3_271 = L1_269.get
+  return L3_271(L1_269, "misc", "wireless", A0_268 .. "_scanifname")
+end
+function apcli_get_scanband(A0_272)
+  local L1_273, L2_274, L3_275
+  L1_273 = require
+  L2_274 = "luci.model.uci"
+  L1_273 = L1_273(L2_274)
+  L1_273 = L1_273.cursor
+  L1_273 = L1_273()
+  L2_274 = apcli_get_wifinet
+  L3_275 = A0_272
+  L2_274 = L2_274(L3_275)
+  L3_275 = _UPVALUE0_
+  L3_275 = L3_275.isStrNil
+  L3_275 = L3_275(L2_274)
+  if not L3_275 then
+    L3_275 = L2_274.get
+    L3_275 = L3_275(L2_274, "scanband")
+    L3_275 = L3_275 or ""
+    if not _UPVALUE0_.isStrNil(L3_275) then
+      return L3_275
+    end
+  end
+  L3_275 = L1_273.get
+  return L3_275(L1_273, "misc", "wireless", A0_272 .. "_scanband")
+end
+function apcli_get_apclimode(A0_276)
+  return require("luci.model.uci").cursor():get("misc", "wireless", A0_276 .. "_mode")
+end
+function apcli_get_ifnames()
+  return require("luci.model.uci").cursor():get_list("misc", "wireless", "APCLI_IFNAMES") or {}
+end
+function apcli_disable(A0_277)
+  apcli_set_inactive(A0_277)
+  apcli_get_wifinet(A0_277):set("disabled", "1")
+  require("luci.model.network").init():save("wireless")
+  require("luci.model.network").init():commit("wireless")
+end
+function apcli_enable(A0_278)
+  local L1_279, L2_280, L3_281, L4_282, L5_283, L6_284, L7_285, L8_286, L9_287, L10_288, L11_289, L12_290, L13_291, L14_292, L15_293, L16_294, L17_295, L18_296
+  L1_279 = A0_278.ifname
+  L2_280 = A0_278.ssid
+  L3_281 = A0_278.encryption
+  L4_282 = A0_278.enctype
+  L5_283 = A0_278.password
+  L6_284 = require
+  L7_285 = "luci.model.uci"
+  L6_284 = L6_284(L7_285)
+  L6_284 = L6_284.cursor
+  L6_284 = L6_284()
+  L7_285 = require
+  L8_286 = "luci.model.network"
+  L7_285 = L7_285(L8_286)
+  L7_285 = L7_285.init
+  L7_285 = L7_285()
+  L8_286 = require
+  L9_287 = "xiaoqiang.util.XQSynchrodata"
+  L8_286 = L8_286(L9_287)
+  L9_287, L10_288, L11_289, L12_290 = nil, nil, nil, nil
+  L13_291 = apcli_get_wifinet
+  L13_291 = L13_291(L14_292)
+  L9_287 = L13_291
+  L13_291 = _UPVALUE0_
+  L13_291 = L13_291.match
+  L13_291 = L13_291(L14_292, L15_293)
+  if not L13_291 then
+    L13_291 = _UPVALUE0_
+    L13_291 = L13_291.match
+    L13_291 = L13_291(L14_292, L15_293)
+    if not L13_291 then
+      L13_291 = _UPVALUE0_
+      L13_291 = L13_291.match
+      L13_291 = L13_291(L14_292, L15_293)
+    end
+  elseif L13_291 then
+    L13_291 = L3_281.match
+    L13_291 = L13_291(L14_292, L15_293)
+    if L13_291 then
+      L12_290 = "psk2"
+    else
+      L13_291 = L3_281.match
+      L13_291 = L13_291(L14_292, L15_293)
+      if L13_291 then
+        L12_290 = "none"
+      else
+        L12_290 = "mixed-psk"
+      end
+    end
+  end
+  L13_291 = _UPVALUE1_
+  L13_291 = L13_291.isStrNil
+  L13_291 = L13_291(L14_292)
+  if L13_291 then
+    L13_291 = apcli_get_device
+    L13_291 = L13_291(L14_292)
+    L14_292.device = L15_293
+    L14_292.ifname = L1_279
+    L14_292.scanifname = L15_293
+    L14_292.apcliband = L15_293
+    L14_292.network = "lan"
+    L14_292.mode = "sta"
+    L14_292.ssid = L2_280
+    L14_292.key = L5_283
+    L14_292.encryption = L3_281
+    L14_292.enctype = L4_282
+    L14_292.disabled = "0"
+    L17_295 = "^r1800"
+    if not L15_293 then
+      L17_295 = "^r3600"
+      if not L15_293 then
+        L17_295 = "^r2200"
+        if not L15_293 then
+          L17_295 = "^r2350"
+        end
+      end
+    elseif L15_293 then
+      L14_292.extap = "1"
+      L14_292.athnewind = "0"
+      L14_292.encryption = L12_290
+    end
+    L17_295 = L14_292
+    L15_293(L16_294, L17_295)
+    L17_295 = "xiaoqiang"
+    L15_293(L16_294, L17_295)
+  else
+    L13_291 = L9_287.set
+    L13_291(L14_292, L15_293, L16_294)
+    L13_291 = L9_287.set
+    L13_291(L14_292, L15_293, L16_294)
+    L13_291 = L9_287.set
+    L13_291(L14_292, L15_293, L16_294)
+    L13_291 = _UPVALUE0_
+    L13_291 = L13_291.match
+    L13_291 = L13_291(L14_292, L15_293)
+    if not L13_291 then
+      L13_291 = _UPVALUE0_
+      L13_291 = L13_291.match
+      L13_291 = L13_291(L14_292, L15_293)
+      if not L13_291 then
+        L13_291 = _UPVALUE0_
+        L13_291 = L13_291.match
+        L13_291 = L13_291(L14_292, L15_293)
+        if not L13_291 then
+          L13_291 = _UPVALUE0_
+          L13_291 = L13_291.match
+          L13_291 = L13_291(L14_292, L15_293)
+        end
+      end
+    else
+      if L13_291 then
+        L13_291 = L9_287.set
+        L13_291(L14_292, L15_293, L16_294)
+        L13_291 = L9_287.set
+        L13_291(L14_292, L15_293, L16_294)
+        L13_291 = L9_287.set
+        L13_291(L14_292, L15_293, L16_294)
+    end
+    else
+      L13_291 = L9_287.set
+      L13_291(L14_292, L15_293, L16_294)
+    end
+    L13_291 = L9_287.set
+    L13_291(L14_292, L15_293, L16_294)
+  end
+  L13_291 = apcli_get_ifnames
+  L13_291 = L13_291()
+  for L17_295, L18_296 in L14_292(L15_293) do
+    if L18_296 ~= L1_279 then
+      os.execute("ifconfig " .. L18_296 .. " down")
+      L11_289 = apcli_get_wifinet(L18_296)
+      if L11_289 ~= nil then
+        L11_289:set("disabled", "1")
+      end
+    end
+  end
+  L17_295 = " up"
+  L14_292(L15_293)
+  L14_292(L15_293)
+  L14_292(L15_293, L16_294)
+  L14_292(L15_293, L16_294)
+end
+function apcli_get_active()
+  local L0_297, L1_298
+  L0_297 = require
+  L1_298 = "luci.model.uci"
+  L0_297 = L0_297(L1_298)
+  L0_297 = L0_297.cursor
+  L0_297 = L0_297()
+  L1_298 = L0_297.get
+  L1_298 = L1_298(L0_297, "xiaoqiang", "common", "active_apcli")
+  if _UPVALUE0_.isStrNil(L1_298) then
+    L1_298 = nil
+  end
+  return L1_298
+end
+function apcli_set_active(A0_299)
+  local L1_300, L2_301, L3_302
+  L1_300 = require
+  L2_301 = "xiaoqiang.util.XQSynchrodata"
+  L1_300 = L1_300(L2_301)
+  L2_301 = require
+  L3_302 = "luci.model.uci"
+  L2_301 = L2_301(L3_302)
+  L2_301 = L2_301.cursor
+  L2_301 = L2_301()
+  L3_302 = nil
+  if A0_299 then
+    L3_302 = tonumber(apcli_get_apclimode(A0_299))
+    if _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2350") then
+      L2_301:set("xiaoqiang", "common", "active_apcli", A0_299)
+    end
+  else
+    L3_302 = 0
+    L2_301:delete("xiaoqiang", "common", "active_apcli")
+  end
+  L2_301:commit("xiaoqiang")
+  L1_300.syncActiveApcliMode(L3_302)
+end
+function apcli_get_active_type()
+  local L0_303, L1_304, L2_305
+  L0_303 = _UPVALUE0_
+  L0_303 = L0_303.miscRecovery
+  L0_303 = L0_303()
+  if L0_303 == 1 then
+    L1_304 = 0
+    return L1_304
+  end
+  L1_304 = 0
+  L2_305 = apcli_get_active
+  L2_305 = L2_305()
+  if _UPVALUE0_.isStrNil(L2_305) then
+    return 0
+  end
+  L1_304 = tonumber(apcli_get_apclimode(L2_305))
+  return L1_304
+end
+function rssi_cmp(A0_306, A1_307)
+  if A0_306.band == A1_307.band then
+    return tonumber(A0_306.rssi) > tonumber(A1_307.rssi)
+  elseif A0_306.band == "5g" then
+    return true
+  else
+    return false
+  end
+end
+function apcli_get_scanlist(A0_308)
+  local L1_309, L2_310, L3_311, L4_312, L5_313, L6_314, L7_315, L8_316, L9_317, L10_318, L11_319, L12_320, L13_321, L14_322, L15_323, L16_324, L17_325, L18_326, L19_327, L20_328, L21_329, L22_330, L23_331, L24_332, L25_333, L26_334, L27_335, L28_336
+  L1_309 = {}
+  L2_310 = ""
+  L3_311 = 0
+  L4_312, L5_313, L6_314 = nil, nil, nil
+  L7_315 = {}
+  L8_316 = nil
+  L9_317 = A0_308.ssid
+  L10_318 = A0_308.band
+  if L11_319 then
+    L9_317 = ""
+  end
+  if L11_319 then
+    L10_318 = ""
+  end
+  L28_336 = L12_320()
+  for L14_322, L15_323 in L11_319(L12_320, L13_321, L14_322, L15_323, L16_324, L17_325, L18_326, L19_327, L20_328, L21_329, L22_330, L23_331, L24_332, L25_333, L26_334, L27_335, L28_336, L12_320()) do
+    L16_324 = _UPVALUE0_
+    L16_324 = L16_324.isStrNil
+    L17_325 = L15_323
+    L16_324 = L16_324(L17_325)
+    if not L16_324 then
+      L16_324 = apcli_get_device
+      L17_325 = L15_323
+      L16_324 = L16_324(L17_325)
+      L17_325 = L16_324.is_up
+      L17_325 = L17_325(L18_326)
+      if L17_325 then
+        L17_325 = apcli_get_scanband
+        L17_325 = L17_325(L18_326)
+        L5_313 = L17_325
+        L17_325 = apcli_get_scanifname
+        L17_325 = L17_325(L18_326)
+        L4_312 = L17_325
+        L17_325 = _UPVALUE0_
+        L17_325 = L17_325.isStrNil
+        L17_325 = L17_325(L18_326)
+        if not L17_325 then
+          L17_325 = _UPVALUE0_
+          L17_325 = L17_325.isStrNil
+          L17_325 = L17_325(L18_326)
+          if not L17_325 then
+            L17_325 = _UPVALUE0_
+            L17_325 = L17_325.isStrNil
+            L17_325 = L17_325(L18_326)
+            if L17_325 or L5_313 == L10_318 then
+              L17_325 = {}
+              L6_314 = L17_325
+              L6_314.scan_ifname = L4_312
+              L6_314.ifname = L15_323
+              L6_314.band = L5_313
+              L6_314.ssid = L9_317
+              L17_325 = L2_310
+              L2_310 = L17_325 .. L18_326
+              L17_325 = table
+              L17_325 = L17_325.insert
+              L17_325(L18_326, L19_327)
+            end
+          end
+        end
+      end
+    end
+  end
+  if L2_310 == "" then
+    return L1_309
+  end
+  L11_319(L12_320)
+  for L14_322, L15_323 in L11_319(L12_320) do
+    L16_324 = _UPVALUE0_
+    L16_324 = L16_324.isStrNil
+    L17_325 = L15_323
+    L16_324 = L16_324(L17_325)
+    if not L16_324 then
+      L16_324 = apcli_get_wifinet
+      L17_325 = L15_323.scan_ifname
+      L16_324 = L16_324(L17_325)
+      L17_325 = L16_324.disabled
+      L17_325 = L17_325(L18_326)
+      if L17_325 == "1" then
+        break
+      end
+      L17_325 = L16_324.scanlist
+      L17_325 = L17_325(L18_326)
+      if L18_326 > 0 then
+        for L21_329, L22_330 in L18_326(L19_327) do
+          L22_330.rssi = L23_331
+          L22_330.signal = L23_331
+          L22_330.band = L23_331
+        end
+        for L21_329, L22_330 in L18_326(L19_327) do
+          L3_311 = 0
+          for L26_334, L27_335 in L23_331(L24_332) do
+            L28_336 = _UPVALUE0_
+            L28_336 = L28_336.isStrNil
+            L28_336 = L28_336(L22_330.ssid)
+            if not L28_336 then
+              L28_336 = L27_335.ssid
+              if L28_336 == L22_330.ssid then
+                L28_336 = L27_335.band
+                if L28_336 == L22_330.band then
+                  L3_311 = 1
+                  break
+                end
+              end
+            end
+          end
+          if L3_311 == 0 then
+            if not L23_331 then
+              for L28_336 = 1, L26_334 - 1 do
+                if string.byte(L23_331, L28_336, L28_336 + 1) == 166 and string.byte(L23_331, L28_336, L28_336 + 1) > 192 and string.byte(L23_331, L28_336, L28_336 + 1) < 217 then
+                  _UPVALUE1_.log(4, string.format("filter out the SSID %s as it contains Greek letter \206\177~\207\137 using GB2312 code", L23_331))
+                  break
+                end
+              end
+              if L24_332 == 0 then
+                L25_333(L26_334, L27_335)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  L11_319(L12_320, L13_321)
+  return L1_309
+end
+function extendwifi_get_scanlist(A0_337)
+  local L1_338, L2_339, L3_340, L4_341, L5_342, L6_343, L7_344
+  L1_338 = apcli_get_scanlist
+  L2_339 = A0_337
+  L1_338 = L1_338(L2_339)
+  L2_339 = {}
+  for L6_343, L7_344 in L3_340(L4_341) do
+    if not _UPVALUE0_.isStrNil(L7_344.wsc_devicename) and L7_344.wsc_devicename == "XiaoMiRouter" and L7_344.enctype == "NONE" then
+      table.insert(L2_339, L7_344)
+    end
+  end
+  return L2_339
+end
+function extendwifi_get_all_scanlist(A0_345)
+  local L1_346, L2_347, L3_348, L4_349, L5_350, L6_351, L7_352
+  L1_346 = apcli_get_scanlist
+  L2_347 = A0_345
+  L1_346 = L1_346(L2_347)
+  L2_347 = {}
+  for L6_351, L7_352 in L3_348(L4_349) do
+    if not _UPVALUE0_.isStrNil(L7_352.wsc_devicename) and L7_352.wsc_devicename == "XiaoMiRouter" then
+      table.insert(L2_347, L7_352)
+    end
+  end
+  return L2_347
+end
+EXTENDWIFI_DEVICE_OPTION = {
+  {
+    "disabled",
+    "string",
+    "0"
+  },
+  {
+    "channel",
+    "string",
+    "0"
+  },
+  {
+    "bw",
+    "string",
+    "0"
+  },
+  {
+    "country",
+    "string",
+    "CN"
+  },
+  {
+    "txbf",
+    "string",
+    "3"
+  },
+  {
+    "ax",
+    "string",
+    "1"
+  },
+  {
+    "txpwr",
+    "string",
+    "max"
+  }
+}
+EXTENDWIFI_IFACE_OPTION = {
+  {
+    "disabled",
+    "string",
+    "0"
+  },
+  {
+    "network",
+    "string",
+    nil
+  },
+  {
+    "ssid",
+    "string",
+    nil
+  },
+  {
+    "key",
+    "string",
+    nil
+  },
+  {
+    "encryption",
+    "string",
+    nil
+  },
+  {
+    "enctype",
+    "string",
+    nil
+  },
+  {
+    "hidden",
+    "string",
+    nil
+  },
+  {
+    "macfilter",
+    "string",
+    nil
+  },
+  {
+    "maclist",
+    "list",
+    nil
+  },
+  {
+    "wpsdevicename",
+    "string",
+    nil
+  },
+  {
+    "bsd",
+    "string",
+    nil
+  },
+  {
+    "wscconfigstatus",
+    "string",
+    nil
+  },
+  {
+    "dynbcn",
+    "string",
+    nil
+  },
+  {
+    "rssithreshold",
+    "string",
+    nil
+  },
+  {
+    "ap_isolate",
+    "string",
+    nil
+  }
+}
+EXTENDWIFI_FILE = {
+  "/etc/xqDb/xqDb",
+  "/etc/config/wifiblist",
+  "/etc/config/wifiwlist",
+  "/etc/config/devicelist"
+}
+function __extendwifi_getdev(A0_353, A1_354)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_353) do
+    if _FORV_6_[".name"] == A1_354 then
+      return _FORV_6_
+    end
+  end
+  return nil
+end
+function __extendwifi_getiface(A0_355, A1_356)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_355) do
+    if _FORV_6_.ifname == A1_356 then
+      return _FORV_6_
+    end
+  end
+  return nil
+end
+function __extendwifi_tranlate_iface(A0_357, A1_358)
+  local L2_359
+  _UPVALUE0_.log(3, "__extendwifi_tranlate_iface (" .. A0_357.ifname .. " --> " .. A1_358.ifname .. ")")
+  for _FORV_6_, _FORV_7_ in pairs(EXTENDWIFI_IFACE_OPTION) do
+    L2_359 = A0_357[_FORV_7_[1]] or _FORV_7_[3]
+    if L2_359 == nil then
+      _UPVALUE0_.log(3, "rm " .. _FORV_7_[1])
+      _UPVALUE1_:delete("wireless", A1_358[".name"], _FORV_7_[1])
+    else
+      if _FORV_7_[2] == "string" then
+        _UPVALUE0_.log(3, _FORV_7_[1] .. " = " .. L2_359)
+      else
+        _UPVALUE0_.log(3, _FORV_7_[1] .. " = ", L2_359)
+      end
+      _UPVALUE1_:set("wireless", A1_358[".name"], _FORV_7_[1], L2_359)
+    end
+  end
+  _UPVALUE1_:commit("wireless")
+end
+function __extendwifi_tranlate_device(A0_360, A1_361)
+  local L2_362
+  _UPVALUE0_.log(3, "__extendwifi_tranlate_device (" .. A0_360[".name"] .. " --> " .. A1_361[".name"] .. ")")
+  for _FORV_6_, _FORV_7_ in pairs(EXTENDWIFI_DEVICE_OPTION) do
+    L2_362 = A0_360[_FORV_7_[1]] or _FORV_7_[3]
+    if L2_362 == nil then
+      _UPVALUE0_.log(3, "rm " .. _FORV_7_[1])
+      _UPVALUE1_:delete("wireless", A1_361[".name"], _FORV_7_[1])
+    else
+      _UPVALUE0_.log(3, _FORV_7_[1] .. " = " .. L2_362)
+      _UPVALUE1_:set("wireless", A1_361[".name"], _FORV_7_[1], L2_362)
+    end
+  end
+  _UPVALUE1_:commit("wireless")
+end
+function extendwifi_tranlate_wireless_config()
+  local L0_363, L1_364, L2_365, L3_366, L4_367, L5_368, L6_369, L7_370, L8_371, L9_372, L10_373, L11_374, L12_375, L13_376, L14_377, L15_378, L16_379, L17_380, L18_381, L19_382, L20_383, L21_384, L22_385
+  L0_363 = {}
+  L1_364 = {}
+  L2_365 = {}
+  L3_366 = {}
+  L4_367 = {}
+  L5_368 = {}
+  L6_369 = {}
+  L7_370 = {}
+  L8_371 = {}
+  L9_372 = {}
+  org_device = L10_373
+  new_device = L10_373
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L16_379.idx = L14_377
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379[".name"] = L17_380
+    L2_365[L15_378] = L16_379
+  end
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L16_379.idx = L14_377
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379[".name"] = L17_380
+    L3_366[L15_378] = L16_379
+  end
+  org_iface = L10_373
+  new_iface = L10_373
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L16_379.idx = L14_377
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379[".name"] = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_ifname"
+    L21_384 = L21_384 .. L22_385
+    L16_379.ifname = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = _UPVALUE1_
+    L22_385 = L21_384
+    L21_384 = L21_384.get
+    L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+    L21_384 = L21_384 or ""
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379.device = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = _UPVALUE1_
+    L22_385 = L21_384
+    L21_384 = L21_384.get
+    L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+    L21_384 = L21_384 or ""
+    L22_385 = "_band"
+    L21_384 = L21_384 .. L22_385
+    L16_379.band = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_network"
+    L21_384 = L21_384 .. L22_385
+    L16_379.network = L17_380
+    L16_379.mode = "ap"
+    L7_370[L15_378] = L16_379
+  end
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L16_379.idx = L14_377
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379[".name"] = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_ifname"
+    L21_384 = L21_384 .. L22_385
+    L16_379.ifname = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = _UPVALUE1_
+    L22_385 = L21_384
+    L21_384 = L21_384.get
+    L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+    L21_384 = L21_384 or ""
+    L22_385 = "_name"
+    L21_384 = L21_384 .. L22_385
+    L16_379.device = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = _UPVALUE1_
+    L22_385 = L21_384
+    L21_384 = L21_384.get
+    L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+    L21_384 = L21_384 or ""
+    L22_385 = "_band"
+    L21_384 = L21_384 .. L22_385
+    L16_379.band = L17_380
+    L19_382 = "misc"
+    L20_383 = "wireless"
+    L21_384 = L14_377
+    L22_385 = "_network"
+    L21_384 = L21_384 .. L22_385
+    L16_379.network = L17_380
+    L16_379.mode = "ap"
+    L8_371[L15_378] = L16_379
+  end
+  if L10_373 then
+  else
+    org_apcli = L10_373
+    new_apcli = L10_373
+    for L13_376, L14_377 in L10_373(L11_374) do
+      L16_379.idx = L14_377
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_name"
+      L21_384 = L21_384 .. L22_385
+      L16_379[".name"] = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_ifname"
+      L21_384 = L21_384 .. L22_385
+      L16_379.ifname = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = _UPVALUE1_
+      L22_385 = L21_384
+      L21_384 = L21_384.get
+      L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+      L21_384 = L21_384 or ""
+      L22_385 = "_name"
+      L21_384 = L21_384 .. L22_385
+      L16_379.device = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = _UPVALUE1_
+      L22_385 = L21_384
+      L21_384 = L21_384.get
+      L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+      L21_384 = L21_384 or ""
+      L22_385 = "_band"
+      L21_384 = L21_384 .. L22_385
+      L16_379.band = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_network"
+      L21_384 = L21_384 .. L22_385
+      L16_379.network = L17_380
+      L16_379.mode = "sta"
+      L7_370[L15_378] = L16_379
+    end
+    for L13_376, L14_377 in L10_373(L11_374) do
+      L16_379.idx = L14_377
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_name"
+      L21_384 = L21_384 .. L22_385
+      L16_379[".name"] = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_ifname"
+      L21_384 = L21_384 .. L22_385
+      L16_379.ifname = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = _UPVALUE1_
+      L22_385 = L21_384
+      L21_384 = L21_384.get
+      L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+      L21_384 = L21_384 or ""
+      L22_385 = "_name"
+      L21_384 = L21_384 .. L22_385
+      L16_379.device = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = _UPVALUE1_
+      L22_385 = L21_384
+      L21_384 = L21_384.get
+      L21_384 = L21_384(L22_385, "misc", "wireless", L14_377 .. "_deviceidx")
+      L21_384 = L21_384 or ""
+      L22_385 = "_band"
+      L21_384 = L21_384 .. L22_385
+      L16_379.band = L17_380
+      L19_382 = "misc"
+      L20_383 = "wireless"
+      L21_384 = L14_377
+      L22_385 = "_network"
+      L21_384 = L21_384 .. L22_385
+      L16_379.network = L17_380
+      L16_379.mode = "sta"
+      L8_371[L15_378] = L16_379
+    end
+  end
+  L10_373(L11_374, L12_375, L13_376, L14_377)
+  L10_373(L11_374, L12_375, L13_376, L14_377)
+  for L13_376, L14_377 in L10_373(L11_374) do
+    for L19_382, L20_383 in L16_379(L17_380) do
+      L21_384 = L14_377.idx
+      L22_385 = L20_383.idx
+      if L21_384 == L22_385 then
+        L21_384 = __extendwifi_getdev
+        L22_385 = L1_364
+        L21_384 = L21_384(L22_385, L14_377[".name"])
+        dev_new = L21_384
+        L21_384 = __extendwifi_getdev
+        L22_385 = L0_363
+        L21_384 = L21_384(L22_385, L20_383[".name"])
+        dev_org = L21_384
+        L21_384 = dev_new
+        if L21_384 then
+          L21_384 = dev_org
+          if L21_384 then
+            L21_384 = __extendwifi_tranlate_device
+            L22_385 = dev_org
+            L21_384(L22_385, dev_new)
+          end
+        end
+      end
+    end
+    if L15_378 == false then
+      L4_367[L16_379] = L17_380
+    end
+  end
+  L10_373(L11_374, L12_375, L13_376)
+  L10_373(L11_374, L12_375, L13_376, L14_377)
+  L10_373(L11_374, L12_375, L13_376, L14_377)
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L16_379[".name"] = L17_380
+    L16_379[".type"] = "wifi-iface"
+    L16_379.ifname = L17_380
+    L16_379.device = L17_380
+    L16_379.network = L17_380
+    L16_379.mode = L17_380
+    if L15_378 == nil then
+      L19_382 = "^r3600"
+      if L17_380 then
+      else
+        L19_382 = "creat new iface"
+        L20_383 = L14_377.idx
+        L21_384 = "  "
+        L22_385 = L16_379[".name"]
+        L19_382 = L19_382 .. L20_383 .. L21_384 .. L22_385 .. " " .. L16_379.ifname
+        L17_380(L18_381, L19_382)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = L16_379[".type"]
+        L17_380(L18_381, L19_382, L20_383, L21_384)
+        L6_369[L17_380] = L16_379
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "ifname"
+        L22_385 = L16_379.ifname
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "device"
+        L22_385 = L16_379.device
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "network"
+        L22_385 = L16_379.network
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "mode"
+        L22_385 = L16_379.mode
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L17_380(L18_381, L19_382)
+      end
+    elseif L17_380 then
+      if L17_380 ~= L18_381 then
+        L19_382 = "reset section name "
+        L20_383 = L14_377.idx
+        L21_384 = "  "
+        L22_385 = L14_377[".name"]
+        L19_382 = L19_382 .. L20_383 .. L21_384 .. L22_385 .. " form " .. L15_378[".name"]
+        L17_380(L18_381, L19_382)
+        L19_382 = "wireless"
+        L20_383 = L15_378[".name"]
+        L17_380(L18_381, L19_382, L20_383)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = L16_379[".type"]
+        L17_380(L18_381, L19_382, L20_383, L21_384)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "ifname"
+        L22_385 = L16_379.ifname
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "device"
+        L22_385 = L16_379.device
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "network"
+        L22_385 = L16_379.network
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L20_383 = L16_379[".name"]
+        L21_384 = "mode"
+        L22_385 = L16_379.mode
+        L17_380(L18_381, L19_382, L20_383, L21_384, L22_385)
+        L19_382 = "wireless"
+        L17_380(L18_381, L19_382)
+      end
+    end
+  end
+  L6_369 = L10_373
+  L10_373(L11_374, L12_375, L13_376, L14_377)
+  for L13_376, L14_377 in L10_373(L11_374) do
+    for L19_382, L20_383 in L16_379(L17_380) do
+      L21_384 = L14_377.idx
+      L22_385 = L20_383.idx
+      if L21_384 == L22_385 then
+        L21_384 = __extendwifi_getiface
+        L22_385 = L5_368
+        L21_384 = L21_384(L22_385, L20_383.ifname)
+        L22_385 = __extendwifi_getiface
+        L22_385 = L22_385(L6_369, L14_377.ifname)
+        if L21_384 and L22_385 then
+          __extendwifi_tranlate_iface(L21_384, L22_385)
+          break
+        end
+      end
+    end
+    if L15_378 == false then
+      L9_372[L16_379] = L14_377
+    end
+  end
+  L10_373(L11_374, L12_375, L13_376)
+  for L13_376, L14_377 in L10_373(L11_374) do
+    for L18_381, L19_382 in L15_378(L16_379) do
+      L20_383 = __extendwifi_getiface
+      L21_384 = L5_368
+      L22_385 = L19_382.ifname
+      L20_383 = L20_383(L21_384, L22_385)
+      L21_384 = __extendwifi_getiface
+      L22_385 = L6_369
+      L21_384 = L21_384(L22_385, L14_377.ifname)
+      if L20_383 and L21_384 then
+        L22_385 = _UPVALUE2_
+        L22_385 = L22_385.match
+        L22_385 = L22_385(L22_385, "^r3600")
+        if L22_385 then
+          L22_385 = L14_377.mode
+          if L22_385 == "ap" then
+            L22_385 = L14_377.network
+            if L22_385 == "lan" then
+              L22_385 = __extendwifi_tranlate_iface
+              L22_385(L20_383, L21_384)
+              L22_385 = string
+              L22_385 = L22_385.upper
+              L22_385 = L22_385(L14_377.band)
+              _UPVALUE1_:set("wireless", L21_384[".name"], "ssid", L20_383.ssid .. "_" .. L22_385)
+              _UPVALUE1_:set("wireless", L21_384[".name"], "disabled", "0")
+            end
+          end
+        else
+          L22_385 = L14_377.mode
+          if L22_385 == "ap" then
+            L22_385 = L14_377.network
+            if L22_385 == "lan" then
+              L22_385 = __extendwifi_tranlate_iface
+              L22_385(L20_383, L21_384)
+              L22_385 = string
+              L22_385 = L22_385.upper
+              L22_385 = L22_385(L14_377.band)
+              _UPVALUE1_:set("wireless", L21_384[".name"], "ssid", L20_383.ssid .. "_" .. L22_385)
+              _UPVALUE1_:set("wireless", L21_384[".name"], "disabled", "0")
+            end
+          else
+            L22_385 = L14_377.mode
+            if L22_385 == "ap" then
+              L22_385 = L14_377.network
+              if L22_385 == "guest" then
+                L22_385 = L20_383.macfilter
+                if L22_385 then
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "macfilter", L20_383.macfilter)
+                end
+                L22_385 = L20_383.maclist
+                if L22_385 then
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "maclist", L20_383.maclist)
+                end
+                L22_385 = _UPVALUE1_
+                L22_385 = L22_385.set
+                L22_385(L22_385, "wireless", L21_384[".name"], "disabled", "1")
+              end
+            else
+              L22_385 = L14_377.mode
+              if L22_385 == "ap" then
+                L22_385 = L14_377.network
+                if L22_385 == "ready" then
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "ssid", "minet_ready")
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "dynbcn", "1")
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "rssithreshold", "-20")
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "encryption", "none")
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "hidden", "1")
+                  L22_385 = _UPVALUE1_
+                  L22_385 = L22_385.set
+                  L22_385(L22_385, "wireless", L21_384[".name"], "disabled", "0")
+                end
+              else
+                L22_385 = _UPVALUE3_
+                L22_385 = L22_385.log
+                L22_385(3, L14_377.idx .. " (" .. L21_384.ifname .. ") no found & set disabled")
+                L22_385 = _UPVALUE1_
+                L22_385 = L22_385.set
+                L22_385(L22_385, "wireless", L21_384[".name"], "disabled", "1")
+              end
+            end
+          end
+          L22_385 = _UPVALUE1_
+          L22_385 = L22_385.commit
+          L22_385(L22_385, "wireless")
+          break
+        end
+      end
+    end
+  end
+  if L10_373 then
+  else
+    if L10_373 ~= "" then
+      L12_375(L13_376, L14_377, L15_378, L16_379)
+    end
+    if L11_374 ~= "" then
+      for L16_379, L17_380 in L13_376(L14_377) do
+        L19_382 = L18_381
+        L20_383 = "misc"
+        L21_384 = "wireless"
+        L22_385 = L17_380.idx
+        L22_385 = L22_385 .. "_ifname"
+      end
+      ifname_new = L13_376
+      L13_376(L14_377, L15_378, L16_379, L17_380, L18_381)
+      mode = L13_376
+      L14_377(L15_378)
+    end
+    L12_375(L13_376, L14_377)
+  end
+  for L13_376, L14_377 in L10_373(L11_374) do
+    L19_382 = " "
+    L20_383 = L14_377
+    L21_384 = " -f  2> /dev/NULL >&2"
+    L15_378(L16_379)
+  end
+  return L10_373
+end
+function getWiFiMacfilterList(A0_386)
+  local L1_387, L2_388
+  L1_387 = require
+  L2_388 = "luci.model.uci"
+  L1_387 = L1_387(L2_388)
+  L1_387 = L1_387.cursor
+  L1_387 = L1_387()
+  L2_388 = tonumber
+  L2_388 = L2_388(A0_386)
+  if L2_388 == 0 then
+    L2_388 = "wifiblist"
+  else
+    L2_388 = L2_388 or "wifiwlist"
+  end
+  return L1_387:get_list(L2_388, "maclist", "mac") or {}
+end
+function getWiFiMacfilterModel()
+  if require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)) then
+    if require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):get("macfilter") == "disabled" then
+      return 0
+    elseif require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):get("macfilter") == "deny" then
+      return 1
+    elseif require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):get("macfilter") == "allow" then
+      return 2
+    else
+      return 0
+    end
+  else
+    return 0
+  end
+end
+function getCurrentMacfilterList()
+  return require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):get("maclist")
+end
+function addDevice(A0_389, A1_390, A2_391)
+  local L3_392, L4_393, L5_394, L6_395, L7_396, L8_397, L9_398, L10_399
+  L3_392 = require
+  L4_393 = "xiaoqiang.util.XQDBUtil"
+  L3_392 = L3_392(L4_393)
+  L4_393 = require
+  L5_394 = "xiaoqiang.util.XQSynchrodata"
+  L4_393 = L4_393(L5_394)
+  L5_394 = _UPVALUE0_
+  L5_394 = L5_394.isStrNil
+  L6_395 = A1_390
+  L5_394 = L5_394(L6_395)
+  if not L5_394 then
+    L5_394 = _UPVALUE0_
+    L5_394 = L5_394.isStrNil
+    L6_395 = A2_391
+    L5_394 = L5_394(L6_395)
+    if not L5_394 then
+      L5_394 = _UPVALUE0_
+      L5_394 = L5_394.macFormat
+      L6_395 = A1_390
+      L5_394 = L5_394(L6_395)
+      A1_390 = L5_394
+      L5_394 = _UPVALUE0_
+      L5_394 = L5_394._cmdformat
+      L6_395 = A1_390
+      L5_394 = L5_394(L6_395)
+      L6_395 = _UPVALUE1_
+      L7_396 = L6_395
+      L6_395 = L6_395.match
+      L8_397 = "^d01"
+      L6_395 = L6_395(L7_396, L8_397)
+      if L6_395 then
+        L6_395 = tonumber
+        L7_396 = A0_389
+        L6_395 = L6_395(L7_396)
+        if L6_395 == 0 then
+          L6_395 = string
+          L6_395 = L6_395.format
+          L7_396 = "/sbin/chk_sta_re \"%s\""
+          L8_397 = L5_394
+          L6_395 = L6_395(L7_396, L8_397)
+          L7_396 = tostring
+          L8_397 = _UPVALUE2_
+          L8_397 = L8_397.trim
+          L8_397 = L8_397(L9_398, L10_399, L9_398(L10_399))
+          L7_396 = L7_396(L8_397, L9_398, L10_399, L8_397(L9_398, L10_399, L9_398(L10_399)))
+          if L7_396 == "resta" then
+            L8_397 = 3
+            return L8_397
+          end
+        end
+      end
+      L6_395 = L3_392.saveDeviceInfo
+      L7_396 = A1_390
+      L8_397 = A2_391
+      L6_395(L7_396, L8_397, L9_398, L10_399, "")
+      L6_395 = require
+      L7_396 = "luci.model.uci"
+      L6_395 = L6_395(L7_396)
+      L6_395 = L6_395.cursor
+      L6_395 = L6_395()
+      L7_396 = tonumber
+      L8_397 = A0_389
+      L7_396 = L7_396(L8_397)
+      if L7_396 == 0 then
+        L7_396 = "wifiblist"
+      else
+        L7_396 = L7_396 or "wifiwlist"
+      end
+      L8_397 = L6_395.get_list
+      L8_397 = L8_397(L9_398, L10_399, "maclist", "mac")
+      L8_397 = L8_397 or {}
+      for _FORV_12_, _FORV_13_ in L9_398(L10_399) do
+        if A1_390 == _FORV_13_ then
+          return 0
+        end
+      end
+      L9_398(L10_399, A1_390)
+      if L9_398 > 32 then
+        return L9_398
+      end
+      L10_399.mac = A1_390
+      L10_399.limited = 1
+      L9_398(L10_399)
+      L9_398(L10_399, L7_396, "maclist", "mac", L8_397)
+      L9_398(L10_399, L7_396)
+      if L10_399 == 1 then
+      else
+      end
+      if L10_399 and tonumber(A0_389) == 0 then
+        L10_399.macfilter = L9_398
+        if L8_397 and #L8_397 > 0 then
+          L10_399.maclist = L8_397
+        else
+          L10_399.maclist = nil
+          L6_395:delete("wireless", "guest_2G", "maclist")
+        end
+        L6_395:section("wireless", "wifi-iface", "guest_2G", L10_399)
+        L6_395:commit("wireless")
+      end
+      if require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)) then
+        require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):set("macfilter", L9_398)
+        if L8_397 and #L8_397 > 0 then
+          require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):set_list("maclist", L8_397)
+        else
+          require("luci.model.network").init():get_wifinet(_wifiNameForIndex(1)):set_list("maclist", nil)
+        end
+      end
+      if require("luci.model.network").init():get_wifinet(_wifiNameForIndex(2)) then
+        require("luci.model.network").init():get_wifinet(_wifiNameForIndex(2)):set("macfilter", L9_398)
+        if L8_397 and #L8_397 > 0 then
+          require("luci.model.network").init():get_wifinet(_wifiNameForIndex(2)):set_list("maclist", L8_397)
+        else
+          require("luci.model.network").init():get_wifinet(_wifiNameForIndex(2)):set_list("maclist", nil)
+        end
+      end
+      require("luci.model.network").init():save("wireless")
+      require("luci.model.network").init():commit("wireless")
+      if tonumber(A0_389) == 0 then
+        if _UPVALUE1_:match("^r1800") or _UPVALUE1_:match("^r3600") or _UPVALUE1_:match("^r2200") or _UPVALUE1_:match("^r2350") then
+          os.execute("iwpriv wl0 addmac_sec \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl1 addmac_sec \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl14 addmac_sec \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl0 maccmd_sec 2")
+          os.execute("iwpriv wl1 maccmd_sec 2")
+          os.execute("iwpriv wl14 maccmd_sec 2")
+          os.execute("iwpriv wl0 kickmac \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl1 kickmac \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl14 kickmac \"" .. L5_394 .. "\"")
+        else
+          os.execute("wl -i wl0 mac \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl1 mac \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl1.2 mac \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl0 macmode 1")
+          os.execute("wl -i wl1 macmode 1")
+          os.execute("wl -i wl1.2 macmode 1")
+          os.execute("wl -i wl0 deauthenticate \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl1 deauthenticate \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl1.2 deauthenticate \"" .. L5_394 .. "\"")
+        end
+      elseif tonumber(A0_389) == 1 then
+        if _UPVALUE1_:match("^r1800") or _UPVALUE1_:match("^r3600") or _UPVALUE1_:match("^r2200") or _UPVALUE1_:match("^r2350") then
+          os.execute("iwpriv wl0 addmac_sec \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl1 addmac_sec \"" .. L5_394 .. "\"")
+          os.execute("iwpriv wl0 maccmd_sec 1")
+          os.execute("iwpriv wl1 maccmd_sec 1")
+          os.execute("iwpriv wl14 maccmd_sec 0")
+        else
+          os.execute("wl -i wl0 mac \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl1 mac \"" .. L5_394 .. "\"")
+          os.execute("wl -i wl0 macmode 2")
+          os.execute("wl -i wl1 macmode 2")
+          os.execute("wl -i wl1.2 macmode 0")
+        end
+      end
+      return 0
+    end
+  else
+    L5_394 = 2
+    return L5_394
+  end
+end
+function wl_editWiFiMacfilterList(A0_400, A1_401, A2_402)
+  local L3_403, L4_404, L5_405, L6_406, L7_407, L8_408, L9_409, L10_410, L11_411, L12_412, L13_413, L14_414, L15_415
+  if A1_401 then
+    L3_403 = _UPVALUE0_
+    L3_403 = L3_403.isStrNil
+    L4_404 = A2_402
+    L3_403 = L3_403(L4_404)
+  elseif L3_403 then
+    return
+  end
+  L3_403 = require
+  L4_404 = "xiaoqiang.util.XQSynchrodata"
+  L3_403 = L3_403(L4_404)
+  L4_404 = require
+  L5_405 = "luci.model.uci"
+  L4_404 = L4_404(L5_405)
+  L4_404 = L4_404.cursor
+  L4_404 = L4_404()
+  L5_405 = tonumber
+  L6_406 = A0_400
+  L5_405 = L5_405(L6_406)
+  if L5_405 == 0 then
+    L5_405 = "wifiblist"
+  else
+    L5_405 = L5_405 or "wifiwlist"
+  end
+  L7_407 = L4_404
+  L6_406 = L4_404.get_list
+  L8_408 = L5_405
+  L9_409 = "maclist"
+  L6_406 = L6_406(L7_407, L8_408, L9_409, L10_410)
+  L6_406 = L6_406 or {}
+  L7_407 = getWiFiMacfilterModel
+  L7_407 = L7_407()
+  L8_408 = getCurrentMacfilterList
+  L8_408 = L8_408()
+  if A2_402 == 0 then
+    L9_409 = {}
+    for L13_413, L14_414 in L10_410(L11_411) do
+      L15_415 = _UPVALUE0_
+      L15_415 = L15_415.macFormat
+      L15_415 = L15_415(L14_414)
+      L9_409[L15_415] = 1
+    end
+    for L13_413, L14_414 in L10_410(L11_411) do
+      L15_415 = _UPVALUE0_
+      L15_415 = L15_415.isStrNil
+      L15_415 = L15_415(L14_414)
+      if not L15_415 then
+        L15_415 = _UPVALUE0_
+        L15_415 = L15_415.macFormat
+        L15_415 = L15_415(L14_414)
+        L9_409[L15_415] = 1
+      end
+    end
+    L6_406 = L10_410
+    for L13_413, L14_414 in L10_410(L11_411) do
+      if L14_414 == 1 then
+        L15_415 = table
+        L15_415 = L15_415.insert
+        L15_415(L6_406, L13_413)
+      end
+    end
+    if L10_410 > 32 then
+      return L10_410
+    end
+  else
+    L9_409 = {}
+    for L13_413, L14_414 in L10_410(L11_411) do
+      L15_415 = _UPVALUE0_
+      L15_415 = L15_415.macFormat
+      L15_415 = L15_415(L14_414)
+      L9_409[L15_415] = 1
+    end
+    for L13_413, L14_414 in L10_410(L11_411) do
+      L15_415 = _UPVALUE0_
+      L15_415 = L15_415.isStrNil
+      L15_415 = L15_415(L14_414)
+      if not L15_415 then
+        L15_415 = _UPVALUE0_
+        L15_415 = L15_415.macFormat
+        L15_415 = L15_415(L14_414)
+        L9_409[L15_415] = 0
+      end
+    end
+    L6_406 = L10_410
+    for L13_413, L14_414 in L10_410(L11_411) do
+      if L14_414 == 1 then
+        L15_415 = table
+        L15_415 = L15_415.insert
+        L15_415(L6_406, L13_413)
+      end
+    end
+  end
+  if A0_400 == 0 then
+    L9_409 = {}
+    if L8_408 then
+      for L14_414, L15_415 in L11_411(L12_412) do
+        L9_409[_UPVALUE0_.macFormat(L15_415)] = 1
+      end
+    end
+    if A2_402 == 0 then
+      for L14_414, L15_415 in L11_411(L12_412) do
+        L15_415 = _UPVALUE0_.macFormat(L15_415)
+        if not L9_409[L15_415] then
+          L10_410[L15_415] = 1
+        end
+      end
+    elseif A2_402 == 1 then
+      for L14_414, L15_415 in L11_411(L12_412) do
+        L15_415 = _UPVALUE0_.macFormat(L15_415)
+        if L9_409[L15_415] then
+          L10_410[L15_415] = 0
+        end
+      end
+    end
+    for L14_414, L15_415 in L11_411(L12_412) do
+      L3_403.syncDeviceInfo({mac = L14_414, limited = L15_415})
+    end
+  end
+  L9_409 = os
+  L9_409 = L9_409.execute
+  L9_409(L10_410)
+  L9_409 = os
+  L9_409 = L9_409.execute
+  L9_409(L10_410)
+  L9_409 = os
+  L9_409 = L9_409.execute
+  L9_409(L10_410)
+  L9_409 = {}
+  for L13_413, L14_414 in L10_410(L11_411) do
+    L15_415 = _UPVALUE0_
+    L15_415 = L15_415._cmdformat
+    L15_415 = L15_415(L14_414)
+    table.insert(L9_409, L15_415)
+  end
+  if L11_411 == 0 then
+    L14_414 = "\""
+    L11_411(L12_412)
+    L14_414 = "\""
+    L11_411(L12_412)
+    L14_414 = "\""
+    L11_411(L12_412)
+    L11_411(L12_412)
+    L11_411(L12_412)
+    L11_411(L12_412)
+    for L14_414, L15_415 in L11_411(L12_412) do
+      os.execute("wl -i wl0 deauthenticate \"" .. L15_415 .. "\"")
+      os.execute("wl -i wl1 deauthenticate \"" .. L15_415 .. "\"")
+      os.execute("wl -i wl1.2 deauthenticate \"" .. L15_415 .. "\"")
+    end
+  elseif L11_411 == 1 then
+    L14_414 = "\""
+    L11_411(L12_412)
+    L14_414 = "\""
+    L11_411(L12_412)
+    L11_411(L12_412)
+    L11_411(L12_412)
+    L11_411(L12_412)
+    if A2_402 == 1 and A1_401 then
+      for L14_414, L15_415 in L11_411(L12_412) do
+        if L15_415 then
+          L15_415 = _UPVALUE0_._cmdformat(L15_415)
+          os.execute("wl -i wl0 deauthenticate \"" .. L15_415 .. "\"")
+          os.execute("wl -i wl1 deauthenticate \"" .. L15_415 .. "\"")
+          os.execute("wl -i wl1.2 deauthenticate \"" .. L15_415 .. "\"")
+        end
+      end
+    end
+  end
+  if L11_411 > 0 then
+    L14_414 = "maclist"
+    L15_415 = "mac"
+    L11_411(L12_412, L13_413, L14_414, L15_415, L6_406)
+  else
+    L14_414 = "maclist"
+    L15_415 = "mac"
+    L11_411(L12_412, L13_413, L14_414, L15_415)
+  end
+  L11_411(L12_412, L13_413)
+  if L12_412 == 1 then
+  else
+  end
+  L14_414 = "wireless"
+  L15_415 = "guest_2G"
+  if L12_412 then
+    L14_414 = A0_400
+    if L13_413 == 0 then
+      L12_412.macfilter = L11_411
+      if L6_406 then
+        if L13_413 > 0 then
+          L12_412.maclist = L6_406
+        end
+      else
+        L12_412.maclist = nil
+        L14_414 = L4_404
+        L15_415 = "wireless"
+        L13_413(L14_414, L15_415, "guest_2G", "maclist")
+      end
+      L14_414 = L4_404
+      L15_415 = "wireless"
+      L13_413(L14_414, L15_415, "wifi-iface", "guest_2G", L12_412)
+      L14_414 = L4_404
+      L15_415 = "wireless"
+      L13_413(L14_414, L15_415)
+    end
+  end
+  L14_414 = "luci.model.network"
+  L15_415 = L13_413
+  L14_414 = L13_413.get_wifinet
+  L14_414 = L14_414(L15_415, _wifiNameForIndex(1))
+  L15_415 = L13_413.get_wifinet
+  L15_415 = L15_415(L13_413, _wifiNameForIndex(2))
+  if L14_414 then
+    L14_414:set("macfilter", L11_411)
+    if L6_406 and #L6_406 > 0 then
+      L14_414:set_list("maclist", L6_406)
+    else
+      L14_414:set_list("maclist", nil)
+    end
+  end
+  if L15_415 then
+    L15_415:set("macfilter", L11_411)
+    if L6_406 and #L6_406 > 0 then
+      L15_415:set_list("maclist", L6_406)
+    else
+      L15_415:set_list("maclist", nil)
+    end
+  end
+  L13_413:save("wireless")
+  L13_413:commit("wireless")
+  os.execute("ubus call trafficd update_assoclist")
+end
+function iwpriv_editWiFiMacfilterList(A0_416, A1_417, A2_418)
+  local L3_419, L4_420, L5_421, L6_422, L7_423, L8_424, L9_425, L10_426, L11_427, L12_428, L13_429, L14_430
+  L3_419 = require
+  L4_420 = "xiaoqiang.util.XQSynchrodata"
+  L3_419 = L3_419(L4_420)
+  if A1_417 then
+    L4_420 = type
+    L5_421 = A1_417
+    L4_420 = L4_420(L5_421)
+    if L4_420 == "table" then
+      L4_420 = _UPVALUE0_
+      L4_420 = L4_420.isStrNil
+      L5_421 = A2_418
+      L4_420 = L4_420(L5_421)
+    end
+  elseif L4_420 then
+    L4_420 = 2
+    return L4_420
+  end
+  L4_420 = require
+  L5_421 = "luci.model.uci"
+  L4_420 = L4_420(L5_421)
+  L4_420 = L4_420.cursor
+  L4_420 = L4_420()
+  L5_421 = tonumber
+  L6_422 = A0_416
+  L5_421 = L5_421(L6_422)
+  if L5_421 == 0 then
+    L5_421 = "wifiblist"
+  else
+    L5_421 = L5_421 or "wifiwlist"
+  end
+  L7_423 = L4_420
+  L6_422 = L4_420.get_list
+  L8_424 = L5_421
+  L6_422 = L6_422(L7_423, L8_424, L9_425, L10_426)
+  L6_422 = L6_422 or {}
+  L7_423 = getCurrentMacfilterList
+  L7_423 = L7_423()
+  if A2_418 == 0 then
+    L8_424 = {}
+    for L12_428, L13_429 in L9_425(L10_426) do
+      L14_430 = _UPVALUE0_
+      L14_430 = L14_430.macFormat
+      L14_430 = L14_430(L13_429)
+      L8_424[L14_430] = 1
+    end
+    for L12_428, L13_429 in L9_425(L10_426) do
+      L14_430 = _UPVALUE0_
+      L14_430 = L14_430.isStrNil
+      L14_430 = L14_430(L13_429)
+      if not L14_430 then
+        L14_430 = _UPVALUE0_
+        L14_430 = L14_430.macFormat
+        L14_430 = L14_430(L13_429)
+        L8_424[L14_430] = 1
+      end
+    end
+    L6_422 = L9_425
+    for L12_428, L13_429 in L9_425(L10_426) do
+      if L13_429 == 1 then
+        L14_430 = table
+        L14_430 = L14_430.insert
+        L14_430(L6_422, L12_428)
+      end
+    end
+    if L9_425 > 32 then
+      return L9_425
+    end
+  else
+    L8_424 = {}
+    for L12_428, L13_429 in L9_425(L10_426) do
+      L14_430 = _UPVALUE0_
+      L14_430 = L14_430.macFormat
+      L14_430 = L14_430(L13_429)
+      L8_424[L14_430] = 1
+    end
+    for L12_428, L13_429 in L9_425(L10_426) do
+      L14_430 = _UPVALUE0_
+      L14_430 = L14_430.isStrNil
+      L14_430 = L14_430(L13_429)
+      if not L14_430 then
+        L14_430 = _UPVALUE0_
+        L14_430 = L14_430.macFormat
+        L14_430 = L14_430(L13_429)
+        L8_424[L14_430] = 0
+      end
+    end
+    L6_422 = L9_425
+    for L12_428, L13_429 in L9_425(L10_426) do
+      if L13_429 == 1 then
+        L14_430 = table
+        L14_430 = L14_430.insert
+        L14_430(L6_422, L12_428)
+      end
+    end
+  end
+  if A0_416 == 0 then
+    L8_424 = {}
+    if L7_423 then
+      for L13_429, L14_430 in L10_426(L11_427) do
+        L8_424[_UPVALUE0_.macFormat(L14_430)] = 1
+      end
+    end
+    if A2_418 == 0 then
+      for L13_429, L14_430 in L10_426(L11_427) do
+        L14_430 = _UPVALUE0_.macFormat(L14_430)
+        if not L8_424[L14_430] then
+          L9_425[L14_430] = 1
+        end
+      end
+    elseif A2_418 == 1 then
+      for L13_429, L14_430 in L10_426(L11_427) do
+        L14_430 = _UPVALUE0_.macFormat(L14_430)
+        if L8_424[L14_430] then
+          L9_425[L14_430] = 0
+        end
+      end
+    end
+    for L13_429, L14_430 in L10_426(L11_427) do
+      L3_419.syncDeviceInfo({mac = L13_429, limited = L14_430})
+    end
+  end
+  L8_424 = #L6_422
+  if L8_424 > 0 then
+    L8_424 = L4_420.set_list
+    L13_429 = L6_422
+    L8_424(L9_425, L10_426, L11_427, L12_428, L13_429)
+  else
+    L8_424 = L4_420.delete
+    L8_424(L9_425, L10_426, L11_427, L12_428)
+  end
+  L8_424 = L4_420.commit
+  L8_424(L9_425, L10_426)
+  L8_424 = nil
+  if L9_425 == 1 then
+    L8_424 = "allow"
+  else
+    L8_424 = "deny"
+  end
+  if L9_425 then
+    if L10_426 == 0 then
+      L9_425.macfilter = L8_424
+      if L6_422 then
+        if L10_426 > 0 then
+          L9_425.maclist = L6_422
+        end
+      else
+        L9_425.maclist = nil
+        L13_429 = "guest_2G"
+        L14_430 = "maclist"
+        L10_426(L11_427, L12_428, L13_429, L14_430)
+      end
+      L13_429 = "wifi-iface"
+      L14_430 = "guest_2G"
+      L10_426(L11_427, L12_428, L13_429, L14_430, L9_425)
+      L10_426(L11_427, L12_428)
+    end
+  end
+  L13_429 = _wifiNameForIndex
+  L14_430 = 1
+  L14_430 = L13_429(L14_430)
+  L13_429 = L10_426
+  L14_430 = _wifiNameForIndex
+  L14_430 = L14_430(2)
+  if L11_427 then
+    L14_430 = L11_427
+    L13_429 = L11_427.set
+    L13_429(L14_430, "macfilter", L8_424)
+    if L6_422 then
+      L13_429 = #L6_422
+      if L13_429 > 0 then
+        L14_430 = L11_427
+        L13_429 = L11_427.set_list
+        L13_429(L14_430, "maclist", L6_422)
+      end
+    else
+      L14_430 = L11_427
+      L13_429 = L11_427.set_list
+      L13_429(L14_430, "maclist", nil)
+    end
+  end
+  if L12_428 then
+    L14_430 = L12_428
+    L13_429 = L12_428.set
+    L13_429(L14_430, "macfilter", L8_424)
+    if L6_422 then
+      L13_429 = #L6_422
+      if L13_429 > 0 then
+        L14_430 = L12_428
+        L13_429 = L12_428.set_list
+        L13_429(L14_430, "maclist", L6_422)
+      end
+    else
+      L14_430 = L12_428
+      L13_429 = L12_428.set_list
+      L13_429(L14_430, "maclist", nil)
+    end
+  end
+  L14_430 = L10_426
+  L13_429 = L10_426.save
+  L13_429(L14_430, "wireless")
+  L14_430 = L10_426
+  L13_429 = L10_426.commit
+  L13_429(L14_430, "wireless")
+  L13_429 = require
+  L14_430 = "json"
+  L13_429 = L13_429(L14_430)
+  L14_430 = L13_429.encode
+  L14_430 = L14_430({model = A0_416, maclist = L6_422})
+  _UPVALUE0_.forkExec("lua /usr/sbin/iwpriv_macfilter.lua 2 \"" .. _UPVALUE0_._cmdformat(L14_430) .. "\"")
+  return 0
+end
+function qca_iwpriv_editWiFiMacfilterList(A0_431, A1_432, A2_433)
+  local L3_434, L4_435, L5_436, L6_437, L7_438, L8_439, L9_440, L10_441, L11_442, L12_443, L13_444, L14_445
+  if A1_432 then
+    L3_434 = type
+    L4_435 = A1_432
+    L3_434 = L3_434(L4_435)
+    if L3_434 == "table" then
+      L3_434 = _UPVALUE0_
+      L3_434 = L3_434.isStrNil
+      L4_435 = A2_433
+      L3_434 = L3_434(L4_435)
+    end
+  elseif L3_434 then
+    L3_434 = 2
+    return L3_434
+  end
+  L3_434 = require
+  L4_435 = "xiaoqiang.util.XQSynchrodata"
+  L3_434 = L3_434(L4_435)
+  L4_435 = require
+  L5_436 = "luci.model.uci"
+  L4_435 = L4_435(L5_436)
+  L4_435 = L4_435.cursor
+  L4_435 = L4_435()
+  L5_436 = tonumber
+  L6_437 = A0_431
+  L5_436 = L5_436(L6_437)
+  if L5_436 == 0 then
+    L5_436 = "wifiblist"
+  else
+    L5_436 = L5_436 or "wifiwlist"
+  end
+  L7_438 = L4_435
+  L6_437 = L4_435.get_list
+  L8_439 = L5_436
+  L6_437 = L6_437(L7_438, L8_439, L9_440, L10_441)
+  L6_437 = L6_437 or {}
+  L7_438 = getCurrentMacfilterList
+  L7_438 = L7_438()
+  if A2_433 == 0 then
+    L8_439 = {}
+    for L12_443, L13_444 in L9_440(L10_441) do
+      L14_445 = _UPVALUE0_
+      L14_445 = L14_445.macFormat
+      L14_445 = L14_445(L13_444)
+      L8_439[L14_445] = 1
+    end
+    for L12_443, L13_444 in L9_440(L10_441) do
+      L14_445 = _UPVALUE0_
+      L14_445 = L14_445.isStrNil
+      L14_445 = L14_445(L13_444)
+      if not L14_445 then
+        L14_445 = _UPVALUE0_
+        L14_445 = L14_445.macFormat
+        L14_445 = L14_445(L13_444)
+        L8_439[L14_445] = 1
+      end
+    end
+    L6_437 = L9_440
+    for L12_443, L13_444 in L9_440(L10_441) do
+      if L13_444 == 1 then
+        L14_445 = table
+        L14_445 = L14_445.insert
+        L14_445(L6_437, L12_443)
+      end
+    end
+    if L9_440 > 32 then
+      return L9_440
+    end
+  else
+    L8_439 = {}
+    for L12_443, L13_444 in L9_440(L10_441) do
+      L14_445 = _UPVALUE0_
+      L14_445 = L14_445.macFormat
+      L14_445 = L14_445(L13_444)
+      L8_439[L14_445] = 1
+    end
+    for L12_443, L13_444 in L9_440(L10_441) do
+      L14_445 = _UPVALUE0_
+      L14_445 = L14_445.isStrNil
+      L14_445 = L14_445(L13_444)
+      if not L14_445 then
+        L14_445 = _UPVALUE0_
+        L14_445 = L14_445.macFormat
+        L14_445 = L14_445(L13_444)
+        L8_439[L14_445] = 0
+      end
+    end
+    L6_437 = L9_440
+    for L12_443, L13_444 in L9_440(L10_441) do
+      if L13_444 == 1 then
+        L14_445 = table
+        L14_445 = L14_445.insert
+        L14_445(L6_437, L12_443)
+      end
+    end
+  end
+  if A0_431 == 0 then
+    L8_439 = {}
+    if L7_438 then
+      for L13_444, L14_445 in L10_441(L11_442) do
+        L8_439[_UPVALUE0_.macFormat(L14_445)] = 1
+      end
+    end
+    if A2_433 == 0 then
+      for L13_444, L14_445 in L10_441(L11_442) do
+        L14_445 = _UPVALUE0_.macFormat(L14_445)
+        if not L8_439[L14_445] then
+          L9_440[L14_445] = 1
+        end
+      end
+    elseif A2_433 == 1 then
+      for L13_444, L14_445 in L10_441(L11_442) do
+        L14_445 = _UPVALUE0_.macFormat(L14_445)
+        if L8_439[L14_445] then
+          L9_440[L14_445] = 0
+        end
+      end
+    end
+    for L13_444, L14_445 in L10_441(L11_442) do
+      L3_434.syncDeviceInfo({mac = L13_444, limited = L14_445})
+    end
+  end
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = os
+  L8_439 = L8_439.execute
+  L8_439(L9_440)
+  L8_439 = {}
+  for L12_443, L13_444 in L9_440(L10_441) do
+    L14_445 = _UPVALUE0_
+    L14_445 = L14_445._cmdformat
+    L14_445 = L14_445(L13_444)
+    table.insert(L8_439, L14_445)
+  end
+  for L12_443, L13_444 in L9_440(L10_441) do
+    L14_445 = os
+    L14_445 = L14_445.execute
+    L14_445("iwpriv wl0 addmac_sec \"" .. L13_444 .. "\"")
+    L14_445 = os
+    L14_445 = L14_445.execute
+    L14_445("iwpriv wl1 addmac_sec \"" .. L13_444 .. "\"")
+    L14_445 = os
+    L14_445 = L14_445.execute
+    L14_445("iwpriv wl14 addmac_sec \"" .. L13_444 .. "\"")
+  end
+  if L9_440 == 0 then
+    L9_440(L10_441)
+    L9_440(L10_441)
+    L9_440(L10_441)
+    for L12_443, L13_444 in L9_440(L10_441) do
+      L14_445 = os
+      L14_445 = L14_445.execute
+      L14_445("iwpriv wl0 kickmac \"" .. L13_444 .. "\"")
+      L14_445 = os
+      L14_445 = L14_445.execute
+      L14_445("iwpriv wl1 kickmac \"" .. L13_444 .. "\"")
+      L14_445 = os
+      L14_445 = L14_445.execute
+      L14_445("iwpriv wl14 kickmac \"" .. L13_444 .. "\"")
+    end
+  elseif L9_440 == 1 then
+    L9_440(L10_441)
+    L9_440(L10_441)
+    L9_440(L10_441)
+    if A2_433 == 1 and A1_432 then
+      for L12_443, L13_444 in L9_440(L10_441) do
+        if L13_444 then
+          L14_445 = _UPVALUE0_
+          L14_445 = L14_445._cmdformat
+          L14_445 = L14_445(L13_444)
+          L13_444 = L14_445
+          L14_445 = os
+          L14_445 = L14_445.execute
+          L14_445("iwpriv wl0 kickmac \"" .. L13_444 .. "\"")
+          L14_445 = os
+          L14_445 = L14_445.execute
+          L14_445("iwpriv wl1 kickmac \"" .. L13_444 .. "\"")
+          L14_445 = os
+          L14_445 = L14_445.execute
+          L14_445("iwpriv wl14 kickmac \"" .. L13_444 .. "\"")
+        end
+      end
+    end
+  end
+  if L9_440 > 0 then
+    L13_444 = "mac"
+    L14_445 = L6_437
+    L9_440(L10_441, L11_442, L12_443, L13_444, L14_445)
+  else
+    L13_444 = "mac"
+    L9_440(L10_441, L11_442, L12_443, L13_444)
+  end
+  L9_440(L10_441, L11_442)
+  if L10_441 == 1 then
+  else
+  end
+  L13_444 = "guest_2G"
+  if L10_441 then
+    if L11_442 == 0 then
+      L10_441.macfilter = L9_440
+      if L6_437 then
+        if L11_442 > 0 then
+          L10_441.maclist = L6_437
+        end
+      else
+        L10_441.maclist = nil
+        L13_444 = "wireless"
+        L14_445 = "guest_2G"
+        L11_442(L12_443, L13_444, L14_445, "maclist")
+      end
+      L13_444 = "wireless"
+      L14_445 = "wifi-iface"
+      L11_442(L12_443, L13_444, L14_445, "guest_2G", L10_441)
+      L13_444 = "wireless"
+      L11_442(L12_443, L13_444)
+    end
+  end
+  L13_444 = L11_442
+  L14_445 = _wifiNameForIndex
+  L14_445 = L14_445(1)
+  L14_445 = L11_442
+  L13_444 = L11_442.get_wifinet
+  L13_444 = L13_444(L14_445, _wifiNameForIndex(2))
+  if L12_443 then
+    L14_445 = L12_443.set
+    L14_445(L12_443, "macfilter", L9_440)
+    if L6_437 then
+      L14_445 = #L6_437
+      if L14_445 > 0 then
+        L14_445 = L12_443.set_list
+        L14_445(L12_443, "maclist", L6_437)
+      end
+    else
+      L14_445 = L12_443.set_list
+      L14_445(L12_443, "maclist", nil)
+    end
+  end
+  if L13_444 then
+    L14_445 = L13_444.set
+    L14_445(L13_444, "macfilter", L9_440)
+    if L6_437 then
+      L14_445 = #L6_437
+      if L14_445 > 0 then
+        L14_445 = L13_444.set_list
+        L14_445(L13_444, "maclist", L6_437)
+      end
+    else
+      L14_445 = L13_444.set_list
+      L14_445(L13_444, "maclist", nil)
+    end
+  end
+  L14_445 = L11_442.save
+  L14_445(L11_442, "wireless")
+  L14_445 = L11_442.commit
+  L14_445(L11_442, "wireless")
+  L14_445 = os
+  L14_445 = L14_445.execute
+  L14_445("ubus call trafficd update_assoclist")
+end
+editWiFiMacfilterList = wl_editWiFiMacfilterList
+if L9_9:match("^r1800") or L9_9:match("^r3600") or L9_9:match("^r2200") or L9_9:match("^r2350") then
+  editWiFiMacfilterList = qca_iwpriv_editWiFiMacfilterList
+elseif L9_9:match("^r1c") or L9_9:match("^r3") or L9_9:match("^r4") or L9_9:match("^r2100") or L9_9:match("^r2600") then
+  editWiFiMacfilterList = iwpriv_editWiFiMacfilterList
+end
+function getWiFiMacfilterInfo(A0_446)
+  local L1_447, L2_448, L3_449, L4_450, L5_451, L6_452, L7_453, L8_454, L9_455, L10_456, L11_457, L12_458, L13_459, L14_460, L15_461, L16_462, L17_463, L18_464, L19_465, L20_466
+  L1_447 = require
+  L2_448 = "luci.util"
+  L1_447 = L1_447(L2_448)
+  L2_448 = require
+  L3_449 = "luci.model.network"
+  L2_448 = L2_448(L3_449)
+  L2_448 = L2_448.init
+  L2_448 = L2_448()
+  L3_449 = require
+  L4_450 = "xiaoqiang.util.XQDBUtil"
+  L3_449 = L3_449(L4_450)
+  L4_450 = require
+  L5_451 = "xiaoqiang.XQEquipment"
+  L4_450 = L4_450(L5_451)
+  L5_451 = require
+  L6_452 = "xiaoqiang.util.XQPushUtil"
+  L5_451 = L5_451(L6_452)
+  L7_453 = L2_448
+  L6_452 = L2_448.get_wifinet
+  L8_454 = _wifiNameForIndex
+  L9_455 = 1
+  L20_466 = L8_454(L9_455)
+  L6_452 = L6_452(L7_453, L8_454, L9_455, L10_456, L11_457, L12_458, L13_459, L14_460, L15_461, L16_462, L17_463, L18_464, L19_465, L20_466, L8_454(L9_455))
+  L7_453 = L5_451.pushSettings
+  L7_453 = L7_453()
+  L8_454 = {}
+  L9_455 = L7_453.auth
+  if L9_455 then
+    L9_455 = 1
+  else
+    L9_455 = L9_455 or 0
+  end
+  L8_454.enable = L9_455
+  L8_454.model = 0
+  if L6_452 then
+    L10_456 = L6_452
+    L9_455 = L6_452.get
+    L9_455 = L9_455(L10_456, L11_457)
+    if L9_455 == "disabled" then
+      L8_454.model = 0
+    elseif L9_455 == "deny" then
+      L8_454.model = 0
+    elseif L9_455 == "allow" then
+      L8_454.model = 1
+    else
+      L8_454.model = 0
+    end
+  end
+  L9_455 = {}
+  L10_456 = getWiFiMacfilterList
+  if A0_446 == nil then
+  else
+  end
+  L10_456 = L10_456(L11_457)
+  for L14_460, L15_461 in L11_457(L12_458) do
+    L16_462 = _UPVALUE0_
+    L16_462 = L16_462.macFormat
+    L17_463 = L15_461
+    L16_462 = L16_462(L17_463)
+    L15_461 = L16_462
+    L16_462 = {}
+    L16_462.mac = L15_461
+    L17_463 = ""
+    L18_464 = L3_449.fetchDeviceInfo
+    L19_465 = L15_461
+    L18_464 = L18_464(L19_465)
+    if L18_464 then
+      L19_465 = L18_464.oName
+      L20_466 = L18_464.nickname
+      if not _UPVALUE0_.isStrNil(L20_466) then
+        L17_463 = L20_466
+      else
+        if _UPVALUE0_.isStrNil(L17_463) and not _UPVALUE0_.isStrNil(L4_450.identifyDevice(L15_461, L19_465).type.n) then
+          L17_463 = L4_450.identifyDevice(L15_461, L19_465).type.n
+        end
+        if _UPVALUE0_.isStrNil(L17_463) and not _UPVALUE0_.isStrNil(L19_465) then
+          L17_463 = L19_465
+        end
+        if _UPVALUE0_.isStrNil(L17_463) and not _UPVALUE0_.isStrNil(L4_450.identifyDevice(L15_461, L19_465).name) then
+          L17_463 = L4_450.identifyDevice(L15_461, L19_465).name
+        end
+        if _UPVALUE0_.isStrNil(L17_463) then
+          L17_463 = L15_461
+        end
+        if L4_450.identifyDevice(L15_461, L19_465).type.c == 3 and _UPVALUE0_.isStrNil(L20_466) then
+          L17_463 = L4_450.identifyDevice(L15_461, L19_465).type.n
+        end
+      end
+      L16_462.name = L17_463
+    end
+    L19_465 = table
+    L19_465 = L19_465.insert
+    L20_466 = L9_455
+    L19_465(L20_466, L16_462)
+  end
+  L8_454.maclist = L9_455
+  L8_454.weblist = L10_456
+  return L8_454
+end
+function setWiFiMacfilterModel(A0_467, A1_468)
+  local L2_469, L3_470, L4_471, L5_472, L6_473, L7_474, L8_475, L9_476, L10_477, L11_478, L12_479, L13_480, L14_481, L15_482, L16_483, L17_484, L18_485, L19_486, L20_487, L21_488
+  if A0_467 then
+    L4_471 = tonumber
+    L5_472 = A1_468
+    L4_471 = L4_471(L5_472)
+    if L4_471 == 1 then
+      L2_469 = "allow"
+      L4_471 = getWiFiMacfilterList
+      L5_472 = 1
+      L4_471 = L4_471(L5_472)
+      L3_470 = L4_471
+    else
+      L2_469 = "deny"
+      L4_471 = getWiFiMacfilterList
+      L5_472 = 0
+      L4_471 = L4_471(L5_472)
+      L3_470 = L4_471
+    end
+  else
+    L2_469 = "disabled"
+    L4_471 = require
+    L5_472 = "xiaoqiang.util.XQPushUtil"
+    L4_471 = L4_471(L5_472)
+    L5_472 = L4_471.pushConfig
+    L6_473 = "auth"
+    L7_474 = "0"
+    L5_472(L6_473, L7_474)
+  end
+  L4_471 = require
+  L5_472 = "luci.model.uci"
+  L4_471 = L4_471(L5_472)
+  L4_471 = L4_471.cursor
+  L4_471 = L4_471()
+  L6_473 = L4_471
+  L5_472 = L4_471.get_all
+  L7_474 = "wireless"
+  L8_475 = "guest_2G"
+  L5_472 = L5_472(L6_473, L7_474, L8_475)
+  if L5_472 then
+    L6_473 = tonumber
+    L7_474 = A1_468
+    L6_473 = L6_473(L7_474)
+    if L6_473 == 0 then
+      L5_472.macfilter = L2_469
+      if L3_470 then
+        L6_473 = #L3_470
+        if L6_473 > 0 then
+          L5_472.maclist = L3_470
+        end
+      else
+        L5_472.maclist = nil
+        L7_474 = L4_471
+        L6_473 = L4_471.delete
+        L8_475 = "wireless"
+        L9_476 = "guest_2G"
+        L10_477 = "maclist"
+        L6_473(L7_474, L8_475, L9_476, L10_477)
+      end
+      L7_474 = L4_471
+      L6_473 = L4_471.section
+      L8_475 = "wireless"
+      L9_476 = "wifi-iface"
+      L10_477 = "guest_2G"
+      L11_478 = L5_472
+      L6_473(L7_474, L8_475, L9_476, L10_477, L11_478)
+      L7_474 = L4_471
+      L6_473 = L4_471.commit
+      L8_475 = "wireless"
+      L6_473(L7_474, L8_475)
+    end
+  end
+  L6_473 = require
+  L7_474 = "luci.util"
+  L6_473 = L6_473(L7_474)
+  L7_474 = require
+  L8_475 = "luci.model.network"
+  L7_474 = L7_474(L8_475)
+  L7_474 = L7_474.init
+  L7_474 = L7_474()
+  L9_476 = L7_474
+  L8_475 = L7_474.get_wifinet
+  L10_477 = _wifiNameForIndex
+  L11_478 = 1
+  L21_488 = L10_477(L11_478)
+  L8_475 = L8_475(L9_476, L10_477, L11_478, L12_479, L13_480, L14_481, L15_482, L16_483, L17_484, L18_485, L19_486, L20_487, L21_488, L10_477(L11_478))
+  L10_477 = L7_474
+  L9_476 = L7_474.get_wifinet
+  L11_478 = _wifiNameForIndex
+  L12_479 = 2
+  L21_488 = L11_478(L12_479)
+  L9_476 = L9_476(L10_477, L11_478, L12_479, L13_480, L14_481, L15_482, L16_483, L17_484, L18_485, L19_486, L20_487, L21_488, L11_478(L12_479))
+  if L8_475 then
+    L11_478 = L8_475
+    L10_477 = L8_475.set
+    L12_479 = "macfilter"
+    L10_477(L11_478, L12_479, L13_480)
+    if L3_470 then
+      L10_477 = #L3_470
+      if L10_477 > 0 then
+        L11_478 = L8_475
+        L10_477 = L8_475.set_list
+        L12_479 = "maclist"
+        L10_477(L11_478, L12_479, L13_480)
+      end
+    else
+      L11_478 = L8_475
+      L10_477 = L8_475.set_list
+      L12_479 = "maclist"
+      L10_477(L11_478, L12_479, L13_480)
+    end
+  end
+  if L9_476 then
+    L11_478 = L9_476
+    L10_477 = L9_476.set
+    L12_479 = "macfilter"
+    L10_477(L11_478, L12_479, L13_480)
+    if L3_470 then
+      L10_477 = #L3_470
+      if L10_477 > 0 then
+        L11_478 = L9_476
+        L10_477 = L9_476.set_list
+        L12_479 = "maclist"
+        L10_477(L11_478, L12_479, L13_480)
+      end
+    else
+      L11_478 = L9_476
+      L10_477 = L9_476.set_list
+      L12_479 = "maclist"
+      L10_477(L11_478, L12_479, L13_480)
+    end
+  end
+  L11_478 = L7_474
+  L10_477 = L7_474.save
+  L12_479 = "wireless"
+  L10_477(L11_478, L12_479)
+  L11_478 = L7_474
+  L10_477 = L7_474.commit
+  L12_479 = "wireless"
+  L10_477(L11_478, L12_479)
+  L10_477 = getWifiConnectDeviceList
+  L11_478 = 1
+  L10_477 = L10_477(L11_478)
+  L11_478 = getWifiConnectDeviceList
+  L12_479 = 2
+  L11_478 = L11_478(L12_479)
+  L12_479 = {}
+  if L3_470 then
+    if L13_480 == "table" then
+      for L16_483, L17_484 in L13_480(L14_481) do
+        if L17_484 then
+          L12_479[L17_484] = true
+        end
+      end
+    end
+  end
+  if not A0_467 then
+    if not L13_480 then
+    else
+      if L13_480 then
+        L14_481(L15_482)
+        L14_481(L15_482, L16_483, L17_484, L18_485)
+        L19_486 = L2_469
+        L14_481(L15_482, L16_483, L17_484, L18_485, L19_486)
+        L14_481(L15_482, L16_483)
+    end
+    else
+      if not L13_480 then
+      else
+        if L13_480 then
+          L14_481(L15_482)
+      end
+      else
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481, L15_482, L16_483, L17_484)
+        L13_480(L14_481, L15_482, L16_483, L17_484, L18_485)
+        L13_480(L14_481, L15_482)
+      end
+    end
+  else
+    if not L13_480 then
+    else
+      if L13_480 then
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        for L17_484, L18_485 in L14_481(L15_482) do
+          L19_486 = _UPVALUE1_
+          L19_486 = L19_486._cmdformat
+          L20_487 = L18_485
+          L19_486 = L19_486(L20_487)
+          L20_487 = table
+          L20_487 = L20_487.insert
+          L21_488 = L13_480
+          L20_487(L21_488, L19_486)
+        end
+        for L17_484, L18_485 in L14_481(L15_482) do
+          L19_486 = os
+          L19_486 = L19_486.execute
+          L20_487 = "iwpriv wl0 addmac_sec \""
+          L21_488 = L18_485
+          L20_487 = L20_487 .. L21_488 .. "\""
+          L19_486(L20_487)
+          L19_486 = os
+          L19_486 = L19_486.execute
+          L20_487 = "iwpriv wl1 addmac_sec \""
+          L21_488 = L18_485
+          L20_487 = L20_487 .. L21_488 .. "\""
+          L19_486(L20_487)
+          L19_486 = os
+          L19_486 = L19_486.execute
+          L20_487 = "iwpriv wl14 addmac_sec \""
+          L21_488 = L18_485
+          L20_487 = L20_487 .. L21_488 .. "\""
+          L19_486(L20_487)
+        end
+        if L14_481 == 0 then
+          L14_481(L15_482)
+          L14_481(L15_482)
+          L14_481(L15_482)
+          for L17_484, L18_485 in L14_481(L15_482) do
+            L19_486 = os
+            L19_486 = L19_486.execute
+            L20_487 = "iwpriv wl0 kickmac \""
+            L21_488 = L18_485
+            L20_487 = L20_487 .. L21_488 .. "\""
+            L19_486(L20_487)
+            L19_486 = os
+            L19_486 = L19_486.execute
+            L20_487 = "iwpriv wl1 kickmac \""
+            L21_488 = L18_485
+            L20_487 = L20_487 .. L21_488 .. "\""
+            L19_486(L20_487)
+            L19_486 = os
+            L19_486 = L19_486.execute
+            L20_487 = "iwpriv wl14 kickmac \""
+            L21_488 = L18_485
+            L20_487 = L20_487 .. L21_488 .. "\""
+            L19_486(L20_487)
+          end
+        elseif L14_481 == 1 then
+          L14_481(L15_482)
+          L14_481(L15_482)
+          L14_481(L15_482)
+          if L10_477 then
+            if L14_481 == "table" then
+              for L17_484, L18_485 in L14_481(L15_482) do
+                L19_486 = L12_479[L18_485]
+                if not L19_486 then
+                  L19_486 = _UPVALUE1_
+                  L19_486 = L19_486._cmdformat
+                  L20_487 = L18_485
+                  L19_486 = L19_486(L20_487)
+                  L20_487 = os
+                  L20_487 = L20_487.execute
+                  L21_488 = "iwpriv wl1 kickmac \""
+                  L21_488 = L21_488 .. L19_486 .. "\""
+                  L20_487(L21_488)
+                end
+              end
+            end
+          end
+          if L11_478 then
+            if L14_481 == "table" then
+              for L17_484, L18_485 in L14_481(L15_482) do
+                L19_486 = L12_479[L18_485]
+                if not L19_486 then
+                  L19_486 = _UPVALUE1_
+                  L19_486 = L19_486._cmdformat
+                  L20_487 = L18_485
+                  L19_486 = L19_486(L20_487)
+                  L20_487 = os
+                  L20_487 = L20_487.execute
+                  L21_488 = "iwpriv wl0 kickmac \""
+                  L21_488 = L21_488 .. L19_486 .. "\""
+                  L20_487(L21_488)
+                end
+              end
+            end
+          end
+          if L14_481 then
+            for L18_485, L19_486 in L15_482(L16_483) do
+              L20_487 = _UPVALUE1_
+              L20_487 = L20_487.isStrNil
+              L21_488 = L19_486
+              L20_487 = L20_487(L21_488)
+              if not L20_487 then
+                L21_488 = L19_486
+                L20_487 = L19_486.match
+                L20_487 = L20_487(L21_488, "(%S+)")
+                if L20_487 then
+                  L21_488 = _UPVALUE1_
+                  L21_488 = L21_488._cmdformat
+                  L21_488 = L21_488(_UPVALUE1_.macFormat(L20_487))
+                  L20_487 = L21_488
+                  L21_488 = os
+                  L21_488 = L21_488.execute
+                  L21_488("iwpriv wl14 kickmac \"" .. L20_487 .. "\"")
+                end
+              end
+            end
+          end
+        end
+    end
+    else
+      if not L13_480 then
+      else
+        if L13_480 then
+          L15_482.model = A1_468
+          L15_482.maclist = L3_470
+          L15_482(L16_483)
+      end
+      else
+        L13_480(L14_481)
+        L13_480(L14_481)
+        L13_480(L14_481)
+        for L17_484, L18_485 in L14_481(L15_482) do
+          L19_486 = _UPVALUE1_
+          L19_486 = L19_486._cmdformat
+          L20_487 = L18_485
+          L19_486 = L19_486(L20_487)
+          L20_487 = table
+          L20_487 = L20_487.insert
+          L21_488 = L13_480
+          L20_487(L21_488, L19_486)
+        end
+        if L15_482 == 0 then
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          for L18_485, L19_486 in L15_482(L16_483) do
+            L20_487 = os
+            L20_487 = L20_487.execute
+            L21_488 = "wl -i wl0 deauthenticate \""
+            L21_488 = L21_488 .. L19_486 .. "\""
+            L20_487(L21_488)
+            L20_487 = os
+            L20_487 = L20_487.execute
+            L21_488 = "wl -i wl1 deauthenticate \""
+            L21_488 = L21_488 .. L19_486 .. "\""
+            L20_487(L21_488)
+            L20_487 = os
+            L20_487 = L20_487.execute
+            L21_488 = "wl -i wl1.2 deauthenticate \""
+            L21_488 = L21_488 .. L19_486 .. "\""
+            L20_487(L21_488)
+          end
+        elseif L15_482 == 1 then
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          L15_482(L16_483)
+          if L10_477 then
+            if L15_482 == "table" then
+              for L18_485, L19_486 in L15_482(L16_483) do
+                L20_487 = L12_479[L19_486]
+                if not L20_487 then
+                  L20_487 = _UPVALUE1_
+                  L20_487 = L20_487._cmdformat
+                  L21_488 = L19_486
+                  L20_487 = L20_487(L21_488)
+                  L21_488 = os
+                  L21_488 = L21_488.execute
+                  L21_488("wl -i wl1 deauthenticate \"" .. L20_487 .. "\"")
+                end
+              end
+            end
+          end
+          if L11_478 then
+            if L15_482 == "table" then
+              for L18_485, L19_486 in L15_482(L16_483) do
+                L20_487 = L12_479[L19_486]
+                if not L20_487 then
+                  L20_487 = _UPVALUE1_
+                  L20_487 = L20_487._cmdformat
+                  L21_488 = L19_486
+                  L20_487 = L20_487(L21_488)
+                  L21_488 = os
+                  L21_488 = L21_488.execute
+                  L21_488("wl -i wl0 deauthenticate \"" .. L20_487 .. "\"")
+                end
+              end
+            end
+          end
+          if L15_482 then
+            for L19_486, L20_487 in L16_483(L17_484) do
+              L21_488 = _UPVALUE1_
+              L21_488 = L21_488.isStrNil
+              L21_488 = L21_488(L20_487)
+              if not L21_488 then
+                L21_488 = L20_487.match
+                L21_488 = L21_488(L20_487, "assoclist (%S+)")
+                if L21_488 then
+                  L21_488 = _UPVALUE1_._cmdformat(_UPVALUE1_.macFormat(L21_488))
+                  os.execute("wl -i wl1.2 deauthenticate \"" .. L21_488 .. "\"")
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+function getGuestWifi_ssid()
+  local L0_489, L1_490, L2_491, L3_492, L4_493, L5_494
+  L1_490 = luci
+  L1_490 = L1_490.sys
+  L1_490 = L1_490.exec
+  L2_491 = "getmac wan"
+  L1_490 = L1_490(L2_491)
+  L0_489 = L1_490
+  L1_490 = string
+  L1_490 = L1_490.upper
+  L2_491 = string
+  L2_491 = L2_491.sub
+  L3_492 = string
+  L3_492 = L3_492.gsub
+  L4_493 = L0_489
+  L5_494 = ":"
+  L3_492 = L3_492(L4_493, L5_494, "")
+  L4_493 = 4294967291
+  L5_494 = 4294967294
+  L5_494 = L2_491(L3_492, L4_493, L5_494)
+  L1_490 = L1_490(L2_491, L3_492, L4_493, L5_494, L2_491(L3_492, L4_493, L5_494))
+  L2_491 = require
+  L3_492 = "xiaoqiang.XQCountryCode"
+  L2_491 = L2_491(L3_492)
+  L3_492 = L2_491.getCurrentCountryCode
+  L3_492 = L3_492()
+  L4_493 = nil
+  L5_494 = "  MiShareWiFi_"
+  if L3_492 == "CN" then
+    L5_494 = "  \229\176\143\231\177\179\229\133\177\228\186\171WiFi_"
+  end
+  L4_493 = L5_494 .. L1_490
+  return L4_493
+end
+function getGuestWifi(A0_495)
+  local L1_496, L2_497, L3_498, L4_499, L5_500, L6_501
+  L1_496 = require
+  L2_497 = "luci.model.uci"
+  L1_496 = L1_496(L2_497)
+  L1_496 = L1_496.cursor
+  L1_496 = L1_496()
+  L3_498 = L1_496
+  L2_497 = L1_496.get
+  L4_499 = "misc"
+  L5_500 = "modules"
+  L6_501 = "guestwifi"
+  L2_497 = L2_497(L3_498, L4_499, L5_500, L6_501)
+  if not L2_497 then
+    L3_498 = nil
+    return L3_498
+  end
+  L3_498 = tonumber
+  L4_499 = A0_495
+  L3_498 = L3_498(L4_499)
+  L4_499 = nil
+  if L3_498 then
+    L5_500 = getWifiStatus
+    L6_501 = L3_498
+    L5_500 = L5_500(L6_501)
+    L4_499 = L5_500
+    if L3_498 == 1 then
+      L3_498 = "guest_2G"
+    elseif L3_498 == 2 then
+      L3_498 = "guest_5G"
+    else
+      L3_498 = nil
+    end
+  end
+  L5_500 = nil
+  L6_501 = getGuestWifi_ssid
+  L6_501 = L6_501()
+  if L3_498 and L4_499 then
+    L5_500 = L1_496:get_all("wireless", L3_498)
+    if L5_500 then
+      return {
+        ifname = L5_500.ifname,
+        ssid = L5_500.ssid or L6_501,
+        encryption = L5_500.encryption or "mixed-psk",
+        password = L5_500.key or L5_500.sae_password or "12345678",
+        status = tonumber(L5_500.disabled) == 0 and 1 or 0,
+        enabled = "1"
+      }
+    end
+  end
+  L5_500 = L5_500 or {
+    ifname = L2_497,
+    ssid = L6_501,
+    encryption = "mixed-psk",
+    password = "12345678",
+    status = "0",
+    enabled = "1"
+  }
+  return L5_500
+end
+function setGuestWifi(A0_502, A1_503, A2_504, A3_505, A4_506, A5_507, A6_508)
+  local L7_509, L8_510, L9_511, L10_512, L11_513, L12_514, L13_515, L14_516, L15_517
+  L7_509 = require
+  L8_510 = "luci.model.network"
+  L7_509 = L7_509(L8_510)
+  L7_509 = L7_509.init
+  L7_509 = L7_509()
+  L9_511 = L7_509
+  L8_510 = L7_509.get_wifidev
+  L10_512 = _UPVALUE0_
+  L10_512 = L10_512.split
+  L11_513 = _wifiNameForIndex
+  L12_514 = 1
+  L11_513 = L11_513(L12_514)
+  L12_514 = "."
+  L10_512 = L10_512(L11_513, L12_514)
+  L10_512 = L10_512[1]
+  L8_510 = L8_510(L9_511, L10_512)
+  L10_512 = L7_509
+  L9_511 = L7_509.get_wifinet
+  L11_513 = _wifiNameForIndex
+  L12_514 = 1
+  L15_517 = L11_513(L12_514)
+  L9_511 = L9_511(L10_512, L11_513, L12_514, L13_515, L14_516, L15_517, L11_513(L12_514))
+  if L8_510 == nil or L9_511 == nil then
+    L10_512 = false
+    return L10_512
+  end
+  L11_513 = L9_511
+  L10_512 = L9_511.get
+  L12_514 = "macfilter"
+  L10_512 = L10_512(L11_513, L12_514)
+  L11_513 = tonumber
+  L12_514 = A5_507
+  L11_513 = L11_513(L12_514)
+  L12_514 = tonumber
+  L14_516 = L8_510
+  L13_515 = L8_510.get
+  L15_517 = "disabled"
+  L15_517 = L13_515(L14_516, L15_517)
+  L12_514 = L12_514(L13_515, L14_516, L15_517, L13_515(L14_516, L15_517))
+  L12_514 = L12_514 == 1
+  if L12_514 and L11_513 == 1 then
+    L14_516 = L8_510
+    L13_515 = L8_510.set
+    L15_517 = "disabled"
+    L13_515(L14_516, L15_517, "0")
+    L14_516 = L7_509
+    L13_515 = L7_509.commit
+    L15_517 = "wireless"
+    L13_515(L14_516, L15_517)
+  end
+  L13_515 = require
+  L14_516 = "luci.model.uci"
+  L13_515 = L13_515(L14_516)
+  L13_515 = L13_515.cursor
+  L13_515 = L13_515()
+  L14_516, L15_517 = nil, nil
+  if not L13_515:get("misc", "modules", "guestwifi") then
+    return true
+  end
+  if tonumber(A0_502) == 1 then
+    L14_516 = "guest_2G"
+    L15_517 = L13_515:get("misc", "wireless", "ifname_guest_2G")
+  elseif tonumber(A0_502) == 2 then
+    L14_516 = "guest_5G"
+  else
+    return false
+  end
+  guestwifi = L13_515:get_all("wireless", L14_516)
+  if guestwifi then
+    guestwifi.ifname = L15_517
+    if not _UPVALUE1_.isStrNil(A1_503) and _UPVALUE1_.checkSSID(A1_503) then
+      guestwifi.ssid = A1_503
+    end
+    if A2_504 and string.lower(tostring(A2_504)) == "none" then
+      if A3_505 and string.lower(tostring(A3_505)) == "12345678" then
+        guestwifi.encryption = "none"
+        guestwifi.key = A3_505
+        guestwifi.sae = ""
+        guestwifi.sae_password = ""
+        guestwifi.ieee80211w = ""
+      else
+        guestwifi.encryption = "none"
+        guestwifi.key = ""
+        guestwifi.sae = ""
+        guestwifi.sae_password = ""
+        guestwifi.ieee80211w = ""
+      end
+    end
+    if A2_504 and string.lower(tostring(A2_504)) ~= "none" and not _UPVALUE1_.isStrNil(A3_505) then
+      if checkWifiPasswd(A3_505, A2_504) == 0 then
+        guestwifi.encryption = A2_504
+        guestwifi.key = A3_505
+        if string.lower(tostring(A2_504)) == "ccmp" then
+          guestwifi.sae = 1
+          guestwifi.key = ""
+          guestwifi.sae_password = A3_505
+          guestwifi.ieee80211w = 2
+        elseif string.lower(tostring(A2_504)) == "psk2+ccmp" then
+          guestwifi.sae = 1
+          guestwifi.key = A3_505
+          guestwifi.sae_password = A3_505
+          guestwifi.ieee80211w = 1
+        else
+          guestwifi.sae = ""
+          guestwifi.sae_password = ""
+          guestwifi.ieee80211w = ""
+        end
+      else
+        return false
+      end
+    end
+    if tonumber(A4_506) == 1 and 1 or 0 then
+      guestwifi.disabled = (tonumber(A4_506) == 1 and 1 or 0) == 1 and 0 or 1
+    end
+    if L11_513 then
+      guestwifi.disabled = L11_513 == 1 and 0 or 1
+    end
+    if (guestwifi.disabled or 1) ~= guestwifi.disabled then
+    end
+  else
+    if _UPVALUE1_.isStrNil(A1_503) or _UPVALUE1_.isStrNil(A2_504) then
+      return false
+    end
+    guestwifi = {
+      device = _UPVALUE2_[A0_502],
+      ifname = L15_517,
+      network = "guest",
+      ssid = A1_503,
+      mode = "ap",
+      encryption = A2_504,
+      key = A3_505,
+      disabled = 0
+    }
+    if string.lower(tostring(A2_504)) == "ccmp" then
+      guestwifi.sae = 1
+      guestwifi.key = ""
+      guestwifi.sae_password = A3_505
+      guestwifi.ieee80211w = 2
+    elseif string.lower(tostring(A2_504)) == "psk2+ccmp" then
+      guestwifi.sae = 1
+      guestwifi.key = A3_505
+      guestwifi.sae_password = A3_505
+      guestwifi.ieee80211w = 1
+    else
+      guestwifi.sae = ""
+      guestwifi.sae_password = ""
+      guestwifi.ieee80211w = ""
+    end
+    if L10_512 == "deny" then
+      guestwifi.macfilter = L10_512
+      guestwifi.maclist = getCurrentMacfilterList()
+    end
+  end
+  guestwifi.wpsdevicename = A6_508 or "XIAOMI_ROUTER_GUEST"
+  L13_515:section("wireless", "wifi-iface", L14_516, guestwifi)
+  L13_515:commit("wireless")
+  return true
+end
+function delGuestWifi(A0_518)
+  local L1_519, L2_520
+  L1_519 = require
+  L2_520 = "luci.model.uci"
+  L1_519 = L1_519(L2_520)
+  L1_519 = L1_519.cursor
+  L1_519 = L1_519()
+  L2_520 = nil
+  if tonumber(A0_518) == 1 then
+    L2_520 = "guest_2G"
+  elseif tonumber(A0_518) == 2 then
+    L2_520 = "guest_5G"
+  else
+    return false
+  end
+  L1_519:delete("wireless", L2_520)
+  L1_519:commit("wireless")
+  return true
+end
+function scanWifiChannel(A0_521)
+  local L1_522, L2_523, L3_524, L4_525, L5_526, L6_527, L7_528, L8_529, L9_530, L10_531, L11_532, L12_533, L13_534, L14_535, L15_536, L16_537
+  L1_522 = {}
+  L1_522.code = 0
+  L2_523, L3_524, L4_525, L5_526 = nil, nil, nil, nil
+  L6_527 = tonumber
+  L7_528 = A0_521
+  L6_527 = L6_527(L7_528)
+  if L6_527 == 1 then
+    L6_527 = "wl1"
+  else
+    L6_527 = L6_527 or "wl0"
+  end
+  L7_528 = nil
+  L8_529 = _UPVALUE0_
+  L9_530 = L8_529
+  L8_529 = L8_529.match
+  L8_529 = L8_529(L9_530, L10_531)
+  if not L8_529 then
+    L8_529 = _UPVALUE0_
+    L9_530 = L8_529
+    L8_529 = L8_529.match
+    L8_529 = L8_529(L9_530, L10_531)
+    if not L8_529 then
+      L8_529 = _UPVALUE0_
+      L9_530 = L8_529
+      L8_529 = L8_529.match
+      L8_529 = L8_529(L9_530, L10_531)
+      if not L8_529 then
+        L8_529 = _UPVALUE0_
+        L9_530 = L8_529
+        L8_529 = L8_529.match
+        L8_529 = L8_529(L9_530, L10_531)
+      end
+    end
+  else
+    if L8_529 then
+      L8_529 = "setchanauto.sh "
+      L9_530 = tostring
+      L9_530 = L9_530(L10_531)
+      L7_528 = L8_529 .. L9_530 .. L10_531
+  end
+  else
+    L8_529 = "iwpriv "
+    L9_530 = tostring
+    L9_530 = L9_530(L10_531)
+    L7_528 = L8_529 .. L9_530 .. L10_531
+  end
+  L8_529 = _UPVALUE1_
+  L8_529 = L8_529.execl
+  L9_530 = L7_528
+  L8_529 = L8_529(L9_530)
+  L9_530 = {}
+  if L8_529 then
+    for L13_534, L14_535 in L10_531(L11_532) do
+      L15_536 = _UPVALUE2_
+      L15_536 = L15_536.isStrNil
+      L16_537 = L14_535
+      L15_536 = L15_536(L16_537)
+      if not L15_536 then
+        if not L2_523 or not L4_525 then
+          L16_537 = L14_535
+          L15_536 = L14_535.match
+          L16_537 = L15_536(L16_537, "^Current Channel (%S+) : Score = (%d+)")
+          L4_525 = L16_537
+          L2_523 = L15_536
+        end
+        if not L3_524 or not L5_526 then
+          L16_537 = L14_535
+          L15_536 = L14_535.match
+          L16_537 = L15_536(L16_537, "^Select Channel (%S+) : Score = (%d+)")
+          L5_526 = L16_537
+          L3_524 = L15_536
+        end
+        L16_537 = L14_535
+        L15_536 = L14_535.match
+        L16_537 = L15_536(L16_537, "^Channel (%S+) : Score = (%d+)")
+        if L15_536 and L16_537 then
+          L9_530[L15_536] = tonumber(L16_537)
+        end
+      end
+    end
+  end
+  if L2_523 and L3_524 and L4_525 and L5_526 then
+    L1_522.cchannel = L10_531
+    L1_522.schannel = L10_531
+    L1_522.cscore = L10_531
+    L1_522.sscore = L10_531
+    for L14_535, L15_536 in L11_532(L12_533) do
+      if L14_535 ~= L2_523 then
+        L16_537 = L1_522.cscore
+      end
+    end
+    L1_522.ranking = L10_531
+  else
+    L1_522.code = 1
+    L1_522.cchannel = L10_531
+    L1_522.schannel = L10_531
+    L1_522.cscore = L10_531
+    L1_522.sscore = L10_531
+    L1_522.ranking = 0
+  end
+  return L1_522
+end
+function wifiChannelQuality()
+  if getAllWifiInfo()[1] and getAllWifiInfo()[1].status == "1" then
+    if _UPVALUE0_:match("^r1800") or _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2200") or _UPVALUE0_:match("^r2350") then
+      _UPVALUE1_.forkExec("sleep 4; iwpriv wl1 acsreport 1 > /dev/null")
+    else
+      _UPVALUE1_.forkExec("sleep 4; iwpriv wl1 set AutoChannelSel=4")
+    end
+  end
+end
+function iwprivSetChannel(A0_538, A1_539)
+  local L2_540
+  if A0_538 then
+    L2_540 = nil
+    if _UPVALUE0_:match("^r1800") or _UPVALUE0_:match("^r3600") or _UPVALUE0_:match("^r2200") or _UPVALUE0_:match("^r2350") then
+      L2_540 = "sleep 4; iwconfig wl1 channel \"" .. _UPVALUE1_._cmdformat(tostring(A0_538)) .. "\""
+    else
+      L2_540 = "sleep 4; iwpriv wl1 set Channel=\"" .. _UPVALUE1_._cmdformat(tostring(A0_538)) .. "\""
+    end
+    _UPVALUE2_.init():get_wifidev(_UPVALUE3_.split(_wifiNameForIndex(1), ".")[1]):set("bw", channelHelper(A0_538).bandwidth)
+    _UPVALUE2_.init():get_wifidev(_UPVALUE3_.split(_wifiNameForIndex(1), ".")[1]):set("autoch", "0")
+    _UPVALUE2_.init():get_wifidev(_UPVALUE3_.split(_wifiNameForIndex(1), ".")[1]):set("channel", channelHelper(A0_538).channel)
+    _UPVALUE2_.init():commit("wireless")
+    _UPVALUE1_.forkExec(L2_540)
+  end
+end
+function wifiutil_get_dev_info_form_band(A0_541)
+  local L1_542, L2_543, L3_544
+  L1_542 = require
+  L2_543 = "luci.model.uci"
+  L1_542 = L1_542(L2_543)
+  L1_542 = L1_542.cursor
+  L1_542 = L1_542()
+  L2_543 = _UPVALUE0_
+  L2_543 = L2_543.init
+  L2_543 = L2_543()
+  L3_544 = L1_542.get_list
+  L3_544 = L3_544(L1_542, "misc", "wireless", "device_" .. A0_541 .. "_name")
+  if L3_544 ~= nil then
+    return L2_543:get_wifidev(L3_544)
+  else
+    return nil
+  end
+end
+function setWifiWeakInfo(A0_545, A1_546, A2_547, A3_548)
+  if _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_545)) == nil then
+    return false
+  end
+  if not _UPVALUE1_.isStrNil(A1_546) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_545)):set("weakenable", A1_546)
+  end
+  if not _UPVALUE1_.isStrNil(A2_547) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_545)):set("weakthreshold", A2_547)
+  end
+  if not _UPVALUE1_.isStrNil(A3_548) then
+    _UPVALUE0_.init():get_wifinet(_wifiNameForIndex(A0_545)):set("kickthreshold", A3_548)
+  end
+  _UPVALUE0_.init():save("wireless")
+  _UPVALUE0_.init():commit("wireless")
+  return true
+end
+function getWifiWeakInfo()
+  local L0_549, L1_550, L2_551
+  L0_549 = {}
+  L1_550 = {}
+  L2_551 = wifiNetworks
+  L2_551 = L2_551()
+  for _FORV_6_, _FORV_7_ in ipairs(L2_551) do
+    ({}).weakenable = _FORV_7_.networks[1].weakenable or 0
+    ;({}).weakthreshold = _FORV_7_.networks[1].weakthreshold or 0
+    ;({}).kickthreshold = _FORV_7_.networks[1].kickthreshold or 0
+    L1_550[_FORV_7_.device] = {}
+  end
+  if L1_550[_UPVALUE0_] then
+    table.insert(L0_549, L1_550[_UPVALUE0_])
+  end
+  if L1_550[_UPVALUE1_] then
+    table.insert(L0_549, L1_550[_UPVALUE1_])
+  end
+  return L0_549
+end
+function miscanSwitch(A0_552)
+  if A0_552 then
+    require("luci.model.uci").cursor():set("miscan", "config", "enabled", "1")
+  else
+    require("luci.model.uci").cursor():set("miscan", "config", "enabled", "0")
+  end
+  require("luci.model.uci").cursor():commit("miscan")
+  return true
+end
+function getMiscanSwitch()
+  local L0_553
+  L0_553 = require("luci.model.uci").cursor():get("miscan", "config", "enabled") or "0"
+  return L0_553
+end
+function apcli_get_real_signal(A0_554)
+  local L1_555, L2_556, L3_557
+  if A0_554 then
+    L1_555 = "iwconfig "
+    L2_556 = A0_554
+    L3_557 = " | grep 'Signal level=' | awk -F '=' '{print $3}' | awk '{print $1}'"
+    L1_555 = L1_555 .. L2_556 .. L3_557
+    L2_556 = io
+    L2_556 = L2_556.popen
+    L3_557 = L1_555
+    L2_556 = L2_556(L3_557)
+    L3_557 = L2_556.read
+    L3_557 = L3_557(L2_556, "*all")
+    L2_556:close()
+    return tonumber(L3_557)
+  else
+    L1_555 = 0
+    return L1_555
+  end
+end

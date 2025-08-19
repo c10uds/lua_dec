@@ -1,0 +1,1984 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4
+L0_0 = module
+L1_1 = "luci.cbi"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "luci.template"
+L0_0(L1_1)
+L0_0 = require
+L1_1 = "luci.util"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "luci.http"
+L1_1(L2_2)
+L1_1 = require
+L2_2 = "nixio.fs"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.uci"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.cbi.datatypes"
+L3_3 = L3_3(L4_4)
+L4_4 = L0_0.class
+FORM_NODATA = 0
+FORM_PROCEED = 0
+FORM_VALID = 1
+FORM_DONE = 1
+FORM_INVALID = 4294967295
+FORM_CHANGED = 2
+FORM_SKIP = 4
+AUTO = true
+CREATE_PREFIX = "cbi.cts."
+REMOVE_PREFIX = "cbi.rts."
+RESORT_PREFIX = "cbi.sts."
+FEXIST_PREFIX = "cbi.cbe."
+function load(A0_5, ...)
+  local L2_7, L3_8, L4_9, L5_10, L6_11, L7_12, L8_13, L9_14, L10_15, L11_16, L12_17, L13_18, L14_19, L15_20, L16_21
+  L2_7 = require
+  L3_8 = "nixio.fs"
+  L2_7 = L2_7(L3_8)
+  L3_8 = require
+  L4_9 = "luci.i18n"
+  L3_8 = L3_8(L4_9)
+  L4_9 = require
+  L5_10 = "luci.config"
+  L4_9(L5_10)
+  L4_9 = require
+  L5_10 = "luci.util"
+  L4_9(L5_10)
+  L4_9 = "/lib/uci/upload/"
+  L5_10 = luci
+  L5_10 = L5_10.util
+  L5_10 = L5_10.libpath
+  L5_10 = L5_10()
+  L6_11 = "/model/cbi/"
+  L5_10 = L5_10 .. L6_11
+  L6_11, L7_12 = nil, nil
+  L8_13 = L2_7.access
+  L9_14 = L5_10
+  L10_15 = A0_5
+  L11_16 = ".lua"
+  L9_14 = L9_14 .. L10_15 .. L11_16
+  L8_13 = L8_13(L9_14)
+  if L8_13 then
+    L8_13 = loadfile
+    L9_14 = L5_10
+    L10_15 = A0_5
+    L11_16 = ".lua"
+    L9_14 = L9_14 .. L10_15 .. L11_16
+    L9_14 = L8_13(L9_14)
+    L7_12 = L9_14
+    L6_11 = L8_13
+  else
+    L8_13 = L2_7.access
+    L9_14 = A0_5
+    L8_13 = L8_13(L9_14)
+    if L8_13 then
+      L8_13 = loadfile
+      L9_14 = A0_5
+      L9_14 = L8_13(L9_14)
+      L7_12 = L9_14
+      L6_11 = L8_13
+    else
+      L8_13 = nil
+      L9_14 = "Model '"
+      L10_15 = A0_5
+      L11_16 = "' not found!"
+      L7_12 = L9_14 .. L10_15 .. L11_16
+      L6_11 = L8_13
+    end
+  end
+  L8_13 = assert
+  L9_14 = L6_11
+  L10_15 = L7_12
+  L8_13(L9_14, L10_15)
+  L8_13 = {}
+  L9_14 = L3_8.translate
+  L8_13.translate = L9_14
+  L9_14 = L3_8.translatef
+  L8_13.translatef = L9_14
+  L9_14 = {
+    [8] = ...
+  }
+  L16_21 = ...
+  ;({
+    [8] = ...
+  })[1] = L10_15
+  ;({
+    [8] = ...
+  })[2] = L11_16
+  ;({
+    [8] = ...
+  })[3] = L12_17
+  ;({
+    [8] = ...
+  })[4] = L13_18
+  ;({
+    [8] = ...
+  })[5] = L14_19
+  ;({
+    [8] = ...
+  })[6] = L15_20
+  ;({
+    [8] = ...
+  })[7] = L16_21
+  L8_13.arg = L9_14
+  L9_14 = setfenv
+  L10_15 = L6_11
+  L11_16 = setmetatable
+  L13_18.__index = L14_19
+  L16_21 = L11_16(L12_17, L13_18)
+  L9_14(L10_15, L11_16, L12_17, L13_18, L14_19, L15_20, L16_21, L11_16(L12_17, L13_18))
+  L9_14 = {
+    [8] = L10_15()
+  }
+  L10_15 = L6_11
+  L16_21 = L10_15()
+  ;({
+    [8] = L10_15()
+  })[1] = L10_15
+  ;({
+    [8] = L10_15()
+  })[2] = L11_16
+  ;({
+    [8] = L10_15()
+  })[3] = L12_17
+  ;({
+    [8] = L10_15()
+  })[4] = L13_18
+  ;({
+    [8] = L10_15()
+  })[5] = L14_19
+  ;({
+    [8] = L10_15()
+  })[6] = L15_20
+  ;({
+    [8] = L10_15()
+  })[7] = L16_21
+  L10_15 = {}
+  L11_16 = false
+  for L15_20, L16_21 in L12_17(L13_18) do
+    if not _UPVALUE0_(L16_21, Node) then
+      error("CBI map returns no valid map object!")
+      return nil
+    else
+      L16_21:prepare()
+      if L16_21.upload_fields then
+        L11_16 = true
+        for _FORV_20_, _FORV_21_ in ipairs(L16_21.upload_fields) do
+          L10_15[_FORV_21_.config .. "." .. (_FORV_21_.section.sectiontype or "1") .. "." .. _FORV_21_.option] = true
+        end
+      end
+    end
+  end
+  if L11_16 then
+    L15_20 = nil
+    L16_21 = luci
+    L16_21 = L16_21.http
+    L16_21 = L16_21.setfilehandler
+    L16_21(function(A0_22, A1_23, A2_24)
+      local L3_25, L4_26, L5_27, L6_28, L7_29
+      if not A0_22 then
+        return
+      end
+      L3_25 = A0_22.name
+      if L3_25 then
+        L3_25 = _UPVALUE0_
+        if not L3_25 then
+          L3_25 = A0_22.name
+          L4_26 = L3_25
+          L3_25 = L3_25.gmatch
+          L5_27 = "cbid%.([^%.]+)%.([^%.]+)%.([^%.]+)"
+          L3_25 = L3_25(L4_26, L5_27)
+          L5_27 = L3_25()
+          if L3_25 and L4_26 and L5_27 then
+            L6_28 = _UPVALUE1_
+            L7_29 = L6_28
+            L6_28 = L6_28.get
+            L6_28 = L6_28(L7_29, L3_25, L4_26)
+            L6_28 = L6_28 or L4_26
+            L7_29 = _UPVALUE2_
+            L7_29 = L7_29[L3_25 .. "." .. L6_28 .. "." .. L5_27]
+            if L7_29 then
+              L7_29 = _UPVALUE3_
+              L7_29 = L7_29 .. A0_22.name
+              _UPVALUE4_ = io.open(L7_29, "w")
+              if _UPVALUE4_ then
+                _UPVALUE0_ = A0_22.name
+                _UPVALUE5_[_UPVALUE0_] = L7_29
+              end
+            end
+          end
+        end
+      end
+      L3_25 = A0_22.name
+      L4_26 = _UPVALUE0_
+      if L3_25 == L4_26 then
+        L3_25 = _UPVALUE4_
+        if L3_25 then
+          L3_25 = _UPVALUE4_
+          L4_26 = L3_25
+          L3_25 = L3_25.write
+          L5_27 = A1_23
+          L3_25(L4_26, L5_27)
+        end
+      end
+      if A2_24 then
+        L3_25 = _UPVALUE4_
+        if L3_25 then
+          L3_25 = _UPVALUE4_
+          L4_26 = L3_25
+          L3_25 = L3_25.close
+          L3_25(L4_26)
+          L3_25 = nil
+          _UPVALUE4_ = L3_25
+          L3_25 = nil
+          _UPVALUE0_ = L3_25
+        end
+      end
+    end)
+  end
+  return L9_14
+end
+function compile_datatype(A0_30)
+  local L1_31, L2_32, L3_33, L4_34, L5_35, L6_36, L7_37, L8_38, L9_39, L10_40, L11_41
+  L2_32 = 0
+  L3_33 = false
+  L4_34 = 0
+  L5_35 = {}
+  for L9_39 = 1, L7_37 + 1 do
+    L11_41 = A0_30
+    L10_40 = A0_30.byte
+    L10_40 = L10_40(L11_41, L9_39)
+    L10_40 = L10_40 or 44
+    if L3_33 then
+      L3_33 = false
+    elseif L10_40 == 92 then
+      L3_33 = true
+    elseif L10_40 == 40 or L10_40 == 44 then
+      if L4_34 <= 0 then
+        if L9_39 > L2_32 then
+          L11_41 = A0_30.sub
+          L11_41 = L11_41(A0_30, L2_32, L9_39 - 1)
+          L11_41 = L11_41.gsub
+          L11_41 = L11_41(L11_41, "\\(.)", "%1")
+          L11_41 = L11_41.gsub
+          L11_41 = L11_41(L11_41, "^%s+", "")
+          L11_41 = L11_41.gsub
+          L11_41 = L11_41(L11_41, "%s+$", "")
+          if #L11_41 > 0 and tonumber(L11_41) then
+            L5_35[#L5_35 + 1] = tonumber(L11_41)
+          elseif L11_41:match("^'.*'$") or L11_41:match("^\".*\"$") then
+            L5_35[#L5_35 + 1] = L11_41:gsub("[\"'](.*)[\"']", "%1")
+          elseif type(_UPVALUE0_[L11_41]) == "function" then
+            L5_35[#L5_35 + 1] = _UPVALUE0_[L11_41]
+            L5_35[#L5_35 + 1] = {}
+          else
+            error("Datatype error, bad token %q" % L11_41)
+          end
+        end
+        L2_32 = L9_39 + 1
+      end
+      if L10_40 == 40 then
+        L11_41 = 1
+      else
+        L11_41 = L11_41 or 0
+      end
+      L4_34 = L4_34 + L11_41
+    elseif L10_40 == 41 then
+      L4_34 = L4_34 - 1
+      if L4_34 <= 0 then
+        L11_41 = type
+        L11_41 = L11_41(L5_35[#L5_35 - 1])
+        if L11_41 ~= "function" then
+          L11_41 = error
+          L11_41("Datatype error, argument list follows non-function")
+        end
+        L11_41 = #L5_35
+        L5_35[L11_41] = compile_datatype(A0_30:sub(L2_32, L9_39 - 1))
+        L2_32 = L9_39 + 1
+      end
+    end
+  end
+  return L5_35
+end
+function verify_datatype(A0_42, A1_43)
+  if A0_42 and #A0_42 > 0 then
+    if not _UPVALUE0_[A0_42] then
+      if compile_datatype(A0_42) and type(compile_datatype(A0_42)[1]) == "function" then
+        _UPVALUE0_[A0_42] = compile_datatype(A0_42)
+      else
+        error("Datatype error, not a function expression")
+      end
+    end
+    if _UPVALUE0_[A0_42] then
+      return _UPVALUE0_[A0_42][1](A1_43, unpack(_UPVALUE0_[A0_42][2]))
+    end
+  end
+  return true
+end
+Node = L4_4()
+function Node.__init__(A0_44, A1_45, A2_46)
+  local L3_47
+  L3_47 = {}
+  A0_44.children = L3_47
+  L3_47 = A1_45 or ""
+  A0_44.title = L3_47
+  L3_47 = A2_46 or ""
+  A0_44.description = L3_47
+  A0_44.template = "cbi/node"
+end
+function Node._run_hook(A0_48, A1_49)
+  if type(A0_48[A1_49]) == "function" then
+    return A0_48[A1_49](A0_48)
+  end
+end
+function Node._run_hooks(A0_50, ...)
+  local L2_52, L3_53
+  L3_53 = false
+  for _FORV_7_, _FORV_8_ in ipairs(L1_51) do
+    if type(A0_50[_FORV_8_]) == "function" then
+      A0_50[_FORV_8_](A0_50)
+      L3_53 = true
+    end
+  end
+  return L3_53
+end
+function Node.prepare(A0_54, ...)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_54.children) do
+    _FORV_6_:prepare(...)
+  end
+end
+function Node.append(A0_56, A1_57)
+  table.insert(A0_56.children, A1_57)
+end
+function Node.parse(A0_58, ...)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_58.children) do
+    _FORV_6_:parse(...)
+  end
+end
+function Node.render(A0_60, A1_61)
+  A1_61 = A1_61 or {}
+  A1_61.self = A0_60
+  luci.template.render(A0_60.template, A1_61)
+end
+function Node.render_children(A0_62, ...)
+  local L2_64, L3_65
+  for _FORV_7_, _FORV_8_ in ipairs(A0_62.children) do
+    _FORV_8_.last_child = _FORV_7_ == #A0_62.children
+    _FORV_8_:render(...)
+  end
+end
+Template = L4_4(Node)
+function Template.__init__(A0_66, A1_67)
+  Node.__init__(A0_66)
+  A0_66.template = A1_67
+end
+function Template.render(A0_68)
+  luci.template.render(A0_68.template, {self = A0_68})
+end
+function Template.parse(A0_69, A1_70)
+  A0_69.readinput = A1_70 ~= false
+  return Map.formvalue(A0_69, "cbi.submit") and FORM_DONE or FORM_NODATA
+end
+Map = L4_4(Node)
+function Map.__init__(A0_71, A1_72, ...)
+  Node.__init__(A0_71, ...)
+  A0_71.config = A1_72
+  A0_71.parsechain = {
+    A0_71.config
+  }
+  A0_71.template = "cbi/map"
+  A0_71.apply_on_parse = nil
+  A0_71.readinput = true
+  A0_71.proceed = false
+  A0_71.flow = {}
+  A0_71.uci = _UPVALUE0_.cursor()
+  A0_71.save = true
+  A0_71.changed = false
+  if not A0_71.uci:load(A0_71.config) then
+    error("Unable to read UCI data: " .. A0_71.config)
+  end
+end
+function Map.formvalue(A0_74, A1_75)
+  return A0_74.readinput and luci.http.formvalue(A1_75)
+end
+function Map.formvaluetable(A0_76, A1_77)
+  return A0_76.readinput and luci.http.formvaluetable(A1_77) or {}
+end
+function Map.get_scheme(A0_78, A1_79, A2_80)
+  local L3_81
+  if not A2_80 then
+    L3_81 = A0_78.scheme
+    if L3_81 then
+      L3_81 = A0_78.scheme
+      L3_81 = L3_81.sections
+      L3_81 = L3_81[A1_79]
+    end
+    return L3_81
+  else
+    L3_81 = A0_78.scheme
+    if L3_81 then
+      L3_81 = A0_78.scheme
+      L3_81 = L3_81.variables
+      L3_81 = L3_81[A1_79]
+      if L3_81 then
+        L3_81 = A0_78.scheme
+        L3_81 = L3_81.variables
+        L3_81 = L3_81[A1_79]
+        L3_81 = L3_81[A2_80]
+      end
+    end
+    return L3_81
+  end
+end
+function Map.submitstate(A0_82)
+  return A0_82:formvalue("cbi.submit")
+end
+function Map.chain(A0_83, A1_84)
+  table.insert(A0_83.parsechain, A1_84)
+end
+function Map.state_handler(A0_85, A1_86)
+  return A1_86
+end
+function Map.parse(A0_87, A1_88, ...)
+  local L3_90, L4_91, L5_92, L6_93, L7_94
+  L3_90 = A1_88 ~= false
+  A0_87.readinput = L3_90
+  L3_90(L4_91, L5_92)
+  if L3_90 then
+    A0_87.state = L3_90
+    return L3_90(L4_91, L5_92)
+  end
+  L7_94 = ...
+  L3_90(L4_91, L5_92, L6_93, L7_94, ...)
+  if L3_90 then
+    L6_93 = "on_before_save"
+    L3_90(L4_91, L5_92, L6_93)
+    for L6_93, L7_94 in L3_90(L4_91) do
+      A0_87.uci:save(L7_94)
+    end
+    L3_90(L4_91, L5_92)
+    if L3_90 then
+      if not L3_90 then
+      else
+        if not L3_90 then
+      end
+      elseif L3_90 then
+        L3_90(L4_91, L5_92)
+        for L6_93, L7_94 in L3_90(L4_91) do
+          A0_87.uci:commit(L7_94)
+          A0_87.uci:load(L7_94)
+        end
+        L6_93 = "on_after_commit"
+        L7_94 = "on_before_apply"
+        L3_90(L4_91, L5_92, L6_93, L7_94)
+        if L3_90 then
+          L3_90(L4_91, L5_92)
+          L6_93 = "on_after_apply"
+          L3_90(L4_91, L5_92, L6_93)
+        else
+          A0_87.apply_needed = true
+        end
+        L3_90(L4_91, L5_92)
+      end
+    end
+    for L6_93, L7_94 in L3_90(L4_91) do
+      A0_87.uci:unload(L7_94)
+    end
+    if L3_90 == "function" then
+      L6_93 = A0_87
+      L7_94 = L5_92(L6_93)
+      L3_90(L4_91, L5_92, L6_93, L7_94, L5_92(L6_93))
+    end
+  end
+  if L3_90 then
+    if not L3_90 then
+      A0_87.state = L3_90
+    elseif L3_90 then
+      A0_87.state = L3_90
+    else
+      if L3_90 then
+      else
+      end
+      A0_87.state = L3_90
+    end
+  else
+    A0_87.state = L3_90
+  end
+  return L3_90(L4_91, L5_92)
+end
+function Map.render(A0_95, ...)
+  A0_95:_run_hooks("on_init")
+  Node.render(A0_95, ...)
+end
+function Map.section(A0_97, A1_98, ...)
+  local L3_100
+  L3_100 = _UPVALUE0_
+  L3_100 = L3_100(A1_98, AbstractSection)
+  if L3_100 then
+    L3_100 = A1_98
+    L3_100 = L3_100(A0_97, ...)
+    A0_97:append(L3_100)
+    return L3_100
+  else
+    L3_100 = error
+    L3_100("class must be a descendent of AbstractSection")
+  end
+end
+function Map.add(A0_101, A1_102)
+  return A0_101.uci:add(A0_101.config, A1_102)
+end
+function Map.set(A0_103, A1_104, A2_105, A3_106)
+  if type(A3_106) ~= "table" or #A3_106 > 0 then
+    if A2_105 then
+      return A0_103.uci:set(A0_103.config, A1_104, A2_105, A3_106)
+    else
+      return A0_103.uci:set(A0_103.config, A1_104, A3_106)
+    end
+  else
+    return Map.del(A0_103, A1_104, A2_105)
+  end
+end
+function Map.del(A0_107, A1_108, A2_109)
+  if A2_109 then
+    return A0_107.uci:delete(A0_107.config, A1_108, A2_109)
+  else
+    return A0_107.uci:delete(A0_107.config, A1_108)
+  end
+end
+function Map.get(A0_110, A1_111, A2_112)
+  if not A1_111 then
+    return A0_110.uci:get_all(A0_110.config)
+  elseif A2_112 then
+    return A0_110.uci:get(A0_110.config, A1_111, A2_112)
+  else
+    return A0_110.uci:get_all(A0_110.config, A1_111)
+  end
+end
+Compound = L4_4(Node)
+function Compound.__init__(A0_113, ...)
+  Node.__init__(A0_113)
+  A0_113.template = "cbi/compound"
+  A0_113.children = {
+    ...
+  }
+end
+function Compound.populate_delegator(A0_115, A1_116)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_115.children) do
+    _FORV_6_.delegator = A1_116
+  end
+end
+function Compound.parse(A0_117, ...)
+  local L2_119, L3_120
+  L2_119 = 0
+  L3_120 = nil
+  for _FORV_7_, _FORV_8_ in ipairs(A0_117.children) do
+    L2_119 = _FORV_8_:parse(...)
+    if not L3_120 or L3_120 > L2_119 then
+      L3_120 = L2_119 or L3_120
+    end
+  end
+  return L3_120
+end
+Delegator = L4_4(Node)
+function Delegator.__init__(A0_121, ...)
+  local L2_123, L3_124, L4_125
+  L2_123 = Node
+  L2_123 = L2_123.__init__
+  L3_124 = A0_121
+  L4_125 = ...
+  L2_123(L3_124, L4_125)
+  L2_123 = {}
+  A0_121.nodes = L2_123
+  L2_123 = {}
+  A0_121.defaultpath = L2_123
+  A0_121.pageaction = false
+  A0_121.readinput = true
+  A0_121.allow_reset = false
+  A0_121.allow_cancel = false
+  A0_121.allow_back = false
+  A0_121.allow_finish = false
+  A0_121.template = "cbi/delegator"
+end
+function Delegator.set(A0_126, A1_127, A2_128)
+  assert(not A0_126.nodes[A1_127], "Duplicate entry")
+  A0_126.nodes[A1_127] = A2_128
+end
+function Delegator.add(A0_129, A1_130, A2_131)
+  A2_131 = A0_129:set(A1_130, A2_131)
+  A0_129.defaultpath[#A0_129.defaultpath + 1] = A1_130
+end
+function Delegator.insert_after(A0_132, A1_133, A2_134)
+  local L3_135
+  L3_135 = A0_132.chain
+  L3_135 = #L3_135
+  L3_135 = L3_135 + 1
+  for _FORV_7_, _FORV_8_ in ipairs(A0_132.chain) do
+    if _FORV_8_ == A2_134 then
+      L3_135 = _FORV_7_ + 1
+      break
+    end
+  end
+  table.insert(A0_132.chain, L3_135, A1_133)
+end
+function Delegator.set_route(A0_136, ...)
+  local L2_138, L3_139, L4_140
+  L2_138 = 0
+  L3_139 = A0_136.chain
+  L4_140 = {
+    ...
+  }
+  for _FORV_8_ = 1, #L3_139 do
+    if L3_139[_FORV_8_] == A0_136.current then
+      L2_138 = _FORV_8_
+      break
+    end
+  end
+  for _FORV_8_ = 1, #L4_140 do
+    L2_138 = L2_138 + 1
+    L3_139[L2_138] = L4_140[_FORV_8_]
+  end
+  for _FORV_8_ = L2_138 + 1, #L3_139 do
+    L3_139[_FORV_8_] = nil
+  end
+end
+function Delegator.get(A0_141, A1_142)
+  local L2_143
+  L2_143 = A0_141.nodes
+  L2_143 = L2_143[A1_142]
+  if type(L2_143) == "string" then
+    L2_143 = load(L2_143, A1_142)
+  end
+  if type(L2_143) == "table" and getmetatable(L2_143) == nil then
+    L2_143 = Compound(unpack(L2_143))
+  end
+  return L2_143
+end
+function Delegator.parse(A0_144, ...)
+  local L2_146, L3_147
+  L2_146 = A0_144.allow_cancel
+  if L2_146 then
+    L2_146 = Map
+    L2_146 = L2_146.formvalue
+    L3_147 = A0_144
+    L2_146 = L2_146(L3_147, "cbi.cancel")
+    if L2_146 then
+      L3_147 = A0_144
+      L2_146 = A0_144._run_hooks
+      L2_146 = L2_146(L3_147, "on_cancel")
+      if L2_146 then
+        L2_146 = FORM_DONE
+        return L2_146
+      end
+    end
+  end
+  L2_146 = Map
+  L2_146 = L2_146.formvalue
+  L3_147 = A0_144
+  L2_146 = L2_146(L3_147, "cbi.delg.current")
+  if not L2_146 then
+    L3_147 = A0_144
+    L2_146 = A0_144._run_hooks
+    L2_146(L3_147, "on_init")
+  end
+  L2_146 = nil
+  L3_147 = A0_144.chain
+  if not L3_147 then
+    L3_147 = A0_144.get_chain
+    L3_147 = L3_147(A0_144)
+  end
+  A0_144.chain = L3_147
+  L3_147 = A0_144.current
+  if not L3_147 then
+    L3_147 = A0_144.get_active
+    L3_147 = L3_147(A0_144)
+  end
+  A0_144.current = L3_147
+  L3_147 = A0_144.active
+  if not L3_147 then
+    L3_147 = A0_144.get
+    L3_147 = L3_147(A0_144, A0_144.current)
+  end
+  A0_144.active = L3_147
+  L3_147 = assert
+  L3_147(A0_144.active, "Invalid state")
+  L3_147 = FORM_DONE
+  if type(A0_144.active) ~= "function" then
+    A0_144.active:populate_delegator(A0_144)
+    L3_147 = A0_144.active:parse()
+  else
+    A0_144:active()
+  end
+  if L3_147 > FORM_PROCEED then
+    if Map.formvalue(A0_144, "cbi.delg.back") then
+      L2_146 = A0_144:get_prev(A0_144.current)
+    else
+      L2_146 = A0_144:get_next(A0_144.current)
+    end
+  elseif L3_147 < FORM_PROCEED then
+    return L3_147
+  end
+  if not Map.formvalue(A0_144, "cbi.submit") then
+    return FORM_NODATA
+  elseif L3_147 > FORM_PROCEED and (not L2_146 or not A0_144:get(L2_146)) then
+    return A0_144:_run_hook("on_done") or FORM_DONE
+  else
+    A0_144.current = L2_146 or A0_144.current
+    A0_144.active = A0_144:get(A0_144.current)
+    if type(A0_144.active) ~= "function" then
+      A0_144.active:populate_delegator(A0_144)
+      if A0_144.active:parse(false) == FORM_SKIP then
+        return A0_144:parse(...)
+      else
+        return FORM_PROCEED
+      end
+    else
+      return A0_144:parse(...)
+    end
+  end
+end
+function Delegator.get_next(A0_148, A1_149)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_148.chain) do
+    if _FORV_6_ == A1_149 then
+      return A0_148.chain[_FORV_5_ + 1]
+    end
+  end
+end
+function Delegator.get_prev(A0_150, A1_151)
+  for _FORV_5_, _FORV_6_ in ipairs(A0_150.chain) do
+    if _FORV_6_ == A1_151 then
+      return A0_150.chain[_FORV_5_ - 1]
+    end
+  end
+end
+function Delegator.get_chain(A0_152)
+-- fail 18
+null
+2
+  local L1_153
+  L1_153 = Map
+  L1_153 = L1_153.formvalue
+  L1_153 = L1_153(A0_152, "cbi.delg.path")
+  L1_153 = L1_153 or A0_152.defaultpath
+  return {L1_153}
+end
+function Delegator.get_active(A0_154)
+  return Map.formvalue(A0_154, "cbi.delg.current") or A0_154.chain[1]
+end
+Page = L4_4(Node)
+Page.__init__ = Node.__init__
+function Page.parse()
+  local L0_155, L1_156
+end
+SimpleForm = L4_4(Node)
+function SimpleForm.__init__(A0_157, A1_158, A2_159, A3_160, A4_161)
+  Node.__init__(A0_157, A2_159, A3_160)
+  A0_157.config = A1_158
+  A0_157.data = A4_161 or {}
+  A0_157.template = "cbi/simpleform"
+  A0_157.dorender = true
+  A0_157.pageaction = false
+  A0_157.readinput = true
+end
+SimpleForm.formvalue = Map.formvalue
+SimpleForm.formvaluetable = Map.formvaluetable
+function SimpleForm.parse(A0_162, A1_163, ...)
+  local L3_165, L4_166
+  L3_165 = A1_163 ~= false
+  A0_162.readinput = L3_165
+  L3_165 = A0_162.formvalue
+  L3_165 = L3_165(L4_166, "cbi.skip")
+  if L3_165 then
+    L3_165 = FORM_SKIP
+    return L3_165
+  end
+  L3_165 = A0_162.formvalue
+  L3_165 = L3_165(L4_166, "cbi.cancel")
+  if L3_165 then
+    L3_165 = A0_162._run_hooks
+    L3_165 = L3_165(L4_166, "on_cancel")
+    if L3_165 then
+      L3_165 = FORM_DONE
+      return L3_165
+    end
+  end
+  L3_165 = A0_162.submitstate
+  L3_165 = L3_165(L4_166)
+  if L3_165 then
+    L3_165 = Node
+    L3_165 = L3_165.parse
+    L3_165(L4_166, 1, ...)
+  end
+  L3_165 = true
+  for _FORV_7_, _FORV_8_ in L4_166(A0_162.children) do
+    for _FORV_12_, _FORV_13_ in ipairs(_FORV_8_.children) do
+      L3_165 = L3_165 and (not _FORV_13_.tag_missing or not _FORV_13_.tag_missing[1]) and (not _FORV_13_.tag_invalid or not _FORV_13_.tag_invalid[1]) and not _FORV_13_.error
+    end
+  end
+  if not L4_166 then
+  elseif not L4_166 then
+    if L3_165 then
+    else
+    end
+  end
+  A0_162.dorender = not A0_162.handle
+  if A0_162.handle then
+    A0_162.dorender = A0_162.dorender or A0_162:handle(L4_166, A0_162.data) ~= false
+  end
+  return L4_166
+end
+function SimpleForm.render(A0_167, ...)
+  local L2_169, L3_170, L4_171
+  L2_169 = A0_167.dorender
+  if L2_169 then
+    L2_169 = Node
+    L2_169 = L2_169.render
+    L3_170 = A0_167
+    L4_171 = ...
+    L2_169(L3_170, L4_171)
+  end
+end
+function SimpleForm.submitstate(A0_172)
+  return A0_172:formvalue("cbi.submit")
+end
+function SimpleForm.section(A0_173, A1_174, ...)
+  local L3_176
+  L3_176 = _UPVALUE0_
+  L3_176 = L3_176(A1_174, AbstractSection)
+  if L3_176 then
+    L3_176 = A1_174
+    L3_176 = L3_176(A0_173, ...)
+    A0_173:append(L3_176)
+    return L3_176
+  else
+    L3_176 = error
+    L3_176("class must be a descendent of AbstractSection")
+  end
+end
+function SimpleForm.field(A0_177, A1_178, ...)
+  local L3_180, L4_181, L5_182, L6_183, L7_184, L8_185
+  for L7_184, L8_185 in L4_181(L5_182) do
+    if _UPVALUE0_(L8_185, SimpleSection) then
+      L3_180 = L8_185
+      break
+    end
+  end
+  L3_180 = L3_180 or L4_181
+  if L4_181 then
+    L8_185 = ...
+    L4_181.track_missing = true
+    L7_184 = L4_181
+    L5_182(L6_183, L7_184)
+    return L4_181
+  else
+    L4_181(L5_182)
+  end
+end
+function SimpleForm.set(A0_186, A1_187, A2_188, A3_189)
+  A0_186.data[A2_188] = A3_189
+end
+function SimpleForm.del(A0_190, A1_191, A2_192)
+  A0_190.data[A2_192] = nil
+end
+function SimpleForm.get(A0_193, A1_194, A2_195)
+  return A0_193.data[A2_195]
+end
+function SimpleForm.get_scheme()
+  local L0_196, L1_197
+  return L0_196
+end
+Form = L4_4(SimpleForm)
+function Form.__init__(A0_198, ...)
+  local L3_200, L4_201
+  L3_200 = SimpleForm
+  L3_200 = L3_200.__init__
+  L4_201 = A0_198
+  L3_200(L4_201, ...)
+  A0_198.embedded = true
+end
+AbstractSection = L4_4(Node)
+function AbstractSection.__init__(A0_202, A1_203, A2_204, ...)
+  local L4_206, L5_207, L6_208
+  L4_206 = Node
+  L4_206 = L4_206.__init__
+  L5_207 = A0_202
+  L6_208 = ...
+  L4_206(L5_207, L6_208)
+  A0_202.sectiontype = A2_204
+  A0_202.map = A1_203
+  L4_206 = A1_203.config
+  A0_202.config = L4_206
+  L4_206 = {}
+  A0_202.optionals = L4_206
+  L4_206 = {}
+  A0_202.defaults = L4_206
+  L4_206 = {}
+  A0_202.fields = L4_206
+  L4_206 = {}
+  A0_202.tag_error = L4_206
+  L4_206 = {}
+  A0_202.tag_invalid = L4_206
+  L4_206 = {}
+  A0_202.tag_deperror = L4_206
+  A0_202.changed = false
+  A0_202.optional = true
+  A0_202.addremove = false
+  A0_202.dynamic = false
+end
+function AbstractSection.tab(A0_209, A1_210, A2_211, A3_212)
+  local L4_213, L5_214
+  L4_213 = A0_209.tabs
+  L4_213 = L4_213 or {}
+  A0_209.tabs = L4_213
+  L4_213 = A0_209.tab_names
+  L4_213 = L4_213 or {}
+  A0_209.tab_names = L4_213
+  L4_213 = A0_209.tab_names
+  L5_214 = A0_209.tab_names
+  L5_214 = #L5_214
+  L5_214 = L5_214 + 1
+  L4_213[L5_214] = A1_210
+  L4_213 = A0_209.tabs
+  L5_214 = {}
+  L5_214.title = A2_211
+  L5_214.description = A3_212
+  L5_214.childs = {}
+  L4_213[A1_210] = L5_214
+end
+function AbstractSection.has_tabs(A0_215)
+  return A0_215.tabs ~= nil and next(A0_215.tabs) ~= nil
+end
+function AbstractSection.option(A0_216, A1_217, A2_218, ...)
+  local L4_220
+  L4_220 = _UPVALUE0_
+  L4_220 = L4_220(A1_217, AbstractValue)
+  if L4_220 then
+    L4_220 = A1_217
+    L4_220 = L4_220(A0_216.map, A0_216, A2_218, ...)
+    A0_216:append(L4_220)
+    A0_216.fields[A2_218] = L4_220
+    return L4_220
+  elseif A1_217 == true then
+    L4_220 = error
+    L4_220("No valid class was given and autodetection failed.")
+  else
+    L4_220 = error
+    L4_220("class must be a descendant of AbstractValue")
+  end
+end
+function AbstractSection.taboption(A0_221, A1_222, ...)
+  assert(A1_222 and A0_221.tabs and A0_221.tabs[A1_222], "Cannot assign option to not existing tab %q" % tostring(A1_222))
+  if AbstractSection.option(A0_221, ...) then
+    A0_221.tabs[A1_222].childs[#A0_221.tabs[A1_222].childs + 1] = AbstractSection.option(A0_221, ...)
+  end
+  return (AbstractSection.option(A0_221, ...))
+end
+function AbstractSection.render_tab(A0_224, A1_225, ...)
+  assert(A1_225 and A0_224.tabs and A0_224.tabs[A1_225], "Cannot render not existing tab %q" % tostring(A1_225))
+  for _FORV_8_, _FORV_9_ in ipairs(A0_224.tabs[A1_225].childs) do
+    _FORV_9_.last_child = _FORV_8_ == #A0_224.tabs[A1_225].childs
+    _FORV_9_:render(...)
+  end
+end
+function AbstractSection.parse_optionals(A0_227, A1_228)
+  local L2_229, L3_230, L4_231, L5_232, L6_233, L7_234
+  L2_229 = A0_227.optional
+  if not L2_229 then
+    return
+  end
+  L2_229 = A0_227.optionals
+  L2_229[A1_228] = L3_230
+  L2_229 = A0_227.map
+  L2_229 = L2_229.formvalue
+  L6_233 = "."
+  L7_234 = A1_228
+  L2_229 = L2_229(L3_230, L4_231)
+  for L6_233, L7_234 in L3_230(L4_231) do
+    if L7_234.optional and not L7_234:cfgvalue(A1_228) and not A0_227:has_tabs() then
+      if L2_229 == L7_234.option then
+        L2_229 = nil
+        A0_227.map.proceed = true
+      else
+        table.insert(A0_227.optionals[A1_228], L7_234)
+      end
+    end
+  end
+  if L2_229 then
+    if L3_230 > 0 then
+      if L3_230 then
+        L3_230(L4_231, L5_232)
+      end
+    end
+  end
+end
+function AbstractSection.add_dynamic(A0_235, A1_236, A2_237)
+  A0_235:option(Value, A1_236, A1_236).optional = A2_237
+end
+function AbstractSection.parse_dynamic(A0_238, A1_239)
+  local L2_240, L3_241, L4_242, L5_243, L6_244, L7_245
+  L2_240 = A0_238.dynamic
+  if not L2_240 then
+    return
+  end
+  L2_240 = luci
+  L2_240 = L2_240.util
+  L2_240 = L2_240.clone
+  L3_241 = A0_238.cfgvalue
+  L7_245 = L3_241(L4_242, L5_243)
+  L2_240 = L2_240(L3_241, L4_242, L5_243, L6_244, L7_245, L3_241(L4_242, L5_243))
+  L3_241 = A0_238.map
+  L3_241 = L3_241.formvaluetable
+  L7_245 = "."
+  L3_241 = L3_241(L4_242, L5_243)
+  for L7_245, _FORV_8_ in L4_242(L5_243) do
+    L2_240[L7_245] = _FORV_8_
+  end
+  for L7_245, _FORV_8_ in L4_242(L5_243) do
+    for _FORV_13_, _FORV_14_ in ipairs(A0_238.children) do
+    end
+    if false and L7_245:sub(1, 1) ~= "." then
+      A0_238.map.proceed = true
+      A0_238:add_dynamic(L7_245, true)
+    end
+  end
+end
+function AbstractSection.cfgvalue(A0_246, A1_247)
+  return A0_246.map:get(A1_247)
+end
+function AbstractSection.push_events(A0_248)
+  A0_248.map.changed = true
+end
+function AbstractSection.remove(A0_249, A1_250)
+  A0_249.map.proceed = true
+  return A0_249.map:del(A1_250)
+end
+function AbstractSection.create(A0_251, A1_252)
+  local L2_253, L3_254, L4_255, L5_256, L6_257, L7_258
+  if A1_252 then
+    L2_253 = L3_254 and L3_254
+  else
+    A1_252 = L3_254
+    L2_253 = A1_252
+  end
+  if L2_253 then
+    for L6_257, L7_258 in L3_254(L4_255) do
+      if L7_258.default then
+        A0_251.map:set(A1_252, L7_258.option, L7_258.default)
+      end
+    end
+    for L6_257, L7_258 in L3_254(L4_255) do
+      A0_251.map:set(A1_252, L6_257, L7_258)
+    end
+  end
+  L3_254.proceed = true
+  return L2_253
+end
+SimpleSection = L4_4(AbstractSection)
+function SimpleSection.__init__(A0_259, A1_260, ...)
+  local L4_262, L5_263, L6_264, L7_265
+  L4_262 = AbstractSection
+  L4_262 = L4_262.__init__
+  L5_263 = A0_259
+  L6_264 = A1_260
+  L7_265 = nil
+  L4_262(L5_263, L6_264, L7_265, ...)
+  A0_259.template = "cbi/nullsection"
+end
+Table = L4_4(AbstractSection)
+function Table.__init__(A0_266, A1_267, A2_268, ...)
+  local L4_270, L6_271, L7_272, L8_273, L9_274, L10_275
+  L4_270 = {}
+  L6_271 = A0_266
+  L4_270.config = "table"
+  L7_272 = A2_268 or {}
+  A0_266.data = L7_272
+  L7_272 = Map
+  L7_272 = L7_272.formvalue
+  L4_270.formvalue = L7_272
+  L7_272 = Map
+  L7_272 = L7_272.formvaluetable
+  L4_270.formvaluetable = L7_272
+  L4_270.readinput = true
+  function L7_272(A0_276, A1_277, A2_278)
+    local L3_279
+    L3_279 = _UPVALUE0_
+    L3_279 = L3_279.data
+    L3_279 = L3_279[A1_277]
+    if L3_279 then
+      L3_279 = _UPVALUE0_
+      L3_279 = L3_279.data
+      L3_279 = L3_279[A1_277]
+      L3_279 = L3_279[A2_278]
+    end
+    return L3_279
+  end
+  L4_270.get = L7_272
+  function L7_272(A0_280)
+    return Map.formvalue(A0_280, "cbi.submit")
+  end
+  L4_270.submitstate = L7_272
+  function L7_272(...)
+    local L1_282
+    L1_282 = true
+    return L1_282
+  end
+  L4_270.del = L7_272
+  function L7_272()
+    local L0_283, L1_284
+    return L0_283
+  end
+  L4_270.get_scheme = L7_272
+  L7_272 = AbstractSection
+  L7_272 = L7_272.__init__
+  L8_273 = A0_266
+  L9_274 = L4_270
+  L10_275 = "table"
+  L7_272(L8_273, L9_274, L10_275, ...)
+  A0_266.template = "cbi/tblsection"
+  A0_266.rowcolors = true
+  A0_266.anonymous = true
+end
+function Table.parse(A0_285, A1_286)
+  local L2_287, L3_288, L4_289, L5_290, L6_291
+  L3_288 = A1_286 ~= false
+  L2_287.readinput = L3_288
+  L6_291 = L3_288(L4_289)
+  for L5_290, L6_291 in L2_287(L3_288, L4_289, L5_290, L6_291, L3_288(L4_289)) do
+    if A0_285.map:submitstate() then
+      Node.parse(A0_285, L6_291)
+    end
+  end
+end
+function Table.cfgsections(A0_292)
+  local L1_293, L2_294, L3_295, L4_296, L5_297
+  L1_293 = {}
+  for L5_297, _FORV_6_ in L2_294(L3_295) do
+    table.insert(L1_293, L5_297)
+  end
+  return L1_293
+end
+function Table.update(A0_298, A1_299)
+  A0_298.data = A1_299
+end
+NamedSection = L4_4(AbstractSection)
+function NamedSection.__init__(A0_300, A1_301, A2_302, A3_303, ...)
+  local L6_305, L7_306, L8_307, L9_308
+  L6_305 = AbstractSection
+  L6_305 = L6_305.__init__
+  L7_306 = A0_300
+  L8_307 = A1_301
+  L9_308 = A3_303
+  L6_305(L7_306, L8_307, L9_308, ...)
+  A0_300.addremove = false
+  A0_300.template = "cbi/nsection"
+  A0_300.section = A2_302
+end
+function NamedSection.parse(A0_309, A1_310)
+  local L2_311, L3_312, L4_313
+  L2_311 = A0_309.section
+  L4_313 = A0_309
+  L3_312 = A0_309.cfgvalue
+  L3_312 = L3_312(L4_313, L2_311)
+  L4_313 = A0_309.addremove
+  if L4_313 then
+    L4_313 = A0_309.config
+    L4_313 = L4_313 .. "." .. L2_311
+    if L3_312 then
+      if A0_309.map:formvalue("cbi.rns." .. L4_313) and A0_309:remove(L2_311) then
+        A0_309:push_events()
+        return
+      end
+    elseif A0_309.map:formvalue("cbi.cns." .. L4_313) then
+      A0_309:create(L2_311)
+      return
+    end
+  end
+  if L3_312 then
+    L4_313 = AbstractSection
+    L4_313 = L4_313.parse_dynamic
+    L4_313(A0_309, L2_311)
+    L4_313 = A0_309.map
+    L4_313 = L4_313.submitstate
+    L4_313 = L4_313(L4_313)
+    if L4_313 then
+      L4_313 = Node
+      L4_313 = L4_313.parse
+      L4_313(A0_309, L2_311)
+    end
+    L4_313 = AbstractSection
+    L4_313 = L4_313.parse_optionals
+    L4_313(A0_309, L2_311)
+    L4_313 = A0_309.changed
+    if L4_313 then
+      L4_313 = A0_309.push_events
+      L4_313(A0_309)
+    end
+  end
+end
+TypedSection = L4_4(AbstractSection)
+function TypedSection.__init__(A0_314, A1_315, A2_316, ...)
+  local L4_318, L5_319, L6_320, L7_321, L8_322
+  L4_318 = AbstractSection
+  L4_318 = L4_318.__init__
+  L5_319 = A0_314
+  L6_320 = A1_315
+  L7_321 = A2_316
+  L8_322 = ...
+  L4_318(L5_319, L6_320, L7_321, L8_322)
+  A0_314.template = "cbi/tsection"
+  L4_318 = {}
+  A0_314.deps = L4_318
+  A0_314.anonymous = false
+end
+function TypedSection.cfgsections(A0_323)
+  A0_323.map.uci:foreach(A0_323.map.config, A0_323.sectiontype, function(A0_324)
+    if _UPVALUE0_:checkscope(A0_324[".name"]) then
+      table.insert(_UPVALUE1_, A0_324[".name"])
+    end
+  end)
+  return {}
+end
+function TypedSection.depends(A0_325, A1_326, A2_327)
+  table.insert(A0_325.deps, {option = A1_326, value = A2_327})
+end
+function TypedSection.parse(A0_328, A1_329)
+  local L2_330, L3_331, L4_332, L5_333, L6_334, L7_335, L8_336, L9_337, L10_338
+  L2_330 = A0_328.addremove
+  if L2_330 then
+    L2_330 = REMOVE_PREFIX
+    L2_330 = L2_330 .. L3_331
+    for L7_335, L8_336 in L4_332(L5_333) do
+      L10_338 = L7_335
+      if L9_337 == ".x" then
+        L10_338 = L7_335
+      end
+      L10_338 = A0_328
+      if L9_337 then
+        L10_338 = A0_328
+        if L9_337 then
+          L10_338 = A0_328
+          L9_337(L10_338, L7_335)
+        end
+      end
+    end
+  end
+  L2_330 = nil
+  L10_338 = L4_332(L5_333)
+  for L6_334, L7_335 in L3_331(L4_332, L5_333, L6_334, L7_335, L8_336, L9_337, L10_338, L4_332(L5_333)) do
+    L10_338 = L7_335
+    L8_336(L9_337, L10_338)
+    if L8_336 then
+      L10_338 = L7_335
+      L8_336(L9_337, L10_338, A1_329)
+    end
+    L10_338 = L7_335
+    L8_336(L9_337, L10_338)
+  end
+  if L3_331 then
+    L10_338 = L6_334(L7_335, L8_336)
+    if L7_335 then
+      if L6_334 then
+        L10_338 = L5_333
+      end
+    elseif L6_334 then
+      if L7_335 then
+      end
+      if not L6_334 then
+        A0_328.err_invalid = true
+      end
+      if L6_334 then
+        if L7_335 > 0 then
+          L10_338 = L5_333
+          L3_331 = L7_335 and L6_334
+          if not L3_331 then
+            A0_328.invalid_cts = true
+          end
+        end
+      end
+    end
+    if L3_331 then
+      L7_335(L8_336, L9_337)
+    end
+  end
+  if L3_331 then
+    if L4_332 then
+      if L5_333 > 0 then
+        for L10_338 in L7_335(L8_336) do
+          A0_328.map.uci:reorder(A0_328.config, L10_338, L6_334)
+        end
+        L7_335 = L6_334 > 0
+        A0_328.changed = L7_335
+      end
+    end
+  end
+  if not L3_331 then
+  elseif L3_331 then
+    L3_331(L4_332)
+  end
+end
+function TypedSection.checkscope(A0_339, A1_340)
+  if A0_339.filter and not A0_339:filter(A1_340) then
+    return nil
+  end
+  if #A0_339.deps > 0 and A0_339:cfgvalue(A1_340) then
+    for _FORV_6_, _FORV_7_ in ipairs(A0_339.deps) do
+    end
+    if not true then
+      return nil
+    end
+  end
+  return A0_339:validate(A1_340)
+end
+function TypedSection.validate(A0_341, A1_342)
+  return A1_342
+end
+AbstractValue = L4_4(Node)
+function AbstractValue.__init__(A0_343, A1_344, A2_345, A3_346, ...)
+  local L5_348, L6_349, L7_350
+  L5_348 = Node
+  L5_348 = L5_348.__init__
+  L6_349 = A0_343
+  L7_350 = ...
+  L5_348(L6_349, L7_350)
+  A0_343.section = A2_345
+  A0_343.option = A3_346
+  A0_343.map = A1_344
+  L5_348 = A1_344.config
+  A0_343.config = L5_348
+  L5_348 = {}
+  A0_343.tag_invalid = L5_348
+  L5_348 = {}
+  A0_343.tag_missing = L5_348
+  L5_348 = {}
+  A0_343.tag_reqerror = L5_348
+  L5_348 = {}
+  A0_343.tag_error = L5_348
+  L5_348 = {}
+  A0_343.deps = L5_348
+  L5_348 = {}
+  A0_343.subdeps = L5_348
+  A0_343.track_missing = false
+  A0_343.rmempty = true
+  A0_343.default = nil
+  A0_343.size = nil
+  A0_343.optional = false
+end
+function AbstractValue.prepare(A0_351)
+  local L1_352
+  L1_352 = A0_351.cast
+  L1_352 = L1_352 or "string"
+  A0_351.cast = L1_352
+end
+function AbstractValue.depends(A0_353, A1_354, A2_355)
+  local L3_356
+  if type(A1_354) == "string" then
+    L3_356 = {}
+    L3_356[A1_354] = A2_355
+  else
+    L3_356 = A1_354
+  end
+  table.insert(A0_353.deps, {deps = L3_356, add = ""})
+end
+function AbstractValue.cbid(A0_357, A1_358)
+  return "cbid." .. A0_357.map.config .. "." .. A1_358 .. "." .. A0_357.option
+end
+function AbstractValue.formcreated(A0_359, A1_360)
+  local L2_361
+  L2_361 = "cbi.opt."
+  L2_361 = L2_361 .. A0_359.config .. "." .. A1_360
+  return A0_359.map:formvalue(L2_361) == A0_359.option
+end
+function AbstractValue.formvalue(A0_362, A1_363)
+  local L3_364
+  L3_364 = A0_362.map
+  L3_364 = L3_364.formvalue
+  return L3_364(L3_364, A0_362:cbid(A1_363))
+end
+function AbstractValue.additional(A0_365, A1_366)
+  A0_365.optional = A1_366
+end
+function AbstractValue.mandatory(A0_367, A1_368)
+  A0_367.rmempty = not A1_368
+end
+function AbstractValue.add_error(A0_369, A1_370, A2_371, A3_372)
+  A0_369.error = A0_369.error or {}
+  A0_369.error[A1_370] = A3_372 or A2_371
+  A0_369.section.error = A0_369.section.error or {}
+  A0_369.section.error[A1_370] = A0_369.section.error[A1_370] or {}
+  table.insert(A0_369.section.error[A1_370], A3_372 or A2_371)
+  if A2_371 == "invalid" then
+    A0_369.tag_invalid[A1_370] = true
+  elseif A2_371 == "missing" then
+    A0_369.tag_missing[A1_370] = true
+  end
+  A0_369.tag_error[A1_370] = true
+  A0_369.map.save = false
+end
+function AbstractValue.parse(A0_373, A1_374, A2_375)
+  local L3_376, L4_377, L5_378, L6_379
+  L4_377 = A0_373
+  L3_376 = A0_373.formvalue
+  L5_378 = A1_374
+  L3_376 = L3_376(L4_377, L5_378)
+  L5_378 = A0_373
+  L4_377 = A0_373.cfgvalue
+  L4_377 = L4_377(L5_378, L6_379)
+  L5_378 = type
+  L5_378 = L5_378(L6_379)
+  if L5_378 == "table" then
+    L5_378 = type
+    L5_378 = L5_378(L6_379)
+    if L5_378 == "table" then
+      L5_378 = #L3_376
+      L5_378 = L5_378 == L6_379
+      if L5_378 then
+        for _FORV_9_ = 1, #L3_376 do
+          if L4_377[_FORV_9_] ~= L3_376[_FORV_9_] then
+            L5_378 = false
+          end
+        end
+      end
+      if L5_378 then
+        L3_376 = L4_377
+      end
+    end
+  end
+  if L3_376 then
+    L5_378 = #L3_376
+    if L5_378 > 0 then
+      L5_378 = nil
+      L5_378 = L6_379(A0_373, L3_376, A1_374)
+      L3_376 = L6_379
+      L3_376 = L6_379
+      if not L3_376 and not A2_375 then
+        L6_379(A0_373, A1_374, "invalid", L5_378)
+      end
+      if L3_376 then
+        if L6_379 or L3_376 ~= L4_377 then
+          if L6_379 then
+            L6_379.changed = true
+          end
+        end
+      end
+    end
+  else
+    L5_378 = A0_373.rmempty
+    if not L5_378 then
+      L5_378 = A0_373.optional
+    else
+      if L5_378 then
+        L5_378 = A0_373.remove
+        L5_378 = L5_378(L6_379, A1_374)
+        if L5_378 then
+          L5_378 = A0_373.section
+          L5_378.changed = true
+        end
+    end
+    elseif L4_377 ~= L3_376 and not A2_375 then
+      L5_378 = A0_373.validate
+      L5_378 = L5_378(L6_379, nil, A1_374)
+      A0_373:add_error(A1_374, "missing", L6_379)
+    end
+  end
+end
+function AbstractValue.render(A0_380, A1_381, A2_382)
+  if not A0_380.optional or A0_380.section:has_tabs() or A0_380:cfgvalue(A1_381) or A0_380:formcreated(A1_381) then
+    A2_382 = A2_382 or {}
+    A2_382.section = A1_381
+    A2_382.cbid = A0_380:cbid(A1_381)
+    Node.render(A0_380, A2_382)
+  end
+end
+function AbstractValue.cfgvalue(A0_383, A1_384)
+  local L2_385
+  if A0_383.tag_error[A1_384] then
+    L2_385 = A0_383:formvalue(A1_384)
+  else
+    L2_385 = A0_383.map:get(A1_384, A0_383.option)
+  end
+  if not L2_385 then
+    return nil
+  elseif not A0_383.cast or A0_383.cast == type(L2_385) then
+    return L2_385
+  elseif A0_383.cast == "string" then
+    if type(L2_385) == "table" then
+      return L2_385[1]
+    end
+  elseif A0_383.cast == "table" then
+    return {L2_385}
+  end
+end
+function AbstractValue.validate(A0_386, A1_387)
+  local L2_388, L3_389, L4_390, L5_391, L6_392, L7_393
+  L2_388 = A0_386.datatype
+  if L2_388 and A1_387 then
+    L2_388 = type
+    L2_388 = L2_388(L3_389)
+    if L2_388 == "table" then
+      L2_388 = nil
+      for L6_392, L7_393 in L3_389(L4_390) do
+        if L7_393 and #L7_393 > 0 and not verify_datatype(A0_386.datatype, L7_393) then
+          return nil
+        end
+      end
+    else
+      L2_388 = verify_datatype
+      L2_388 = L2_388(L3_389, L4_390)
+      if not L2_388 then
+        L2_388 = nil
+        return L2_388
+      end
+    end
+  end
+  return A1_387
+end
+AbstractValue.transform = AbstractValue.validate
+function AbstractValue.write(A0_394, A1_395, A2_396)
+  return A0_394.map:set(A1_395, A0_394.option, A2_396)
+end
+function AbstractValue.remove(A0_397, A1_398)
+  return A0_397.map:del(A1_398, A0_397.option)
+end
+Value = L4_4(AbstractValue)
+function Value.__init__(A0_399, ...)
+  local L2_401, L3_402, L4_403
+  L2_401 = AbstractValue
+  L2_401 = L2_401.__init__
+  L3_402 = A0_399
+  L4_403 = ...
+  L2_401(L3_402, L4_403)
+  A0_399.template = "cbi/value"
+  L2_401 = {}
+  A0_399.keylist = L2_401
+  L2_401 = {}
+  A0_399.vallist = L2_401
+end
+function Value.reset_values(A0_404)
+  local L1_405
+  L1_405 = {}
+  A0_404.keylist = L1_405
+  L1_405 = {}
+  A0_404.vallist = L1_405
+end
+function Value.value(A0_406, A1_407, A2_408)
+  local L3_409, L4_410
+  A2_408 = A2_408 or A1_407
+  L3_409 = table
+  L3_409 = L3_409.insert
+  L4_410 = A0_406.keylist
+  L3_409(L4_410, tostring(A1_407))
+  L3_409 = table
+  L3_409 = L3_409.insert
+  L4_410 = A0_406.vallist
+  L3_409(L4_410, tostring(A2_408))
+end
+DummyValue = L4_4(AbstractValue)
+function DummyValue.__init__(A0_411, ...)
+  local L3_413, L4_414
+  L3_413 = AbstractValue
+  L3_413 = L3_413.__init__
+  L4_414 = A0_411
+  L3_413(L4_414, ...)
+  A0_411.template = "cbi/dvalue"
+  A0_411.value = nil
+end
+function DummyValue.cfgvalue(A0_415, A1_416)
+  local L2_417
+  if A0_415.value then
+    if type(A0_415.value) == "function" then
+      L2_417 = A0_415:value(A1_416)
+    else
+      L2_417 = A0_415.value
+    end
+  else
+    L2_417 = AbstractValue.cfgvalue(A0_415, A1_416)
+  end
+  return L2_417
+end
+function DummyValue.parse(A0_418)
+  local L1_419
+end
+Flag = L4_4(AbstractValue)
+function Flag.__init__(A0_420, ...)
+  local L2_422, L3_423, L4_424
+  L2_422 = AbstractValue
+  L2_422 = L2_422.__init__
+  L3_423 = A0_420
+  L4_424 = ...
+  L2_422(L3_423, L4_424)
+  A0_420.template = "cbi/fvalue"
+  A0_420.enabled = "1"
+  A0_420.disabled = "0"
+  L2_422 = A0_420.disabled
+  A0_420.default = L2_422
+end
+function Flag.parse(A0_425, A1_426)
+  local L2_427, L3_428
+  L2_427 = A0_425.map
+  L3_428 = L2_427
+  L2_427 = L2_427.formvalue
+  L2_427 = L2_427(L3_428, FEXIST_PREFIX .. A0_425.config .. "." .. A1_426 .. "." .. A0_425.option)
+  if L2_427 then
+    L3_428 = A0_425.formvalue
+    L3_428 = L3_428(A0_425, A1_426)
+    if L3_428 then
+      L3_428 = A0_425.enabled
+    else
+      L3_428 = L3_428 or A0_425.disabled
+    end
+    if L3_428 ~= A0_425.default or not A0_425.optional and not A0_425.rmempty then
+      A0_425:write(A1_426, L3_428)
+    else
+      A0_425:remove(A1_426)
+    end
+  else
+    L3_428 = A0_425.remove
+    L3_428(A0_425, A1_426)
+  end
+end
+function Flag.cfgvalue(A0_429, A1_430)
+  return AbstractValue.cfgvalue(A0_429, A1_430) or A0_429.default
+end
+ListValue = L4_4(AbstractValue)
+function ListValue.__init__(A0_431, ...)
+  local L2_433, L3_434, L4_435
+  L2_433 = AbstractValue
+  L2_433 = L2_433.__init__
+  L3_434 = A0_431
+  L4_435 = ...
+  L2_433(L3_434, L4_435)
+  A0_431.template = "cbi/lvalue"
+  L2_433 = {}
+  A0_431.keylist = L2_433
+  L2_433 = {}
+  A0_431.vallist = L2_433
+  A0_431.size = 1
+  A0_431.widget = "select"
+end
+function ListValue.reset_values(A0_436)
+  local L1_437
+  L1_437 = {}
+  A0_436.keylist = L1_437
+  L1_437 = {}
+  A0_436.vallist = L1_437
+end
+function ListValue.value(A0_438, A1_439, A2_440, ...)
+  if luci.util.contains(A0_438.keylist, A1_439) then
+    return
+  end
+  A2_440 = A2_440 or A1_439
+  table.insert(A0_438.keylist, tostring(A1_439))
+  table.insert(A0_438.vallist, tostring(A2_440))
+  for _FORV_7_, _FORV_8_ in ipairs({
+    ...
+  }) do
+    A0_438.subdeps[#A0_438.subdeps + 1] = {
+      add = "-" .. A1_439,
+      deps = _FORV_8_
+    }
+  end
+end
+function ListValue.validate(A0_442, A1_443)
+  if luci.util.contains(A0_442.keylist, A1_443) then
+    return A1_443
+  else
+    return nil
+  end
+end
+MultiValue = L4_4(AbstractValue)
+function MultiValue.__init__(A0_444, ...)
+  local L2_446, L3_447, L4_448
+  L2_446 = AbstractValue
+  L2_446 = L2_446.__init__
+  L3_447 = A0_444
+  L4_448 = ...
+  L2_446(L3_447, L4_448)
+  A0_444.template = "cbi/mvalue"
+  L2_446 = {}
+  A0_444.keylist = L2_446
+  L2_446 = {}
+  A0_444.vallist = L2_446
+  A0_444.widget = "checkbox"
+  A0_444.delimiter = " "
+end
+function MultiValue.render(A0_449, ...)
+  local L2_451, L3_452, L4_453
+  L2_451 = A0_449.widget
+  if L2_451 == "select" then
+    L2_451 = A0_449.size
+    if not L2_451 then
+      L2_451 = A0_449.vallist
+      L2_451 = #L2_451
+      A0_449.size = L2_451
+    end
+  end
+  L2_451 = AbstractValue
+  L2_451 = L2_451.render
+  L3_452 = A0_449
+  L4_453 = ...
+  L2_451(L3_452, L4_453)
+end
+function MultiValue.reset_values(A0_454)
+  local L1_455
+  L1_455 = {}
+  A0_454.keylist = L1_455
+  L1_455 = {}
+  A0_454.vallist = L1_455
+end
+function MultiValue.value(A0_456, A1_457, A2_458)
+  if luci.util.contains(A0_456.keylist, A1_457) then
+    return
+  end
+  A2_458 = A2_458 or A1_457
+  table.insert(A0_456.keylist, tostring(A1_457))
+  table.insert(A0_456.vallist, tostring(A2_458))
+end
+function MultiValue.valuelist(A0_459, A1_460)
+  local L2_461
+  L2_461 = A0_459.cfgvalue
+  L2_461 = L2_461(A0_459, A1_460)
+  if type(L2_461) ~= "string" then
+    return {}
+  end
+  return luci.util.split(L2_461, A0_459.delimiter)
+end
+function MultiValue.validate(A0_462, A1_463)
+  local L2_464, L3_465, L4_466, L5_467, L6_468, L7_469
+  L2_464 = type
+  L2_464 = L2_464(L3_465)
+  if L2_464 ~= "table" or not A1_463 then
+    L2_464 = {L3_465}
+    A1_463 = L2_464
+  end
+  L2_464 = nil
+  for L6_468, L7_469 in L3_465(L4_466) do
+    L2_464 = not luci.util.contains(A0_462.keylist, L7_469) or L2_464 and L2_464 .. A0_462.delimiter .. L7_469 or L7_469
+  end
+  return L2_464
+end
+StaticList = L4_4(MultiValue)
+function StaticList.__init__(A0_470, ...)
+  local L2_472, L3_473, L4_474, L5_475, L6_476, L7_477
+  L2_472 = MultiValue
+  L2_472 = L2_472.__init__
+  L7_477 = ...
+  L2_472(L3_473, L4_474, L5_475, L6_476, L7_477, ...)
+  A0_470.cast = "table"
+  L2_472 = A0_470.cfgvalue
+  A0_470.valuelist = L2_472
+  L2_472 = A0_470.override_scheme
+  if not L2_472 then
+    L2_472 = A0_470.map
+    L2_472 = L2_472.get_scheme
+    L2_472 = L2_472(L3_473, L4_474, L5_475)
+    if L2_472 then
+      L2_472 = A0_470.map
+      L2_472 = L2_472.get_scheme
+      L2_472 = L2_472(L3_473, L4_474, L5_475)
+      if L3_473 then
+        if L3_473 then
+          if not L3_473 then
+            for L6_476, L7_477 in L3_473(L4_474) do
+              A0_470:value(L6_476, L7_477)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+function StaticList.validate(A0_478, A1_479)
+  local L2_480, L3_481, L4_482, L5_483, L6_484, L7_485
+  L2_480 = type
+  L2_480 = L2_480(L3_481)
+  if L2_480 ~= "table" or not A1_479 then
+    L2_480 = {L3_481}
+    A1_479 = L2_480
+  end
+  L2_480 = {}
+  for L6_484, L7_485 in L3_481(L4_482) do
+    if luci.util.contains(A0_478.keylist, L7_485) then
+      table.insert(L2_480, L7_485)
+    end
+  end
+  return L2_480
+end
+DynamicList = L4_4(AbstractValue)
+function DynamicList.__init__(A0_486, ...)
+  local L2_488, L3_489, L4_490
+  L2_488 = AbstractValue
+  L2_488 = L2_488.__init__
+  L3_489 = A0_486
+  L4_490 = ...
+  L2_488(L3_489, L4_490)
+  A0_486.template = "cbi/dynlist"
+  A0_486.cast = "table"
+  L2_488 = {}
+  A0_486.keylist = L2_488
+  L2_488 = {}
+  A0_486.vallist = L2_488
+end
+function DynamicList.reset_values(A0_491)
+  local L1_492
+  L1_492 = {}
+  A0_491.keylist = L1_492
+  L1_492 = {}
+  A0_491.vallist = L1_492
+end
+function DynamicList.value(A0_493, A1_494, A2_495)
+  local L3_496, L4_497
+  A2_495 = A2_495 or A1_494
+  L3_496 = table
+  L3_496 = L3_496.insert
+  L4_497 = A0_493.keylist
+  L3_496(L4_497, tostring(A1_494))
+  L3_496 = table
+  L3_496 = L3_496.insert
+  L4_497 = A0_493.vallist
+  L3_496(L4_497, tostring(A2_495))
+end
+function DynamicList.write(A0_498, A1_499, A2_500)
+  local L3_501
+  L3_501 = {}
+  if type(A2_500) == "table" then
+    for _FORV_8_, _FORV_9_ in ipairs(A2_500) do
+      if _FORV_9_ and #_FORV_9_ > 0 then
+        L3_501[#L3_501 + 1] = _FORV_9_
+      end
+    end
+  else
+    L3_501 = {A2_500}
+  end
+  if A0_498.cast == "string" then
+    A2_500 = table.concat(L3_501, " ")
+  else
+    A2_500 = L3_501
+  end
+  return AbstractValue.write(A0_498, A1_499, A2_500)
+end
+function DynamicList.cfgvalue(A0_502, A1_503)
+  local L2_504
+  L2_504 = AbstractValue
+  L2_504 = L2_504.cfgvalue
+  L2_504 = L2_504(A0_502, A1_503)
+  if type(L2_504) == "string" then
+    for _FORV_8_ in L2_504:gmatch("%S+") do
+      if #_FORV_8_ > 0 then
+        ({})[#{} + 1] = _FORV_8_
+      end
+    end
+    L2_504 = {}
+  end
+  return L2_504
+end
+function DynamicList.formvalue(A0_505, A1_506)
+  local L2_507
+  L2_507 = AbstractValue
+  L2_507 = L2_507.formvalue
+  L2_507 = L2_507(A0_505, A1_506)
+  if type(L2_507) == "string" then
+    if A0_505.cast == "string" then
+      for _FORV_8_ in L2_507:gmatch("%S+") do
+        ({})[#{} + 1] = _FORV_8_
+      end
+      L2_507 = {}
+    else
+      L2_507 = {L2_507}
+    end
+  end
+  return L2_507
+end
+TextValue = L4_4(AbstractValue)
+function TextValue.__init__(A0_508, ...)
+  local L3_510, L4_511
+  L3_510 = AbstractValue
+  L3_510 = L3_510.__init__
+  L4_511 = A0_508
+  L3_510(L4_511, ...)
+  A0_508.template = "cbi/tvalue"
+end
+Button = L4_4(AbstractValue)
+function Button.__init__(A0_512, ...)
+  local L3_514, L4_515
+  L3_514 = AbstractValue
+  L3_514 = L3_514.__init__
+  L4_515 = A0_512
+  L3_514(L4_515, ...)
+  A0_512.template = "cbi/button"
+  A0_512.inputstyle = nil
+  A0_512.rmempty = true
+end
+FileUpload = L4_4(AbstractValue)
+function FileUpload.__init__(A0_516, ...)
+  local L2_518, L3_519
+  L2_518 = AbstractValue
+  L2_518 = L2_518.__init__
+  L3_519 = A0_516
+  L2_518(L3_519, ...)
+  A0_516.template = "cbi/upload"
+  L2_518 = A0_516.map
+  L2_518 = L2_518.upload_fields
+  if not L2_518 then
+    L2_518 = A0_516.map
+    L3_519 = {A0_516}
+    L2_518.upload_fields = L3_519
+  else
+    L2_518 = A0_516.map
+    L2_518 = L2_518.upload_fields
+    L3_519 = A0_516.map
+    L3_519 = L3_519.upload_fields
+    L3_519 = #L3_519
+    L3_519 = L3_519 + 1
+    L2_518[L3_519] = A0_516
+  end
+end
+function FileUpload.formcreated(A0_520, A1_521)
+  return AbstractValue.formcreated(A0_520, A1_521) or A0_520.map:formvalue("cbi.rlf." .. A1_521 .. "." .. A0_520.option) or A0_520.map:formvalue("cbi.rlf." .. A1_521 .. "." .. A0_520.option .. ".x")
+end
+function FileUpload.cfgvalue(A0_522, A1_523)
+  local L2_524
+  L2_524 = AbstractValue
+  L2_524 = L2_524.cfgvalue
+  L2_524 = L2_524(A0_522, A1_523)
+  if L2_524 and _UPVALUE0_.access(L2_524) then
+    return L2_524
+  end
+  return nil
+end
+function FileUpload.formvalue(A0_525, A1_526)
+  local L2_527
+  L2_527 = AbstractValue
+  L2_527 = L2_527.formvalue
+  L2_527 = L2_527(A0_525, A1_526)
+  if L2_527 then
+    if not A0_525.map:formvalue("cbi.rlf." .. A1_526 .. "." .. A0_525.option) and not A0_525.map:formvalue("cbi.rlf." .. A1_526 .. "." .. A0_525.option .. ".x") then
+      return L2_527
+    end
+    _UPVALUE0_.unlink(L2_527)
+    A0_525.value = nil
+  end
+  return nil
+end
+function FileUpload.remove(A0_528, A1_529)
+  local L2_530
+  L2_530 = AbstractValue
+  L2_530 = L2_530.formvalue
+  L2_530 = L2_530(A0_528, A1_529)
+  if L2_530 and _UPVALUE0_.access(L2_530) then
+    _UPVALUE0_.unlink(L2_530)
+  end
+  return AbstractValue.remove(A0_528, A1_529)
+end
+FileBrowser = L4_4(AbstractValue)
+function FileBrowser.__init__(A0_531, ...)
+  local L3_533, L4_534
+  L3_533 = AbstractValue
+  L3_533 = L3_533.__init__
+  L4_534 = A0_531
+  L3_533(L4_534, ...)
+  A0_531.template = "cbi/browser"
+end

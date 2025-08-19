@@ -1,0 +1,385 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQDDNS", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function _serverId(A0_1)
+  for _FORV_4_, _FORV_5_ in ipairs(_UPVALUE0_) do
+    if _FORV_5_ == A0_1 then
+      return _FORV_4_
+    end
+  end
+  return false
+end
+function ddns_cfg_update()
+  local L0_2
+  L0_2 = false
+  require("luci.model.uci").cursor():foreach("ddns", "service", function(A0_3)
+    if A0_3.enabled == "0" then
+      if not A0_3.laststatus or A0_3.laststatus == "loading" then
+        _UPVALUE0_:set("ddns", A0_3[".name"], "laststatus", "off")
+      end
+    else
+      _UPVALUE1_ = true
+    end
+  end)
+  if not L0_2 then
+    require("luci.model.uci").cursor():set("ddns", "ddns", "status", "off")
+  end
+  require("luci.model.uci").cursor():commit("ddns")
+end
+function ddns_stop(A0_4)
+  os.execute("/usr/lib/ddns/dynamic_dns_updater.sh -S " .. A0_4 .. " -- stop")
+  return true
+end
+function ddns_start(A0_5)
+  os.execute("uci set ddns.ddns.status=on 2>/dev/null && uci set ddns." .. A0_5 .. ".laststatus=\"loading\" && uci commit ddns 2>/dev/null")
+  os.execute("rm -rf /var/run/ddns/*")
+  _UPVALUE0_.forkExec("/usr/lib/ddns/dynamic_dns_updater.sh -v 0 -S " .. A0_5 .. " -- start &")
+  return true
+end
+function ddns_restart(A0_6)
+  ddns_stop(A0_6)
+  ddns_start(A0_6)
+  return true
+end
+function _saveConfig(A0_7, A1_8, A2_9, A3_10, A4_11, A5_12, A6_13)
+  local L7_14, L8_15, L9_16
+  L7_14 = require
+  L8_15 = "luci.model.uci"
+  L7_14 = L7_14(L8_15)
+  L7_14 = L7_14.cursor
+  L7_14 = L7_14()
+  L8_15 = _UPVALUE0_
+  L8_15 = L8_15[A0_7]
+  if L8_15 and A2_9 and A3_10 and A6_13 and A4_11 and A5_12 then
+    L9_16 = L7_14.foreach
+    L9_16(L7_14, "ddns", "service", function(A0_17)
+      if A0_17[".name"] ~= _UPVALUE0_ and tonumber(A0_17.enabled) == 1 then
+        _UPVALUE1_:set("ddns", A0_17[".name"], "enabled", 0)
+        ddns_stop(A0_17[".name"])
+      end
+    end)
+    L9_16 = {}
+    L9_16.enabled = A1_8
+    L9_16.interface = "wan"
+    L9_16.service_name = L8_15.service_name
+    L9_16.force_interval = A5_12
+    L9_16.force_unit = "hours"
+    L9_16.check_interval = A4_11
+    L9_16.check_unit = "minutes"
+    L9_16.username = A2_9
+    L9_16.password = A3_10
+    L9_16.ip_source = "network"
+    L9_16.ip_url = L8_15.ip_url
+    L9_16.lookup_host = A6_13
+    L9_16.domain = A6_13
+    L9_16.use_https = 0
+    if L8_15.service_name == "dyndns.org" then
+      L9_16.use_https = 1
+    end
+    L7_14:section("ddns", "service", A0_7, L9_16)
+    L7_14:commit("ddns")
+    ddns_cfg_update()
+    return true
+  end
+  L9_16 = false
+  return L9_16
+end
+function _ddnsServerSwitch(A0_18, A1_19)
+  if _UPVALUE0_.isStrNil(A0_18) then
+    return false
+  end
+  require("luci.model.uci").cursor():foreach("ddns", "service", function(A0_20)
+    if A0_20[".name"] ~= _UPVALUE0_ then
+      if A0_20.enabled == "1" and _UPVALUE1_ == 1 then
+        _UPVALUE2_:set("ddns", A0_20[".name"], "enabled", 0)
+        ddns_stop(A0_20[".name"])
+      end
+    else
+      _UPVALUE2_:set("ddns", A0_20[".name"], "enabled", _UPVALUE1_)
+    end
+  end)
+  require("luci.model.uci").cursor():commit("ddns")
+  if A1_19 == 1 then
+    ddns_start(A0_18)
+  else
+    ddns_stop(A0_18)
+  end
+  ddns_cfg_update()
+  return true
+end
+function ddnsInfo()
+  local L0_21, L1_22, L2_23, L3_24, L4_25, L5_26, L6_27, L7_28, L8_29, L9_30, L10_31
+  L0_21 = require
+  L1_22 = "cjson"
+  L0_21 = L0_21(L1_22)
+  L1_22 = require
+  L2_23 = "luci.util"
+  L1_22 = L1_22(L2_23)
+  L2_23 = require
+  L3_24 = "xiaoqiang.util.XQLanWanUtil"
+  L2_23 = L2_23(L3_24)
+  L3_24 = L2_23.getLanWanIp
+  L4_25 = "wan"
+  L3_24 = L3_24(L4_25)
+  if L3_24 then
+    L4_25 = L3_24[1]
+    if L4_25 then
+      L4_25 = L3_24[1]
+      L3_24 = L4_25.ip
+    end
+  else
+    L3_24 = ""
+  end
+  L4_25 = {}
+  L4_25.on = 0
+  L5_26 = {}
+  L4_25.list = L5_26
+  L5_26 = L1_22.exec
+  L5_26 = L5_26(L6_27)
+  if not L6_27 then
+    L5_26 = L6_27
+    if L6_27 == "on" then
+      L4_25.on = 1
+    end
+    for L9_30, L10_31 in L6_27(L7_28) do
+      if L9_30 ~= "deamon" then
+        if require("luci.model.uci").cursor():get_all("ddns", L9_30) then
+          if require("luci.model.uci").cursor():get_all("ddns", L9_30).laststatus == "ok" or require("luci.model.uci").cursor():get_all("ddns", L9_30).laststatus == "off" then
+            L10_31.status = 1
+          elseif require("luci.model.uci").cursor():get_all("ddns", L9_30).laststatus == "loading" or not require("luci.model.uci").cursor():get_all("ddns", L9_30).laststatus then
+            L10_31.status = 2
+          else
+            L10_31.status = 0
+            if _UPVALUE1_[L9_30] then
+              L10_31.error = _UPVALUE1_[L9_30][require("luci.model.uci").cursor():get_all("ddns", L9_30).lastreturn] or require("luci.model.uci").cursor():get_all("ddns", L9_30).lastreturn
+            end
+          end
+        end
+        if _serverId(L9_30) then
+          L10_31.id, L10_31.enabled = _serverId(L9_30), tonumber(L10_31.enabled)
+          L10_31.servicename = _UPVALUE2_[L9_30].service_name
+          L10_31.wanip = L3_24
+          table.insert(L4_25.list, L10_31)
+        end
+      end
+    end
+  end
+  return L4_25
+end
+function ddnsSwitch(A0_32)
+  if A0_32 then
+    os.execute("/usr/sbin/ddnsd start")
+  else
+    os.execute("/usr/sbin/ddnsd stop")
+  end
+end
+function getDdns(A0_33)
+  local L1_34, L2_35
+  L1_34 = tonumber
+  L2_35 = A0_33
+  L1_34 = L1_34(L2_35)
+  if not L1_34 then
+    L1_34 = false
+    return L1_34
+  end
+  L1_34 = require
+  L2_35 = "luci.model.uci"
+  L1_34 = L1_34(L2_35)
+  L1_34 = L1_34.cursor
+  L1_34 = L1_34()
+  L2_35 = _UPVALUE0_
+  L2_35 = L2_35[tonumber(A0_33)]
+  if L1_34:get_all("ddns", L2_35) then
+    ({}).username = L1_34:get_all("ddns", L2_35).username or ""
+    ;({}).password = L1_34:get_all("ddns", L2_35).password or ""
+    ;({}).forceinterval = tonumber(L1_34:get_all("ddns", L2_35).force_interval) or 0
+    ;({}).checkinterval = tonumber(L1_34:get_all("ddns", L2_35).check_interval) or 0
+    ;({}).domain = L1_34:get_all("ddns", L2_35).domain or ""
+    ;({}).enabled = tonumber(L1_34:get_all("ddns", L2_35).enabled) or 0
+    return {}
+  end
+  return false
+end
+function setDdns(A0_36, A1_37, A2_38, A3_39, A4_40, A5_41, A6_42)
+  local L7_43, L8_44
+  L7_43 = tonumber
+  L8_44 = A0_36
+  L7_43 = L7_43(L8_44)
+  if not L7_43 then
+    L7_43 = false
+    return L7_43
+  end
+  L7_43 = _UPVALUE0_
+  L8_44 = tonumber
+  L8_44 = L8_44(A0_36)
+  L7_43 = L7_43[L8_44]
+  L8_44 = _UPVALUE1_
+  L8_44 = L8_44.isStrNil
+  L8_44 = L8_44(A2_38)
+  if not L8_44 then
+    L8_44 = _UPVALUE1_
+    L8_44 = L8_44.isStrNil
+    L8_44 = L8_44(A3_39)
+    if not L8_44 then
+      L8_44 = _UPVALUE1_
+      L8_44 = L8_44.isStrNil
+      L8_44 = L8_44(A6_42)
+      if not L8_44 then
+        L8_44 = _UPVALUE1_
+        L8_44 = L8_44.isStrNil
+        L8_44 = L8_44(L7_43)
+      end
+    end
+  elseif L8_44 then
+    L8_44 = false
+    return L8_44
+  end
+  L8_44 = tonumber
+  L8_44 = L8_44(A4_40)
+  A4_40 = L8_44
+  L8_44 = tonumber
+  L8_44 = L8_44(A5_41)
+  A5_41 = L8_44
+  if not A4_40 or not A5_41 then
+    L8_44 = false
+    return L8_44
+  end
+  if A1_37 == 1 then
+    L8_44 = 1
+  else
+    L8_44 = L8_44 or 0
+  end
+  if _saveConfig(L7_43, L8_44, A2_38, A3_39, A4_40, A5_41, A6_42) and L8_44 == 1 then
+    return ddns_start(L7_43)
+  end
+  return false
+end
+function editDdns(A0_45, A1_46, A2_47, A3_48, A4_49, A5_50, A6_51)
+  local L7_52, L8_53, L9_54, L10_55
+  L7_52 = tonumber
+  L8_53 = A0_45
+  L7_52 = L7_52(L8_53)
+  if not L7_52 then
+    L7_52 = false
+    return L7_52
+  end
+  L7_52 = require
+  L8_53 = "luci.model.uci"
+  L7_52 = L7_52(L8_53)
+  L7_52 = L7_52.cursor
+  L7_52 = L7_52()
+  L8_53 = _UPVALUE0_
+  L9_54 = tonumber
+  L10_55 = A0_45
+  L9_54 = L9_54(L10_55)
+  L8_53 = L8_53[L9_54]
+  L10_55 = L7_52
+  L9_54 = L7_52.get_all
+  L9_54 = L9_54(L10_55, "ddns", L8_53)
+  if L9_54 then
+    L10_55 = _UPVALUE1_
+    L10_55 = L10_55.isStrNil
+    L10_55 = L10_55(A2_47)
+    if not L10_55 then
+      L10_55 = L9_54.username
+      if A2_47 ~= L10_55 then
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "username", A2_47)
+      end
+    end
+    L10_55 = _UPVALUE1_
+    L10_55 = L10_55.isStrNil
+    L10_55 = L10_55(A3_48)
+    if not L10_55 then
+      L10_55 = L9_54.password
+      if A3_48 ~= L10_55 then
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "password", A3_48)
+      end
+    end
+    L10_55 = _UPVALUE1_
+    L10_55 = L10_55.isStrNil
+    L10_55 = L10_55(A6_51)
+    if not L10_55 then
+      L10_55 = L9_54.domain
+      if A6_51 ~= L10_55 then
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "lookup_host", A6_51)
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "domain", A6_51)
+      end
+    end
+    L10_55 = tonumber
+    L10_55 = L10_55(A4_49)
+    if L10_55 then
+      L10_55 = tonumber
+      L10_55 = L10_55(A4_49)
+      if L10_55 ~= tonumber(L9_54.check_interval) then
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "check_interval", A4_49)
+      end
+    end
+    L10_55 = tonumber
+    L10_55 = L10_55(A5_50)
+    if L10_55 then
+      L10_55 = tonumber
+      L10_55 = L10_55(A5_50)
+      if L10_55 ~= tonumber(L9_54.force_interval) then
+        L10_55 = L7_52.set
+        L10_55(L7_52, "ddns", L8_53, "force_interval", A5_50)
+      end
+    end
+    if A1_46 == 1 then
+      L10_55 = 1
+    else
+      L10_55 = L10_55 or 0
+    end
+    if L10_55 ~= tonumber(L9_54.enabled) then
+      L7_52:set("ddns", L8_53, "enabled", L10_55)
+    end
+    L7_52:commit("ddns")
+    if L10_55 == 1 then
+      ddns_restart(L8_53)
+    end
+    return true
+  end
+  L10_55 = false
+  return L10_55
+end
+function deleteDdns(A0_56)
+  local L1_57
+  L1_57 = tonumber
+  L1_57 = L1_57(A0_56)
+  if not L1_57 then
+    L1_57 = false
+    return L1_57
+  end
+  L1_57 = _UPVALUE0_
+  L1_57 = L1_57[tonumber(A0_56)]
+  if _UPVALUE1_.isStrNil(L1_57) then
+    return false
+  end
+  require("luci.model.uci").cursor():delete("ddns", L1_57)
+  require("luci.model.uci").cursor():commit("ddns")
+  if require("luci.model.uci").cursor():get("ddns", L1_57, "enabled") == "1" then
+    ddns_stop(L1_57)
+    ddns_cfg_update()
+  end
+  return true
+end
+function ddnsServerSwitch(A0_58, A1_59)
+  if A0_58 then
+    return _ddnsServerSwitch(_UPVALUE0_[A0_58], A1_59 and 1 or 0)
+  end
+  return false
+end
+function reload()
+  require("luci.model.uci").cursor():foreach("ddns", "service", function(A0_60)
+    if A0_60.enabled == "1" then
+      ddns_restart(A0_60[".name"])
+    end
+  end)
+  return true
+end

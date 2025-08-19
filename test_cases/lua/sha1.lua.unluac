@@ -1,0 +1,437 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6
+L0_0 = require
+L1_1 = "string"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "table"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "math"
+L2_2 = L2_2(L3_3)
+L3_3 = _G
+L4_4 = module
+L5_5 = "sha1"
+L4_4(L5_5)
+function L4_4()
+  local L0_7
+  L0_7 = {
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  }
+  return L0_7
+end
+L5_5 = {}
+L6_6 = {
+  false,
+  false,
+  false,
+  false
+}
+L5_5["0"] = L6_6
+L6_6 = {
+  false,
+  false,
+  false,
+  true
+}
+L5_5["1"] = L6_6
+L6_6 = {
+  false,
+  false,
+  true,
+  false
+}
+L5_5["2"] = L6_6
+L6_6 = {
+  false,
+  false,
+  true,
+  true
+}
+L5_5["3"] = L6_6
+L6_6 = {
+  false,
+  true,
+  false,
+  false
+}
+L5_5["4"] = L6_6
+L6_6 = {
+  false,
+  true,
+  false,
+  true
+}
+L5_5["5"] = L6_6
+L6_6 = {
+  false,
+  true,
+  true,
+  false
+}
+L5_5["6"] = L6_6
+L6_6 = {
+  false,
+  true,
+  true,
+  true
+}
+L5_5["7"] = L6_6
+L6_6 = {
+  true,
+  false,
+  false,
+  false
+}
+L5_5["8"] = L6_6
+L6_6 = {
+  true,
+  false,
+  false,
+  true
+}
+L5_5["9"] = L6_6
+L6_6 = {
+  true,
+  false,
+  true,
+  false
+}
+L5_5.A = L6_6
+L6_6 = {
+  true,
+  false,
+  true,
+  true
+}
+L5_5.B = L6_6
+L6_6 = {
+  true,
+  true,
+  false,
+  false
+}
+L5_5.C = L6_6
+L6_6 = {
+  true,
+  true,
+  false,
+  true
+}
+L5_5.D = L6_6
+L6_6 = {
+  true,
+  true,
+  true,
+  false
+}
+L5_5.E = L6_6
+L6_6 = {
+  true,
+  true,
+  true,
+  true
+}
+L5_5.F = L6_6
+L6_6 = {
+  true,
+  false,
+  true,
+  false
+}
+L5_5.a = L6_6
+L6_6 = {
+  true,
+  false,
+  true,
+  true
+}
+L5_5.b = L6_6
+L6_6 = {
+  true,
+  true,
+  false,
+  false
+}
+L5_5.c = L6_6
+L6_6 = {
+  true,
+  true,
+  false,
+  true
+}
+L5_5.d = L6_6
+L6_6 = {
+  true,
+  true,
+  true,
+  false
+}
+L5_5.e = L6_6
+L6_6 = {
+  true,
+  true,
+  true,
+  true
+}
+L5_5.f = L6_6
+function L6_6(A0_8)
+  local L1_9, L2_10, L3_11, L4_12, L5_13, L6_14
+  L1_9 = _UPVALUE0_
+  L1_9 = L1_9.assert
+  L2_10 = L2_10 == "string"
+  L1_9(L2_10)
+  L1_9 = _UPVALUE0_
+  L1_9 = L1_9.assert
+  L6_14 = L2_10(L3_11, L4_12)
+  L1_9(L2_10, L3_11, L4_12, L5_13, L6_14, L2_10(L3_11, L4_12))
+  L1_9 = _UPVALUE0_
+  L1_9 = L1_9.assert
+  L2_10 = L2_10 == 8
+  L1_9(L2_10)
+  L1_9 = {}
+  for L5_13 in L2_10(L3_11, L4_12) do
+    L6_14 = _UPVALUE1_
+    L6_14 = L6_14[L5_13]
+    _UPVALUE0_.assert(L6_14)
+    _UPVALUE2_.insert(L1_9, 1, L6_14[1])
+    _UPVALUE2_.insert(L1_9, 1, L6_14[2])
+    _UPVALUE2_.insert(L1_9, 1, L6_14[3])
+    _UPVALUE2_.insert(L1_9, 1, L6_14[4])
+  end
+  return L1_9
+end
+function asHEX(A0_15)
+  local L1_16, L2_17
+  L1_16 = ""
+  L2_17 = 1
+  while L2_17 < #A0_15 do
+    L1_16 = _UPVALUE0_[(A0_15[L2_17 + 3] and "1" or "0") .. (A0_15[L2_17 + 2] and "1" or "0") .. (A0_15[L2_17 + 1] and "1" or "0") .. (A0_15[L2_17 + 0] and "1" or "0")] .. L1_16
+    L2_17 = L2_17 + 4
+  end
+  return L1_16
+end
+function sha1(A0_18)
+  local L1_19, L2_20, L3_21, L4_22, L5_23, L6_24, L7_25, L8_26, L9_27, L10_28, L11_29, L12_30, L13_31, L14_32, L15_33, L16_34, L17_35, L18_36, L19_37, L20_38, L21_39, L22_40, L23_41, L24_42, L25_43, L26_44, L27_45, L28_46, L29_47
+  L1_19 = _UPVALUE0_
+  L1_19 = L1_19.assert
+  L2_20 = _UPVALUE0_
+  L2_20 = L2_20.type
+  L3_21 = A0_18
+  L2_20 = L2_20(L3_21)
+  L2_20 = L2_20 == "string"
+  L1_19(L2_20)
+  L1_19 = _UPVALUE0_
+  L1_19 = L1_19.assert
+  L2_20 = #A0_18
+  L2_20 = L2_20 < 2147483647
+  L1_19(L2_20)
+  L1_19 = _UPVALUE1_
+  L2_20 = _UPVALUE2_
+  L3_21 = _UPVALUE3_
+  L4_22 = _UPVALUE4_
+  L5_23 = _UPVALUE5_
+  L6_24 = #A0_18
+  L6_24 = L6_24 * 8
+  L7_25 = _UPVALUE6_
+  L7_25 = L7_25.char
+  L8_26 = 128
+  L7_25 = L7_25(L8_26)
+  L8_26 = #A0_18
+  L8_26 = L8_26 + 1
+  L8_26 = L8_26 + 8
+  L9_27 = L8_26 % 64
+  L10_28 = ""
+  if L9_27 ~= 0 then
+    L11_29 = _UPVALUE6_
+    L11_29 = L11_29.rep
+    L12_30 = _UPVALUE6_
+    L12_30 = L12_30.char
+    L13_31 = 0
+    L12_30 = L12_30(L13_31)
+    L13_31 = 64 - L9_27
+    L11_29 = L11_29(L12_30, L13_31)
+    L10_28 = L11_29
+  end
+  L11_29 = _UPVALUE7_
+  L11_29 = L11_29.modf
+  L12_30 = L6_24 / 16777216
+  L12_30 = L11_29(L12_30)
+  L13_31 = _UPVALUE7_
+  L13_31 = L13_31.modf
+  L14_32 = 16777216 * L12_30
+  L14_32 = L14_32 / 65536
+  L14_32 = L13_31(L14_32)
+  L15_33 = _UPVALUE7_
+  L15_33 = L15_33.modf
+  L16_34 = 65536 * L14_32
+  L16_34 = L16_34 / 256
+  L16_34 = L15_33(L16_34)
+  L17_35 = 256 * L16_34
+  L18_36 = _UPVALUE6_
+  L18_36 = L18_36.char
+  L19_37 = 0
+  L18_36 = L18_36(L19_37)
+  L19_37 = _UPVALUE6_
+  L19_37 = L19_37.char
+  L20_38 = 0
+  L19_37 = L19_37(L20_38)
+  L20_38 = _UPVALUE6_
+  L20_38 = L20_38.char
+  L21_39 = 0
+  L20_38 = L20_38(L21_39)
+  L21_39 = _UPVALUE6_
+  L21_39 = L21_39.char
+  L22_40 = 0
+  L21_39 = L21_39(L22_40)
+  L22_40 = _UPVALUE6_
+  L22_40 = L22_40.char
+  L23_41 = L11_29
+  L22_40 = L22_40(L23_41)
+  L23_41 = _UPVALUE6_
+  L23_41 = L23_41.char
+  L24_42 = L13_31
+  L23_41 = L23_41(L24_42)
+  L24_42 = _UPVALUE6_
+  L24_42 = L24_42.char
+  L25_43 = L15_33
+  L24_42 = L24_42(L25_43)
+  L25_43 = _UPVALUE6_
+  L25_43 = L25_43.char
+  L26_44 = L17_35
+  L25_43 = L25_43(L26_44)
+  L18_36 = L18_36 .. L19_37 .. L20_38 .. L21_39 .. L22_40 .. L23_41 .. L24_42 .. L25_43
+  L19_37 = A0_18
+  L20_38 = L7_25
+  L21_39 = L10_28
+  L22_40 = L18_36
+  A0_18 = L19_37 .. L20_38 .. L21_39 .. L22_40
+  L19_37 = _UPVALUE0_
+  L19_37 = L19_37.assert
+  L20_38 = #A0_18
+  L20_38 = L20_38 % 64
+  L20_38 = L20_38 == 0
+  L19_37(L20_38)
+  L19_37 = #A0_18
+  L19_37 = L19_37 / 64
+  L20_38 = {}
+  L21_39, L22_40, L23_41, L24_42, L25_43, L26_44, L27_45, L28_46, L29_47 = nil, nil, nil, nil, nil, nil, nil, nil, nil
+  while L19_37 > 0 do
+    L21_39 = 0 * 64 + 1
+    for _FORV_34_ = 0, 15 do
+      L20_38[_FORV_34_] = _UPVALUE8_(_UPVALUE6_.format("%02x%02x%02x%02x", A0_18:byte(L21_39, L21_39 + 3)))
+      L21_39 = L21_39 + 4
+    end
+    for _FORV_34_ = 16, 79 do
+      L20_38[_FORV_34_] = _UPVALUE9_(1, _UPVALUE10_(L20_38[_FORV_34_ - 3], L20_38[_FORV_34_ - 8], L20_38[_FORV_34_ - 14], L20_38[_FORV_34_ - 16]))
+    end
+    L22_40 = L1_19
+    L23_41 = L2_20
+    L24_42 = L3_21
+    L25_43 = L4_22
+    L26_44 = L5_23
+    for _FORV_34_ = 0, 79 do
+      if _FORV_34_ <= 19 then
+        L27_45 = _UPVALUE11_(_UPVALUE12_(L23_41, L24_42), _UPVALUE12_(_UPVALUE13_(L23_41), L25_43))
+        L28_46 = _UPVALUE14_
+      elseif _FORV_34_ <= 39 then
+        L27_45 = _UPVALUE10_(L23_41, L24_42, L25_43)
+        L28_46 = _UPVALUE15_
+      elseif _FORV_34_ <= 59 then
+        L27_45 = _UPVALUE16_(_UPVALUE12_(L23_41, L24_42), _UPVALUE12_(L23_41, L25_43), _UPVALUE12_(L24_42, L25_43))
+        L28_46 = _UPVALUE17_
+      else
+        L27_45 = _UPVALUE10_(L23_41, L24_42, L25_43)
+        L28_46 = _UPVALUE18_
+      end
+      L29_47 = _UPVALUE19_(_UPVALUE9_(5, L22_40), L27_45, L26_44, L20_38[_FORV_34_], L28_46)
+      L26_44 = L25_43
+      L25_43 = L24_42
+      L24_42 = _UPVALUE9_(30, L23_41)
+      L23_41 = L22_40
+      L22_40 = L29_47
+    end
+    L1_19 = _UPVALUE19_(L1_19, L22_40)
+    L2_20 = _UPVALUE19_(L2_20, L23_41)
+    L3_21 = _UPVALUE19_(L3_21, L24_42)
+    L4_22 = _UPVALUE19_(L4_22, L25_43)
+    L5_23 = _UPVALUE19_(L5_23, L26_44)
+  end
+  return asHEX(L1_19) .. asHEX(L2_20) .. asHEX(L3_21) .. asHEX(L4_22) .. asHEX(L5_23)
+end
+function sha1_binary(A0_48)
+  local L1_49
+  L1_49 = _UPVALUE0_
+  return L1_49(sha1(A0_48))
+end
+function hmac_sha1(A0_50, A1_51)
+  local L2_52, L3_53
+  L2_52 = _UPVALUE0_
+  L2_52 = L2_52.assert
+  L3_53 = _UPVALUE0_
+  L3_53 = L3_53.type
+  L3_53 = L3_53(A0_50)
+  L3_53 = L3_53 == "string"
+  L2_52(L3_53, "key passed to hmac_sha1 should be a string")
+  L2_52 = _UPVALUE0_
+  L2_52 = L2_52.assert
+  L3_53 = _UPVALUE0_
+  L3_53 = L3_53.type
+  L3_53 = L3_53(A1_51)
+  L3_53 = L3_53 == "string"
+  L2_52(L3_53, "text passed to hmac_sha1 should be a string")
+  L2_52 = #A0_50
+  L3_53 = _UPVALUE1_
+  if L2_52 > L3_53 then
+    L2_52 = sha1_binary
+    L3_53 = A0_50
+    L2_52 = L2_52(L3_53)
+    A0_50 = L2_52
+  end
+  L3_53 = A0_50
+  L2_52 = A0_50.gsub
+  L2_52 = L2_52(L3_53, ".", _UPVALUE2_)
+  L3_53 = _UPVALUE3_
+  L3_53 = L3_53.rep
+  L3_53 = L3_53(_UPVALUE3_.char(54), _UPVALUE1_ - #A0_50)
+  L2_52 = L2_52 .. L3_53
+  L3_53 = A0_50.gsub
+  L3_53 = L3_53(A0_50, ".", _UPVALUE4_)
+  L3_53 = L3_53 .. _UPVALUE3_.rep(_UPVALUE3_.char(92), _UPVALUE1_ - #A0_50)
+  return sha1(L3_53 .. sha1_binary(L2_52 .. A1_51))
+end
+function hmac_sha1_binary(A0_54, A1_55)
+  local L2_56
+  L2_56 = _UPVALUE0_
+  return L2_56(hmac_sha1(A0_54, A1_55))
+end

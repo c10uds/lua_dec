@@ -1,0 +1,35 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13
+L2_2 = ...
+L4_4 = L2_2
+L3_3 = L2_2.get_interface
+L3_3 = L3_3(L4_4)
+L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L4_4 = L1_1:taboption("general", Value, "hostname", translate("Hostname to send when requesting DHCP"))
+L4_4.placeholder = luci.sys.hostname()
+L4_4.datatype = "hostname"
+if luci.model.network:has_ipv6() then
+  L5_5 = s:taboption("general", Flag, "accept_ra", translate("Accept router advertisements"))
+  L5_5.default = L5_5.enabled
+  L6_6 = s:taboption("general", Flag, "send_rs", translate("Send router solicitations"))
+  L6_6.default = L6_6.disabled
+  L6_6:depends("accept_ra", "")
+end
+L7_7 = L1_1:taboption("advanced", Flag, "broadcast", translate("Use broadcast flag"), translate("Required for certain ISPs, e.g. Charter with DOCSIS 3"))
+L7_7.default = L7_7.disabled
+L8_8 = L1_1:taboption("advanced", Flag, "defaultroute", translate("Use default gateway"), translate("If unchecked, no default route is configured"))
+L8_8.default = L8_8.enabled
+L9_9 = L1_1:taboption("advanced", Flag, "peerdns", translate("Use DNS servers advertised by peer"), translate("If unchecked, the advertised DNS server addresses are ignored"))
+L9_9.default = L9_9.enabled
+L10_10 = L1_1:taboption("advanced", DynamicList, "dns", translate("Use custom DNS servers"))
+L10_10:depends("peerdns", "")
+L10_10.datatype = "ipaddr"
+L10_10.cast = "string"
+L11_11 = L1_1:taboption("advanced", Value, "metric", translate("Use gateway metric"))
+L11_11.placeholder = "0"
+L11_11.datatype = "uinteger"
+L12_12 = L1_1:taboption("advanced", Value, "clientid", translate("Client ID to send when requesting DHCP"))
+L13_13 = L1_1:taboption("advanced", Value, "vendorid", translate("Vendor Class to send when requesting DHCP"))
+luci.tools.proto.opt_macaddr(L1_1, L3_3, translate("Override MAC address"))
+mtu = L1_1:taboption("advanced", Value, "mtu", translate("Override MTU"))
+mtu.placeholder = "1500"
+mtu.datatype = "max(1500)"

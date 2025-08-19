@@ -1,0 +1,278 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("nixio.fs")
+module("luci.cbi.datatypes")
+_M["or"] = function(A0_1, ...)
+  local L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9
+  L8_9 = ...
+  for L6_7 = 1, L4_5(L5_6, L6_7, L7_8, L8_9, ...), 2 do
+    L7_8 = _UPVALUE0_
+    L8_9 = L6_7
+    L7_8 = L7_8(L8_9, ...)
+    L8_9 = _UPVALUE0_
+    L8_9 = L8_9(L6_7 + 1, ...)
+    if _UPVALUE1_(L7_8) ~= "function" then
+      if L7_8 == A0_1 then
+        return true
+      end
+      L6_7 = L6_7 - 1
+    elseif L7_8(A0_1, _UPVALUE2_(L8_9)) then
+      return true
+    end
+  end
+  return L3_4
+end
+_M["and"] = function(A0_10, ...)
+  local L2_12, L3_13, L4_14, L5_15, L6_16, L7_17, L8_18
+  L8_18 = ...
+  for L6_16 = 1, L4_14(L5_15, L6_16, L7_17, L8_18, ...), 2 do
+    L7_17 = _UPVALUE0_
+    L8_18 = L6_16
+    L7_17 = L7_17(L8_18, ...)
+    L8_18 = _UPVALUE0_
+    L8_18 = L8_18(L6_16 + 1, ...)
+    if _UPVALUE1_(L7_17) ~= "function" then
+      if L7_17 ~= A0_10 then
+        return false
+      end
+      L6_16 = L6_16 - 1
+    elseif not L7_17(A0_10, _UPVALUE2_(L8_18)) then
+      return false
+    end
+  end
+  return L3_13
+end
+function neg(A0_19, ...)
+  return _M["or"](A0_19:gsub("^%s*!%s*", ""), ...)
+end
+function list(A0_21, A1_22, A2_23)
+  local L3_24, L4_25, L5_26, L6_27, L7_28
+  L3_24 = _UPVALUE0_
+  L3_24 = L3_24(L4_25)
+  if L3_24 ~= "function" then
+    L3_24 = false
+    return L3_24
+  end
+  L3_24 = nil
+  for L7_28 in L4_25(L5_26, L6_27) do
+    if not A1_22(L7_28, _UPVALUE1_(A2_23)) then
+      return false
+    end
+  end
+  return L4_25
+end
+function bool(A0_29)
+  local L1_30
+  if A0_29 == "1" or A0_29 == "yes" or A0_29 == "on" or A0_29 == "true" then
+    L1_30 = true
+    return L1_30
+  elseif A0_29 == "0" or A0_29 == "no" or A0_29 == "off" or A0_29 == "false" then
+    L1_30 = true
+    return L1_30
+  elseif A0_29 == "" or A0_29 == nil then
+    L1_30 = true
+    return L1_30
+  end
+  L1_30 = false
+  return L1_30
+end
+function uinteger(A0_31)
+  local L1_32
+  L1_32 = _UPVALUE0_
+  L1_32 = L1_32(A0_31)
+  if L1_32 ~= nil and _UPVALUE1_.floor(L1_32) == L1_32 and L1_32 >= 0 then
+    return true
+  end
+  return false
+end
+function integer(A0_33)
+  local L1_34
+  L1_34 = _UPVALUE0_
+  L1_34 = L1_34(A0_33)
+  if L1_34 ~= nil and _UPVALUE1_.floor(L1_34) == L1_34 then
+    return true
+  end
+  return false
+end
+function ufloat(A0_35)
+  return _UPVALUE0_(A0_35) ~= nil and _UPVALUE0_(A0_35) >= 0
+end
+function float(A0_36)
+  return _UPVALUE0_(A0_36) ~= nil
+end
+function ipaddr(A0_37)
+  return ip4addr(A0_37) or ip6addr(A0_37)
+end
+function ip4addr(A0_38)
+  if A0_38 then
+    return _UPVALUE0_.IPv4(A0_38) and true or false
+  end
+  return false
+end
+function ip4prefix(A0_39)
+  A0_39 = _UPVALUE0_(A0_39)
+  return A0_39 and A0_39 >= 0 and A0_39 <= 32
+end
+function ip6addr(A0_40)
+  if A0_40 then
+    return _UPVALUE0_.IPv6(A0_40) and true or false
+  end
+  return false
+end
+function ip6prefix(A0_41)
+  A0_41 = _UPVALUE0_(A0_41)
+  return A0_41 and A0_41 >= 0 and A0_41 <= 128
+end
+function port(A0_42)
+  A0_42 = _UPVALUE0_(A0_42)
+  return A0_42 and A0_42 >= 0 and A0_42 <= 65535
+end
+function portrange(A0_43)
+  local L1_44, L2_45
+  L2_45 = A0_43
+  L1_44 = A0_43.match
+  L2_45 = L1_44(L2_45, "^(%d+)%-(%d+)$")
+  if L1_44 and L2_45 and port(L1_44) and port(L2_45) then
+    return true
+  else
+    return port(A0_43)
+  end
+end
+function macaddr(A0_46)
+  if A0_46 and A0_46:match("^[a-fA-F0-9]+:[a-fA-F0-9]+:[a-fA-F0-9]+:" .. "[a-fA-F0-9]+:[a-fA-F0-9]+:[a-fA-F0-9]+$") then
+    for _FORV_5_ = 1, 6 do
+      _UPVALUE0_.split(A0_46, ":")[_FORV_5_] = _UPVALUE1_(_UPVALUE0_.split(A0_46, ":")[_FORV_5_], 16)
+      if _UPVALUE0_.split(A0_46, ":")[_FORV_5_] < 0 or _UPVALUE0_.split(A0_46, ":")[_FORV_5_] > 255 then
+        return false
+      end
+    end
+    return _FOR_
+  end
+  return false
+end
+function hostname(A0_47)
+  if A0_47 and #A0_47 < 254 and (A0_47:match("^[a-zA-Z_]+$") or A0_47:match("^[a-zA-Z0-9_][a-zA-Z0-9_%-%.]*[a-zA-Z0-9]$") and A0_47:match("[^0-9%.]")) then
+    return true
+  end
+  return false
+end
+function host(A0_48)
+  return hostname(A0_48) or ipaddr(A0_48)
+end
+function network(A0_49)
+  return uciname(A0_49) or host(A0_49)
+end
+function wpakey(A0_50)
+  if #A0_50 == 64 then
+    return A0_50:match("^[a-fA-F0-9]+$") ~= nil
+  else
+    return #A0_50 >= 8 and #A0_50 <= 63
+  end
+end
+function wepkey(A0_51)
+  if A0_51:sub(1, 2) == "s:" then
+    A0_51 = A0_51:sub(3)
+  end
+  if #A0_51 == 10 or #A0_51 == 26 then
+    return A0_51:match("^[a-fA-F0-9]+$") ~= nil
+  else
+    return #A0_51 == 5 or #A0_51 == 13
+  end
+end
+function string(A0_52)
+  local L1_53
+  L1_53 = true
+  return L1_53
+end
+function directory(A0_54, A1_55)
+  A1_55 = A1_55 or {}
+  if _UPVALUE0_.stat(A0_54) and not A1_55[_UPVALUE0_.stat(A0_54).ino] then
+    A1_55[_UPVALUE0_.stat(A0_54).ino] = true
+    if _UPVALUE0_.stat(A0_54).type == "dir" then
+      return true
+    elseif _UPVALUE0_.stat(A0_54).type == "lnk" then
+      return directory(_UPVALUE0_.readlink(A0_54), A1_55)
+    end
+  end
+  return false
+end
+function file(A0_56, A1_57)
+  A1_57 = A1_57 or {}
+  if _UPVALUE0_.stat(A0_56) and not A1_57[_UPVALUE0_.stat(A0_56).ino] then
+    A1_57[_UPVALUE0_.stat(A0_56).ino] = true
+    if _UPVALUE0_.stat(A0_56).type == "reg" then
+      return true
+    elseif _UPVALUE0_.stat(A0_56).type == "lnk" then
+      return file(_UPVALUE0_.readlink(A0_56), A1_57)
+    end
+  end
+  return false
+end
+function device(A0_58, A1_59)
+  A1_59 = A1_59 or {}
+  if _UPVALUE0_.stat(A0_58) and not A1_59[_UPVALUE0_.stat(A0_58).ino] then
+    A1_59[_UPVALUE0_.stat(A0_58).ino] = true
+    if _UPVALUE0_.stat(A0_58).type == "chr" or _UPVALUE0_.stat(A0_58).type == "blk" then
+      return true
+    elseif _UPVALUE0_.stat(A0_58).type == "lnk" then
+      return device(_UPVALUE0_.readlink(A0_58), A1_59)
+    end
+  end
+  return false
+end
+function uciname(A0_60)
+  return A0_60:match("^[a-zA-Z0-9_]+$") ~= nil
+end
+function range(A0_61, A1_62, A2_63)
+  A0_61 = _UPVALUE0_(A0_61)
+  A1_62 = _UPVALUE0_(A1_62)
+  A2_63 = _UPVALUE0_(A2_63)
+  if A0_61 ~= nil and A1_62 ~= nil and A2_63 ~= nil then
+    return A0_61 >= A1_62 and A0_61 <= A2_63
+  end
+  return false
+end
+function min(A0_64, A1_65)
+  A0_64 = _UPVALUE0_(A0_64)
+  A1_65 = _UPVALUE0_(A1_65)
+  if A0_64 ~= nil and A1_65 ~= nil then
+    return A0_64 >= A1_65
+  end
+  return false
+end
+function max(A0_66, A1_67)
+  A0_66 = _UPVALUE0_(A0_66)
+  A1_67 = _UPVALUE0_(A1_67)
+  if A0_66 ~= nil and A1_67 ~= nil then
+    return A0_66 <= A1_67
+  end
+  return false
+end
+function rangelength(A0_68, A1_69, A2_70)
+  A0_68 = _UPVALUE0_(A0_68)
+  A1_69 = _UPVALUE1_(A1_69)
+  A2_70 = _UPVALUE1_(A2_70)
+  if A0_68 ~= nil and A1_69 ~= nil and A2_70 ~= nil then
+    return A1_69 <= #A0_68 and A2_70 >= #A0_68
+  end
+  return false
+end
+function minlength(A0_71, A1_72)
+  A0_71 = _UPVALUE0_(A0_71)
+  A1_72 = _UPVALUE1_(A1_72)
+  if A0_71 ~= nil and A1_72 ~= nil then
+    return A1_72 <= #A0_71
+  end
+  return false
+end
+function maxlength(A0_73, A1_74)
+  A0_73 = _UPVALUE0_(A0_73)
+  A1_74 = _UPVALUE1_(A1_74)
+  if A0_73 ~= nil and A1_74 ~= nil then
+    return A1_74 >= #A0_73
+  end
+  return false
+end
+function phonedigit(A0_75)
+  return A0_75:match("^[0-9*#]+$") ~= nil
+end

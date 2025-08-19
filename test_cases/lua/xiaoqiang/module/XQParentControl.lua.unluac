@@ -1,0 +1,965 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQParentControl", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function get_global_info()
+  if _UPVALUE0_:get_all("parentalctl", "global") and _UPVALUE0_:get_all("parentalctl", "global").disabled and tonumber(_UPVALUE0_:get_all("parentalctl", "global").disabled) == 1 then
+    ({on = 1}).on = 0
+  end
+  return {on = 1}
+end
+function get_macfilter_wan(A0_1)
+  local L1_2, L2_3
+  L1_2 = true
+  L2_3 = _UPVALUE0_
+  L2_3 = L2_3.exec
+  L2_3 = L2_3("/usr/sbin/sysapi macfilter get | grep \"" .. string.lower(A0_1) .. "\"")
+  if L2_3 then
+    L2_3 = _UPVALUE0_.trim(L2_3)
+    L2_3 = L2_3 .. ";"
+    if L2_3:match("wan=(%S-);") and L2_3:match("wan=(%S-);") ~= "yes" then
+      L1_2 = false
+    end
+  end
+  return L1_2
+end
+function macfilter_wan_changed(A0_4, A1_5)
+  local L2_6, L3_7
+  L2_6 = require
+  L3_7 = "xiaoqiang.util.XQSynchrodata"
+  L2_6 = L2_6(L3_7)
+  L3_7 = A0_4.gsub
+  L3_7 = L3_7(A0_4, ":", "")
+  summary = {
+    mac = A0_4,
+    disabled = "0",
+    mark = "1",
+    mode = A1_5 and "none" or "limited"
+  }
+  _UPVALUE0_:section("parentalctl", "summary", L3_7, summary)
+  _UPVALUE0_:commit("parentalctl")
+  apply()
+end
+function _generate_key(A0_8)
+  local L1_9, L2_10, L3_11, L4_12, L5_13, L6_14
+  L2_10 = A0_8
+  L1_9 = A0_8.gsub
+  L1_9 = L1_9(L2_10, L3_11, L4_12)
+  L2_10 = _UPVALUE0_
+  L2_10 = L2_10.pow
+  L2_10 = L2_10(L3_11, L4_12)
+  L2_10 = L2_10 - 1
+  L6_14 = "device"
+  L3_11(L4_12, L5_13, L6_14, function(A0_15)
+    local L1_16
+    L1_16 = A0_15[".name"]
+    L1_16 = L1_16.match
+    L1_16 = L1_16(L1_16, "^" .. _UPVALUE0_ .. "_")
+    if L1_16 then
+      L1_16 = A0_15[".name"]
+      L1_16 = L1_16.gsub
+      L1_16 = L1_16(L1_16, _UPVALUE0_ .. "_", "")
+      if tonumber(L1_16) and tonumber(L1_16) <= _UPVALUE1_ then
+        _UPVALUE2_ = _UPVALUE3_.bxor(_UPVALUE2_, _UPVALUE4_.pow(2, tonumber(L1_16) - 1))
+      end
+    end
+  end)
+  for L6_14 = 1, _UPVALUE1_ do
+    if _UPVALUE3_.band(L2_10, _UPVALUE0_.pow(2, L6_14 - 1)) > 0 then
+      return L1_9 .. "_" .. tostring(L6_14)
+    end
+  end
+  return L3_11
+end
+function _parse_frequency(A0_17, A1_18)
+  local L2_19, L3_20, L4_21, L5_22, L6_23, L7_24, L8_25
+  L2_19 = {}
+  for L6_23, L7_24 in L3_20(L4_21) do
+    L8_25 = tonumber
+    L8_25 = L8_25(L7_24)
+    if L8_25 == 0 then
+      L2_19 = nil
+      break
+    end
+    L8_25 = _UPVALUE0_
+    L8_25 = L8_25[tonumber(L7_24)]
+    if L8_25 then
+      table.insert(L2_19, L8_25)
+    end
+  end
+  if L2_19 then
+    L6_23 = L2_19
+    L7_24 = " "
+    L2_19 = L5_22
+  else
+    L6_23 = "%Y-%m-%d"
+    L6_23 = "%Y-%m-%d"
+    L7_24 = os
+    L7_24 = L7_24.time
+    L7_24 = L7_24()
+    L7_24 = L7_24 + 86400
+    L6_23 = A1_18
+    if not L5_22 then
+      L6_23 = "%X"
+      L6_23 = L5_22
+      L7_24 = ":%d+$"
+      L8_25 = ""
+      L7_24 = A1_18
+      L6_23 = A1_18.match
+      L8_25 = "[%d:]+%-([%d:]+)"
+      L6_23 = L6_23(L7_24, L8_25)
+      if L5_22 > L6_23 then
+        L7_24 = os
+        L7_24 = L7_24.date
+        L8_25 = "%Y-%m-%d"
+        L7_24 = L7_24(L8_25, os.time() + 86400)
+        L7_24 = os
+        L7_24 = L7_24.date
+        L8_25 = "%Y-%m-%d"
+        L7_24 = L7_24(L8_25, os.time() + 172800)
+      end
+    end
+  end
+  L6_23 = L3_20
+  L7_24 = L4_21
+  return L5_22, L6_23, L7_24
+end
+function apply(A0_26)
+  if A0_26 then
+    _UPVALUE0_.forkExec("/usr/sbin/parentalctl.sh 2>/dev/null >/dev/null")
+  else
+    os.execute("/usr/sbin/parentalctl.sh 2>/dev/null >/dev/null")
+  end
+end
+function get_device_mode_info(A0_27)
+  local L1_28, L2_29, L3_30
+  L1_28 = _UPVALUE0_
+  L1_28 = L1_28.isStrNil
+  L2_29 = A0_27
+  L1_28 = L1_28(L2_29)
+  if not L1_28 then
+    L1_28 = _UPVALUE1_
+    L1_28 = L1_28.macaddr
+    L2_29 = A0_27
+    L1_28 = L1_28(L2_29)
+  else
+    if not L1_28 then
+      L1_28 = nil
+      return L1_28
+  end
+  else
+    L1_28 = _UPVALUE0_
+    L1_28 = L1_28.macFormat
+    L2_29 = A0_27
+    L1_28 = L1_28(L2_29)
+    A0_27 = L1_28
+  end
+  L1_28 = get_macfilter_wan
+  L2_29 = A0_27
+  L1_28 = L1_28(L2_29)
+  L2_29 = {}
+  L3_30 = A0_27.gsub
+  L3_30 = L3_30(A0_27, ":", "")
+  if _UPVALUE2_:get_all("parentalctl", L3_30) and tonumber(_UPVALUE2_:get_all("parentalctl", L3_30).mark) and tonumber(_UPVALUE2_:get_all("parentalctl", L3_30).mark) == 1 then
+    L2_29.enable = tonumber(_UPVALUE2_:get_all("parentalctl", L3_30).disabled) == 0 and 1 or 0
+    L2_29.mode = _UPVALUE2_:get_all("parentalctl", L3_30).mode or "time"
+    if not L1_28 then
+      L2_29.mode = "limited"
+      L2_29.enable = 1
+      _UPVALUE2_:set("parentalctl", L3_30, "disabled", "0")
+      _UPVALUE2_:set("parentalctl", L3_30, "mode", "limited")
+      _UPVALUE2_:commit("parentalctl")
+    end
+  else
+    L2_29.enable = 1
+    if L1_28 then
+      L2_29.mode = "none"
+    else
+      L2_29.mode = "limited"
+    end
+    if parentctl_rules({
+      [A0_27] = 1
+    }) and parentctl_rules({
+      [A0_27] = 1
+    })[A0_27] and 0 < parentctl_rules({
+      [A0_27] = 1
+    })[A0_27].enabled then
+      L2_29.mode = "time"
+      os.execute("/usr/sbin/sysapi macfilter set mac=" .. A0_27 .. " wan=yes; /usr/sbin/sysapi macfilter commit")
+    end
+    if _UPVALUE2_:get_all("parentalctl", L3_30) and not _UPVALUE2_:get_all("parentalctl", L3_30).mark then
+      _UPVALUE2_:delete("parentalctl", L3_30)
+      _UPVALUE2_:commit("parentalctl")
+    end
+  end
+  L2_29.urlfilter = {
+    mode = get_parentctl_url_filter(A0_27).mode,
+    count = get_parentctl_url_filter(A0_27).count
+  }
+  return L2_29
+end
+function set_device_mode_info(A0_31, A1_32, A2_33)
+  local L3_34, L4_35, L5_36, L6_37
+  L3_34 = _UPVALUE0_
+  L3_34 = L3_34.isStrNil
+  L4_35 = A0_31
+  L3_34 = L3_34(L4_35)
+  if not L3_34 then
+    L3_34 = _UPVALUE1_
+    L3_34 = L3_34.macaddr
+    L4_35 = A0_31
+    L3_34 = L3_34(L4_35)
+  else
+    if not L3_34 then
+      L3_34 = nil
+      return L3_34
+  end
+  else
+    L3_34 = _UPVALUE0_
+    L3_34 = L3_34.macFormat
+    L4_35 = A0_31
+    L3_34 = L3_34(L4_35)
+    A0_31 = L3_34
+  end
+  L3_34 = require
+  L4_35 = "xiaoqiang.util.XQSynchrodata"
+  L3_34 = L3_34(L4_35)
+  L4_35 = {}
+  L6_37 = A0_31
+  L5_36 = A0_31.gsub
+  L5_36 = L5_36(L6_37, ":", "")
+  L6_37 = _UPVALUE2_
+  L6_37 = L6_37.get_all
+  L6_37 = L6_37(L6_37, "parentalctl", L5_36)
+  if L6_37 then
+    if A1_32 then
+      L6_37.disabled = A1_32 == 1 and "0" or "1"
+    end
+    if A2_33 then
+      L6_37.mode = A2_33
+    end
+  else
+    L6_37 = {
+      disabled = "0",
+      mode = "time",
+      mac = A0_31
+    }
+    if A1_32 then
+      L6_37.disabled = A1_32 == 1 and "0" or "1"
+    end
+    if A2_33 then
+      L6_37.mode = A2_33
+    end
+  end
+  L6_37.mark = 1
+  L4_35.enable = tonumber(L6_37.disabled) == 0 and 1 or 0
+  L4_35.mode = L6_37.mode
+  if L4_35.mode == "limited" then
+    if L4_35.enable == 1 then
+      os.execute("/usr/sbin/sysapi macfilter set mac=" .. A0_31 .. " wan=no; /usr/sbin/sysapi macfilter commit")
+    else
+      os.execute("/usr/sbin/sysapi macfilter set mac=" .. A0_31 .. " wan=yes; /usr/sbin/sysapi macfilter commit")
+    end
+  elseif not get_macfilter_wan(A0_31) then
+    os.execute("/usr/sbin/sysapi macfilter set mac=" .. A0_31 .. " wan=yes; /usr/sbin/sysapi macfilter commit")
+  end
+  _UPVALUE2_:section("parentalctl", "summary", L5_36, L6_37)
+  _UPVALUE2_:commit("parentalctl")
+  L3_34.syncDeviceInfo({mac = A0_31})
+  return L4_35
+end
+function get_device_info(A0_38)
+  if _UPVALUE0_.isStrNil(A0_38) or not _UPVALUE1_.macaddr(A0_38) then
+    return nil
+  else
+    A0_38 = _UPVALUE0_.macFormat(A0_38)
+  end
+  _UPVALUE2_:foreach("parentalctl", "device", function(A0_39)
+    local L1_40, L2_41, L3_42, L4_43
+    L1_40 = A0_39[".name"]
+    L2_41 = L1_40
+    L1_40 = L1_40.match
+    L3_42 = "^"
+    L4_43 = _UPVALUE0_
+    L3_42 = L3_42 .. L4_43 .. "_"
+    L1_40 = L1_40(L2_41, L3_42)
+    if L1_40 then
+      L1_40 = {}
+      L2_41 = A0_39[".name"]
+      L1_40.id = L2_41
+      L2_41 = A0_39.mac
+      L1_40.mac = L2_41
+      L2_41 = tonumber
+      L3_42 = A0_39.disabled
+      L2_41 = L2_41(L3_42)
+      if L2_41 == 1 then
+        L2_41 = 0
+      else
+        L2_41 = L2_41 or 1
+      end
+      L1_40.enable = L2_41
+      L2_41 = nil
+      L3_42 = A0_39.time_seg
+      if L3_42 then
+        L3_42 = A0_39.time_seg
+        L4_43 = L3_42
+        L3_42 = L3_42.match
+        L3_42 = L3_42(L4_43, "[%d:]+%-([%d:]+)")
+        L2_41 = L3_42
+      end
+      L3_42 = A0_39.start_date
+      if L3_42 then
+        L3_42 = A0_39.stop_date
+        if L3_42 then
+          L3_42 = {L4_43}
+          L4_43 = 0
+          L1_40.frequency = L3_42
+          L3_42 = L1_40.enable
+          if L3_42 == 1 then
+            L3_42 = _UPVALUE1_
+            L4_43 = A0_39.start_date
+            if not (L3_42 > L4_43) then
+              L3_42 = _UPVALUE1_
+              L4_43 = A0_39.start_date
+              if L3_42 == L4_43 then
+                L3_42 = _UPVALUE2_
+              else
+              end
+            elseif L2_41 < L3_42 or not L2_41 then
+              L1_40.enable = 0
+              L3_42 = _UPVALUE3_
+              L4_43 = L3_42
+              L3_42 = L3_42.set
+              L3_42(L4_43, "parentalctl", A0_39[".name"], "disabled", 1)
+            end
+          end
+        end
+      end
+      L3_42 = A0_39.weekdays
+      if L3_42 then
+        L3_42 = {}
+        L4_43 = _UPVALUE4_
+        L4_43 = L4_43.split
+        L4_43 = L4_43(A0_39.weekdays, " ")
+        for _FORV_8_, _FORV_9_ in ipairs(L4_43) do
+          table.insert(L3_42, _UPVALUE5_[_FORV_9_])
+        end
+        L1_40.frequency = L3_42
+      end
+      L3_42 = A0_39.time_seg
+      if L3_42 then
+        L3_42 = A0_39.time_seg
+        L4_43 = L3_42
+        L3_42 = L3_42.match
+        L4_43 = L3_42(L4_43, "([%d:]+)%-([%d:]+)")
+        if L3_42 and L4_43 then
+          L1_40.timeseg = {from = L3_42, to = L4_43}
+        end
+      end
+      L3_42 = table
+      L3_42 = L3_42.insert
+      L4_43 = _UPVALUE6_
+      L3_42(L4_43, L1_40)
+    end
+  end)
+  ;({}).rules = {}
+  return {}
+end
+function add_device_info(A0_44, A1_45, A2_46, A3_47)
+  local L4_48, L5_49, L6_50, L7_51, L8_52, L9_53
+  L4_48 = require
+  L5_49 = "xiaoqiang.util.XQSynchrodata"
+  L4_48 = L4_48(L5_49)
+  L5_49 = _UPVALUE0_
+  L5_49 = L5_49.isStrNil
+  L6_50 = A0_44
+  L5_49 = L5_49(L6_50)
+  if not L5_49 and A2_46 then
+    L5_49 = type
+    L6_50 = A2_46
+    L5_49 = L5_49(L6_50)
+    if L5_49 == "table" then
+      L5_49 = _UPVALUE0_
+      L5_49 = L5_49.isStrNil
+      L6_50 = A3_47
+      L5_49 = L5_49(L6_50)
+      if not L5_49 then
+        L6_50 = A3_47
+        L5_49 = A3_47.match
+        L7_51 = "[%d:]+%-[%d:]+"
+        L5_49 = L5_49(L6_50, L7_51)
+      end
+    end
+  else
+    if not L5_49 then
+      L5_49 = false
+      return L5_49
+  end
+  else
+    L5_49 = _UPVALUE0_
+    L5_49 = L5_49.macFormat
+    L6_50 = A0_44
+    L5_49 = L5_49(L6_50)
+    A0_44 = L5_49
+  end
+  L5_49 = _generate_key
+  L6_50 = A0_44
+  L5_49 = L5_49(L6_50)
+  if not L5_49 then
+    L6_50 = false
+    return L6_50
+  end
+  L6_50 = _parse_frequency
+  L7_51 = A2_46
+  L8_52 = L6_50(L7_51)
+  L9_53 = {}
+  L9_53.mac = A0_44
+  L9_53.weekdays = L6_50
+  L9_53.start_date = L7_51
+  L9_53.stop_date = L8_52
+  L9_53.disabled = A1_45 == 1 and 0 or 1
+  L9_53.time_seg = A3_47
+  _UPVALUE1_:section("parentalctl", "device", L5_49, L9_53)
+  _UPVALUE1_:commit("parentalctl")
+  L4_48.syncDeviceInfo({mac = A0_44})
+  return L5_49
+end
+function update_device_info(A0_54, A1_55, A2_56, A3_57, A4_58)
+  local L5_59, L6_60
+  L5_59 = require
+  L6_60 = "xiaoqiang.util.XQSynchrodata"
+  L5_59 = L5_59(L6_60)
+  L6_60 = _UPVALUE0_
+  L6_60 = L6_60.isStrNil
+  L6_60 = L6_60(A0_54)
+  if L6_60 then
+    L6_60 = false
+    return L6_60
+  end
+  L6_60 = _UPVALUE1_
+  L6_60 = L6_60.get_all
+  L6_60 = L6_60(L6_60, "parentalctl", A0_54)
+  if not L6_60 then
+    return false
+  end
+  if A2_56 then
+    L6_60.disabled = A2_56 == 1 and 0 or 1
+  end
+  if A3_57 then
+    if _parse_frequency(A3_57, A4_58 or L6_60.time_seg) then
+      L6_60.weekdays = _parse_frequency(A3_57, A4_58 or L6_60.time_seg)
+      L6_60.start_date = nil
+      L6_60.stop_date = nil
+      _UPVALUE1_:delete("parentalctl", A0_54, "start_date")
+      _UPVALUE1_:delete("parentalctl", A0_54, "stop_date")
+    end
+    if _parse_frequency(A3_57, A4_58 or L6_60.time_seg) then
+      L6_60.start_date = _parse_frequency(A3_57, A4_58 or L6_60.time_seg)
+    end
+    if _parse_frequency(A3_57, A4_58 or L6_60.time_seg) then
+      L6_60.stop_date = _parse_frequency(A3_57, A4_58 or L6_60.time_seg)
+    end
+    if _parse_frequency(A3_57, A4_58 or L6_60.time_seg) or _parse_frequency(A3_57, A4_58 or L6_60.time_seg) then
+      L6_60.weekdays = nil
+      _UPVALUE1_:delete("parentalctl", A0_54, "weekdays")
+    end
+  elseif A2_56 and A2_56 == 1 and L6_60.start_date and L6_60.stop_date then
+    if _parse_frequency({0}, A4_58 or L6_60.time_seg) then
+      L6_60.start_date = _parse_frequency({0}, A4_58 or L6_60.time_seg)
+    end
+    if _parse_frequency({0}, A4_58 or L6_60.time_seg) then
+      L6_60.stop_date = _parse_frequency({0}, A4_58 or L6_60.time_seg)
+    end
+  end
+  if A4_58 and A4_58:match("[%d:]+%-[%d:]+") then
+    L6_60.time_seg = A4_58
+  end
+  _UPVALUE1_:section("parentalctl", "device", A0_54, L6_60)
+  _UPVALUE1_:commit("parentalctl")
+  L5_59.syncDeviceInfo({mac = A1_55})
+  return true
+end
+function delete_device_info(A0_61)
+  if _UPVALUE0_.isStrNil(A0_61) then
+    return false
+  end
+  if _UPVALUE1_:get_all("parentalctl", A0_61) then
+  end
+  _UPVALUE1_:delete("parentalctl", A0_61)
+  _UPVALUE1_:commit("parentalctl")
+  require("xiaoqiang.util.XQSynchrodata").syncDeviceInfo({
+    mac = _UPVALUE1_:get_all("parentalctl", A0_61).mac
+  })
+  return true
+end
+function parentctl_rules(A0_62)
+  local L1_63
+  L1_63 = {}
+  _UPVALUE0_:foreach("parentalctl", "device", function(A0_64)
+    local L1_65
+    L1_65 = A0_64.mac
+    if L1_65 then
+      L1_65 = A0_64[".name"]
+      L1_65 = L1_65.match
+      L1_65 = L1_65(L1_65, "_")
+      if L1_65 then
+        L1_65 = _UPVALUE0_
+        if L1_65 then
+          L1_65 = _UPVALUE0_
+          if L1_65 then
+            L1_65 = _UPVALUE0_
+            L1_65 = L1_65[A0_64.mac]
+          end
+        elseif L1_65 then
+          L1_65 = _UPVALUE1_
+          L1_65 = L1_65[A0_64.mac]
+          if L1_65 then
+            L1_65.total = L1_65.total + 1
+            if A0_64.disabled and tonumber(A0_64.disabled) == 0 then
+              L1_65.enabled = L1_65.enabled + 1
+            end
+          else
+            L1_65 = {total = 1, enabled = 0}
+            if A0_64.disabled and tonumber(A0_64.disabled) == 0 then
+              L1_65.enabled = 1
+            end
+          end
+          _UPVALUE1_[A0_64.mac] = L1_65
+        end
+      end
+    end
+  end)
+  if A0_62 then
+    for _FORV_5_, _FORV_6_ in pairs(A0_62) do
+      if not L1_63[_FORV_5_] then
+        L1_63[_FORV_5_] = {total = 0, enabled = 0}
+      end
+    end
+  end
+  return L1_63
+end
+function netacctl_status(A0_66)
+  local L1_67, L2_68, L3_69, L4_70, L5_71, L6_72, L7_73, L8_74, L9_75, L10_76, L11_77
+  L1_67 = require
+  L2_68 = "xiaoqiang.util.XQDeviceUtil"
+  L1_67 = L1_67(L2_68)
+  L2_68 = {}
+  L3_69 = L1_67.getMacfilterInfoDict
+  L3_69 = L3_69()
+  if A0_66 then
+    if L4_70 == "table" then
+      for L7_73, L8_74 in L4_70(L5_71) do
+        L9_75 = true
+        L10_76 = L3_69[L7_73]
+        if L10_76 then
+          L10_76 = L3_69[L7_73]
+          L9_75 = L10_76.wan
+        end
+        L10_76 = {}
+        L11_77 = L7_73.gsub
+        L11_77 = L11_77(L7_73, ":", "")
+        if _UPVALUE0_:get_all("parentalctl", L11_77) and tonumber(_UPVALUE0_:get_all("parentalctl", L11_77).mark) and tonumber(_UPVALUE0_:get_all("parentalctl", L11_77).mark) == 1 then
+          L10_76.enable = tonumber(_UPVALUE0_:get_all("parentalctl", L11_77).disabled) == 0 and 1 or 0
+          L10_76.mode = _UPVALUE0_:get_all("parentalctl", L11_77).mode or "time"
+          if not L9_75 then
+            L10_76.mode = "limited"
+            L10_76.enable = 1
+          end
+        else
+          L10_76.enable = 1
+          if L9_75 then
+            L10_76.mode = "none"
+          else
+            L10_76.mode = "limited"
+          end
+          if parentctl_rules({
+            [L7_73] = 1
+          }) and parentctl_rules({
+            [L7_73] = 1
+          })[L7_73] and 0 < parentctl_rules({
+            [L7_73] = 1
+          })[L7_73].enabled then
+            L10_76.mode = "time"
+          end
+        end
+        L2_68[L7_73] = L10_76
+      end
+    end
+  end
+  return L2_68
+end
+function get_url_info(A0_78)
+  local L1_79, L2_80, L3_81, L4_82, L5_83, L6_84, L7_85
+  L1_79 = _UPVALUE0_
+  L1_79 = L1_79.isStrNil
+  L2_80 = A0_78
+  L1_79 = L1_79(L2_80)
+  if L1_79 then
+    L1_79 = nil
+    return L1_79
+  end
+  L1_79 = _UPVALUE1_
+  L1_79 = L1_79.access
+  L2_80 = A0_78
+  L1_79 = L1_79(L2_80)
+  if not L1_79 then
+    L1_79 = nil
+    return L1_79
+  end
+  L1_79 = io
+  L1_79 = L1_79.open
+  L2_80 = A0_78
+  L1_79 = L1_79(L2_80, L3_81)
+  L2_80 = {}
+  if L1_79 then
+    for L6_84 in L3_81(L4_82) do
+      L7_85 = _UPVALUE0_
+      L7_85 = L7_85.isStrNil
+      L7_85 = L7_85(L6_84)
+      if not L7_85 then
+        L7_85 = L6_84.match
+        L7_85 = L7_85(L6_84, "(%S+)%s%S+")
+        table.insert(L2_80, L7_85)
+      end
+    end
+  end
+  return L2_80
+end
+function set_url_info(A0_86, A1_87)
+  local L2_88, L3_89, L4_90, L5_91, L6_92, L7_93, L8_94
+  L2_88 = _UPVALUE0_
+  L2_88 = L2_88.isStrNil
+  L2_88 = L2_88(L3_89)
+  if L2_88 then
+    L2_88 = false
+    return L2_88
+  end
+  if A1_87 then
+    L2_88 = type
+    L2_88 = L2_88(L3_89)
+    if L2_88 == "table" then
+      L2_88 = io
+      L2_88 = L2_88.open
+      L2_88 = L2_88(L3_89, L4_90)
+      for L6_92, L7_93 in L3_89(L4_90) do
+        L8_94 = _UPVALUE0_
+        L8_94 = L8_94.isStrNil
+        L8_94 = L8_94(L7_93)
+        if not L8_94 then
+          L8_94 = L7_93.gsub
+          L8_94 = L8_94(L7_93, "http://", "")
+          L8_94 = L8_94:gsub("^www.", "")
+          if not _UPVALUE1_.ipaddr(L8_94) and not L8_94:match("^%.") then
+            L8_94 = "." .. L8_94
+          end
+          L2_88:write(L7_93 .. " " .. L8_94 .. "\n")
+        end
+      end
+      L3_89(L4_90)
+    end
+  end
+  L2_88 = true
+  return L2_88
+end
+function get_parentctl_url_filter(A0_95)
+  local L1_96, L2_97, L3_98, L4_99, L5_100
+  L1_96 = _UPVALUE0_
+  L1_96 = L1_96.isStrNil
+  L2_97 = A0_95
+  L1_96 = L1_96(L2_97)
+  if not L1_96 then
+    L1_96 = _UPVALUE1_
+    L1_96 = L1_96.macaddr
+    L2_97 = A0_95
+    L1_96 = L1_96(L2_97)
+  else
+    if not L1_96 then
+      L1_96 = nil
+      return L1_96
+  end
+  else
+    L1_96 = _UPVALUE0_
+    L1_96 = L1_96.macFormat
+    L2_97 = A0_95
+    L1_96 = L1_96(L2_97)
+    A0_95 = L1_96
+  end
+  L1_96 = {}
+  L1_96.mode = "none"
+  L1_96.count = 0
+  L3_98 = A0_95
+  L2_97 = A0_95.gsub
+  L4_99 = ":"
+  L5_100 = ""
+  L2_97 = L2_97(L3_98, L4_99, L5_100)
+  L3_98 = "_RULE"
+  L2_97 = L2_97 .. L3_98
+  L3_98 = _UPVALUE2_
+  L4_99 = L3_98
+  L3_98 = L3_98.get_all
+  L5_100 = "parentalctl"
+  L3_98 = L3_98(L4_99, L5_100, L2_97)
+  if L3_98 then
+    L4_99 = L3_98.mode
+    L4_99 = L4_99 or "none"
+    L1_96.mode = L4_99
+    L4_99 = tonumber
+    L5_100 = L3_98.disabled
+    L4_99 = L4_99(L5_100)
+    if L4_99 == 0 then
+      L4_99 = L3_98.hostfile
+      if L4_99 then
+        L5_100 = type
+        L5_100 = L5_100(L4_99)
+        if L5_100 == "table" then
+          L5_100 = #L4_99
+          if L5_100 > 0 then
+            L5_100 = L4_99[1]
+            L1_96.urls, L1_96.count = get_url_info(L5_100) or {}, #(get_url_info(L5_100) or {})
+          end
+        end
+      end
+    end
+  end
+  return L1_96
+end
+function get_parentctl_url_list(A0_101, A1_102)
+  local L2_103
+  if A1_102 == "white" then
+    L2_103 = "/etc/parentalctl/" .. A0_101:gsub(":", "") .. "_WHITE.url"
+  elseif A1_102 == "black" then
+    L2_103 = "/etc/parentalctl/" .. A0_101:gsub(":", "") .. "_BLACK.url"
+  end
+  if L2_103 then
+    return get_url_info(L2_103) or {}
+  end
+  return {}
+end
+function set_parentctl_url_filter(A0_104, A1_105)
+  local L2_106, L3_107, L4_108, L5_109
+  L2_106 = require
+  L3_107 = "xiaoqiang.util.XQSynchrodata"
+  L2_106 = L2_106(L3_107)
+  L3_107 = _UPVALUE0_
+  L3_107 = L3_107.isStrNil
+  L4_108 = A0_104
+  L3_107 = L3_107(L4_108)
+  if not L3_107 then
+    L3_107 = _UPVALUE1_
+    L3_107 = L3_107.macaddr
+    L4_108 = A0_104
+    L3_107 = L3_107(L4_108)
+    if L3_107 then
+      L3_107 = _UPVALUE0_
+      L3_107 = L3_107.isStrNil
+      L4_108 = A1_105
+      L3_107 = L3_107(L4_108)
+    end
+  else
+    if L3_107 then
+      L3_107 = nil
+      return L3_107
+  end
+  else
+    L3_107 = _UPVALUE0_
+    L3_107 = L3_107.macFormat
+    L4_108 = A0_104
+    L3_107 = L3_107(L4_108)
+    A0_104 = L3_107
+  end
+  L4_108 = A0_104
+  L3_107 = A0_104.gsub
+  L5_109 = ":"
+  L3_107 = L3_107(L4_108, L5_109, "")
+  L4_108 = "_RULE"
+  L3_107 = L3_107 .. L4_108
+  L4_108 = _UPVALUE2_
+  L5_109 = L4_108
+  L4_108 = L4_108.get_all
+  L4_108 = L4_108(L5_109, "parentalctl", L3_107)
+  if not L4_108 then
+    L5_109 = {}
+    L4_108 = L5_109
+  end
+  L4_108.mac = A0_104
+  L5_109 = nil
+  if A1_105 == "white" then
+    L5_109 = "/etc/parentalctl/" .. A0_104:gsub(":", "") .. "_WHITE.url"
+  elseif A1_105 == "black" then
+    L5_109 = "/etc/parentalctl/" .. A0_104:gsub(":", "") .. "_BLACK.url"
+  end
+  L4_108.disabled = A1_105 ~= "none" and "0" or "1"
+  if L5_109 then
+    L4_108.hostfile = {L5_109}
+  end
+  L4_108.mode = A1_105
+  _UPVALUE2_:section("parentalctl", "rule", L3_107, L4_108)
+  _UPVALUE2_:commit("parentalctl")
+  L2_106.syncDeviceInfo({mac = A0_104})
+end
+function edit_parentctl_url_list(A0_110, A1_111, A2_112, A3_113, A4_114)
+  local L5_115, L6_116, L7_117, L8_118, L9_119, L10_120, L11_121, L12_122, L13_123, L14_124
+  L5_115 = require
+  L6_116 = "xiaoqiang.util.XQSynchrodata"
+  L5_115 = L5_115(L6_116)
+  L6_116 = _UPVALUE0_
+  L6_116 = L6_116.isStrNil
+  L7_117 = A0_110
+  L6_116 = L6_116(L7_117)
+  if not L6_116 then
+    L6_116 = _UPVALUE1_
+    L6_116 = L6_116.macaddr
+    L7_117 = A0_110
+    L6_116 = L6_116(L7_117)
+  else
+    if not L6_116 or not A1_111 or not A2_112 or not A3_113 then
+      L6_116 = false
+      return L6_116
+  end
+  else
+    L6_116 = _UPVALUE0_
+    L6_116 = L6_116.macFormat
+    L7_117 = A0_110
+    L6_116 = L6_116(L7_117)
+    A0_110 = L6_116
+  end
+  if A2_112 == "none" then
+    L6_116 = false
+    return L6_116
+  end
+  L6_116 = "/etc/parentalctl/"
+  L8_118 = A0_110
+  L7_117 = A0_110.gsub
+  L7_117 = L7_117(L8_118, L9_119, L10_120)
+  L8_118 = "_BLACK.url"
+  L6_116 = L6_116 .. L7_117 .. L8_118
+  if A2_112 == "white" then
+    L7_117 = "/etc/parentalctl/"
+    L8_118 = A0_110.gsub
+    L8_118 = L8_118(L9_119, L10_120, L11_121)
+    L6_116 = L7_117 .. L8_118 .. L9_119
+  end
+  L7_117 = get_url_info
+  L8_118 = L6_116
+  L7_117 = L7_117(L8_118)
+  if A3_113 then
+    L8_118 = type
+    L8_118 = L8_118(L9_119)
+    if L8_118 == "table" then
+      L8_118 = #A3_113
+      if L8_118 > 1 and A1_111 == 1 then
+        L8_118 = {}
+        for L13_123, L14_124 in L10_120(L11_121) do
+          if not _UPVALUE0_.isStrNil(L14_124) then
+            L8_118[L14_124] = true
+          end
+        end
+        if L7_117 then
+          for L13_123 = #L7_117, 1, 4294967295 do
+            L14_124 = L7_117[L13_123]
+            L14_124 = L8_118[L14_124]
+            if L14_124 then
+              L14_124 = table
+              L14_124 = L14_124.remove
+              L14_124(L7_117, L13_123)
+            end
+          end
+          L10_120(L11_121, L12_122)
+          return L10_120
+        end
+      end
+    end
+  end
+  if L7_117 then
+    L8_118 = nil
+    for L12_122, L13_123 in L9_119(L10_120) do
+      if L13_123 == A3_113 then
+        L8_118 = L12_122
+      end
+    end
+    if A1_111 == 0 then
+      if not L8_118 then
+        L9_119(L10_120, L11_121)
+      end
+    elseif A1_111 == 1 then
+      if L8_118 then
+        L9_119(L10_120, L11_121)
+      end
+    elseif A1_111 == 2 and A4_114 then
+      if L8_118 then
+        L7_117[L8_118] = A4_114
+      else
+        L9_119(L10_120, L11_121)
+      end
+    end
+  else
+    L8_118 = {}
+    L7_117 = L8_118
+    if A1_111 == 0 then
+      L8_118 = {L9_119}
+      L7_117 = L8_118
+    end
+    if A1_111 == 2 and A4_114 then
+      L8_118 = {L9_119}
+      L7_117 = L8_118
+    end
+  end
+  L8_118 = set_url_info
+  L8_118(L9_119, L10_120)
+  L8_118 = L5_115.syncDeviceInfo
+  L9_119.mac = A0_110
+  L8_118(L9_119)
+  L8_118 = true
+  return L8_118
+end
+function _get_file_line_count(A0_125)
+  local L1_126
+  L1_126 = _UPVALUE0_
+  L1_126 = L1_126.isStrNil
+  L1_126 = L1_126(A0_125)
+  if L1_126 then
+    L1_126 = 0
+    return L1_126
+  end
+  L1_126 = _UPVALUE1_
+  L1_126 = L1_126.access
+  L1_126 = L1_126(A0_125)
+  if not L1_126 then
+    L1_126 = 0
+    return L1_126
+  end
+  L1_126 = "wc -l \""
+  L1_126 = L1_126 .. _UPVALUE0_._cmdformat(A0_125) .. "\" | awk '{print $1}'"
+  return tonumber(_UPVALUE2_.trim(_UPVALUE2_.exec(L1_126)))
+end
+function get_urlfilter_info(A0_127)
+  local L2_128
+  L2_128 = {}
+  if A0_127 and type(A0_127) == "table" then
+    _UPVALUE0_:foreach("parentalctl", "rule", function(A0_129)
+      local L1_130, L2_131
+      L1_130 = A0_129.mac
+      if L1_130 then
+        L1_130 = A0_129.mode
+        L2_131 = A0_129.hostfile
+        if L2_131 and type(L2_131) == "table" and #L2_131 == 1 then
+          L2_131 = L2_131[1]
+        else
+          L2_131 = nil
+        end
+        if A0_129.disabled and tonumber(A0_129.disabled) == 1 then
+          L1_130 = "none"
+        end
+        _UPVALUE0_[A0_129.mac] = {
+          count = _get_file_line_count(L2_131),
+          mode = L1_130
+        }
+      end
+    end)
+    for _FORV_6_, _FORV_7_ in pairs(A0_127) do
+      L2_128[_FORV_6_] = ({})[_FORV_6_] or {count = 0, mode = "none"}
+    end
+  end
+  return L2_128
+end

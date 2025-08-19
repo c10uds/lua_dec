@@ -1,0 +1,2216 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQSysUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function getPrivacy()
+  local L0_1
+  L0_1 = require
+  L0_1 = L0_1("xiaoqiang.XQPreference")
+  L0_1 = L0_1.get
+  L0_1 = L0_1("PRIVACY")
+  if tonumber(L0_1) and tonumber(L0_1) == 1 then
+    return true
+  else
+    return false
+  end
+end
+function setPrivacy(A0_2)
+  local L1_3
+  if A0_2 then
+    L1_3 = "1"
+  else
+    L1_3 = L1_3 or "0"
+  end
+  require("xiaoqiang.XQPreference").set("PRIVACY", L1_3)
+  if getHardware() == "R1D" then
+    _UPVALUE0_.nvramSet("user_privacy", L1_3)
+    _UPVALUE0_.nvramCommit()
+  end
+end
+function isMiWiFi()
+  local L0_4, L1_5
+  L0_4 = require
+  L1_5 = "xiaoqiang.XQPreference"
+  L0_4 = L0_4(L1_5)
+  L1_5 = L0_4.get
+  L1_5 = L1_5("ap_hostname")
+  L1_5 = L1_5 or ""
+  L1_5 = string.lower(L1_5)
+  if L1_5:match("^miwifi") then
+    return true
+  end
+  return false
+end
+function getConfUploadEnable()
+  local L0_6
+  L0_6 = require
+  L0_6 = L0_6("xiaoqiang.XQPreference")
+  L0_6 = L0_6.get
+  L0_6 = L0_6("CONFUPLOAD_ENABLE")
+  if L0_6 and tonumber(L0_6) == 1 then
+    return true
+  else
+    return false
+  end
+end
+function setConfUploadEnable(A0_7)
+  require("xiaoqiang.XQPreference").set("CONFUPLOAD_ENABLE", A0_7 and "1" or "0")
+end
+function doConfUpload(A0_8)
+  local L1_9, L2_10, L3_11, L4_12
+  L1_9 = require
+  L2_10 = "luci.model.uci"
+  L1_9 = L1_9(L2_10)
+  L1_9 = L1_9.cursor
+  L1_9 = L1_9()
+  L2_10 = require
+  L3_11 = "xiaoqiang.util.XQSynchrodata"
+  L2_10 = L2_10(L3_11)
+  L3_11 = require
+  L4_12 = "xiaoqiang.util.XQWifiUtil"
+  L3_11 = L3_11(L4_12)
+  L4_12 = {}
+  if getConfUploadEnable() then
+    if not A0_8 or not A0_8.ssid_24G then
+      L4_12.ssid_24G = L3_11.getWifiBasicInfo(1).ssid
+      L4_12.wifi_24G_password = L3_11.getWifiBasicInfo(1).password
+    else
+      L4_12.ssid_24G = A0_8.ssid_24G or ""
+      L4_12.wifi_24G_password = A0_8.wifi_24G_password or ""
+    end
+    if not A0_8 or not A0_8.pppoe_name then
+      if L1_9:get("network", "wan", "proto") and L1_9:get("network", "wan", "proto") == "pppoe" then
+        L4_12.pppoe_password, L4_12.pppoe_name = L1_9:get("network", "wan", "password") or "", L1_9:get("network", "wan", "username") or ""
+      end
+    else
+      L4_12.pppoe_name = A0_8.pppoe_name or ""
+      L4_12.pppoe_password = A0_8.pppoe_password or ""
+    end
+    L2_10.uploadConf(L4_12)
+  end
+end
+function getVendorInfo()
+  local L0_13, L1_14, L2_15
+  L0_13 = {}
+  L0_13.name = ""
+  L0_13.hardware = ""
+  L0_13.color = ""
+  L0_13.version = ""
+  L0_13.ip = ""
+  L1_14 = require
+  L2_15 = "xiaoqiang.XQPreference"
+  L1_14 = L1_14(L2_15)
+  L2_15 = L1_14.get
+  L2_15 = L2_15("vendorinfo")
+  if _UPVALUE0_.isStrNil(L2_15) then
+    return L0_13
+  end
+  L0_13.name = L1_14.get("ap_hostname") or ""
+  L0_13.hardware = require("luci.util").split(L2_15, "-")[2] or ""
+  L0_13.version = require("luci.util").split(L2_15, "-")[3] or ""
+  L0_13.color = require("luci.util").split(L2_15, "-")[4] or ""
+  if _UPVALUE0_.isStrNil(L0_13.color) and not _UPVALUE0_.isStrNil(L0_13.hardware) then
+    if string.upper(L0_13.hardware) == "R1D" then
+      L0_13.color = "100"
+    else
+      L0_13.color = "101"
+    end
+  end
+  if _UPVALUE0_.getNetModeType() == 0 then
+    if require("ubus").connect():call("network.interface.wan", "status", {}) and require("ubus").connect():call("network.interface.wan", "status", {}).route and require("ubus").connect():call("network.interface.wan", "status", {}).route[1] and require("ubus").connect():call("network.interface.wan", "status", {}).route[1].nexthop then
+      L0_13.ip = require("ubus").connect():call("network.interface.wan", "status", {}).route[1].nexthop
+    end
+  else
+    L0_13.ip = require("luci.model.uci").cursor():get("network", "lan", "gateway") or ""
+  end
+  return L0_13
+end
+function getInitInfo()
+  if require("xiaoqiang.XQPreference").get(_UPVALUE0_.PREF_IS_INITED) then
+    return true
+  else
+    return false
+  end
+end
+function setInited()
+  require("xiaoqiang.XQPreference").set(_UPVALUE0_.PREF_IS_INITED, "YES")
+  require("luci.util").exec("/usr/sbin/sysapi webinitrdr set off")
+  require("luci.util").exec("[ -f /usr/sbin/wan_check.sh ] && /usr/sbin/wan_check.sh reset")
+  _UPVALUE1_.forkExec("[ -f /usr/sbin/ntpsetclock ] && /usr/sbin/ntpsetclock post log >/dev/null 2>&1")
+  if getHardware() and (getHardware() == "R1800" or getHardware() == "R4C" or getHardware() == "R3600" or getHardware() == "R2200" or getHardware() == "R2350") then
+    _UPVALUE1_.forkExec("/usr/sbin/set_wps_state 2")
+  end
+  return true
+end
+function setSPwd()
+  local L0_16, L1_17
+  L0_16 = require
+  L1_17 = "luci.util"
+  L0_16 = L0_16(L1_17)
+  L1_17 = L0_16.exec
+  L1_17 = L1_17("mkxqimage -I")
+  if L1_17 then
+    L1_17 = L0_16.trim(L1_17)
+    require("luci.sys").user.setpasswd("root", L1_17)
+  end
+end
+function getChangeLog()
+  if require("luci.fs").access(_UPVALUE0_.XQ_CHANGELOG_FILEPATH) then
+    return require("luci.util").exec("cat " .. _UPVALUE0_.XQ_CHANGELOG_FILEPATH)
+  end
+  return ""
+end
+function getMiscHardwareInfo()
+  ({}).bbs = tostring(require("luci.model.uci").cursor():get("misc", "hardware", "bbs"))
+  ;({}).cpufreq = tostring(require("luci.model.uci").cursor():get("misc", "hardware", "cpufreq"))
+  ;({}).verify = tostring(require("luci.model.uci").cursor():get("misc", "hardware", "verify"))
+  ;({}).gpio = tonumber(require("luci.model.uci").cursor():get("misc", "hardware", "gpio")) == 1 and 1 or 0
+  ;({}).recovery = tonumber(require("luci.model.uci").cursor():get("misc", "hardware", "recovery")) == 1 and 1 or 0
+  ;({}).flashpermission = tonumber(require("luci.model.uci").cursor():get("misc", "hardware", "flash_per")) == 1 and 1 or 0
+  ;({}).memsize = require("luci.model.uci").cursor():get("misc", "hardware", "memsize")
+  return {}
+end
+function getPassportBindInfo()
+  local L0_18, L1_19, L2_20
+  L0_18 = require
+  L1_19 = "xiaoqiang.XQPreference"
+  L0_18 = L0_18(L1_19)
+  L1_19 = L0_18.get
+  L2_20 = _UPVALUE0_
+  L2_20 = L2_20.PREF_IS_PASSPORT_BOUND
+  L1_19 = L1_19(L2_20)
+  L2_20 = L0_18.get
+  L2_20 = L2_20(_UPVALUE0_.PREF_PASSPORT_BOUND_UUID, "")
+  if not _UPVALUE1_.isStrNil(L1_19) and L1_19 == "YES" and not _UPVALUE1_.isStrNil(L2_20) then
+    return L2_20
+  else
+    return false
+  end
+end
+function setPassportBound(A0_21, A1_22)
+  if A0_21 then
+    if not _UPVALUE0_.isStrNil(A1_22) then
+      require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_PASSPORT_BOUND_UUID, A1_22)
+    end
+    require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_IS_PASSPORT_BOUND, "YES")
+    require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_TIMESTAMP, "0")
+  else
+    if not _UPVALUE0_.isStrNil(A1_22) then
+      require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_PASSPORT_BOUND_UUID, "")
+    end
+    require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_IS_PASSPORT_BOUND, "NO")
+    require("xiaoqiang.XQPreference").set(_UPVALUE1_.PREF_BOUND_USERINFO, "")
+  end
+  return true
+end
+function getSysUptime()
+  local L0_23, L1_24, L2_25, L3_26, L4_27, L5_28, L6_29
+  L0_23 = require
+  L1_24 = "luci.util"
+  L0_23 = L0_23(L1_24)
+  L1_24 = "cat /proc/uptime"
+  L2_25 = L0_23.exec
+  L3_26 = L1_24
+  L2_25 = L2_25(L3_26)
+  if L2_25 == nil then
+    L3_26 = 0
+    return L3_26
+  else
+    L4_27 = L2_25
+    L3_26 = L2_25.match
+    L5_28 = "^(%S+) (%S+)"
+    L4_27 = L3_26(L4_27, L5_28)
+    L5_28 = L0_23.trim
+    L6_29 = L3_26
+    return L5_28(L6_29)
+  end
+end
+function getConfigInfo()
+  return require("luci.util").exec("cat /etc/config/*")
+end
+function getRouterName()
+  local L0_30, L1_31
+  L0_30 = require
+  L1_31 = "xiaoqiang.XQPreference"
+  L0_30 = L0_30(L1_31)
+  L1_31 = L0_30.get
+  L1_31 = L1_31(_UPVALUE0_.PREF_ROUTER_NAME, "")
+  L1_31 = _UPVALUE1_.isStrNil(L1_31) and (require("xiaoqiang.util.XQWifiUtil").getWifiStatus(1).ssid or "")
+  return L1_31
+end
+function setRouterName(A0_32)
+  if A0_32 then
+    require("xiaoqiang.util.XQSynchrodata").syncRouterName(A0_32)
+    require("xiaoqiang.XQPreference").set(_UPVALUE0_.PREF_ROUTER_NAME, A0_32)
+    setRouterNamePending("1")
+    return true
+  else
+    return false
+  end
+end
+function getRouterLocale()
+  return require("xiaoqiang.XQPreference").get("ROUTER_LOCALE") or ""
+end
+function setRouterLocale(A0_33)
+  if A0_33 then
+    require("xiaoqiang.util.XQSynchrodata").syncRouterLocale(A0_33)
+    require("xiaoqiang.XQPreference").set("ROUTER_LOCALE", A0_33)
+  end
+end
+function getRouterNamePending()
+  return require("xiaoqiang.XQPreference").get(_UPVALUE0_.PREF_ROUTER_NAME_PENDING, "0")
+end
+function setRouterNamePending(A0_34)
+  return require("xiaoqiang.XQPreference").set(_UPVALUE0_.PREF_ROUTER_NAME_PENDING, A0_34)
+end
+function getBindUUID()
+  return require("xiaoqiang.XQPreference").get(_UPVALUE0_.PREF_PASSPORT_BOUND_UUID, "")
+end
+function getSN()
+  local L0_35, L1_36
+  L0_35 = require
+  L1_36 = "luci.util"
+  L0_35 = L0_35(L1_36)
+  L1_36 = L0_35.exec
+  L1_36 = L1_36(_UPVALUE0_.GET_NVRAM_SN)
+  if _UPVALUE1_.isStrNil(L1_36) then
+    return nil
+  else
+    L1_36 = L0_35.trim(L1_36)
+  end
+  return L1_36
+end
+function getRomVersion()
+  local L0_37, L1_38
+  L0_37 = require
+  L1_38 = "luci.util"
+  L0_37 = L0_37(L1_38)
+  L1_38 = L0_37.exec
+  L1_38 = L1_38(_UPVALUE0_.XQ_ROM_VERSION)
+  if _UPVALUE1_.isStrNil(L1_38) then
+    L1_38 = ""
+  end
+  return L0_37.trim(L1_38)
+end
+function getChannel()
+  local L0_39, L1_40
+  L0_39 = require
+  L1_40 = "luci.util"
+  L0_39 = L0_39(L1_40)
+  L1_40 = L0_39.exec
+  L1_40 = L1_40(_UPVALUE0_.XQ_CHANNEL)
+  if _UPVALUE1_.isStrNil(L1_40) then
+    L1_40 = ""
+  end
+  return L0_39.trim(L1_40)
+end
+function getHardwareVersion()
+  local L0_41, L1_42, L2_43, L3_44, L4_45
+  L0_41 = _UPVALUE0_
+  L0_41 = L0_41.getGpioValue
+  L1_42 = 14
+  L0_41 = L0_41(L1_42)
+  L1_42 = _UPVALUE0_
+  L1_42 = L1_42.getGpioValue
+  L2_43 = 13
+  L1_42 = L1_42(L2_43)
+  L2_43 = _UPVALUE0_
+  L2_43 = L2_43.getGpioValue
+  L3_44 = 12
+  L2_43 = L2_43(L3_44)
+  L3_44 = L0_41 * 4
+  L4_45 = L1_42 * 2
+  L3_44 = L3_44 + L4_45
+  L3_44 = L3_44 + L2_43
+  L4_45 = string
+  L4_45 = L4_45.char
+  L4_45 = L4_45(65 + L3_44)
+  return "Ver." .. L4_45
+end
+function getHardwareGPIO()
+  local L0_46, L1_47
+  L0_46 = require
+  L1_47 = "luci.util"
+  L0_46 = L0_46(L1_47)
+  L1_47 = L0_46.exec
+  L1_47 = L1_47(_UPVALUE0_.XQ_HARDWARE)
+  if _UPVALUE1_.isStrNil(L1_47) then
+    L1_47 = ""
+  else
+    L1_47 = L0_46.trim(L1_47)
+  end
+  if getMiscHardwareInfo().gpio == 1 then
+    return getHardwareVersion()
+  end
+  return L1_47
+end
+function getHardware()
+  local L0_48, L1_49
+  L0_48 = require
+  L1_49 = "luci.util"
+  L0_48 = L0_48(L1_49)
+  L1_49 = L0_48.exec
+  L1_49 = L1_49(_UPVALUE0_.XQ_HARDWARE)
+  if _UPVALUE1_.isStrNil(L1_49) then
+    L1_49 = ""
+  else
+    L1_49 = L0_48.trim(L1_49)
+  end
+  return L1_49
+end
+function getCFEVersion()
+  local L0_50, L1_51
+  L0_50 = require
+  L1_51 = "luci.util"
+  L0_50 = L0_50(L1_51)
+  L1_51 = L0_50.exec
+  L1_51 = L1_51(_UPVALUE0_.XQ_CFE_VERSION)
+  if _UPVALUE1_.isStrNil(L1_51) then
+    L1_51 = ""
+  end
+  return L0_50.trim(L1_51)
+end
+function getKernelVersion()
+  local L0_52, L1_53
+  L0_52 = require
+  L1_53 = "luci.util"
+  L0_52 = L0_52(L1_53)
+  L1_53 = L0_52.exec
+  L1_53 = L1_53(_UPVALUE0_.XQ_KERNEL_VERSION)
+  if _UPVALUE1_.isStrNil(L1_53) then
+    L1_53 = ""
+  end
+  return L0_52.trim(L1_53)
+end
+function getRamFsVersion()
+  local L0_54, L1_55
+  L0_54 = require
+  L1_55 = "luci.util"
+  L0_54 = L0_54(L1_55)
+  L1_55 = L0_54.exec
+  L1_55 = L1_55(_UPVALUE0_.XQ_RAMFS_VERSION)
+  if _UPVALUE1_.isStrNil(L1_55) then
+    L1_55 = ""
+  end
+  return L0_54.trim(L1_55)
+end
+function getSqaFsVersion()
+  local L0_56, L1_57
+  L0_56 = require
+  L1_57 = "luci.util"
+  L0_56 = L0_56(L1_57)
+  L1_57 = L0_56.exec
+  L1_57 = L1_57(_UPVALUE0_.XQ_SQAFS_VERSION)
+  if _UPVALUE1_.isStrNil(L1_57) then
+    L1_57 = ""
+  end
+  return L0_56.trim(L1_57)
+end
+function getRootFsVersion()
+  local L0_58, L1_59
+  L0_58 = require
+  L1_59 = "luci.util"
+  L0_58 = L0_58(L1_59)
+  L1_59 = L0_58.exec
+  L1_59 = L1_59(_UPVALUE0_.XQ_ROOTFS_VERSION)
+  if _UPVALUE1_.isStrNil(L1_59) then
+    L1_59 = ""
+  end
+  return L0_58.trim(L1_59)
+end
+function getISPCode()
+  local L0_60, L1_61
+  L0_60 = require
+  L1_61 = "luci.util"
+  L0_60 = L0_60(L1_61)
+  L1_61 = L0_60.exec
+  L1_61 = L1_61(_UPVALUE0_.XQ_ISP_CODE)
+  if _UPVALUE1_.isStrNil(L1_61) then
+    L1_61 = ""
+  end
+  return L0_60.trim(L1_61)
+end
+function getLangList()
+  local L0_62, L1_63, L2_64, L3_65, L4_66, L5_67, L6_68, L7_69, L8_70
+  L0_62 = require
+  L1_63 = "luci.util"
+  L0_62 = L0_62(L1_63)
+  L1_63 = require
+  L2_64 = "luci.config"
+  L1_63 = L1_63(L2_64)
+  L2_64 = {}
+  for L6_68, L7_69 in L3_65(L4_66) do
+    L8_70 = type
+    L8_70 = L8_70(L7_69)
+    if L8_70 == "string" then
+      L8_70 = L6_68.sub
+      L8_70 = L8_70(L6_68, 1, 1)
+      if L8_70 ~= "." then
+        L8_70 = {}
+        L8_70.lang = L6_68
+        L8_70.name = L7_69
+        table.insert(L2_64, L8_70)
+      end
+    end
+  end
+  return L2_64
+end
+function getLang()
+  return require("luci.config").main.lang
+end
+function setLang(A0_71)
+  local L1_72, L2_73, L3_74, L4_75, L5_76, L6_77, L7_78, L8_79
+  L1_72 = require
+  L2_73 = "luci.util"
+  L1_72 = L1_72(L2_73)
+  L2_73 = require
+  L3_74 = "luci.model.uci"
+  L2_73 = L2_73(L3_74)
+  L3_74 = require
+  L3_74 = L3_74(L4_75)
+  for L7_78, L8_79 in L4_75(L5_76) do
+    if type(L8_79) == "string" and L7_78:sub(1, 1) ~= "." and (A0_71 == L7_78 or A0_71 == "auto") then
+      if A0_71 == "auto" then
+        L2_73.cursor():set("luci", "main", "lang", "auto")
+      else
+        L2_73.cursor():set("luci", "main", "lang", L7_78)
+      end
+      L2_73.cursor():commit("luci")
+      L2_73.cursor():save("luci")
+      return true
+    end
+  end
+  return L4_75
+end
+function setSysPasswordDefault()
+  require("xiaoqiang.util.XQSecureUtil").savePlaintextPwd("admin", "admin")
+end
+function checkSysPassword(A0_80)
+  return require("luci.sys").user.checkpasswd("root", A0_80)
+end
+function setSysPassword(A0_81)
+  check = require("luci.sys").user.setpasswd("root", A0_81)
+  require("xiaoqiang.util.XQSecureUtil").savePlaintextPwd("admin", A0_81)
+  if check == 0 then
+    return true
+  else
+    require("luci.util").exec("rm /etc/passwd+")
+  end
+  return false
+end
+function cutImage(A0_82)
+  if not A0_82 then
+    return false
+  end
+  if 0 == os.execute(_UPVALUE0_.XQ_CUT_IMAGE .. A0_82) or 127 == os.execute(_UPVALUE0_.XQ_CUT_IMAGE .. A0_82) then
+    return true
+  else
+    return false
+  end
+end
+function verifyImage(A0_83)
+  if not A0_83 then
+    return false
+  end
+  if 0 == os.execute(getMiscHardwareInfo().verify .. "'" .. A0_83 .. "'") then
+    return true
+  else
+    return false
+  end
+end
+function getSysInfo()
+  local L0_84, L1_85, L2_86, L3_87, L4_88, L5_89, L6_90, L7_91, L8_92, L9_93, L10_94, L11_95, L12_96
+  L0_84 = require
+  L1_85 = "luci.sys"
+  L0_84 = L0_84(L1_85)
+  L1_85 = require
+  L2_86 = "luci.util"
+  L1_85 = L1_85(L2_86)
+  L2_86 = getMiscHardwareInfo
+  L2_86 = L2_86()
+  L3_87 = {}
+  L4_88 = L1_85.execl
+  L5_89 = "cat /proc/cpuinfo | grep processor"
+  L4_88 = L4_88(L5_89)
+  L5_89 = L0_84.sysinfo
+  L11_95 = L5_89()
+  L12_96 = #L4_88
+  if L12_96 > 0 then
+    L12_96 = #L4_88
+    L3_87.core = L12_96
+  else
+    L3_87.core = 1
+  end
+  function L12_96(A0_97)
+    if tonumber(A0_97) then
+      if tonumber(A0_97) % 64 >= 32 then
+        return tonumber(A0_97) + 64 - tonumber(A0_97) % 64
+      else
+        return tonumber(A0_97) - tonumber(A0_97) % 64
+      end
+    else
+      return 0
+    end
+  end
+  if L2_86.cpufreq then
+    L3_87.hz = L2_86.cpufreq
+  else
+    L3_87.hz = _UPVALUE0_.hzFormat(tonumber(L11_95) * 500000)
+  end
+  if L2_86.memsize then
+    L3_87.memTotal = L2_86.memsize
+  else
+    L3_87.memTotal = string.format("%d M", L12_96(L7_91 / 1024))
+  end
+  L3_87.system = L5_89
+  L3_87.memFree = string.format("%0.2f M", L10_94 / 1024)
+  return L3_87
+end
+function setMacFilter(A0_98, A1_99, A2_100, A3_101, A4_102)
+  local L5_103, L6_104, L7_105
+  L5_103 = require
+  L6_104 = "luci.cbi.datatypes"
+  L5_103 = L5_103(L6_104)
+  L6_104 = _UPVALUE0_
+  L6_104 = L6_104.isStrNil
+  L7_105 = A0_98
+  L6_104 = L6_104(L7_105)
+  if not L6_104 then
+    L6_104 = L5_103.macaddr
+    L7_105 = A0_98
+    L6_104 = L6_104(L7_105)
+    if L6_104 then
+      L6_104 = "/usr/sbin/sysapi macfilter set mac="
+      L7_105 = A0_98
+      L6_104 = L6_104 .. L7_105
+      if A2_100 then
+        L7_105 = L6_104
+        L6_104 = L7_105 .. " wan=" .. (A2_100 == "1" and "yes" or "no")
+      end
+      if A1_99 then
+        L7_105 = L6_104
+        L6_104 = L7_105 .. " lan=" .. (A1_99 == "1" and "yes" or "no")
+        L7_105 = {}
+        L7_105.api = 75
+        L7_105.isAdd = A1_99 == "1" and true or false
+        L7_105.isLogin = false
+        L7_105.mac = A0_98
+        _UPVALUE0_.thrift_tunnel_to_datacenter(require("json").encode(L7_105))
+      end
+      if A3_101 then
+        L7_105 = L6_104
+        L6_104 = L7_105 .. " admin=" .. (A3_101 == "1" and "yes" or "no")
+      end
+      if A4_102 then
+        L7_105 = L6_104
+        L6_104 = L7_105 .. " pridisk=" .. (A4_102 == "1" and "yes" or "no")
+      end
+      L7_105 = os
+      L7_105 = L7_105.execute
+      L7_105 = L7_105(L6_104 .. ";" .. "/usr/sbin/sysapi macfilter commit")
+      if L7_105 == 0 then
+        L7_105 = true
+        return L7_105
+      end
+    end
+  end
+  L6_104 = false
+  return L6_104
+end
+function getDiskSpace()
+  local L0_106, L1_107
+  L0_106 = require
+  L1_107 = "luci.util"
+  L0_106 = L0_106(L1_107)
+  L1_107 = L0_106.exec
+  L1_107 = L1_107(_UPVALUE0_.DISK_SPACE)
+  if L1_107 and tonumber(L0_106.trim(L1_107)) then
+    L1_107 = tonumber(L0_106.trim(L1_107))
+    return _UPVALUE1_.byteFormat(L1_107 * 1024)
+  else
+    return "Cannot find userdisk"
+  end
+end
+function getAvailableMemery()
+  local L0_108, L1_109
+  L0_108 = require
+  L1_109 = "luci.util"
+  L0_108 = L0_108(L1_109)
+  L1_109 = L0_108.exec
+  L1_109 = L1_109(_UPVALUE0_.AVAILABLE_MEMERY)
+  if L1_109 and tonumber(L0_108.trim(L1_109)) then
+    return tonumber(L0_108.trim(L1_109))
+  else
+    return false
+  end
+end
+function getAvailableDisk(A0_110)
+  local L1_111, L2_112
+  L1_111 = require
+  L2_112 = "luci.util"
+  L1_111 = L1_111(L2_112)
+  L2_112 = L1_111.exec
+  L2_112 = L2_112(A0_110 or _UPVALUE0_.AVAILABLE_DISK)
+  if L2_112 and tonumber(L1_111.trim(L2_112)) then
+    return tonumber(L1_111.trim(L2_112))
+  else
+    return false
+  end
+end
+function getAvailableSpace(A0_113)
+  if A0_113 and A0_113:match("/userdisk/data") then
+    return getAvailableDisk("df -k | grep \\ /userdisk/data$ | awk '{print $4}' | sed -n '1p'")
+  elseif A0_113 and A0_113:match("/userdisk") then
+    return getAvailableDisk()
+  end
+  return getAvailableMemery()
+end
+function checkDiskSpace(A0_114)
+  if getAvailableDisk() and getAvailableDisk() - A0_114 / 1024 > 10240 then
+    return true
+  end
+  return false
+end
+function checkTmpSpace(A0_115)
+  if getAvailableMemery() and getAvailableMemery() - A0_115 / 1024 > 10240 then
+    return true
+  end
+  return false
+end
+function checkSpace(A0_116, A1_117)
+  if A0_116 and A1_117 and getAvailableSpace(A0_116) then
+    if getHardware() == "R3" then
+      if getAvailableSpace(A0_116) > 10240 then
+        return true
+      end
+    elseif 10240 < getAvailableSpace(A0_116) - A1_117 / 1024 then
+      return true
+    end
+  end
+  return false
+end
+function getUploadDir()
+  local L0_118, L1_119
+  L0_118 = "/tmp/"
+  return L0_118
+end
+function getUploadRomFilePath()
+  local L1_120
+  L1_120 = _UPVALUE0_
+  L1_120 = L1_120.CROM_CACHE_FILEPATH
+  return L1_120
+end
+function updateUpgradeStatus(A0_121)
+  local L1_122
+  L1_122 = tostring
+  L1_122 = L1_122(A0_121)
+  os.execute("echo " .. L1_122 .. " > " .. _UPVALUE0_.UPGRADE_LOCK_FILE)
+end
+function getUpgradeStatus()
+  if tonumber(require("luci.util").exec(_UPVALUE0_.UPGRADE_STATUS)) then
+    return (tonumber(require("luci.util").exec(_UPVALUE0_.UPGRADE_STATUS)))
+  else
+    return 0
+  end
+end
+function getFlashProgress()
+  if tonumber(require("luci.util").exec("cat /tmp/state/upgrade_progress 2>/dev/null")) then
+    return (tonumber(require("luci.util").exec("cat /tmp/state/upgrade_progress 2>/dev/null")))
+  else
+    return 0
+  end
+end
+function checkBeenUpgraded()
+  if tonumber(require("luci.util").trim(require("luci.util").exec("nvram get flag_ota_reboot"))) == 1 then
+    return true
+  else
+    return false
+  end
+end
+function getFlashStatus()
+  if checkBeenUpgraded() then
+    return 2
+  end
+  if os.execute(_UPVALUE0_.FLASH_EXECUTION_CHECK) ~= 0 then
+    return 1
+  end
+  if not require("luci.fs").access(_UPVALUE0_.FLASH_PID_TMP) then
+    return 0
+  else
+    return 3
+  end
+end
+function checkExecStatus(A0_123)
+  local L1_124, L2_125
+  L1_124 = require
+  L2_125 = "luci.util"
+  L1_124 = L1_124(L2_125)
+  L2_125 = L1_124.exec
+  L2_125 = L2_125(A0_123)
+  if L2_125 then
+    L2_125 = tonumber(L1_124.trim(L2_125))
+    if L2_125 > 0 then
+      return 1
+    end
+  end
+  return 0
+end
+function checkUpgradeStatus()
+  if checkBeenUpgraded() then
+    return 11
+  end
+  if checkExecStatus(_UPVALUE0_.CRONTAB_ROM_CHECK) == 1 then
+    if getUpgradeStatus() == 0 then
+      return 1
+    else
+      return (getUpgradeStatus())
+    end
+  end
+  if os.execute(_UPVALUE0_.FLASH_EXECUTION_CHECK) ~= 0 then
+    if checkExecStatus(_UPVALUE0_.CROM_FLASH_CHECK) == 1 then
+      return 12
+    else
+      return 5
+    end
+  end
+  if require("luci.fs").access(_UPVALUE0_.CRONTAB_PID_TMP) then
+    if getUpgradeStatus() == 0 then
+      if getFlashStatus() == 2 then
+        return 11
+      elseif getFlashStatus() == 3 then
+        return 10
+      end
+    end
+    return (getUpgradeStatus())
+  elseif getFlashStatus() == 2 then
+    return 11
+  elseif getFlashStatus() == 3 then
+    return 10
+  end
+  return 0
+end
+function isUpgrading()
+  if checkUpgradeStatus() == 1 or checkUpgradeStatus() == 2 or checkUpgradeStatus() == 3 or checkUpgradeStatus() == 4 or checkUpgradeStatus() == 5 or checkUpgradeStatus() == 12 then
+    return true
+  else
+    return false
+  end
+end
+function cancelUpgrade()
+  local L0_126, L1_127, L2_128, L3_129, L4_130, L5_131
+  L0_126 = require
+  L1_127 = "luci.util"
+  L0_126 = L0_126(L1_127)
+  L1_127 = require
+  L2_128 = "xiaoqiang.XQPreference"
+  L1_127 = L1_127(L2_128)
+  L2_128 = require
+  L3_129 = "xiaoqiang.util.XQDownloadUtil"
+  L2_128 = L2_128(L3_129)
+  L3_129 = os
+  L3_129 = L3_129.execute
+  L4_130 = _UPVALUE0_
+  L4_130 = L4_130.FLASH_EXECUTION_CHECK
+  L3_129 = L3_129(L4_130)
+  if L3_129 ~= 0 then
+    L4_130 = false
+    return L4_130
+  end
+  L4_130 = L0_126.exec
+  L5_131 = _UPVALUE0_
+  L5_131 = L5_131.UPGRADE_PID
+  L4_130 = L4_130(L5_131)
+  L5_131 = L0_126.exec
+  L5_131 = L5_131(_UPVALUE0_.UPGRADE_LUA_PID)
+  if not _UPVALUE1_.isStrNil(L4_130) then
+    L4_130 = L0_126.trim(L4_130)
+    os.execute("kill " .. L4_130)
+    if not _UPVALUE1_.isStrNil(L5_131) then
+      os.execute("kill " .. L0_126.trim(L5_131))
+    end
+    L2_128.cancelDownload(L1_127.get(_UPVALUE0_.PREF_ROM_DOWNLOAD_ID, ""))
+    _UPVALUE1_.sysUnlock()
+    return true
+  else
+    return false
+  end
+end
+function getCpuTemperature()
+  local L0_132, L1_133
+  L0_132 = require
+  L1_133 = "luci.util"
+  L0_132 = L0_132(L1_133)
+  L1_133 = L0_132.exec
+  L1_133 = L1_133(_UPVALUE0_.CPU_TEMPERATURE)
+  if not _UPVALUE1_.isStrNil(L1_133) then
+    L1_133 = L1_133:match("Temperature: (%S+)")
+    if L1_133 then
+      L1_133 = tonumber(L0_132.trim(L1_133))
+      return L1_133
+    end
+  end
+  return 0
+end
+function getNetworkDetectInfo(A0_134, A1_135)
+  local L2_136, L3_137, L4_138, L5_139, L6_140, L7_141, L8_142
+  L2_136 = require
+  L3_137 = "luci.util"
+  L2_136 = L2_136(L3_137)
+  L3_137 = require
+  L4_138 = "json"
+  L3_137 = L3_137(L4_138)
+  L4_138 = require
+  L5_139 = "xiaoqiang.util.XQSecureUtil"
+  L4_138 = L4_138(L5_139)
+  L5_139 = {}
+  if A1_135 ~= nil then
+    L6_140 = L4_138.cmdSafeCheck
+    L7_141 = A1_135
+    L6_140 = L6_140(L7_141)
+  else
+    if not L6_140 then
+      L6_140 = "http://www.baidu.com"
+  end
+  else
+    L6_140 = L6_140 or A1_135
+  end
+  if L6_140 then
+    L8_142 = L6_140
+    L7_141 = L6_140.match
+    L7_141 = L7_141(L8_142, "http://")
+    if L7_141 == nil then
+      L8_142 = L6_140
+      L7_141 = L6_140.match
+      L7_141 = L7_141(L8_142, "https://")
+      if L7_141 == nil then
+        L7_141 = "http://"
+        L8_142 = L6_140
+        L6_140 = L7_141 .. L8_142
+      end
+    end
+  end
+  L7_141 = nil
+  L8_142 = tonumber
+  L8_142 = L8_142(A0_134)
+  if L8_142 == 1 then
+    L8_142 = L2_136.exec
+    L8_142 = L8_142(_UPVALUE0_.SIMPLE_NETWORK_NOLOG_DETECT .. "'" .. L6_140 .. "'")
+    L7_141 = L8_142
+  else
+    L8_142 = tonumber
+    L8_142 = L8_142(A0_134)
+    if L8_142 == 2 then
+      L8_142 = L2_136.exec
+      L8_142 = L8_142(_UPVALUE0_.SIMPLE_NETWORK_DETECT .. "'" .. L6_140 .. "'")
+      L7_141 = L8_142
+    else
+      L8_142 = L2_136.exec
+      L8_142 = L8_142(_UPVALUE0_.FULL_NETWORK_DETECT .. "'" .. L6_140 .. "'")
+      L7_141 = L8_142
+    end
+  end
+  if L7_141 then
+    L8_142 = L3_137.decode
+    L8_142 = L8_142(L2_136.trim(L7_141))
+    L7_141 = L8_142
+    if L7_141 then
+      L8_142 = type
+      L8_142 = L8_142(L7_141)
+      if L8_142 == "table" then
+        L8_142 = L7_141.CHECKINFO
+        if L8_142 and type(L8_142) == "table" then
+          L5_139.wanLink = L8_142.wanlink == "up" and 1 or 0
+          L5_139.wanType = L8_142.wanprotocal or ""
+          L5_139.pingLost = L8_142.ping:match("(%S+)%%")
+          L5_139.gw = L8_142.gw:match("(%S+)%%")
+          L5_139.dns = L8_142.dns == "ok" and 1 or 0
+          L5_139.tracer = L8_142.tracer == "ok" and 1 or 0
+          L5_139.memory = tonumber(L8_142.memory) * 100
+          L5_139.cpu = tonumber(L8_142.cpu)
+          L5_139.disk = L8_142.disk
+          L5_139.tcp = L8_142.tcp
+          L5_139.http = L8_142.http
+          L5_139.ip = L8_142.ip
+          return L5_139
+        end
+      end
+    end
+  end
+  L8_142 = nil
+  return L8_142
+end
+function checkSystemStatus()
+  ({}).cpu = tonumber(require("luci.util").trim(require("luci.util").exec(_UPVALUE0_.CPU_LOAD_AVG))) or 0
+  ;({}).mem = tonumber(string.format("%0.2f", 1 - (require("luci.sys").sysinfo() + require("luci.sys").sysinfo() + require("luci.sys").sysinfo()) / require("luci.sys").sysinfo())) or 0
+  ;({}).link = string.upper(require("luci.util").trim(require("luci.util").exec(_UPVALUE0_.WAN_LINK))) == "UP"
+  ;({}).wan = true
+  ;({}).tmp = getCpuTemperature()
+  return {}
+end
+function getFlashPermission()
+  local L0_143, L1_144
+  L0_143 = require
+  L1_144 = "luci.util"
+  L0_143 = L0_143(L1_144)
+  L1_144 = L0_143.exec
+  L1_144 = L1_144(_UPVALUE0_.GET_FLASH_PERMISSION)
+  if _UPVALUE1_.isStrNil(L1_144) then
+    return false
+  else
+    L1_144 = tonumber(L0_143.trim(L1_144))
+    if L1_144 and L1_144 == 1 then
+      return true
+    end
+  end
+  return false
+end
+function setFlashPermission(A0_145)
+  if A0_145 then
+    require("luci.util").exec(_UPVALUE0_.SET_FLASH_PERMISSION .. "1")
+  else
+    require("luci.util").exec(_UPVALUE0_.SET_FLASH_PERMISSION .. "0")
+  end
+end
+function getMacfilterMode(A0_146)
+  local L1_147, L2_148, L3_149
+  L1_147 = require
+  L2_148 = "luci.util"
+  L1_147 = L1_147(L2_148)
+  L2_148 = _UPVALUE0_
+  L2_148 = L2_148.GET_LAN_MODE
+  if A0_146 == "wan" then
+    L3_149 = _UPVALUE0_
+    L2_148 = L3_149.GET_WAN_MODE
+  elseif A0_146 == "admin" then
+    L3_149 = _UPVALUE0_
+    L2_148 = L3_149.GET_ADMIN_MODE
+  end
+  L3_149 = L1_147.exec
+  L3_149 = L3_149(L2_148)
+  if L3_149 then
+    L3_149 = L1_147.trim(L3_149)
+    if L3_149 == "whitelist" then
+      return 0
+    else
+      return 1
+    end
+  end
+  return false
+end
+function setMacfilterMode(A0_150, A1_151)
+  local L2_152, L3_153
+  L2_152 = require
+  L3_153 = "luci.util"
+  L2_152 = L2_152(L3_153)
+  L3_153 = nil
+  if A0_150 == "lan" then
+    if tonumber(A1_151) == 0 then
+      L3_153 = _UPVALUE0_.SET_LAN_WHITELIST
+    else
+      L3_153 = _UPVALUE0_.SET_LAN_BLACKLIST
+    end
+  elseif A0_150 == "wan" then
+    if tonumber(A1_151) == 0 then
+      L3_153 = _UPVALUE0_.SET_WAN_WHITELIST
+    else
+      L3_153 = _UPVALUE0_.SET_WAN_BLACKLIST
+    end
+  elseif A0_150 == "admin" then
+    if tonumber(A1_151) == 0 then
+      L3_153 = _UPVALUE0_.SET_ADMIN_WHITELIST
+    else
+      L3_153 = _UPVALUE0_.SET_ADMIN_BLACKLIST
+    end
+  end
+  if L3_153 and os.execute(L3_153) == 0 then
+    return true
+  else
+    return false
+  end
+end
+function getDetectionTimestamp()
+  return tonumber(require("xiaoqiang.XQPreference").get(_UPVALUE0_.PREF_TIMESTAMP, "0"))
+end
+function setDetectionTimestamp()
+  require("xiaoqiang.XQPreference").set(_UPVALUE0_.PREF_TIMESTAMP, tostring(os.time()))
+end
+function getWifiLog()
+  os.execute(_UPVALUE0_.WIFI_LOG_COLLECTION)
+end
+function getNvramConfigs()
+  local L0_154
+  L0_154 = {}
+  L0_154.wifi_ssid = _UPVALUE0_.nvramGet("nv_wifi_ssid", "")
+  L0_154.wifi_enc = _UPVALUE0_.nvramGet("nv_wifi_enc", "")
+  L0_154.wifi_pwd = _UPVALUE0_.nvramGet("nv_wifi_pwd", "")
+  L0_154.rom_ver = _UPVALUE0_.nvramGet("nv_rom_ver", "")
+  L0_154.rom_channel = _UPVALUE0_.nvramGet("nv_rom_channel", "")
+  L0_154.hardware = _UPVALUE0_.nvramGet("nv_hardware", "")
+  L0_154.uboot = _UPVALUE0_.nvramGet("nv_uboot", "")
+  L0_154.linux = _UPVALUE0_.nvramGet("nv_linux", "")
+  L0_154.ramfs = _UPVALUE0_.nvramGet("nv_ramfs", "")
+  L0_154.sqafs = _UPVALUE0_.nvramGet("nv_sqafs", "")
+  L0_154.rootfs = _UPVALUE0_.nvramGet("nv_rootfs", "")
+  L0_154.sys_pwd = _UPVALUE0_.nvramGet("nv_sys_pwd", "")
+  L0_154.wan_type = _UPVALUE0_.nvramGet("nv_wan_type", "")
+  L0_154.pppoe_name = _UPVALUE0_.nvramGet("nv_pppoe_name", "")
+  L0_154.pppoe_pwd = _UPVALUE0_.nvramGet("nv_pppoe_pwd", "")
+  return L0_154
+end
+function noflushdStatus()
+  return os.execute("/etc/init.d/noflushd status")
+end
+function noflushdSwitch(A0_155)
+  if A0_155 then
+    return os.execute("/etc/init.d/noflushd on") == 0
+  else
+    return os.execute("killall -s 10 noflushd ; /etc/init.d/noflushd off") == 0
+  end
+end
+function getModulesList()
+  local L0_156, L1_157, L2_158
+  L0_156 = require
+  L1_157 = "luci.model.uci"
+  L0_156 = L0_156(L1_157)
+  L0_156 = L0_156.cursor
+  L0_156 = L0_156()
+  L1_157 = {}
+  L2_158 = L0_156.get_all
+  L2_158 = L2_158(L0_156, "module", "common")
+  for _FORV_6_, _FORV_7_ in pairs(L2_158) do
+    if _FORV_6_ and _FORV_7_ and not _FORV_6_:match("%.") then
+      L1_157[_FORV_6_] = _FORV_7_
+    end
+  end
+  if _G.next(L1_157) == nil then
+    return nil
+  else
+    return L1_157
+  end
+end
+function bdataInfo()
+  local L0_159, L1_160, L2_161, L3_162, L4_163
+  L0_159 = require
+  L1_160 = "luci.util"
+  L0_159 = L0_159(L1_160)
+  L1_160 = {}
+  L2_161 = L0_159.exec
+  L3_162 = "bdata show"
+  L2_161 = L2_161(L3_162)
+  while true do
+    L3_162 = string
+    L3_162 = L3_162.find
+    L4_163 = L2_161
+    L3_162 = L3_162(L4_163, "\n")
+    if nil == L3_162 then
+      break
+    end
+    L4_163 = string
+    L4_163 = L4_163.sub
+    L4_163 = L4_163(L2_161, 1, L3_162 - 1)
+    if string.find(L4_163, "=") then
+      k = string.sub(L4_163, 1, string.find(L4_163, "=") - 1)
+      v = string.sub(L4_163, string.find(L4_163, "=") + 1, #L4_163)
+      if v then
+        L1_160[k] = v
+      end
+    end
+    L2_161 = string.sub(L2_161, L3_162 + 1, #L2_161)
+  end
+  return L1_160
+end
+function facInfo()
+  local L0_164, L1_165, L2_166, L3_167, L4_168, L5_169
+  L0_164 = require
+  L1_165 = "luci.util"
+  L0_164 = L0_164(L1_165)
+  L1_165 = require
+  L2_166 = "xiaoqiang.util.XQWifiUtil"
+  L1_165 = L1_165(L2_166)
+  L2_166 = {}
+  L3_167 = L1_165.getWifissid
+  L4_168 = L3_167()
+  L2_166.wl0_ssid = L4_168
+  L2_166.wl1_ssid = L3_167
+  L5_169 = getRomVersion
+  L5_169 = L5_169()
+  L2_166.version = L5_169
+  L5_169 = getInitInfo
+  L5_169 = L5_169()
+  L2_166.init = L5_169
+  L5_169 = tonumber
+  L5_169 = L5_169(_UPVALUE0_.nvramGet("ssh_en", 0))
+  if L5_169 == 1 then
+    L5_169 = true
+  else
+    L5_169 = L5_169 or false
+  end
+  L2_166.ssh = L5_169
+  L5_169 = tonumber
+  L5_169 = L5_169(_UPVALUE0_.nvramGet("uart_en", 0))
+  if L5_169 == 1 then
+    L5_169 = true
+  else
+    L5_169 = L5_169 or false
+  end
+  L2_166.uart = L5_169
+  L5_169 = tonumber
+  L5_169 = L5_169(_UPVALUE0_.nvramGet("telnet_en", 0))
+  if L5_169 == 1 then
+    L5_169 = true
+  else
+    L5_169 = L5_169 or false
+  end
+  L2_166.telnet = L5_169
+  L5_169 = tonumber
+  L5_169 = L5_169(L0_164.exec("cat /proc/xiaoqiang/ft_mode 2>/dev/null"))
+  if L5_169 == 1 then
+    L5_169 = true
+  else
+    L5_169 = L5_169 or false
+  end
+  L2_166.facmode = L5_169
+  L5_169 = tonumber
+  L5_169 = L5_169(L0_164.exec("fdisk -lu | grep /dev/sda4 | awk {'print $2'}"))
+  if L5_169 then
+    L5_169 = math.mod(L5_169, 8) == 0 and true or false
+  else
+    L5_169 = false
+  end
+  L2_166["4kblock"] = L5_169
+  return L2_166
+end
+function _(A0_170)
+  local L1_171
+  return A0_170
+end
+NETTB = {
+  ["1"] = _("\232\183\175\231\148\177\229\153\168\230\178\161\230\156\137\230\163\128\230\181\139\229\136\176WAN\229\143\163\231\189\145\231\186\191\230\142\165\229\133\165"),
+  ["2"] = _("DHCP\230\156\141\229\138\161\230\178\161\230\156\137\229\147\141\229\186\148"),
+  ["3"] = _("\229\174\189\229\184\166\230\139\168\229\143\183\230\156\141\229\138\161\230\151\160\229\147\141\229\186\148"),
+  ["4"] = _("\228\184\138\231\186\167\231\189\145\231\187\156IP\228\184\142\232\183\175\231\148\177\229\153\168\229\177\128\229\159\159\231\189\145IP\230\156\137\229\134\178\231\170\129"),
+  ["5"] = _("\231\189\145\229\133\179\228\184\141\229\143\175\232\190\190"),
+  ["6"] = _("DNS\230\156\141\229\138\161\229\153\168\230\151\160\230\179\149\230\156\141\229\138\161\239\188\140\229\143\175\228\187\165\229\176\157\232\175\149\232\135\170\229\174\154\228\185\137DNS\232\167\163\229\134\179\239\188\136114.114.114.114, 114.114.115.115  \229\155\189\229\164\1508.8.8.8  8.8.4.4)"),
+  ["7"] = _("\232\135\170\229\174\154\228\185\137\231\154\132DNS\230\151\160\230\179\149\230\156\141\229\138\161\239\188\140\232\175\183\229\133\179\233\151\173\232\135\170\229\138\168\228\187\165DNS\230\136\150\232\128\133\233\135\141\230\150\176\232\174\190\231\189\174"),
+  ["8"] = _("\230\151\160\231\186\191\228\184\173\231\187\167\239\188\140\230\151\160\230\179\149\228\184\173\231\187\167\228\184\138\231\186\167"),
+  ["9"] = _("\230\156\137\231\186\191\228\184\173\231\187\167\239\188\140\230\151\160\230\179\149\228\184\173\231\187\167\228\184\138\231\186\167"),
+  ["10"] = _("\233\157\153\230\128\129IP\239\188\140\232\191\158\230\142\165\230\151\182\232\191\158\230\142\165\230\150\173\229\188\128"),
+  ["31"] = _("PPPoE\230\156\141\229\138\161\229\153\168\228\184\141\229\133\129\232\174\184\228\184\128\228\184\170\232\180\166\229\143\183\229\144\140\230\151\182\231\153\187\229\189\149"),
+  ["32"] = _("PPPoE\228\184\138\231\189\145\230\152\175\231\148\168\230\136\183\229\144\141\230\136\150\232\128\133\229\175\134\231\160\129\233\148\153\232\175\175 691"),
+  ["33"] = _("PPPoE\228\184\138\231\189\145\230\152\175\231\148\168\230\136\183\229\144\141\230\136\150\232\128\133\229\175\134\231\160\129\233\148\153\232\175\175 678")
+}
+function nettb()
+  local L0_172, L1_173, L2_174, L3_175, L4_176
+  L0_172 = require
+  L1_173 = "json"
+  L0_172 = L0_172(L1_173)
+  L1_173 = require
+  L2_174 = "luci.util"
+  L1_173 = L1_173(L2_174)
+  L2_174 = require
+  L3_175 = "xiaoqiang.util.XQLanWanUtil"
+  L2_174 = L2_174(L3_175)
+  L3_175 = {}
+  L3_175.code = 0
+  L3_175.reason = ""
+  L4_176 = L1_173.exec
+  L4_176 = L4_176("/usr/sbin/nettb")
+  if not _UPVALUE0_.isStrNil(L4_176) then
+    L4_176 = L1_173.trim(L4_176)
+    L4_176 = L0_172.decode(L4_176)
+    if L4_176.code then
+      L3_175.code = tonumber(L4_176.code)
+      if L3_175.code == 32 then
+        L3_175.code = L2_174._pppoeError(691) or 33
+      elseif L3_175.code == 33 then
+        L3_175.code = L2_174._pppoeError(678) or 35
+      end
+      L3_175.reason = NETTB[tostring(L4_176.code)]
+    end
+  end
+  return L3_175
+end
+function getColor()
+  local L0_177, L1_178
+  L0_177 = require
+  L1_178 = "luci.util"
+  L0_177 = L0_177(L1_178)
+  L1_178 = L0_177.exec
+  L1_178 = L1_178("nvram get color")
+  if not _UPVALUE0_.isStrNil(L1_178) then
+    L1_178 = L0_177.trim(L1_178)
+    L1_178 = tonumber(L1_178)
+    L1_178 = L1_178 or 100
+  elseif getHardware() and getHardware() == "R2D" then
+    L1_178 = 101
+  else
+    L1_178 = 100
+  end
+  return L1_178
+end
+function getBindinfo()
+  local L0_179, L1_180, L2_181, L3_182, L4_183, L5_184, L6_185, L7_186
+  L0_179 = require
+  L1_180 = "xiaoqiang.XQLog"
+  L0_179 = L0_179(L1_180)
+  L1_180 = require
+  L2_181 = "json"
+  L1_180 = L1_180(L2_181)
+  L2_181 = require
+  L3_182 = "luci.util"
+  L2_181 = L2_181(L3_182)
+  L3_182 = "matool --method api_call --params \"/device/minet_get_bindinfo\""
+  L4_183 = L2_181.exec
+  L5_184 = L3_182
+  L4_183 = L4_183(L5_184)
+  if L4_183 then
+    L5_184 = L0_179.log
+    L6_185 = 6
+    L7_186 = "ret "
+    L7_186 = L7_186 .. L4_183
+    L5_184(L6_185, L7_186)
+    L5_184 = L1_180.decode
+    L6_185 = L4_183
+    L5_184 = L5_184(L6_185)
+    L6_185 = L5_184.code
+    L7_186 = L0_179.log
+    L7_186(6, "code: " .. L6_185)
+    if L6_185 ~= nil and L6_185 == 0 then
+      L7_186 = L5_184.data
+      L7_186 = L7_186.bind
+      L0_179.log(6, "bind: " .. L7_186)
+      return L7_186
+    else
+      L7_186 = L0_179.log
+      L7_186(6, "bind return 2")
+      L7_186 = 2
+      return L7_186
+    end
+  else
+    L5_184 = 2
+    return L5_184
+  end
+end
+function getRouterInfo()
+  local L0_187, L1_188, L2_189, L3_190, L4_191, L5_192, L6_193
+  L0_187 = require
+  L1_188 = "xiaoqiang.util.XQWifiUtil"
+  L0_187 = L0_187(L1_188)
+  L1_188 = require
+  L2_189 = "xiaoqiang.util.XQLanWanUtil"
+  L1_188 = L1_188(L2_189)
+  L2_189 = require
+  L3_190 = "cjson"
+  L2_189 = L2_189(L3_190)
+  L3_190 = L0_187.getWifiStatus
+  L4_191 = 1
+  L3_190 = L3_190(L4_191)
+  L3_190 = L3_190 or {}
+  L4_191 = L0_187.getWifiBssid
+  L5_192 = L4_191()
+  L6_193 = {}
+  L6_193.hardware = getHardware()
+  L6_193.channel = getChannel()
+  L6_193.color = getColor()
+  L6_193.locale = getRouterLocale()
+  L6_193.ssid = L3_190.ssid or ""
+  L6_193.bssid1 = L4_191 or ""
+  L6_193.bssid2 = L5_192 or ""
+  L6_193.ip = L1_188.getLanIp()
+  return L2_189.encode(L6_193)
+end
+function getRouterInfo4Trafficd()
+  local L0_194, L1_195, L2_196, L3_197, L4_198, L5_199, L6_200, L7_201, L8_202
+  L0_194 = require
+  L1_195 = "luci.model.uci"
+  L0_194 = L0_194(L1_195)
+  L0_194 = L0_194.cursor
+  L0_194 = L0_194()
+  L1_195 = require
+  L2_196 = "xiaoqiang.util.XQWifiUtil"
+  L1_195 = L1_195(L2_196)
+  L2_196 = require
+  L3_197 = "luci.util"
+  L2_196 = L2_196(L3_197)
+  L3_197 = require
+  L4_198 = "xiaoqiang.util.XQLanWanUtil"
+  L3_197 = L3_197(L4_198)
+  L4_198 = require
+  L5_199 = "cjson"
+  L4_198 = L4_198(L5_199)
+  L5_199 = L2_196.exec
+  L6_200 = "uci -q get wireless.@wifi-iface[0].ssid"
+  L5_199 = L5_199(L6_200)
+  L6_200 = L1_195.getWifiBssid
+  L7_201 = L6_200()
+  L8_202 = string
+  L8_202 = L8_202.sub
+  L8_202 = L8_202(L5_199, 0, string.len(L5_199) - 1)
+  L5_199 = L8_202
+  L8_202 = {}
+  L8_202.hardware = getHardware()
+  L8_202.channel = getChannel()
+  L8_202.color = getColor()
+  L8_202.locale = getRouterLocale()
+  L8_202.ssid = L5_199 or ""
+  L8_202.bssid1 = L6_200 or ""
+  L8_202.bssid2 = L7_201 or ""
+  L8_202.ip = L3_197.getLanIp()
+  L8_202.sn = getSN()
+  L8_202.bind_status = tonumber(L0_194:get("bind", "info", "status")) or 0
+  L8_202.bind_record = tonumber(L0_194:get("bind", "info", "record")) or 0
+  return L4_198.encode(L8_202)
+end
+function backupSysLog()
+  local L0_203, L1_204, L2_205, L3_206, L4_207, L5_208, L6_209
+  L0_203 = require
+  L1_204 = "xiaoqiang.common.XQConfigs"
+  L0_203 = L0_203(L1_204)
+  L1_204 = require
+  L2_205 = "luci.model.uci"
+  L1_204 = L1_204(L2_205)
+  L1_204 = L1_204.cursor
+  L1_204 = L1_204()
+  L2_205 = require
+  L3_206 = "nixio.fs"
+  L2_205 = L2_205(L3_206)
+  L3_206 = require
+  L4_207 = "luci.sys"
+  L3_206 = L3_206(L4_207)
+  L4_207 = "/tmp/syslogbackup/"
+  L6_209 = L1_204
+  L5_208 = L1_204.get
+  L5_208 = L5_208(L6_209, "network", "lan", "ipaddr")
+  L5_208 = L5_208 or "192.168.31.1"
+  function L6_209()
+    return _UPVALUE0_.process.info("uid") == _UPVALUE1_.stat(_UPVALUE2_, "uid") and _UPVALUE1_.stat(_UPVALUE2_, "modestr") == "rwx------"
+  end
+  sane = L6_209
+  function L6_209()
+    _UPVALUE0_.mkdir(_UPVALUE1_, 700)
+  end
+  prepare = L6_209
+  L6_209 = sane
+  L6_209 = L6_209()
+  if not L6_209 then
+    L6_209 = prepare
+    L6_209()
+  else
+    L6_209 = os
+    L6_209 = L6_209.execute
+    L6_209("rm " .. L4_207 .. "*.tar.gz")
+  end
+  L6_209 = os
+  L6_209 = L6_209.execute
+  L6_209("/usr/sbin/log_collection.sh >/dev/null 2>/dev/null")
+  L6_209 = L2_205.access
+  L6_209 = L6_209(L0_203.LOG_ZIP_FILEPATH)
+  if L6_209 then
+    L6_209 = os
+    L6_209 = L6_209.date
+    L6_209 = L6_209("%Y-%m-%d--%X", os.time())
+    L6_209 = L6_209 .. ".tar.gz"
+    os.execute("cp " .. L0_203.LOG_ZIP_FILEPATH .. " " .. L4_207 .. L6_209)
+    os.execute("rm " .. L0_203.LOG_ZIP_FILEPATH)
+    return L5_208 .. "/backup/log/" .. L6_209
+  end
+  L6_209 = nil
+  return L6_209
+end
+function getCachedDirInfo()
+  local L0_210, L1_211, L2_212
+  L0_210 = require
+  L1_211 = "json"
+  L0_210 = L0_210(L1_211)
+  L1_211 = io
+  L1_211 = L1_211.open
+  L2_212 = "/tmp/dir_info"
+  L1_211 = L1_211(L2_212, "r")
+  if L1_211 then
+    L2_212 = L1_211.read
+    L2_212 = L2_212(L1_211, "*a")
+    L1_211:close()
+    if pcall(L0_210.decode, L2_212) and pcall(L0_210.decode, L2_212) then
+      return pcall(L0_210.decode, L2_212)
+    else
+      return nil
+    end
+  else
+    L2_212 = nil
+    return L2_212
+  end
+end
+function getDirectoryInfo(A0_213)
+  local L1_214, L2_215, L3_216, L4_217, L5_218, L6_219, L7_220, L8_221, L9_222, L10_223, L11_224, L12_225, L13_226, L14_227, L15_228
+  L1_214 = require
+  L2_215 = "luci.util"
+  L1_214 = L1_214(L2_215)
+  L2_215 = {}
+  L2_215.total = ""
+  L3_216 = {}
+  L2_215.info = L3_216
+  L3_216 = A0_213 or "/userdisk/data/"
+  L5_218 = L3_216
+  L4_217 = L3_216.match
+  L4_217 = L4_217(L5_218, L6_219)
+  if not L4_217 then
+    L4_217 = L3_216
+    L5_218 = "/"
+    L3_216 = L4_217 .. L5_218
+  end
+  L4_217 = L1_214.execl
+  L5_218 = "du -h -d 1 "
+  L5_218 = L5_218 .. L6_219
+  L4_217 = L4_217(L5_218)
+  L5_218 = #L4_217
+  for L9_222, L10_223 in L6_219(L7_220) do
+    if L10_223 then
+      L12_225 = L10_223
+      L11_224 = L10_223.match
+      L13_226 = "(%S+)%s+(%S+)"
+      L12_225 = L11_224(L12_225, L13_226)
+      if L12_225 and L9_222 ~= L5_218 then
+        L13_226 = {}
+        L15_228 = L12_225
+        L14_227 = L12_225.gsub
+        L14_227 = L14_227(L15_228, L3_216, "")
+        L13_226.name = L14_227
+        L13_226.size = L11_224
+        L13_226.path = L12_225
+        L13_226.type = "folder"
+        L14_227 = table
+        L14_227 = L14_227.insert
+        L15_228 = L2_215.info
+        L14_227(L15_228, L13_226)
+      elseif L12_225 and L9_222 == L5_218 then
+        L2_215.total = L11_224
+      end
+    end
+  end
+  for L10_223, L11_224 in L7_220(L8_221) do
+    if L11_224 then
+      L13_226 = L11_224
+      L12_225 = L11_224.match
+      L14_227 = "(%S+)%s+%S+%s+%S+%s+%S+%s+(%S+)%s+"
+      L13_226 = L12_225(L13_226, L14_227)
+      L15_228 = L11_224
+      L14_227 = L11_224.match
+      L14_227 = L14_227(L15_228, "%s(%S+)$")
+      if L12_225 then
+        L15_228 = L12_225.match
+        L15_228 = L15_228(L12_225, "^d")
+        if not L15_228 then
+          L15_228 = {}
+          L15_228.name = L14_227
+          L15_228.size = L13_226
+          L15_228.path = L3_216 .. L14_227
+          L15_228.type = "file"
+          table.insert(L2_215.info, L15_228)
+        end
+      end
+    end
+  end
+  return L2_215
+end
+function backupFiles(A0_229, A1_230)
+  local L2_231
+  if A0_229 then
+    L2_231 = type
+    L2_231 = L2_231(A0_229)
+    if L2_231 == "table" then
+      L2_231 = A1_230 or "/tmp/usb/"
+      for _FORV_6_, _FORV_7_ in ipairs(A0_229) do
+        if _FORV_7_.type and _FORV_7_.path then
+          if _FORV_7_.type == "folder" then
+            os.execute("echo 1 '" .. _FORV_7_.path .. "' > /tmp/backup_files_status")
+          elseif _FORV_7_.type == "file" then
+            os.execute("echo 1 '" .. _FORV_7_.path .. "' > /tmp/backup_files_status")
+          end
+          os.execute(cp)
+        end
+      end
+    end
+  end
+  L2_231 = os
+  L2_231 = L2_231.execute
+  L2_231("echo 2 > /tmp/backup_files_status")
+end
+function backupStatus()
+  local L0_232, L1_233, L2_234
+  L0_232 = require
+  L1_233 = "luci.util"
+  L0_232 = L0_232(L1_233)
+  L1_233 = {}
+  L1_233.status = 0
+  L1_233.description = ""
+  L2_234 = L0_232.exec
+  L2_234 = L2_234("cat /tmp/backup_files_status 2>/dev/null")
+  if not _UPVALUE0_.isStrNil(L2_234) then
+    if L2_234:match("^2") then
+      L1_233.status = 2
+    elseif L2_234:match("^1") then
+      L1_233.status = 1
+      L1_233.description = L2_234:gsub("1 ", "")
+    elseif L2_234:match("^3") then
+      L1_233.status = 3
+    end
+  end
+  return L1_233
+end
+function cancelBackup()
+  local L0_235, L1_236
+  L0_235 = require
+  L1_236 = "luci.util"
+  L0_235 = L0_235(L1_236)
+  L1_236 = L0_235.exec
+  L1_236 = L1_236("cat /tmp/backup_files_pid 2>/dev/null")
+  if not _UPVALUE0_.isStrNil(L1_236) then
+    os.execute("kill -9 " .. L1_236)
+  end
+end
+function getPluginIdList()
+  local L0_237, L1_238, L2_239, L3_240, L4_241, L5_242, L6_243, L7_244
+  L0_237 = require
+  L1_238 = "nixio.fs"
+  L0_237 = L0_237(L1_238)
+  L1_238 = L0_237.dir
+  L2_239 = "/userdisk/appdata/app_infos"
+  L1_238 = L1_238(L2_239)
+  L2_239 = {}
+  if L1_238 then
+    for L6_243 in L1_238, nil, nil do
+      L7_244 = L6_243.match
+      L7_244 = L7_244(L6_243, "(%d+)")
+      if L7_244 then
+        table.insert(L2_239, L7_244)
+      end
+    end
+  end
+  return L3_240(L4_241, L5_242)
+end
+function usbMode()
+  local L0_245, L1_246
+  L0_245 = require
+  L1_246 = "luci.util"
+  L0_245 = L0_245(L1_246)
+  L1_246 = L0_245.exec
+  L1_246 = L1_246("cat /tmp/usbDeployRootPath.conf 2>/dev/null")
+  if _UPVALUE0_.isStrNil(L1_246) then
+    return nil
+  else
+    return L0_245.trim(L1_246)
+  end
+end
+function checkRomVersion(A0_247)
+  local L1_248, L2_249, L3_250, L4_251, L5_252, L6_253, L7_254, L8_255, L9_256
+  L1_248 = require
+  L2_249 = "luci.util"
+  L1_248 = L1_248(L2_249)
+  L2_249 = L1_248.execl
+  L3_250 = "cd /tmp; mkxqimage -V '"
+  L4_251 = A0_247
+  L3_250 = L3_250 .. L4_251 .. L5_252 .. L6_253
+  L2_249 = L2_249(L3_250)
+  L3_250 = nil
+  L4_251 = getRomVersion
+  L4_251 = L4_251()
+  if L2_249 then
+    if L5_252 == "table" then
+      for L8_255, L9_256 in L5_252(L6_253) do
+        if not _UPVALUE0_.isStrNil(L9_256) then
+          L9_256 = L9_256:match("%s+option%sROM%s+'(%S+)'")
+          if L9_256 then
+            L3_250 = L9_256
+            break
+          end
+        end
+      end
+    end
+  end
+  if L3_250 and L4_251 then
+    L3_250 = L5_252
+    L4_251 = L5_252
+    if L5_252 == L6_253 then
+      for L8_255, L9_256 in L5_252(L6_253) do
+        if tonumber(L9_256) > tonumber(L3_250[L8_255]) then
+          return true
+        elseif tonumber(L9_256) < tonumber(L3_250[L8_255]) then
+          return false
+        end
+      end
+      return L5_252
+    end
+  end
+  return L5_252
+end
+function getHwnatStatus()
+  local L0_257, L1_258
+  L0_257 = require
+  L1_258 = "luci.model.uci"
+  L0_257 = L0_257(L1_258)
+  L0_257 = L0_257.cursor
+  L0_257 = L0_257()
+  L1_258 = L0_257.get
+  L1_258 = L1_258(L0_257, "hwnat", "switch", "force_start")
+  return tonumber(L1_258) or 0
+end
+function hwnatSwitch(A0_259)
+  require("luci.model.uci").cursor():set("hwnat", "switch", "force_start", A0_259 and 1 or 0)
+  require("luci.model.uci").cursor():commit("hwnat")
+  if A0_259 then
+    os.execute("/etc/init.d/hwnat start >/dev/null 2>/dev/null")
+  else
+    os.execute("/etc/init.d/hwnat stop >/dev/null 2>/dev/null")
+  end
+end
+function httpStatus()
+  local L0_260, L1_261
+  L0_260 = require
+  L1_261 = "luci.model.uci"
+  L0_260 = L0_260(L1_261)
+  L0_260 = L0_260.cursor
+  L0_260 = L0_260()
+  L1_261 = L0_260.get
+  L1_261 = L1_261(L0_260, "http_status_stat", "settings", "enabled")
+  L1_261 = L1_261 or 0
+  return tonumber(L1_261)
+end
+function httpSwitch(A0_262)
+  local L1_263
+  L1_263 = "/etc/init.d/http_status_stat "
+  L1_263 = L1_263 .. (A0_262 and "on" or "off") .. " >/dev/null 2>/dev/null"
+  return os.execute(L1_263) == 0
+end
+function ustackSwitch(A0_264)
+  local L1_265
+  L1_265 = "/etc/init.d/ustack "
+  L1_265 = L1_265 .. (A0_264 and "on" or "off") .. " >/dev/null 2>/dev/null"
+  return os.execute(L1_265) == 0
+end
+function getSysStatus()
+  if require("ubus").connect() then
+    if require("ubus").connect():call("rmonitor", "status", {}) then
+      ({
+        cpuload = 0,
+        fanspeed = 1,
+        temperature = 40
+      }).cpuload = tonumber(require("ubus").connect():call("rmonitor", "status", {}).cpuload)
+      ;({
+        cpuload = 0,
+        fanspeed = 1,
+        temperature = 40
+      }).fanspeed = tonumber(require("ubus").connect():call("rmonitor", "status", {}).fanspeed)
+      ;({
+        cpuload = 0,
+        fanspeed = 1,
+        temperature = 40
+      }).temperature = tonumber(require("ubus").connect():call("rmonitor", "status", {}).temperature)
+    end
+    require("ubus").connect():close()
+  end
+  return {
+    cpuload = 0,
+    fanspeed = 1,
+    temperature = 40
+  }
+end
+function webAccessControl(A0_266, A1_267, A2_268)
+  local L3_269, L4_270, L5_271, L6_272
+  L3_269 = require
+  L4_270 = "luci.cbi.datatypes"
+  L3_269 = L3_269(L4_270)
+  L4_270 = getMacfilterMode
+  L5_271 = "admin"
+  L4_270 = L4_270(L5_271)
+  if A0_266 then
+    if A1_267 then
+      L5_271 = L3_269.macaddr
+      L6_272 = A1_267
+      L5_271 = L5_271(L6_272)
+      if L5_271 then
+        if A2_268 == 0 then
+          L5_271 = "yes"
+        else
+          L5_271 = L5_271 or "no"
+        end
+        L6_272 = "/usr/sbin/sysapi macfilter set mac="
+        L6_272 = L6_272 .. string.lower(A1_267) .. " admin=" .. L5_271
+        os.execute(L6_272)
+        if L4_270 == 1 then
+          os.execute("/usr/sbin/sysapi macfilter set adminmode=whitelist")
+        end
+      end
+    end
+  else
+    L5_271 = os
+    L5_271 = L5_271.execute
+    L6_272 = "/usr/sbin/sysapi macfilter set adminmode=close"
+    L5_271(L6_272)
+  end
+end
+function webAccessInfo()
+  local L0_273, L1_274, L2_275, L3_276, L4_277, L5_278, L6_279, L7_280, L8_281, L9_282
+  L0_273 = require
+  L1_274 = "luci.util"
+  L0_273 = L0_273(L1_274)
+  L1_274 = getMacfilterMode
+  L2_275 = "admin"
+  L1_274 = L1_274(L2_275)
+  L2_275 = {}
+  L3_276 = L1_274 == 0
+  L2_275.open = L3_276
+  L3_276 = L2_275.open
+  if not L3_276 then
+    return L2_275
+  end
+  L3_276 = nil
+  L4_277 = L0_273.execi
+  L4_277 = L4_277(L5_278)
+  if L4_277 then
+    for L8_281 in L4_277, nil, nil do
+      L9_282 = L8_281
+      L8_281 = L9_282 .. ";"
+      L9_282 = L8_281.match
+      L9_282 = L9_282(L8_281, "mac=(%S-);")
+      if L9_282 and L8_281:match("admin=(%S-);") and L8_281:match("admin=(%S-);") == "yes" then
+        L3_276 = L3_276 or {}
+        table.insert(L3_276, _UPVALUE0_.macFormat(L9_282))
+      end
+    end
+    L2_275.list = L3_276
+  end
+  return L2_275
+end
+CST12 = {"CST+12"}
+CST11 = {
+  "SST+11SDT,M9.5.0/0,M4.1.0/0",
+  "CST+11"
+}
+CST10 = {"CST+10"}
+CST9_30 = {"CST+9:30"}
+CST9 = {
+  "AKST+9AKDT,M3.2.0/2,M11.1.0/2"
+}
+CST8 = {
+  "PST+8PDT,M3.2.0/2,M11.1.0/2",
+  "PST+8PDT,M3.2.0/2,M11.1.0/2"
+}
+CST7 = {
+  "MST+7MDT,M4.1.0/2,M10.5.0/2",
+  "MST+7MDT,M3.2.0/2,M11.1.0/2",
+  "CST+7"
+}
+CST6 = {
+  "CST+6CDT,M4.1.0/2,M10.5.0/2",
+  "CST+6",
+  "CST+6CDT,M3.2.0/2,M11.1.0/2",
+  "CST+6"
+}
+CST5 = {
+  "CST+5",
+  "EST+5EDT,M3.2.0/2,M11.1.0/2",
+  "EST+5EDT,M3.2.0/2,M11.1.0/2"
+}
+CST4_30 = {"CST+4:30"}
+CST4 = {
+  "AST+4ADT,M3.2.0/2,M11.1.0/2",
+  "AMST+4AMT,M11.1.0/0,M2.3.0/0",
+  "CST+4",
+  "CLT+4CLST,M9.1.0/0,M4.1.0/0",
+  "PYST+4PYT,M10.1.0/0,M3.4.0/0"
+}
+CST3_30 = {
+  "NST+3:30NDT,M3.2.0/2,M11.1.0/2"
+}
+CST3 = {
+  "BRT+3BRT,M11.1.0/0,M2.3.0/0",
+  "CST+3",
+  "CST+3",
+  "CST+3",
+  "CST+3"
+}
+CST2 = {
+  "CST+2",
+  "ZST+2ZDT,M3.5.0/2,M9.5.0/2"
+}
+CST1 = {
+  "CST+1",
+  "AZOT+1AZOST,M3.5.0/0,M10.5.0/1"
+}
+CST = {
+  "GMT+0IST,M3.5.0/1,M10.5.0/2",
+  "CST",
+  "CST",
+  "CST"
+}
+CST_1 = {
+  "CET-1CEST,M3.5.0/2,M10.5.0/3",
+  "CET-1CEST,M3.5.0/2,M10.5.0/3",
+  "CET-1CEST,M3.5.0/2,M10.5.0/3",
+  "CET-1CEST,M3.5.0/2,M10.5.0/3",
+  "CST-1",
+  "CST-1"
+}
+CST_2 = {
+  "EET-2EEST,M3.5.5/0,M10.5.5/1",
+  "EET-2EEST,M3.5.0/0,M10.5.0/0",
+  "EET-2EEST,M3.5.5/0,M10.5.5/0",
+  "CST-2",
+  "EET-2EEST,M3.5.0/3,M10.5.0/4",
+  "CST-2",
+  "CST-2",
+  "EET-2EEST,M3.5.0/3,M10.5.0/4",
+  "CST-2",
+  "CST-2"
+}
+CST_3 = {
+  "CST-3",
+  "CST-3",
+  "CST-3",
+  "CST-3"
+}
+CST_3_30 = {"CST-3:30"}
+CST_4 = {
+  "CST-4",
+  "CST-4",
+  "CST-4",
+  "CST-4",
+  "CST-4",
+  "CST-4"
+}
+CST_4_30 = {"CST-4:30"}
+CST_5 = {"CST-5", "CST-5"}
+CST_5_30 = {"CST-5:30", "CST-5:30"}
+CST_5_45 = {"CST-5:45"}
+CST_6 = {
+  "CST-6",
+  "CST-6",
+  "CST-6"
+}
+CST_6_30 = {"CST-6:30"}
+CST_7 = {"CST-7", "CST-7"}
+CST_8 = {
+  "CST-8",
+  "CST-8",
+  "CST-8",
+  "CST-8",
+  "CST-8",
+  "CST-8"
+}
+CST_8_30 = {"CST-8:30"}
+CST_9 = {
+  "CST-9",
+  "CST-9",
+  "CST-9"
+}
+CST_9_30 = {
+  "ACST-9:30ACDT,M10.1.0/2,M4.1.0/3",
+  "CST-9:3"
+}
+CST_10 = {
+  "CST-10",
+  "CST-10",
+  "AEST-10AEDT,M10.1.0/2,M4.1.0/3",
+  "AEST-10AEDT,M10.1.0/2,M4.1.0/3",
+  "CST-10"
+}
+CST_10_30 = {"CST-10:30"}
+CST_11 = {"CST-11", "CST-11"}
+CST_11_30 = {"CST-11:30"}
+CST_12 = {
+  "NZST-12NZDT,M9.5.0/2,M4.1.0/3",
+  "FST-12FDT,M11.1.0/2,M1.3.0/3",
+  "CST-12",
+  "CST-12"
+}
+CST_12_45 = {"CST-12:45"}
+CST_13 = {"CST-13"}
+CST_14 = {"CST-14"}
+TIME_ZONE = {
+  ["CST+12"] = CST12,
+  ["CST+11"] = CST11,
+  ["CST+10"] = CST10,
+  ["CST+9:30"] = CST9_30,
+  ["CST+9"] = CST9,
+  ["CST+8"] = CST8,
+  ["CST+7"] = CST7,
+  ["CST+6"] = CST6,
+  ["CST+5"] = CST5,
+  ["CST+4:30"] = CST4_30,
+  ["CST+4"] = CST4,
+  ["CST+3:30"] = CST3_30,
+  ["CST+3"] = CST3,
+  ["CST+2"] = CST2,
+  ["CST+1"] = CST1,
+  ["CST"] = CST,
+  ["CST-1"] = CST_1,
+  ["CST-2"] = CST_2,
+  ["CST-3"] = CST_3,
+  ["CST-3:30"] = CST_3_30,
+  ["CST-4"] = CST_4,
+  ["CST-4:30"] = CST_4_30,
+  ["CST-5"] = CST_5,
+  ["CST-5:30"] = CST_5_30,
+  ["CST-5:45"] = CST_5_45,
+  ["CST-6"] = CST_6,
+  ["CST-6:30"] = CST_6_30,
+  ["CST-7"] = CST_7,
+  ["CST-8"] = CST_8,
+  ["CST-8:30"] = CST_8_30,
+  ["CST-9"] = CST_9,
+  ["CST-9:30"] = CST_9_30,
+  ["CST-10"] = CST_10,
+  ["CST-10:30"] = CST_10_30,
+  ["CST-11"] = CST_11,
+  ["CST-11:30"] = CST_11_30,
+  ["CST-12"] = CST_12,
+  ["CST-12:45"] = CST_12_45,
+  ["CST-13"] = CST_13,
+  ["CST-14"] = CST_14
+}
+function getSysTime()
+  local L0_283
+  L0_283 = require
+  L0_283 = L0_283("luci.model.uci")
+  L0_283 = L0_283.cursor
+  L0_283 = L0_283()
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).year = os.date("*t", os.time()).year
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).month = os.date("*t", os.time()).month
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).day = os.date("*t", os.time()).day
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).hour = os.date("*t", os.time()).hour
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).min = os.date("*t", os.time()).min
+  ;({
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }).sec = os.date("*t", os.time()).sec
+  L0_283:foreach("system", "system", function(A0_284)
+    if not _UPVALUE0_.isStrNil(A0_284.timezone) then
+      _UPVALUE1_.timezone = A0_284.timezone
+      _UPVALUE1_.index = tonumber(A0_284.timezoneindex or 0) or 0
+    end
+  end)
+  return {
+    timezone = "CST-8",
+    index = 0,
+    year = 0,
+    month = 0,
+    day = 0,
+    hour = 0,
+    min = 0,
+    sec = 0
+  }
+end
+function setSysTime(A0_285, A1_286, A2_287)
+  local L3_288, L4_289, L5_290, L6_291, L7_292, L8_293, L9_294, L10_295, L11_296, L12_297, L13_298
+  L3_288 = _UPVALUE0_
+  L3_288 = L3_288.isStrNil
+  L4_289 = A1_286
+  L3_288 = L3_288(L4_289)
+  if not L3_288 then
+    L3_288 = TIME_ZONE
+    L3_288 = L3_288[A1_286]
+    if L3_288 then
+      L3_288 = require
+      L4_289 = "nixio.fs"
+      L3_288 = L3_288(L4_289)
+      L4_289 = require
+      L5_290 = "luci.model.uci"
+      L4_289 = L4_289(L5_290)
+      L4_289 = L4_289.cursor
+      L4_289 = L4_289()
+      L6_291 = L4_289
+      L5_290 = L4_289.foreach
+      L7_292 = "system"
+      L8_293 = "system"
+      function L9_294(A0_299)
+        if not _UPVALUE0_.isStrNil(A0_299.timezone) then
+          _UPVALUE1_:set("system", A0_299[".name"], "timezone", _UPVALUE2_)
+          _UPVALUE1_:set("system", A0_299[".name"], "timezoneindex", _UPVALUE3_)
+        end
+      end
+      L5_290(L6_291, L7_292, L8_293, L9_294)
+      L6_291 = L4_289
+      L5_290 = L4_289.commit
+      L7_292 = "system"
+      L5_290(L6_291, L7_292)
+      L5_290 = L3_288.writefile
+      L6_291 = "/tmp/TZ"
+      L7_292 = TIME_ZONE
+      L7_292 = L7_292[A1_286]
+      L8_293 = A2_287 + 1
+      L7_292 = L7_292[L8_293]
+      L8_293 = "\n"
+      L7_292 = L7_292 .. L8_293
+      L5_290(L6_291, L7_292)
+      L5_290 = require
+      L6_291 = "xiaoqiang.util.XQSysUtil"
+      L5_290 = L5_290(L6_291)
+      L6_291 = require
+      L7_292 = "xiaoqiang.XQLog"
+      L6_291 = L6_291(L7_292)
+      L7_292 = L5_290.getHardware
+      L7_292 = L7_292()
+      if L7_292 and L7_292 == "R3600" then
+        L8_293 = require
+        L9_294 = "luci.model.uci"
+        L8_293 = L8_293(L9_294)
+        L8_293 = L8_293.cursor
+        L8_293 = L8_293()
+        L10_295 = L8_293
+        L9_294 = L8_293.get
+        L11_296 = "xiaoqiang"
+        L12_297 = "common"
+        L13_298 = "NETMODE"
+        L9_294 = L9_294(L10_295, L11_296, L12_297, L13_298)
+        L9_294 = L9_294 or ""
+        L11_296 = L9_294
+        L10_295 = L9_294.match
+        L12_297 = "^whc_cap"
+        L10_295 = L10_295(L11_296, L12_297)
+        if L10_295 then
+          L10_295 = {}
+          L10_295.cmd = "sync_time"
+          L11_296 = tostring
+          L12_297 = A1_286
+          L11_296 = L11_296(L12_297)
+          L10_295.timezone = L11_296
+          L11_296 = tostring
+          L12_297 = A2_287
+          L11_296 = L11_296(L12_297)
+          L10_295.index = L11_296
+          L11_296 = tostring
+          L12_297 = TIME_ZONE
+          L12_297 = L12_297[A1_286]
+          L13_298 = A2_287 + 1
+          L12_297 = L12_297[L13_298]
+          L11_296 = L11_296(L12_297)
+          L10_295.tz_value = L11_296
+          L11_296 = require
+          L12_297 = "luci.json"
+          L11_296 = L11_296(L12_297)
+          L12_297 = L11_296.encode
+          L13_298 = L10_295
+          L12_297 = L12_297(L13_298)
+          L13_298 = L11_296.encode
+          L13_298 = L13_298(L12_297)
+          L6_291.log(6, "R3600 CAP call RE sync timezone msg:" .. L13_298)
+          os.execute("/sbin/whc_to_re_common_api.sh action '" .. L13_298 .. "'")
+        end
+      end
+    end
+  end
+  L3_288 = _UPVALUE0_
+  L3_288 = L3_288.isStrNil
+  L4_289 = A0_285
+  L3_288 = L3_288(L4_289)
+  if not L3_288 then
+    L4_289 = A0_285
+    L3_288 = A0_285.match
+    L5_290 = "^%d+%-%d+%-%d+ %d+:%d+:%d+$"
+    L3_288 = L3_288(L4_289, L5_290)
+    if L3_288 then
+      L3_288 = _UPVALUE0_
+      L3_288 = L3_288.forkExec
+      L4_289 = "echo 'ok,xiaoqiang' > /tmp/ntp.status; sleep 3; date -s \""
+      L5_290 = A0_285
+      L6_291 = "\""
+      L4_289 = L4_289 .. L5_290 .. L6_291
+      L3_288(L4_289)
+    end
+  end
+end
+function setBlueLed(A0_300)
+  local L1_301, L2_302, L3_303
+  L1_301 = require
+  L2_302 = "xiaoqiang.XQLog"
+  L1_301 = L1_301(L2_302)
+  L2_302 = require
+  L3_303 = "luci.model.uci"
+  L2_302 = L2_302(L3_303)
+  L2_302 = L2_302.cursor
+  L2_302 = L2_302()
+  L3_303 = "gpio 3 "
+  L3_303 = L3_303 .. (A0_300 and "0" or "1")
+  L2_302:set("xiaoqiang", "common", "BLUE_LED", A0_300 and "1" or "0")
+  L2_302:commit("xiaoqiang")
+  if getHardware() == "R2100" or getHardware() == "R2200" then
+    if A0_300 == false then
+      L3_303 = "xqled sys blue && xqled sys_off; xqled func blue && xqled func_off"
+    else
+      L3_303 = "xqled sys_ok; [ -f /usr/sbin/wan_check.sh ] && /usr/sbin/wan_check.sh reset "
+    end
+  end
+  if getHardware() == "R3600" or getHardware() == "R2350" then
+    if A0_300 == false then
+      L3_303 = "xqled sys_off; xqled func_off; xqled ant_off"
+    else
+      L3_303 = "xqled sys_ok; [ -f /usr/sbin/wan_check.sh ] && /usr/sbin/wan_check.sh reset; [ -f /etc/init.d/scan ] && /etc/init.d/scan led_reset"
+    end
+  end
+  L1_301.log(4, "XQSysUtil setBlueLed cmd=" .. L3_303)
+  os.execute(L3_303)
+end
+function getBlueLed()
+  local L0_304, L1_305
+  L0_304 = require
+  L1_305 = "luci.model.uci"
+  L0_304 = L0_304(L1_305)
+  L0_304 = L0_304.cursor
+  L0_304 = L0_304()
+  L1_305 = L0_304.get
+  L1_305 = L1_305(L0_304, "xiaoqiang", "common", "BLUE_LED")
+  L1_305 = L1_305 or "1"
+  return tonumber(L1_305)
+end

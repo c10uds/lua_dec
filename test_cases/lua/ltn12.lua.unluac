@@ -1,0 +1,327 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("string")
+if module then
+  ltn12 = {}
+end
+;({}).pump, ({}).sink, ({}).source, ({}).filter = {}, {}, {}, {}
+;({}).BLOCKSIZE = 2048
+;({})._VERSION = "LTN12 1.0.3"
+;({}).cycle = function(A0_1, A1_2, A2_3)
+  _UPVALUE0_.assert(A0_1)
+  return function(A0_4)
+    local L1_5
+    L1_5, _UPVALUE0_ = _UPVALUE1_(_UPVALUE0_, A0_4, _UPVALUE2_)
+    return L1_5
+  end
+end
+;({}).chain = function(...)
+  return function(A0_7)
+    _UPVALUE0_ = A0_7 and _UPVALUE0_
+    while true do
+      if _UPVALUE1_ == _UPVALUE2_ then
+        A0_7 = _UPVALUE3_[_UPVALUE1_](A0_7)
+        if A0_7 == "" or _UPVALUE2_ == _UPVALUE4_ then
+          return A0_7
+        elseif A0_7 then
+          _UPVALUE1_ = _UPVALUE1_ + 1
+        else
+          _UPVALUE2_ = _UPVALUE2_ + 1
+          _UPVALUE1_ = _UPVALUE2_
+        end
+      else
+        A0_7 = _UPVALUE3_[_UPVALUE1_](A0_7 or "")
+        if A0_7 == "" then
+          _UPVALUE1_ = _UPVALUE1_ - 1
+          A0_7 = _UPVALUE0_
+        elseif A0_7 then
+          if _UPVALUE1_ == _UPVALUE4_ then
+            return A0_7
+          else
+            _UPVALUE1_ = _UPVALUE1_ + 1
+          end
+        else
+          _UPVALUE5_.error("filter returned inappropriate nil")
+        end
+      end
+    end
+  end
+end
+;({}).empty = function()
+  local L0_8, L1_9
+  L0_8 = _UPVALUE0_
+  return L0_8
+end
+;({}).error = function(A0_10)
+  local L1_11
+  function L1_11()
+    local L0_12, L1_13
+    L1_13 = _UPVALUE0_
+    return L0_12, L1_13
+  end
+  return L1_11
+end
+;({}).file = function(A0_14, A1_15)
+  if A0_14 then
+    return function()
+      if not _UPVALUE0_:read(_UPVALUE1_.BLOCKSIZE) then
+        _UPVALUE0_:close()
+      end
+      return (_UPVALUE0_:read(_UPVALUE1_.BLOCKSIZE))
+    end
+  else
+    return _UPVALUE1_.error(A1_15 or "unable to open file")
+  end
+end
+;({}).simplify = function(A0_16)
+  _UPVALUE0_.assert(A0_16)
+  return function()
+    local L0_17, L1_18
+    L0_17 = _UPVALUE0_
+    L1_18 = L0_17()
+    _UPVALUE0_ = L1_18 or _UPVALUE0_
+    if not L0_17 then
+      return nil, L1_18
+    else
+      return L0_17
+    end
+  end
+end
+;({}).string = function(A0_19)
+  if A0_19 then
+    return function()
+      _UPVALUE2_ = _UPVALUE2_ + _UPVALUE3_.BLOCKSIZE
+      if _UPVALUE0_.sub(_UPVALUE1_, _UPVALUE2_, _UPVALUE2_ + _UPVALUE3_.BLOCKSIZE - 1) ~= "" then
+        return (_UPVALUE0_.sub(_UPVALUE1_, _UPVALUE2_, _UPVALUE2_ + _UPVALUE3_.BLOCKSIZE - 1))
+      else
+        return nil
+      end
+    end
+  else
+    return _UPVALUE2_.empty()
+  end
+end
+;({}).rewind = function(A0_20)
+  _UPVALUE0_.assert(A0_20)
+  return function(A0_21)
+    if not A0_21 then
+      A0_21 = _UPVALUE0_.remove(_UPVALUE1_)
+      if not A0_21 then
+        return _UPVALUE2_()
+      else
+        return A0_21
+      end
+    else
+      _UPVALUE0_.insert(_UPVALUE1_, A0_21)
+    end
+  end
+end
+;({}).chain = function(A0_22, A1_23, ...)
+  if (...) then
+    A1_23 = _UPVALUE0_.chain(A1_23, ...)
+  end
+  _UPVALUE1_.assert(A0_22 and A1_23)
+  return function()
+    if not _UPVALUE0_ then
+      _UPVALUE1_.error("source is empty!", 2)
+    end
+    while true do
+      if _UPVALUE2_ == "feeding" then
+        _UPVALUE3_, _UPVALUE4_ = _UPVALUE5_()
+        if _UPVALUE4_ then
+          return nil, _UPVALUE4_
+        end
+        _UPVALUE0_ = _UPVALUE6_(_UPVALUE3_)
+        if not _UPVALUE0_ then
+          if _UPVALUE3_ then
+            _UPVALUE1_.error("filter returned inappropriate nil")
+          else
+            return nil
+          end
+        elseif _UPVALUE0_ ~= "" then
+          _UPVALUE2_ = "eating"
+          if _UPVALUE3_ then
+            _UPVALUE3_ = ""
+          end
+          return _UPVALUE0_
+        end
+      else
+        _UPVALUE0_ = _UPVALUE6_(_UPVALUE3_)
+        if _UPVALUE0_ == "" then
+          if _UPVALUE3_ == "" then
+            _UPVALUE2_ = "feeding"
+          else
+            _UPVALUE1_.error("filter returned \"\"")
+          end
+        elseif not _UPVALUE0_ then
+          if _UPVALUE3_ then
+            _UPVALUE1_.error("filter returned inappropriate nil")
+          else
+            return nil
+          end
+        else
+          return _UPVALUE0_
+        end
+      end
+    end
+  end
+end
+;({}).cat = function(...)
+  local L1_26
+  L1_26 = {
+    ...
+  }
+  return function()
+    local L0_27, L1_28
+    while true do
+      L0_27 = _UPVALUE0_
+      if L0_27 then
+        L0_27 = _UPVALUE0_
+        L1_28 = L0_27()
+        if L0_27 then
+          return L0_27
+        end
+        if L1_28 then
+          return nil, L1_28
+        end
+        _UPVALUE0_ = _UPVALUE1_.remove(_UPVALUE2_, 1)
+      end
+    end
+  end
+end
+;({}).table = function(A0_29)
+  local L1_30, L2_31, L3_32
+  if not A0_29 then
+    L1_30 = {}
+    A0_29 = L1_30
+  end
+  function L1_30(A0_33, A1_34)
+    if A0_33 then
+      _UPVALUE0_.insert(_UPVALUE1_, A0_33)
+    end
+    return 1
+  end
+  L2_31 = L1_30
+  L3_32 = A0_29
+  return L2_31, L3_32
+end
+;({}).simplify = function(A0_35)
+  _UPVALUE0_.assert(A0_35)
+  return function(A0_36, A1_37)
+    local L2_38, L3_39
+    L2_38 = _UPVALUE0_
+    L3_39 = A0_36
+    L3_39 = L2_38(L3_39, A1_37)
+    if not L2_38 then
+      return nil, L3_39
+    end
+    _UPVALUE0_ = L3_39 or _UPVALUE0_
+    return 1
+  end
+end
+;({}).file = function(A0_40, A1_41)
+  if A0_40 then
+    return function(A0_42, A1_43)
+      if not A0_42 then
+        _UPVALUE0_:close()
+        return 1
+      else
+        return _UPVALUE0_:write(A0_42)
+      end
+    end
+  else
+    return _UPVALUE0_.error(A1_41 or "unable to open file")
+  end
+end
+;({}).null = function()
+  local L0_44, L1_45
+  L0_44 = _UPVALUE0_
+  return L0_44
+end
+;({}).error = function(A0_46)
+  local L1_47
+  function L1_47()
+    local L0_48, L1_49
+    L1_49 = _UPVALUE0_
+    return L0_48, L1_49
+  end
+  return L1_47
+end
+;({}).chain = function(A0_50, A1_51, ...)
+  local L3_53
+  L3_53 = (...)
+  if L3_53 then
+    L3_53 = {
+      A0_50,
+      A1_51,
+      ...
+    }
+    A1_51 = _UPVALUE0_.remove(L3_53, #L3_53)
+    A0_50 = _UPVALUE1_.chain(unpack(L3_53))
+  end
+  L3_53 = _UPVALUE2_
+  L3_53 = L3_53.assert
+  L3_53(A0_50 and A1_51)
+  function L3_53(A0_54, A1_55)
+    local L2_56, L3_57, L4_58, L5_59
+    if A0_54 ~= "" then
+      L2_56 = _UPVALUE0_
+      L3_57 = A0_54
+      L2_56 = L2_56(L3_57)
+      L3_57 = A0_54 and ""
+      while true do
+        L4_58 = _UPVALUE1_
+        L5_59 = L2_56
+        L5_59 = L4_58(L5_59, A1_55)
+        if not L4_58 then
+          return nil, L5_59
+        end
+        if L2_56 == L3_57 then
+          return 1
+        end
+        L2_56 = _UPVALUE0_(L3_57)
+      end
+    else
+      L2_56 = 1
+      return L2_56
+    end
+  end
+  return L3_53
+end
+;({}).step = function(A0_60, A1_61)
+  local L2_62, L3_63, L4_64, L5_65
+  L2_62 = A0_60
+  L3_63 = L2_62()
+  L4_64 = A1_61
+  L5_65 = L2_62
+  L5_65 = L4_64(L5_65, L3_63)
+  if L2_62 and L4_64 then
+    return 1
+  else
+    return nil, L3_63 or L5_65
+  end
+end
+;({}).all = function(A0_66, A1_67, A2_68)
+  local L3_69, L4_70
+  L3_69 = _UPVALUE0_
+  L3_69 = L3_69.assert
+  L4_70 = A0_66 and A1_67
+  L3_69(L4_70)
+  if not A2_68 then
+    L3_69 = _UPVALUE1_
+    A2_68 = L3_69.step
+  end
+  while true do
+    L3_69 = A2_68
+    L4_70 = A0_66
+    L4_70 = L3_69(L4_70, A1_67)
+    if not L3_69 then
+      if L4_70 then
+        return nil, L4_70
+      else
+        return 1
+      end
+    end
+  end
+end
+return {}

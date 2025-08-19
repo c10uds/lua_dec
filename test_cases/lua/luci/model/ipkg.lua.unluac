@@ -1,0 +1,91 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("os")
+module("luci.model.ipkg")
+function info(A0_1)
+  return _UPVALUE0_("info", A0_1)
+end
+function status(A0_2)
+  return _UPVALUE0_("status", A0_2)
+end
+function install(...)
+  local L1_4, L2_5, L3_6
+  L1_4 = _UPVALUE0_
+  L2_5 = "install"
+  L3_6 = ...
+  return L1_4(L2_5, L3_6)
+end
+function installed(A0_7)
+  return status(A0_7)[A0_7] and status(A0_7)[A0_7].Status and status(A0_7)[A0_7].Status.installed
+end
+function remove(...)
+  local L1_9, L2_10, L3_11
+  L1_9 = _UPVALUE0_
+  L2_10 = "remove"
+  L3_11 = ...
+  return L1_9(L2_10, L3_11)
+end
+function update()
+  return _UPVALUE0_("update")
+end
+function upgrade()
+  return _UPVALUE0_("upgrade")
+end
+function _list(A0_12, A1_13, A2_14)
+  local L3_15, L4_16, L5_17, L6_18
+  L3_15 = _UPVALUE0_
+  L3_15 = L3_15.popen
+  L4_16 = _UPVALUE1_
+  L5_17 = " "
+  L6_18 = A0_12
+  L4_16 = L4_16 .. L5_17 .. L6_18 .. (A1_13 and " '%s'" % A1_13:gsub("'", "") or "")
+  L3_15 = L3_15(L4_16)
+  if L3_15 then
+    L4_16, L5_17, L6_18 = nil, nil, nil
+    while true do
+      if not L3_15:read("*l") then
+        break
+      end
+      L4_16, L5_17, L6_18 = L3_15:read("*l"):match("^(.-) %- (.-) %- (.+)")
+      if not L4_16 then
+        L4_16, L5_17 = L3_15:read("*l"):match("^(.-) %- (.+)")
+        L6_18 = ""
+      end
+      A2_14(L4_16, L5_17, L6_18)
+      L4_16, L5_17, L6_18 = nil, nil, nil
+    end
+    L3_15:close()
+  end
+end
+function list_all(A0_19, A1_20)
+  _list("list", A0_19, A1_20)
+end
+function list_installed(A0_21, A1_22)
+  _list("list_installed", A0_21, A1_22)
+end
+function find(A0_23, A1_24)
+  _list("find", A0_23, A1_24)
+end
+function overlay_root()
+  local L0_25, L1_26, L2_27
+  L0_25 = "/"
+  L1_26 = _UPVALUE0_
+  L1_26 = L1_26.open
+  L2_27 = _UPVALUE1_
+  L1_26 = L1_26(L2_27, "r")
+  if L1_26 then
+    L2_27 = nil
+    repeat
+      L2_27 = L1_26:read("*l")
+      if L2_27 and L2_27:match("^%s*option%s+overlay_root%s+") then
+        L0_25 = L2_27:match("^%s*option%s+overlay_root%s+(%S+)")
+        if not _UPVALUE2_.stat(L0_25) or _UPVALUE2_.stat(L0_25).type ~= "dir" then
+          L0_25 = "/"
+          break
+        end
+      end
+    until not L2_27
+    L1_26:close()
+  end
+  return L0_25
+end

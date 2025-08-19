@@ -1,0 +1,794 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQVPNUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function setVpn(A0_1, A1_2, A2_3, A3_4, A4_5, A5_6, A6_7)
+  local L7_8, L8_9, L9_10, L10_11, L11_12, L12_13, L13_14, L14_15
+  L7_8 = _UPVALUE0_
+  L7_8 = L7_8.isStrNil
+  L8_9 = A0_1
+  L7_8 = L7_8(L8_9)
+  if not L7_8 then
+    L7_8 = _UPVALUE0_
+    L7_8 = L7_8.isStrNil
+    L8_9 = A1_2
+    L7_8 = L7_8(L8_9)
+    if not L7_8 then
+      L7_8 = _UPVALUE0_
+      L7_8 = L7_8.isStrNil
+      L8_9 = A2_3
+      L7_8 = L7_8(L8_9)
+      if not L7_8 then
+        L7_8 = _UPVALUE0_
+        L7_8 = L7_8.isStrNil
+        L8_9 = A3_4
+        L7_8 = L7_8(L8_9)
+        if not L7_8 then
+          L7_8 = _UPVALUE0_
+          L7_8 = L7_8.isStrNil
+          L8_9 = A4_5
+          L7_8 = L7_8(L8_9)
+          if not L7_8 then
+            L7_8 = _UPVALUE0_
+            L7_8 = L7_8.isStrNil
+            L8_9 = A6_7
+            L7_8 = L7_8(L8_9)
+          end
+        end
+      end
+    end
+  elseif L7_8 then
+    L7_8 = false
+    return L7_8
+  end
+  L7_8 = A5_6
+  L8_9 = _UPVALUE0_
+  L8_9 = L8_9.isStrNil
+  L9_10 = L7_8
+  L8_9 = L8_9(L9_10)
+  if L8_9 then
+    L8_9 = _UPVALUE1_
+    L8_9 = L8_9.md5Str
+    L9_10 = A1_2
+    L10_11 = A2_3
+    L11_12 = A4_5
+    L9_10 = L9_10 .. L10_11 .. L11_12
+    L8_9 = L8_9(L9_10)
+    L7_8 = L8_9
+  end
+  L8_9 = require
+  L9_10 = "luci.model.uci"
+  L8_9 = L8_9(L9_10)
+  L8_9 = L8_9.cursor
+  L8_9 = L8_9()
+  L10_11 = L8_9
+  L9_10 = L8_9.get
+  L11_12 = "network"
+  L12_13 = "vpn"
+  L13_14 = "trafficall"
+  L9_10 = L9_10(L10_11, L11_12, L12_13, L13_14)
+  if L9_10 then
+    L10_11 = string
+    L10_11 = L10_11.lower
+    L11_12 = L9_10
+    L10_11 = L10_11(L11_12)
+    if L10_11 == "yes" then
+      L9_10 = "yes"
+    end
+  else
+    L9_10 = "no"
+  end
+  L10_11 = string
+  L10_11 = L10_11.lower
+  L11_12 = A4_5
+  L10_11 = L10_11(L11_12)
+  L11_12 = _UPVALUE2_
+  L11_12 = L11_12.init
+  L11_12 = L11_12()
+  L13_14 = L11_12
+  L12_13 = L11_12.del_network
+  L14_15 = A0_1
+  L14_15 = L14_15 .. "6"
+  L12_13(L13_14, L14_15)
+  L13_14 = L11_12
+  L12_13 = L11_12.del_network
+  L14_15 = A0_1
+  L12_13(L13_14, L14_15)
+  L13_14 = L11_12
+  L12_13 = L11_12.add_network
+  L14_15 = A0_1
+  L12_13 = L12_13(L13_14, L14_15, {
+    proto = L10_11,
+    server = A1_2,
+    username = A2_3,
+    password = A3_4,
+    auth = "auto",
+    id = L7_8,
+    auto = A6_7,
+    trafficall = L9_10
+  })
+  L13_14 = "0"
+  L14_15 = false
+  if L13_14 == "1" then
+    L14_15 = L11_12:add_network(A0_1 .. "6", {
+      proto = "dhcpv6",
+      ifname = "@" .. A0_1
+    })
+  else
+    L14_15 = true
+  end
+  if L12_13 and L14_15 then
+    L11_12:save("network")
+    L11_12:commit("network")
+    _UPVALUE3_.init():get_zone("wan"):add_network(A0_1)
+    _UPVALUE3_.init():save("firewall")
+    _UPVALUE3_.init():commit("firewall")
+    return true
+  end
+  return false
+end
+function _delNetworkVpn(A0_16)
+  if getVPNInfo("vpn").id == A0_16 then
+    _UPVALUE0_.init():del_network("vpn6")
+    _UPVALUE0_.init():del_network("vpn")
+    _UPVALUE0_.init():save("network")
+    _UPVALUE0_.init():commit("network")
+  end
+end
+function _editNetworkVpn(A0_17, A1_18, A2_19, A3_20, A4_21)
+  local L5_22, L6_23, L7_24, L8_25, L9_26
+  L5_22 = getVPNInfo
+  L6_23 = "vpn"
+  L5_22 = L5_22(L6_23)
+  L6_23 = L5_22.id
+  if L6_23 == A4_21 then
+    L7_24 = "vpn"
+    L8_25 = string
+    L8_25 = L8_25.lower
+    L9_26 = A3_20
+    L8_25 = L8_25(L9_26)
+    L9_26 = _UPVALUE0_
+    L9_26 = L9_26.md5Str
+    L9_26 = L9_26(A0_17 .. A1_18 .. A3_20)
+    _UPVALUE1_:set("network", L7_24, "proto", L8_25)
+    _UPVALUE1_:set("network", L7_24, "server", A0_17)
+    _UPVALUE1_:set("network", L7_24, "username", A1_18)
+    _UPVALUE1_:set("network", L7_24, "password", A2_19)
+    _UPVALUE1_:set("network", L7_24, "id", L9_26)
+    _UPVALUE1_:commit("network")
+  end
+end
+function setVpnAuto(A0_27)
+  local L1_28, L2_29
+  L1_28 = tonumber
+  L2_29 = A0_27
+  L1_28 = L1_28(L2_29)
+  A0_27 = L1_28
+  L1_28 = "vpn"
+  if A0_27 and A0_27 == 0 then
+    L2_29 = "0"
+  else
+    L2_29 = L2_29 or "1"
+  end
+  _UPVALUE0_:set("network", L1_28, "auto", L2_29)
+  _UPVALUE0_:commit("network")
+  return true
+end
+function getVPNInfo(A0_30)
+  if _UPVALUE1_.isStrNil(A0_30) then
+    return {
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }
+  end
+  if _UPVALUE0_.init():get_network(A0_30) then
+    ({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).proto = _UPVALUE0_.init():get_network(A0_30):get_option_value("proto")
+    ;({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).server = _UPVALUE0_.init():get_network(A0_30):get_option_value("server")
+    ;({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).username = _UPVALUE0_.init():get_network(A0_30):get_option_value("username")
+    ;({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).password = _UPVALUE0_.init():get_network(A0_30):get_option_value("password")
+    ;({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).auto = _UPVALUE0_.init():get_network(A0_30):get_option_value("auto")
+    ;({
+      proto = "",
+      server = "",
+      username = "",
+      password = "",
+      auto = "0",
+      id = ""
+    }).id = _UPVALUE0_.init():get_network(A0_30):get_option_value("id")
+  end
+  return {
+    proto = "",
+    server = "",
+    username = "",
+    password = "",
+    auto = "0",
+    id = ""
+  }
+end
+function vpnSwitch(A0_31, A1_32)
+  local L2_33, L3_34, L4_35, L5_36, L6_37, L7_38
+  L2_33 = require
+  L3_34 = "xiaoqiang.common.XQFunction"
+  L2_33 = L2_33(L3_34)
+  L3_34 = L2_33.isStrNil
+  L4_35 = A1_32
+  L3_34 = L3_34(L4_35)
+  if L3_34 then
+    L3_34 = false
+    return L3_34
+  end
+  if A0_31 then
+    L3_34 = require
+    L4_35 = "ubus"
+    L3_34 = L3_34(L4_35)
+    L3_34 = L3_34.connect
+    L3_34 = L3_34()
+    L5_36 = L3_34
+    L4_35 = L3_34.call
+    L6_37 = "network.interface.vpn"
+    L7_38 = "status"
+    L4_35 = L4_35(L5_36, L6_37, L7_38, {})
+    L5_36 = getVPNInfo
+    L6_37 = "vpn"
+    L5_36 = L5_36(L6_37)
+    L6_37 = L5_36.id
+    L7_38 = L5_36.auto
+    if L2_33.isStrNil(L7_38) then
+      L7_38 = "0"
+    end
+    if L6_37 ~= A1_32 and _UPVALUE0_:get_all("vpnlist", A1_32) then
+      setVpn("vpn", _UPVALUE0_:get_all("vpnlist", A1_32).server, _UPVALUE0_:get_all("vpnlist", A1_32).username, _UPVALUE0_:get_all("vpnlist", A1_32).password, _UPVALUE0_:get_all("vpnlist", A1_32).proto, A1_32, L7_38)
+    end
+    os.execute(_UPVALUE1_.RM_VPNSTATUS_FILE)
+    os.execute(_UPVALUE1_.VPN_DISABLE)
+    if not L4_35 then
+      os.execute("sleep 1")
+    end
+    L2_33.forkExec(_UPVALUE1_.VPN_ENABLE)
+    return 1
+  else
+    L3_34 = os
+    L3_34 = L3_34.execute
+    L4_35 = _UPVALUE1_
+    L4_35 = L4_35.RM_VPNSTATUS_FILE
+    L3_34(L4_35)
+    L3_34 = L2_33.forkExec
+    L4_35 = _UPVALUE1_
+    L4_35 = L4_35.VPN_DISABLE
+    L3_34(L4_35)
+    L3_34 = 1
+    return L3_34
+  end
+end
+function vpnStatus()
+  local L0_39, L1_40
+  L0_39 = require
+  L1_40 = "luci.util"
+  L0_39 = L0_39(L1_40)
+  L1_40 = L0_39.exec
+  L1_40 = L1_40(_UPVALUE0_.VPN_STATUS)
+  if not _UPVALUE1_.isStrNil(L1_40) then
+    L1_40 = L0_39.trim(L1_40)
+    if _UPVALUE1_.isStrNil(L1_40) then
+      return nil
+    end
+    L1_40 = require("json").decode(L1_40)
+    if L1_40 then
+      return L1_40
+    end
+  end
+  return nil
+end
+function addVPN(A0_41, A1_42, A2_43, A3_44, A4_45)
+  local L5_46, L6_47, L7_48
+  L5_46 = _UPVALUE0_
+  L5_46 = L5_46.isStrNil
+  L6_47 = A0_41
+  L5_46 = L5_46(L6_47)
+  if not L5_46 then
+    L5_46 = _UPVALUE0_
+    L5_46 = L5_46.isStrNil
+    L6_47 = A1_42
+    L5_46 = L5_46(L6_47)
+    if not L5_46 then
+      L5_46 = _UPVALUE0_
+      L5_46 = L5_46.isStrNil
+      L6_47 = A2_43
+      L5_46 = L5_46(L6_47)
+      if not L5_46 then
+        L5_46 = _UPVALUE0_
+        L5_46 = L5_46.isStrNil
+        L6_47 = A3_44
+        L5_46 = L5_46(L6_47)
+        if not L5_46 then
+          L5_46 = _UPVALUE0_
+          L5_46 = L5_46.isStrNil
+          L6_47 = A4_45
+          L5_46 = L5_46(L6_47)
+        end
+      end
+    end
+  elseif L5_46 then
+    L5_46 = false
+    return L5_46
+  end
+  L5_46 = _UPVALUE1_
+  L5_46 = L5_46.md5Str
+  L6_47 = A1_42
+  L7_48 = A2_43
+  L6_47 = L6_47 .. L7_48 .. A4_45
+  L5_46 = L5_46(L6_47)
+  L6_47 = string
+  L6_47 = L6_47.lower
+  L7_48 = A4_45
+  L6_47 = L6_47(L7_48)
+  L7_48 = {}
+  L7_48.oname = A0_41
+  L7_48.server = A1_42
+  L7_48.username = A2_43
+  L7_48.password = A3_44
+  L7_48.proto = L6_47
+  L7_48.id = L5_46
+  _UPVALUE2_:section("vpnlist", "vpn", L5_46, L7_48)
+  _UPVALUE2_:commit("vpnlist")
+  return true
+end
+function editVPN(A0_49, A1_50, A2_51, A3_52, A4_53, A5_54)
+  if _UPVALUE0_.isStrNil(A0_49) then
+    return false
+  end
+  _UPVALUE1_:delete("vpnlist", A0_49)
+  _editNetworkVpn(A2_51, A3_52, A4_53, A5_54, A0_49)
+  return addVPN(A1_50, A2_51, A3_52, A4_53, A5_54)
+end
+function delVPN(A0_55)
+  if _UPVALUE0_.isStrNil(A0_55) then
+    return false
+  end
+  _UPVALUE1_:delete("vpnlist", A0_55)
+  _UPVALUE1_:commit("vpnlist")
+  _delNetworkVpn(A0_55)
+  return true
+end
+function getVPNList()
+  local L0_56
+  L0_56 = {}
+  _UPVALUE0_:foreach("vpnlist", "vpn", function(A0_57)
+    local L1_58
+    L1_58 = {}
+    L1_58.oname = A0_57.oname
+    L1_58.server = A0_57.server
+    L1_58.username = A0_57.username
+    L1_58.password = A0_57.password
+    L1_58.proto = A0_57.proto
+    L1_58.id = A0_57.id
+    table.insert(_UPVALUE0_, L1_58)
+  end)
+  return L0_56
+end
+function getProxyList()
+  local L0_59, L1_60, L2_61, L3_62, L4_63, L5_64, L6_65, L7_66
+  L0_59 = require
+  L1_60 = "nixio.fs"
+  L0_59 = L0_59(L1_60)
+  L1_60 = require
+  L2_61 = "luci.cbi.datatypes"
+  L1_60 = L1_60(L2_61)
+  L2_61 = {}
+  L3_62 = L0_59.access
+  L3_62 = L3_62(L4_63)
+  if L3_62 then
+    L3_62 = io
+    L3_62 = L3_62.open
+    L3_62 = L3_62(L4_63, L5_64)
+    if L3_62 then
+      for L7_66 in L4_63(L5_64) do
+        if not _UPVALUE1_.isStrNil(L7_66) then
+          if L7_66:match("^%.") then
+            L7_66 = L7_66:gsub("^%.", "")
+            table.insert(L2_61, L7_66)
+          elseif L1_60.ipaddr(L7_66) then
+            table.insert(L2_61, L7_66)
+          end
+        end
+      end
+    end
+  end
+  L3_62 = #L2_61
+  if L3_62 > 0 then
+    return L2_61
+  else
+    L3_62 = nil
+    return L3_62
+  end
+end
+function updateProxyList(A0_67)
+  local L1_68, L2_69, L3_70, L4_71, L5_72, L6_73
+  if A0_67 then
+    L1_68 = type
+    L1_68 = L1_68(L2_69)
+    if L1_68 == "string" and A0_67 == "default" then
+      A0_67 = nil
+    end
+  end
+  if A0_67 then
+    L1_68 = type
+    L1_68 = L1_68(L2_69)
+    if L1_68 == "table" then
+      L1_68 = io
+      L1_68 = L1_68.open
+      L1_68 = L1_68(L2_69, L3_70)
+      for L5_72, L6_73 in L2_69(L3_70) do
+        if not _UPVALUE1_.isStrNil(L6_73) then
+          L1_68:write(L6_73 .. "\n")
+        end
+      end
+      L2_69(L3_70)
+    end
+  end
+end
+function getDeviceList()
+  local L0_74, L1_75
+  L0_74 = require
+  L1_75 = "luci.model.uci"
+  L0_74 = L0_74(L1_75)
+  L0_74 = L0_74.cursor
+  L0_74 = L0_74()
+  L1_75 = {}
+  if L0_74:get_all("smartvpn", "device") then
+    L1_75 = L0_74:get_list("smartvpn", "device", "mac")
+  else
+    L1_75 = nil
+  end
+  return L1_75
+end
+function getSmartVPNInfo()
+  if require("luci.model.uci").cursor():get_all("smartvpn", "vpn") then
+    if require("luci.model.uci").cursor():get_all("smartvpn", "vpn").status == "on" then
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).status = 1
+    elseif require("luci.model.uci").cursor():get_all("smartvpn", "vpn").status == "off" then
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).status = 0
+    end
+    if require("luci.model.uci").cursor():get_all("smartvpn", "vpn").switch and tonumber(require("luci.model.uci").cursor():get_all("smartvpn", "vpn").switch) == 1 then
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).switch = 1
+    end
+    if require("luci.model.uci").cursor():get_all("smartvpn", "device") and require("luci.model.uci").cursor():get_all("smartvpn", "device").disabled and tonumber(require("luci.model.uci").cursor():get_all("smartvpn", "device").disabled) == 0 then
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).mode = 2
+    elseif require("luci.model.uci").cursor():get_all("smartvpn", "vpn").disabled and tonumber(require("luci.model.uci").cursor():get_all("smartvpn", "vpn").disabled) == 0 then
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).mode = 1
+    else
+      ({
+        status = 0,
+        switch = 0,
+        mode = 1
+      }).mode = 0
+    end
+  end
+  return {
+    status = 0,
+    switch = 0,
+    mode = 1
+  }
+end
+function setSmartVPN(A0_76, A1_77)
+  local L2_78, L3_79, L4_80
+  L2_78 = require
+  L3_79 = "nixio.fs"
+  L2_78 = L2_78(L3_79)
+  L3_79 = require
+  L4_80 = "luci.model.uci"
+  L3_79 = L3_79(L4_80)
+  L3_79 = L3_79.cursor
+  L3_79 = L3_79()
+  if A1_77 then
+    if A1_77 == 1 then
+      L4_80 = L2_78.access
+      L4_80 = L4_80(_UPVALUE0_)
+      if not L4_80 and A0_76 == 1 then
+        L4_80 = updateProxyList
+        L4_80("default")
+      end
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "vpn", "disabled", "0")
+      L4_80 = L3_79.set_list
+      L4_80(L3_79, "smartvpn", "vpn", "domain_file", {_UPVALUE0_})
+      L4_80 = L3_79.get_all
+      L4_80 = L4_80(L3_79, "smartvpn", "device")
+      if L4_80 then
+        L4_80 = L3_79.set
+        L4_80(L3_79, "smartvpn", "device", "disabled", "1")
+      end
+    elseif A1_77 == 2 then
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "vpn", "disabled", "1")
+      L4_80 = L3_79.get_all
+      L4_80 = L4_80(L3_79, "smartvpn", "device")
+      if L4_80 then
+        L4_80 = L3_79.set
+        L4_80(L3_79, "smartvpn", "device", "disabled", "0")
+      else
+        L4_80 = L3_79.section
+        L4_80(L3_79, "smartvpn", "record", "device", {disabled = "0"})
+      end
+    end
+  end
+  if A0_76 then
+    if A0_76 == 0 then
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "vpn", "switch", "0")
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "vpn", "disabled", "1")
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "device", "disabled", "1")
+    elseif A0_76 == 1 then
+      L4_80 = L3_79.set
+      L4_80(L3_79, "smartvpn", "vpn", "switch", "1")
+    end
+  end
+  L4_80 = L3_79.commit
+  L4_80(L3_79, "smartvpn")
+  if A0_76 then
+    L4_80 = os
+    L4_80 = L4_80.execute
+    L4_80("/usr/sbin/smartvpn.sh flush >/dev/null 2>/dev/null")
+    L4_80 = L3_79.get
+    L4_80 = L4_80(L3_79, "network", "vpn", "trafficall")
+    if A0_76 == 1 and L4_80 and string.lower(L4_80) == "yes" then
+      mivpnSwitch(false)
+    end
+  end
+end
+function setMiVPN(A0_81)
+  if A0_81 and A0_81 == 0 then
+    os.execute("/usr/sbin/mivpn.sh off >/dev/null 2>/dev/null")
+  end
+end
+function merge(A0_82, A1_83, A2_84)
+  local L3_85, L4_86, L5_87, L6_88, L7_89, L8_90, L9_91
+  if not A0_82 and not A1_83 then
+    L3_85 = nil
+    return L3_85
+  end
+  if A2_84 == "+" then
+    if A0_82 then
+      if not A1_83 then
+        return A0_82
+      end
+      L3_85 = {}
+      for L7_89, L8_90 in L4_86(L5_87) do
+        L3_85[L8_90] = true
+      end
+      for L7_89, L8_90 in L4_86(L5_87) do
+        L9_91 = L3_85[L8_90]
+        if not L9_91 then
+          L9_91 = table
+          L9_91 = L9_91.insert
+          L9_91(A0_82, L8_90)
+        end
+      end
+      return A0_82
+    elseif not A1_83 then
+      L3_85 = nil
+      return L3_85
+    else
+      return A1_83
+    end
+  elseif A2_84 == "-" and A0_82 then
+    if not A1_83 then
+      return A0_82
+    end
+    L3_85 = {}
+    for L8_90, L9_91 in L5_87(L6_88) do
+      L4_86[L9_91] = true
+    end
+    for L8_90, L9_91 in L5_87(L6_88) do
+      if not L4_86[L9_91] then
+        table.insert(L3_85, L9_91)
+      end
+    end
+    return L3_85
+  end
+  L3_85 = nil
+  return L3_85
+end
+function urlFormat(A0_92)
+  if A0_92 then
+    A0_92 = A0_92:gsub("http://", "")
+    A0_92 = A0_92:gsub("^www", "")
+    if not require("luci.cbi.datatypes").ipaddr(A0_92) and not A0_92:match("^%.") then
+      A0_92 = "." .. A0_92
+    end
+    return A0_92
+  end
+  return nil
+end
+function editUrl(A0_93, A1_94)
+  local L2_95, L3_96, L4_97, L5_98, L6_99, L7_100
+  if A1_94 then
+  elseif L2_95 ~= "table" then
+    return L2_95
+  end
+  for L5_98, L6_99 in L2_95(L3_96) do
+    L7_100 = _UPVALUE0_
+    L7_100 = L7_100.isStrNil
+    L7_100 = L7_100(L6_99)
+    if L7_100 then
+      L7_100 = false
+      return L7_100
+    else
+      L7_100 = urlFormat
+      L7_100 = L7_100(L6_99)
+      A1_94[L5_98] = L7_100
+    end
+  end
+  if L2_95 then
+    for L6_99, L7_100 in L3_96(L4_97) do
+      if not _UPVALUE0_.isStrNil(L7_100) then
+        L2_95[L6_99] = urlFormat(L7_100)
+      end
+    end
+    if A0_93 == 0 then
+      L6_99 = "+"
+    elseif A0_93 == 1 then
+      L6_99 = "-"
+    end
+    L3_96(L4_97)
+  elseif A0_93 == 0 then
+    L3_96(L4_97)
+  end
+  return L3_96
+end
+function editMac(A0_101, A1_102)
+  local L2_103, L3_104, L4_105, L5_106, L6_107, L7_108
+  L2_103 = require
+  L2_103 = L2_103(L3_104)
+  if A1_102 then
+  elseif L3_104 ~= "table" then
+    return L3_104
+  end
+  for L6_107, L7_108 in L3_104(L4_105) do
+    if _UPVALUE0_.isStrNil(L7_108) or not L2_103.macaddr(L7_108) then
+      return false
+    else
+      A1_102[L6_107] = _UPVALUE0_.macFormat(L7_108)
+    end
+  end
+  L6_107 = "smartvpn"
+  L7_108 = "device"
+  if L4_105 then
+    if L5_106 then
+      L6_107 = L4_105.mac
+      if L5_106 == "table" then
+        if A0_101 == 0 then
+          L6_107 = L4_105.mac
+          L7_108 = A1_102
+          L4_105.mac = L5_106
+        elseif A0_101 == 1 then
+          L6_107 = L4_105.mac
+          L7_108 = A1_102
+          L4_105.mac = L5_106
+        end
+      end
+    elseif A0_101 == 0 then
+      L4_105.mac = A1_102
+    end
+    if L5_106 > 0 then
+      L6_107 = L3_104
+      L7_108 = "smartvpn"
+      L5_106(L6_107, L7_108, "record", "device", L4_105)
+    else
+      L6_107 = L3_104
+      L7_108 = "smartvpn"
+      L5_106(L6_107, L7_108, "device", "mac")
+    end
+  elseif A0_101 == 0 then
+    L6_107 = L3_104
+    L7_108 = "smartvpn"
+    L5_106(L6_107, L7_108, "record", "device", {disabled = 0, mac = A1_102})
+  end
+  L6_107 = L3_104
+  L7_108 = "smartvpn"
+  L5_106(L6_107, L7_108)
+  return L5_106
+end
+function mivpnInfo()
+  local L0_109, L1_110
+  L0_109 = require
+  L1_110 = "luci.model.uci"
+  L0_109 = L0_109(L1_110)
+  L0_109 = L0_109.cursor
+  L0_109 = L0_109()
+  L1_110 = L0_109.get
+  L1_110 = L1_110(L0_109, "network", "vpn", "trafficall")
+  if L1_110 and string.lower(L1_110) == "yes" then
+    return 1
+  else
+    return 0
+  end
+end
+function mivpnSwitch(A0_111)
+  local L1_112, L2_113, L3_114
+  L1_112 = require
+  L2_113 = "luci.model.uci"
+  L1_112 = L1_112(L2_113)
+  L1_112 = L1_112.cursor
+  L1_112 = L1_112()
+  L3_114 = L1_112
+  L2_113 = L1_112.get_all
+  L2_113 = L2_113(L3_114, "network", "vpn")
+  L3_114 = L1_112.get
+  L3_114 = L3_114(L1_112, "smartvpn", "vpn", "switch")
+  if A0_111 and L3_114 and tonumber(L3_114) == 1 then
+    setSmartVPN(0, 1)
+  end
+  if L2_113 then
+    L1_112:set("network", "vpn", "trafficall", A0_111 and "yes" or "no")
+    L1_112:commit("network")
+    if not A0_111 then
+      setMiVPN(0)
+    end
+    return true
+  else
+    return false
+  end
+end

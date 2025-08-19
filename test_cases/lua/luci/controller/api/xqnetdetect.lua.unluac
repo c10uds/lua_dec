@@ -1,0 +1,396 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.api.xqnetdetect", package.seeall)
+function L0_0()
+  node("api", "xqnetdetect").target = firstchild()
+  node("api", "xqnetdetect").title = ""
+  node("api", "xqnetdetect").order = 350
+  node("api", "xqnetdetect").sysauth = "admin"
+  node("api", "xqnetdetect").sysauth_authenticator = "jsonauth"
+  node("api", "xqnetdetect").index = true
+  entry({
+    "api",
+    "xqnetdetect"
+  }, firstchild(), _(""), 350)
+  entry({
+    "api",
+    "xqnetdetect",
+    "sys_info"
+  }, call("getSysInfo"), "", 352, 1)
+  entry({
+    "api",
+    "xqnetdetect",
+    "ping_test"
+  }, call("pingTest"), "", 353, 1)
+  entry({
+    "api",
+    "xqnetdetect",
+    "detect"
+  }, call("systemDiagnostics"), "", 354, 1)
+  entry({
+    "api",
+    "xqnetdetect",
+    "sys_status"
+  }, call("systemStatus"), "", 355, 1)
+  entry({
+    "api",
+    "xqnetdetect",
+    "netspeed"
+  }, call("netspeed"), "", 356)
+  entry({
+    "api",
+    "xqnetdetect",
+    "netupspeed"
+  }, call("uploadSpeed"), "", 357)
+  entry({
+    "api",
+    "xqnetdetect",
+    "nettb"
+  }, call("nettb"), "", 359, 1)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function getWanStatus()
+  local L0_1, L1_2
+  L0_1 = require
+  L1_2 = "xiaoqiang.util.XQLanWanUtil"
+  L0_1 = L0_1(L1_2)
+  L1_2 = {}
+  L1_2.code = 0
+  L1_2.wanMonitor, L1_2.wanInfo, L1_2.wanType, L1_2.wanLink = L0_1.getWanMonitorStat(), L0_1.getLanWanInfo("wan"), L0_1.getAutoWanType(), L0_1.getAutoWanType() == 99 and 0 or 1
+  _UPVALUE0_.write_json(L1_2)
+end
+function getSysInfo()
+  local L0_3, L1_4
+  L0_3 = require
+  L1_4 = "luci.sys"
+  L0_3 = L0_3(L1_4)
+  L1_4 = {}
+  L1_4.memInfo, L1_4.cpuInfo, L1_4.code = {
+    total = L0_3.sysinfo()
+  }, {
+    info = L0_3.sysinfo()
+  }, 0
+  _UPVALUE0_.write_json(L1_4)
+end
+function pingTest()
+  local L0_5, L1_6, L2_7, L3_8
+  L0_5 = require
+  L1_6 = "luci.sys"
+  L0_5 = L0_5(L1_6)
+  L1_6 = _UPVALUE0_
+  L1_6 = L1_6.formvalue
+  L2_7 = "url"
+  L1_6 = L1_6(L2_7)
+  L2_7 = L0_5.net
+  L2_7 = L2_7.pingtest
+  L3_8 = L1_6
+  L2_7 = L2_7(L3_8)
+  L3_8 = {}
+  L3_8.code = 0
+  L3_8.result = L2_7 == 0 and 1 or 0
+  _UPVALUE0_.write_json(L3_8)
+end
+function systemDiagnostics()
+  local L0_9, L1_10, L2_11, L3_12, L4_13, L5_14, L6_15, L7_16, L8_17, L9_18, L10_19, L11_20, L12_21, L13_22, L14_23, L15_24, L16_25, L17_26, L18_27, L19_28, L20_29, L21_30, L22_31, L23_32, L24_33
+  L0_9 = require
+  L1_10 = "xiaoqiang.XQLog"
+  L0_9 = L0_9(L1_10)
+  L1_10 = require
+  L2_11 = "xiaoqiang.util.XQSysUtil"
+  L1_10 = L1_10(L2_11)
+  L2_11 = require
+  L3_12 = "xiaoqiang.util.XQSecureUtil"
+  L2_11 = L2_11(L3_12)
+  L3_12 = require
+  L4_13 = "xiaoqiang.util.XQWifiUtil"
+  L3_12 = L3_12(L4_13)
+  L4_13 = require
+  L5_14 = "xiaoqiang.util.XQDeviceUtil"
+  L4_13 = L4_13(L5_14)
+  L5_14 = L4_13.getWanLanNetworkStatistics
+  L6_15 = "lan"
+  L5_14 = L5_14(L6_15)
+  L6_15 = L4_13.getWanLanNetworkStatistics
+  L7_16 = "wan"
+  L6_15 = L6_15(L7_16)
+  L7_16 = {}
+  L8_17 = tonumber
+  L9_18 = L5_14.downspeed
+  L8_17 = L8_17(L9_18)
+  L7_16.lan = L8_17
+  L8_17 = tonumber
+  L9_18 = L6_15.downspeed
+  L8_17 = L8_17(L9_18)
+  L7_16.wan = L8_17
+  L8_17 = tonumber
+  L9_18 = _UPVALUE0_
+  L9_18 = L9_18.formvalue
+  L10_19 = "simple"
+  L9_18 = L9_18(L10_19)
+  L9_18 = L9_18 or 0
+  L8_17 = L8_17(L9_18)
+  L9_18 = _UPVALUE0_
+  L9_18 = L9_18.formvalue
+  L10_19 = "target"
+  L9_18 = L9_18(L10_19)
+  L10_19 = {}
+  L11_20 = 0
+  L12_21 = 0
+  L13_22 = 0
+  L14_23 = L1_10.getCpuTemperature
+  L14_23 = L14_23()
+  L15_24 = L1_10.getNetworkDetectInfo
+  L16_25 = L8_17
+  L17_26 = L9_18
+  L15_24 = L15_24(L16_25, L17_26)
+  L16_25 = L1_10.setDetectionTimestamp
+  L16_25()
+  L16_25 = L3_12.getAllWifiInfo
+  L16_25 = L16_25()
+  L17_26 = false
+  L18_27 = true
+  L19_28 = {}
+  for L23_32 = 1, #L16_25 do
+    L24_33 = L2_11.checkPlaintextPwd
+    L24_33 = L24_33("admin", L16_25[L23_32].password)
+    if L24_33 then
+      L17_26 = true
+    end
+    L24_33 = L2_11.checkStrong
+    L24_33 = L24_33(L16_25[L23_32].password)
+    if L24_33 < 2 then
+      L18_27 = false
+    end
+  end
+  if L17_26 then
+  else
+  end
+  L19_28.same = L20_29
+  if L18_27 then
+  else
+  end
+  L19_28.strong = L20_29
+  if L21_30 then
+    if L22_31 == 0 then
+      L23_32 = L21_30.capacity
+      L23_32 = tonumber
+      L24_33 = L21_30.free
+      L23_32 = L23_32(L24_33)
+      L24_33 = string
+      L24_33 = L24_33.format
+      L24_33 = L24_33("%.3fG", (L22_31 - L23_32) / 1073741824)
+      L20_29.Used = L24_33
+      L24_33 = string
+      L24_33 = L24_33.format
+      L24_33 = L24_33("%.3fG", L23_32 / 1073741824)
+      L20_29.Available = L24_33
+    end
+  end
+  if L15_24 then
+    L22_31.temperature = L14_23
+    if L14_23 > 70 then
+      L13_22 = L13_22 + 1
+      L12_21 = 1
+      L22_31.status = 0
+    else
+      L22_31.status = 1
+    end
+    L23_32 = {}
+    L24_33 = L15_24.cpu
+    L23_32.loadavg = L24_33
+    L24_33 = tonumber
+    L24_33 = L24_33(L15_24.cpu)
+    if L24_33 > 90 then
+      L13_22 = L13_22 + 1
+      L12_21 = 1
+      L23_32.status = 0
+    else
+      L23_32.status = 1
+    end
+    L24_33 = {}
+    L24_33.use = L15_24.memory
+    if 90 < tonumber(L15_24.memory) then
+      L13_22 = L13_22 + 1
+      L12_21 = 1
+      L24_33.status = 0
+    else
+      L24_33.status = 1
+    end
+    if L15_24.wanLink ~= 1 then
+      L13_22 = L13_22 + 1
+      L12_21 = 2
+      ;({}).status = 0
+    else
+      ({}).status = 1
+    end
+    ;({}).type = L15_24.wanType
+    if tonumber(L15_24.wanLink) ~= 1 then
+      L13_22 = L13_22 + 1
+      L12_21 = 2
+      ;({}).status = 0
+    else
+      ({}).status = 1
+    end
+    ;({}).lost = L15_24.gw
+    if tonumber(L15_24.gw) > 80 then
+      L13_22 = L13_22 + 1
+      L12_21 = 1
+      ;({}).status = 0
+    else
+      ({}).status = 1
+    end
+    if tonumber(L15_24.dns) ~= 1 then
+      L13_22 = L13_22 + 1
+      L12_21 = 2
+      ;({}).status = 0
+    else
+      ({}).status = 1
+    end
+    ;({}).lost = L15_24.pingLost
+    if 80 < tonumber(L15_24.pingLost) then
+      L13_22 = L13_22 + 1
+      L12_21 = 2
+      ;({}).status = 0
+    else
+      ({}).status = 1
+    end
+    L10_19 = L15_24
+    L10_19.count = L13_22
+    L10_19.status = L12_21
+    L10_19.cpuavg = L23_32
+    L10_19.memoryuse = L24_33
+    L10_19.ping, L10_19.dnsstatus, L10_19.gateway, L10_19.wan, L10_19.link, L10_19.cputemp = {}, {}, {}, {}, {}, L22_31
+    L10_19.cpuTemperature = L14_23
+    L10_19.wifi = L19_28
+    L10_19.speed = L7_16
+    L10_19.disk = L20_29
+    if L13_22 > 0 then
+      L0_9.check(0, L0_9.KEY_DETECT_ERROR, 1)
+    end
+  else
+    L11_20 = 1567
+  end
+  if L11_20 ~= 0 then
+    L23_32 = L11_20
+    L10_19.msg = L22_31
+  else
+    L23_32 = "xiaoqiang.XQPushHelper"
+    L23_32 = require
+    L24_33 = "json"
+    L23_32 = L23_32(L24_33)
+    L24_33 = {}
+    L24_33.type = 6
+    L24_33.data = {
+      lan = L7_16.lan,
+      wan = L7_16.wan
+    }
+    L22_31.push_request(L23_32.encode(L24_33))
+  end
+  L10_19.code = L11_20
+  L23_32 = L10_19
+  L22_31(L23_32)
+end
+function systemStatus()
+  local L0_34, L1_35, L2_36
+  L0_34 = require
+  L1_35 = "xiaoqiang.util.XQSysUtil"
+  L0_34 = L0_34(L1_35)
+  L1_35 = 0
+  L2_36 = {}
+  L2_36.code = 0
+  L2_36.status = 0
+  if L0_34.checkSystemStatus().cpu and L0_34.checkSystemStatus().cpu > 90 then
+    L1_35 = L1_35 + 1
+    L2_36.status = 1
+  end
+  if L0_34.checkSystemStatus().mem and 90 < L0_34.checkSystemStatus().mem then
+    L1_35 = L1_35 + 1
+    L2_36.status = 1
+  end
+  if L0_34.checkSystemStatus().tmp and L0_34.checkSystemStatus().tmp > 70 then
+    L1_35 = L1_35 + 1
+    L2_36.status = 1
+  end
+  if not L0_34.checkSystemStatus().wan or not L0_34.checkSystemStatus().link then
+    L1_35 = L1_35 + 1
+    L2_36.status = 2
+  end
+  L2_36.count = L1_35
+  _UPVALUE0_.write_json(L2_36)
+end
+function netspeed()
+  local L0_37, L1_38, L2_39, L3_40
+  L0_37 = require
+  L1_38 = "xiaoqiang.XQPreference"
+  L0_37 = L0_37(L1_38)
+  L1_38 = require
+  L2_39 = "xiaoqiang.module.XQNetworkSpeedTest"
+  L1_38 = L1_38(L2_39)
+  L2_39 = 0
+  L3_40 = {}
+  if _UPVALUE0_.formvalue("history") then
+    L3_40.bandwidth = tonumber(L0_37.get("BANDWIDTH", 0, "xiaoqiang"))
+    L3_40.download = tonumber(string.format("%.2f", 128 * L3_40.bandwidth))
+    L3_40.bandwidth2 = tonumber(L0_37.get("BANDWIDTH2", 0, "xiaoqiang"))
+    L3_40.upload = tonumber(string.format("%.2f", 128 * L3_40.bandwidth2))
+  else
+    os.execute("/etc/init.d/miqos stop")
+    if L1_38.downloadSpeedTest() then
+      L3_40.download = L1_38.downloadSpeedTest()
+      L3_40.bandwidth = tonumber(string.format("%.2f", 8 * L1_38.downloadSpeedTest() / 1024))
+      L0_37.set("BANDWIDTH", tostring(L3_40.bandwidth), "xiaoqiang")
+    else
+      L2_39 = 1588
+    end
+    if L2_39 ~= 0 then
+      L3_40.msg = _UPVALUE1_.getErrorMessage(L2_39)
+    end
+    os.execute("/etc/init.d/miqos start")
+  end
+  L3_40.code = L2_39
+  _UPVALUE0_.write_json(L3_40)
+end
+function uploadSpeed()
+  local L0_41, L1_42, L2_43, L3_44
+  L0_41 = require
+  L1_42 = "xiaoqiang.XQPreference"
+  L0_41 = L0_41(L1_42)
+  L1_42 = require
+  L2_43 = "xiaoqiang.module.XQNetworkSpeedTest"
+  L1_42 = L1_42(L2_43)
+  L2_43 = os
+  L2_43 = L2_43.execute
+  L3_44 = "/etc/init.d/miqos stop"
+  L2_43(L3_44)
+  L2_43 = 0
+  L3_44 = {}
+  if L1_42.uploadSpeedTest() then
+    L3_44.upload = L1_42.uploadSpeedTest()
+    L3_44.bandwidth = tonumber(string.format("%.2f", 8 * L1_42.uploadSpeedTest() / 1024))
+    L0_41.set("BANDWIDTH2", tostring(L3_44.bandwidth), "xiaoqiang")
+  else
+    L2_43 = 1588
+  end
+  if L2_43 ~= 0 then
+    L3_44.msg = _UPVALUE0_.getErrorMessage(L2_43)
+  end
+  os.execute("/etc/init.d/miqos start")
+  L3_44.code = L2_43
+  _UPVALUE1_.write_json(L3_44)
+end
+function nettb()
+  local L0_45, L1_46
+  L0_45 = require
+  L1_46 = "xiaoqiang.util.XQSysUtil"
+  L0_45 = L0_45(L1_46)
+  L1_46 = {}
+  L1_46.code = 0
+  L1_46.error = 0
+  if L0_45.nettb().code ~= 0 then
+    L1_46.error = L0_45.nettb().code
+    L1_46.reason = L0_45.nettb().reason
+  end
+  _UPVALUE0_.write_json(L1_46)
+end

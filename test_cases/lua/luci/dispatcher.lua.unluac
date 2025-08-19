@@ -1,0 +1,1361 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("nixio.fs")
+require("nixio.util")
+module("luci.dispatcher", package.seeall)
+context = require("luci.util").threadlocal()
+i18n = require("luci.i18n")
+_M.fs = L0_0
+authenticator = {}
+function build_url(...)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10
+  L1_2 = {
+    [9] = ...
+  }
+  L9_10 = ...
+  ;({
+    [9] = ...
+  })[1] = L2_3
+  ;({
+    [9] = ...
+  })[2] = L3_4
+  ;({
+    [9] = ...
+  })[3] = L4_5
+  ;({
+    [9] = ...
+  })[4] = L5_6
+  ;({
+    [9] = ...
+  })[5] = L6_7
+  ;({
+    [9] = ...
+  })[6] = L7_8
+  ;({
+    [9] = ...
+  })[7] = L8_9
+  ;({
+    [9] = ...
+  })[8] = L9_10
+  L2_3 = {L3_4}
+  L3_4 = _UPVALUE0_
+  L3_4 = L3_4.getenv
+  L4_5 = "SCRIPT_NAME"
+  L3_4 = L3_4(L4_5)
+  L3_4 = L3_4 or ""
+  L3_4, L4_5 = nil, nil
+  for L8_9, L9_10 in L5_6(L6_7) do
+    L2_3[#L2_3 + 1] = "/;"
+    L2_3[#L2_3 + 1] = _UPVALUE0_.urlencode(L8_9)
+    L2_3[#L2_3 + 1] = "="
+    L2_3[#L2_3 + 1] = _UPVALUE0_.urlencode(L9_10)
+  end
+  for L9_10, _FORV_10_ in L6_7(L7_8) do
+    if _FORV_10_:match("^[a-zA-Z0-9_%-%.%%/,;]+$") then
+      L2_3[#L2_3 + 1] = "/"
+      L2_3[#L2_3 + 1] = _FORV_10_
+    end
+  end
+  return L6_7(L7_8, L8_9)
+end
+function node_visible(A0_11)
+  if A0_11 then
+    return A0_11.title and #A0_11.title ~= 0 and A0_11.target and A0_11.hidden ~= true and (type(A0_11.target) ~= "table" or A0_11.target.type ~= "firstchild" or type(A0_11.nodes) == "table" and not not next(A0_11.nodes))
+  end
+  return false
+end
+function node_childs(A0_12)
+  local L1_13, L2_14, L3_15, L4_16, L5_17, L6_18, L7_19, L8_20
+  L1_13 = {}
+  if A0_12 then
+    L2_14, L3_15 = nil, nil
+    for L7_19, L8_20 in L4_16(L5_17, L6_18) do
+      if node_visible(L8_20) then
+        L1_13[#L1_13 + 1] = L7_19
+      end
+    end
+  end
+  return L1_13
+end
+function error404(A0_21)
+  luci.http.status(404, "Not Found")
+  A0_21 = A0_21 or "Not Found"
+  require("luci.template")
+  if not luci.util.copcall(luci.template.render, "error404") then
+    luci.http.prepare_content("text/plain")
+    luci.http.write(A0_21)
+  end
+  return false
+end
+function error500(A0_22)
+  require("xiaoqiang.XQLog").log(3, "Internal Server Error", A0_22)
+  A0_22 = "Internal Server Error"
+  if not context.template_header_sent then
+    luci.http.status(500, "Internal Server Error")
+    luci.http.prepare_content("text/plain")
+    luci.http.write(A0_22)
+  else
+    require("luci.template")
+    if not luci.util.copcall(luci.template.render, "error500", {message = A0_22}) then
+      luci.http.prepare_content("text/plain")
+      luci.http.write(A0_22)
+    end
+  end
+  return false
+end
+function errorpage(A0_23, A1_24)
+  if tonumber(A0_23) then
+    luci.http.status(tonumber(A0_23), "Not Found")
+    require("luci.template")
+    if not luci.util.copcall(luci.template.render, "error404") then
+      luci.http.prepare_content("text/plain")
+      luci.http.write(A1_24)
+    end
+    return false
+  end
+end
+function empower(A0_25, A1_26, A2_27)
+end
+function getremotemac(A0_28)
+  local L1_29, L2_30, L3_31
+  L1_29 = require
+  L2_30 = "xiaoqiang.common.XQFunction"
+  L1_29 = L1_29(L2_30)
+  L2_30 = luci
+  L2_30 = L2_30.http
+  L2_30 = L2_30.getenv
+  L3_31 = "HTTP_X_FORWARDED_FOR"
+  L2_30 = L2_30(L3_31)
+  L3_31 = L1_29.isStrNil
+  L3_31 = L3_31(L2_30)
+  if L3_31 then
+    L3_31 = luci
+    L3_31 = L3_31.http
+    L3_31 = L3_31.getenv
+    L3_31 = L3_31("REMOTE_ADDR")
+    L2_30 = L3_31 or ""
+  end
+  L3_31 = nil
+  if A0_28 then
+    L3_31 = luci.sys.net.ip4mac_ex(L2_30) or ""
+  else
+    L3_31 = luci.sys.net.ip4mac(L2_30) or ""
+  end
+  return L1_29.macFormat(L3_31)
+end
+function loginAuthenFailed()
+  local L0_32, L1_33
+  L0_32 = require
+  L1_33 = "xiaoqiang.XQPushHelper"
+  L0_32 = L0_32(L1_33)
+  L1_33 = {}
+  L1_33.type = 16
+  L1_33.data = {
+    mac = getremotemac()
+  }
+  L0_32.push_request_lua(L1_33)
+end
+function authenticator.jsonauth(A0_34, A1_35, A2_36)
+  local L3_37, L4_38, L5_39, L6_40, L7_41
+  L3_37 = require
+  L4_38 = "xiaoqiang.util.XQSysUtil"
+  L3_37 = L3_37(L4_38)
+  L4_38 = luci
+  L4_38 = L4_38.http
+  L4_38 = L4_38.xqformvalue
+  L5_39 = "username"
+  L4_38 = L4_38(L5_39)
+  L5_39 = luci
+  L5_39 = L5_39.http
+  L5_39 = L5_39.xqformvalue
+  L6_40 = "password"
+  L5_39 = L5_39(L6_40)
+  L6_40 = luci
+  L6_40 = L6_40.http
+  L6_40 = L6_40.xqformvalue
+  L7_41 = "nonce"
+  L6_40 = L6_40(L7_41)
+  if L6_40 then
+    L7_41 = _UPVALUE0_
+    L7_41 = L7_41.checkNonce
+    L7_41 = L7_41(L6_40, getremotemac())
+    if L7_41 then
+      L7_41 = _UPVALUE0_
+      L7_41 = L7_41.checkUser
+      L7_41 = L7_41(L4_38, L6_40, L5_39)
+      if L7_41 then
+        L7_41 = empower
+        L7_41("1", "1", nil)
+        L7_41 = "2"
+        luci.http.header("Set-Cookie", "psp=" .. L4_38 .. "|||" .. L7_41 .. "|||0;path=/;")
+        return L4_38, L7_41
+      else
+        L7_41 = loginAuthenFailed
+        L7_41()
+      end
+    else
+      L7_41 = context
+      L7_41.path = {}
+      L7_41 = luci
+      L7_41 = L7_41.http
+      L7_41 = L7_41.write
+      L7_41("{\"code\":1582,\"msg\":\"Invalid nonce\"}")
+      L7_41 = false
+      return L7_41
+    end
+  else
+    L7_41 = _UPVALUE0_
+    L7_41 = L7_41.checkPlaintextPwd
+    L7_41 = L7_41(L4_38, L5_39)
+    if L7_41 then
+      L7_41 = empower
+      L7_41("1", "1", nil)
+      L7_41 = "2"
+      luci.http.header("Set-Cookie", "psp=" .. L4_38 .. "|||" .. L7_41 .. "|||0;path=/;")
+      return L4_38, L7_41
+    else
+      L7_41 = context
+      L7_41.path = {}
+      L7_41 = luci
+      L7_41 = L7_41.http
+      L7_41 = L7_41.write
+      L7_41("{\"code\":401,\"msg\":\"Invalid token\"}")
+      L7_41 = false
+      return L7_41
+    end
+  end
+  L7_41 = context
+  L7_41.path = {}
+  L7_41 = luci
+  L7_41 = L7_41.http
+  L7_41 = L7_41.write
+  L7_41("{\"code\":401,\"msg\":\"not auth\"}")
+  L7_41 = false
+  return L7_41
+end
+function authenticator.htmlauth(A0_42, A1_43, A2_44)
+  local L3_45, L4_46, L5_47, L6_48, L7_49, L8_50
+  L3_45 = require
+  L4_46 = "xiaoqiang.util.XQSysUtil"
+  L3_45 = L3_45(L4_46)
+  L4_46 = luci
+  L4_46 = L4_46.http
+  L4_46 = L4_46.xqformvalue
+  L5_47 = "redirectKey"
+  L4_46 = L4_46(L5_47)
+  L5_47 = L3_45.getPassportBindInfo
+  L5_47 = L5_47()
+  if L4_46 then
+    L6_48 = _UPVALUE0_
+    L6_48 = L6_48.checkRedirectKey
+    L7_49 = L4_46
+    L6_48 = L6_48(L7_49)
+    if L6_48 then
+      if L6_48 == "1" and L5_47 then
+        L7_49 = require
+        L8_50 = "xiaoqiang.util.XQDBUtil"
+        L7_49 = L7_49(L8_50)
+        L8_50 = L3_45.getBindUUID
+        L8_50 = L8_50()
+        if L7_49.fetchPassport(L8_50)[1] then
+          luci.http.header("Set-Cookie", "psp=" .. L8_50 .. "|||1|||" .. L7_49.fetchPassport(L8_50)[1].token .. ";path=/;")
+          return A2_44, L6_48
+        end
+      elseif L6_48 == "2" then
+        L7_49 = luci
+        L7_49 = L7_49.http
+        L7_49 = L7_49.header
+        L8_50 = "Set-Cookie"
+        L7_49(L8_50, "psp=admin|||2|||0;path=/;")
+        L7_49 = "admin"
+        L8_50 = L6_48
+        return L7_49, L8_50
+      end
+    end
+  end
+  L6_48 = require
+  L7_49 = "luci.i18n"
+  L6_48(L7_49)
+  L6_48 = require
+  L7_49 = "luci.template"
+  L6_48(L7_49)
+  L6_48 = context
+  L7_49 = {}
+  L6_48.path = L7_49
+  L6_48 = luci
+  L6_48 = L6_48.template
+  L6_48 = L6_48.render
+  L7_49 = "web/sysauth"
+  L8_50 = {}
+  L8_50.duser = A2_44
+  L8_50.fuser = user
+  L6_48(L7_49, L8_50)
+  L6_48 = false
+  return L6_48
+end
+function authenticator.htmlauth_moblie(A0_51, A1_52, A2_53)
+  local L3_54, L4_55, L5_56
+  L3_54 = luci
+  L3_54 = L3_54.http
+  L3_54 = L3_54.xqformvalue
+  L4_55 = "username"
+  L3_54 = L3_54(L4_55)
+  L4_55 = luci
+  L4_55 = L4_55.http
+  L4_55 = L4_55.xqformvalue
+  L5_56 = "password"
+  L4_55 = L4_55(L5_56)
+  L5_56 = luci
+  L5_56 = L5_56.http
+  L5_56 = L5_56.xqformvalue
+  L5_56 = L5_56("nonce")
+  if L5_56 and _UPVALUE0_.checkNonce(L5_56, getremotemac()) and _UPVALUE0_.checkUser(L3_54, L5_56, L4_55) then
+    empower("1", "1", nil)
+    return L3_54, "2"
+  end
+  loginAuthenFailed()
+  require("luci.i18n")
+  require("luci.template")
+  context.path = {}
+  luci.template.render("mobile/sysauth", {duser = A2_53, fuser = L3_54})
+  return false
+end
+function check_show_syslock(A0_57)
+  if require("xiaoqiang.common.XQFunction").sysLockStatus() == 1 then
+    if require("xiaoqiang.util.XQSysUtil").isUpgrading() then
+      require("luci.i18n")
+      require("luci.template")
+      if type(A0_57) == "string" and A0_57 == "htmlauth" then
+        context.path = {}
+        luci.http.redirect(luci.dispatcher.build_url("web", "upgrading"))
+      elseif type(A0_57) == "string" and A0_57 == "jsonauth" then
+        context.path = {}
+        luci.http.write("{\"code\":403,\"msg\":\"system locked\"}")
+      else
+        require("xiaoqiang.common.XQFunction").sysUnlock()
+        return false
+      end
+      return true
+    elseif not luci.http.getenv("REQUEST_URI"):match("/api/service/") and not luci.http.getenv("REQUEST_URI"):match("/api%-third%-party/") then
+      require("xiaoqiang.common.XQFunction").sysUnlock()
+    end
+  end
+  return false
+end
+function http_request_log(A0_58, A1_59)
+  local L2_60, L3_61
+  L2_60 = require
+  L3_61 = "xiaoqiang.XQLog"
+  L2_60 = L2_60(L3_61)
+  L3_61 = A0_58.getenv
+  L3_61 = L3_61(A0_58, "REQUEST_URI")
+  if L3_61 and A1_59 and type(A1_59) == "string" then
+    L2_60.log(6, A1_59 .. ":" .. luci.util.split(L3_61, "?")[1])
+    if luci.util.split(L3_61, "?")[2] then
+      L2_60.log(7, luci.util.split(L3_61, "?")[2])
+    end
+  end
+end
+function _noauthAccessAllowed(A0_62)
+  if A0_62 == nil then
+    return false
+  end
+  if _UPVALUE0_.band(A0_62, 1) == 1 then
+    return true
+  else
+    return false
+  end
+end
+function _remoteAccessForbidden(A0_63)
+  if A0_63 == nil then
+    return false
+  end
+  if _UPVALUE0_.band(A0_63, 2) == 2 then
+    return true
+  else
+    return false
+  end
+end
+function _syslockAccessAllowed(A0_64)
+  if A0_64 == nil then
+    return false
+  end
+  if _UPVALUE0_.band(A0_64, 4) == 4 then
+    return true
+  else
+    return false
+  end
+end
+function _noinitAccessAllowed(A0_65)
+  if require("xiaoqiang.util.XQSysUtil").getInitInfo() then
+    return true
+  else
+    if A0_65 == nil then
+      return false
+    end
+    if _UPVALUE0_.band(A0_65, 8) == 8 then
+      return true
+    else
+      return false
+    end
+  end
+end
+function _sdkFilter(A0_66)
+  if A0_66 == nil then
+    return false
+  end
+  if _UPVALUE0_.band(A0_66, 16) == 16 then
+    return true
+  else
+    return false
+  end
+end
+function _webAccessAllowed(A0_67, A1_68)
+  local L2_69, L3_70
+  if not A0_67 then
+    L2_69 = true
+    return L2_69
+  end
+  if A0_67 == "htmlauth" then
+    L2_69 = _noauthAccessAllowed
+    L3_70 = A1_68
+    L2_69 = L2_69(L3_70)
+    if not L2_69 then
+      L2_69 = require
+      L3_70 = "xiaoqiang.common.XQFunction"
+      L2_69 = L2_69(L3_70)
+      L3_70 = getremotemac
+      L3_70 = L3_70()
+      if (require("luci.model.uci").cursor():get("macfilter", "mode", "admin") or "") == "whitelist" and not L2_69.isStrNil(L3_70) then
+        require("luci.model.uci").cursor():foreach("macfilter", "mac", function(A0_71)
+          if A0_71.mac and string.lower(A0_71.mac) == string.lower(_UPVALUE0_) and A0_71.admin == "yes" then
+            _UPVALUE1_ = true
+          end
+        end)
+        return false
+      end
+    end
+  end
+  L2_69 = true
+  return L2_69
+end
+function httpdispatch(A0_72, A1_73)
+  local L2_74, L3_75, L4_76, L5_77, L6_78, L7_79, L8_80, L9_81, L10_82
+  L2_74 = http_request_log
+  L3_75 = A0_72
+  L2_74(L3_75, L4_76)
+  L2_74 = _G
+  L3_75 = _
+  L2_74._ = L3_75
+  L2_74 = _G
+  L3_75 = i18n
+  L3_75 = L3_75.translate
+  L2_74.translate = L3_75
+  L2_74 = luci
+  L2_74 = L2_74.http
+  L2_74 = L2_74.context
+  L2_74.request = A0_72
+  L2_74 = {}
+  L3_75 = context
+  L3_75.request = L2_74
+  L3_75 = context
+  L3_75.urltoken = L4_76
+  L3_75 = _UPVALUE0_
+  L3_75 = L3_75.urldecode
+  L3_75 = L3_75(L4_76, L5_77)
+  if A1_73 then
+    for L7_79, L8_80 in L4_76(L5_77) do
+      L9_81 = #L2_74
+      L9_81 = L9_81 + 1
+      L2_74[L9_81] = L8_80
+    end
+  end
+  for L8_80 in L5_77(L6_78, L7_79) do
+    L9_81, L10_82 = nil, nil
+    if L4_76 then
+      L9_81, L10_82 = L8_80:match(";(%w+)=([a-fA-F0-9]*)")
+    end
+    if L9_81 then
+      context.urltoken[L9_81] = L10_82
+    else
+      L2_74[#L2_74 + 1] = L8_80
+    end
+  end
+  L7_79()
+  L8_80 = A0_72
+  L9_81 = "finished"
+  L7_79(L8_80, L9_81)
+end
+function dispatch(A0_83)
+  local L1_84, L2_85, L3_86, L4_87, L5_88, L6_89, L7_90, L8_91, L9_92, L10_93, L11_94, L12_95, L13_96, L14_97, L15_98, L16_99, L17_100, L18_101, L19_102, L20_103, L21_104, L22_105, L23_106, L24_107, L25_108, L26_109, L27_110, L28_111, L29_112, L30_113, L31_114
+  L1_84 = context
+  L1_84.path = A0_83
+  L2_85 = require
+  L3_86 = "luci.config"
+  L2_85 = L2_85(L3_86)
+  L3_86 = assert
+  L4_87 = L2_85.main
+  L3_86(L4_87, L5_88)
+  L3_86 = L2_85.main
+  L3_86 = L3_86.lang
+  L3_86 = L3_86 or "auto"
+  if L3_86 == "auto" then
+    L4_87 = _UPVALUE0_
+    L4_87 = L4_87.getenv
+    L4_87 = L4_87(L5_88)
+    L4_87 = L4_87 or ""
+    for L8_91 in L5_88(L6_89, L7_90) do
+      if L8_91 then
+        L10_93 = L8_91
+        L9_92 = L8_91.gsub
+        L11_94 = "-"
+        L12_95 = "_"
+        L9_92 = L9_92(L10_93, L11_94, L12_95)
+        L8_91 = L9_92
+      end
+      L9_92 = L2_85.languages
+      L9_92 = L9_92[L8_91]
+      if L9_92 then
+        L3_86 = L8_91
+        break
+      end
+    end
+  end
+  L4_87 = require
+  L4_87 = L4_87(L5_88)
+  if not L5_88 then
+    if L7_90 ~= L3_86 then
+      L8_91 = L2_85.languages
+      L8_91 = L8_91[L7_90]
+      if L8_91 then
+        L3_86 = L7_90
+        L8_91 = L4_87.setLang
+        L9_92 = L3_86
+        L8_91(L9_92)
+      end
+    end
+  else
+    L5_88 = L5_88 == "release"
+    if not L5_88 and L3_86 ~= "zh_cn" then
+      L3_86 = "zh_cn"
+      L6_89(L7_90)
+    end
+  end
+  if L3_86 == "zh_hk" then
+    L3_86 = "zh_tw"
+  end
+  L5_88(L6_89)
+  L8_91 = {}
+  L1_84.args = L8_91
+  L9_92 = L1_84.requestargs
+  L9_92 = L9_92 or L8_91
+  L1_84.requestargs = L9_92
+  L9_92 = nil
+  L10_93 = L1_84.urltoken
+  L11_94 = {}
+  L12_95 = {}
+  for L16_99, L17_100 in L13_96(L14_97) do
+    L18_101 = #L11_94
+    L18_101 = L18_101 + 1
+    L11_94[L18_101] = L17_100
+    L18_101 = #L12_95
+    L18_101 = L18_101 + 1
+    L12_95[L18_101] = L17_100
+    L18_101 = L5_88.nodes
+    L9_92 = L16_99
+    if not L5_88 then
+      break
+    end
+    L18_101 = _UPVALUE1_
+    L18_101 = L18_101.update
+    L19_102 = L7_90
+    L20_103 = L5_88
+    L18_101(L19_102, L20_103)
+    L18_101 = L5_88.leaf
+    if L18_101 then
+      break
+    end
+  end
+  if L5_88 then
+    if L13_96 then
+      for L16_99 = L9_92 + 1, #A0_83 do
+        L18_101 = A0_83[L16_99]
+        L8_91[L17_100] = L18_101
+        L18_101 = A0_83[L16_99]
+        L12_95[L17_100] = L18_101
+      end
+    end
+  end
+  L1_84.requestpath = L13_96
+  L1_84.path = L11_94
+  if L13_96 then
+    L13_96(L14_97)
+  end
+  if L5_88 then
+  else
+    if not L13_96 then
+  end
+  elseif not L13_96 then
+    L18_101 = L14_97
+    if not L15_98 then
+      for L18_101, L19_102 in L15_98(L16_99) do
+        L21_104 = L18_101
+        L20_103 = L18_101.sub
+        L22_105 = 1
+        L23_106 = 1
+        L20_103 = L20_103(L21_104, L22_105, L23_106)
+        if L20_103 ~= "." then
+          L20_103 = pcall
+          L21_104 = L13_96.Template
+          L22_105 = _UPVALUE2_
+          L22_105 = L22_105.basename
+          L23_106 = L19_102
+          L22_105 = L22_105(L23_106)
+          L22_105 = "themes/%s/header" % L22_105
+          L20_103 = L20_103(L21_104, L22_105)
+          if L20_103 then
+          end
+        end
+      end
+      L15_98(L16_99, L17_100)
+    end
+    L18_101 = {}
+    L19_102 = luci
+    L19_102 = L19_102.http
+    L19_102 = L19_102.write
+    L18_101.write = L19_102
+    function L19_102(A0_115)
+      _UPVALUE0_.Template(A0_115):render(getfenv(2))
+    end
+    L18_101.include = L19_102
+    L19_102 = i18n
+    L19_102 = L19_102.translate
+    L18_101.translate = L19_102
+    function L19_102(A0_116, A1_117)
+      local L2_118
+      L2_118 = _UPVALUE0_
+      L2_118 = L2_118.context
+      L2_118 = L2_118.viewns
+      L2_118 = L2_118[A0_116]
+      if L2_118 == nil then
+        L2_118 = _UPVALUE0_
+        L2_118 = L2_118.context
+        L2_118 = L2_118.viewns
+        L2_118[A0_116] = A1_117
+      end
+    end
+    L18_101.export = L19_102
+    L19_102 = _UPVALUE1_
+    L19_102 = L19_102.striptags
+    L18_101.striptags = L19_102
+    L19_102 = _UPVALUE1_
+    L19_102 = L19_102.pcdata
+    L18_101.pcdata = L19_102
+    L18_101.media = L14_97
+    L19_102 = _UPVALUE2_
+    L19_102 = L19_102.basename
+    L20_103 = L14_97
+    L19_102 = L19_102(L20_103)
+    L18_101.theme = L19_102
+    L19_102 = luci
+    L19_102 = L19_102.config
+    L19_102 = L19_102.main
+    L19_102 = L19_102.resourcebase
+    L18_101.resource = L19_102
+    function L19_102(...)
+      local L1_120, L2_121
+      L1_120 = _UPVALUE0_
+      L2_121 = ...
+      return L1_120(L2_121)
+    end
+    L18_101.ifattr = L19_102
+    function L19_102(...)
+      local L1_123, L2_124, L3_125
+      L1_123 = _UPVALUE0_
+      L2_124 = true
+      L3_125 = ...
+      return L1_123(L2_124, L3_125)
+    end
+    L18_101.attr = L19_102
+    L19_102 = {}
+    function L20_103(A0_126, A1_127)
+      if A1_127 == "controller" then
+        return build_url()
+      elseif A1_127 == "REQUEST_URI" then
+        return build_url(unpack(_UPVALUE0_.requestpath))
+      else
+        return rawget(A0_126, A1_127) or _G[A1_127]
+      end
+    end
+    L19_102.__index = L20_103
+    L16_99.viewns = L17_100
+  end
+  L13_96 = L13_96 ~= false
+  L7_90.dependent = L13_96
+  L14_97 = not L14_97 or not L14_97
+  L18_101 = "/"
+  L18_101 = "has no parent node so the access to this location has been denied.\n"
+  L19_102 = "This is a software bug, please report this message at "
+  L20_103 = "http://luci.subsignal.org/trac/newticket"
+  L13_96(L14_97, L15_98)
+  if L13_96 then
+    if L14_97 then
+      L15_98(L16_99, L17_100)
+      return
+    end
+  end
+  if not L14_97 then
+    L14_97(L15_98, L16_99)
+    return
+  end
+  if not L14_97 then
+    if L14_97 then
+      return
+    end
+  end
+  if not L14_97 then
+    L14_97(L15_98, L16_99)
+    return
+  end
+  L16_99 = L14_97 == "127.0.0.1" and L15_98 == "localhost"
+  L18_101 = L7_90.flag
+  if L17_100 and not L16_99 then
+    L18_101 = "xiaoqiang.util.XQSDKUtil"
+    L18_101 = L17_100.checkPermission
+    L19_102 = getremotemac
+    L31_114 = L19_102()
+    L18_101 = L18_101(L19_102, L20_103, L21_104, L22_105, L23_106, L24_107, L25_108, L26_109, L27_110, L28_111, L29_112, L30_113, L31_114, L19_102())
+    if not L18_101 then
+      L18_101 = context
+      L19_102 = {}
+      L18_101.path = L19_102
+      L18_101 = luci
+      L18_101 = L18_101.http
+      L18_101 = L18_101.write
+      L19_102 = "{\"code\":1500,\"msg\":\"Permission denied\"}"
+      L18_101(L19_102)
+      return
+    end
+  end
+  if not L16_99 then
+    L18_101 = L7_90.flag
+    if not L17_100 then
+      if L17_100 then
+        L18_101 = "luci.sauth"
+        L18_101 = require
+        L19_102 = "xiaoqiang.util.XQCryptoUtil"
+        L18_101 = L18_101(L19_102)
+        L19_102 = require
+        L20_103 = "xiaoqiang.util.XQSysUtil"
+        L19_102 = L19_102(L20_103)
+        L20_103 = L19_102.getPassportBindInfo
+        L20_103 = L20_103()
+        L21_104 = type
+        L22_105 = L7_90.sysauth_authenticator
+        L21_104 = L21_104(L22_105)
+        if L21_104 == "function" then
+          L21_104 = L7_90.sysauth_authenticator
+        elseif not L21_104 then
+          L21_104 = authenticator
+          L22_105 = L7_90.sysauth_authenticator
+          L21_104 = L21_104[L22_105]
+        end
+        L22_105 = type
+        L23_106 = L7_90.sysauth
+        L22_105 = L22_105(L23_106)
+        L22_105 = L22_105 == "string" and L7_90.sysauth
+        if L22_105 then
+          L23_106 = {L24_107}
+          L24_107 = L7_90.sysauth
+        else
+          L23_106 = L23_106 or L7_90.sysauth
+        end
+        L24_107 = L1_84.urltoken
+        L24_107 = L24_107.stok
+        L25_108 = L17_100.read
+        L26_109 = L24_107
+        L25_108 = L25_108(L26_109)
+        L26_109 = nil
+        if L25_108 then
+          L27_110 = L1_84.urltoken
+          L27_110 = L27_110.stok
+          L28_111 = L25_108.token
+          if L27_110 == L28_111 then
+            L27_110 = L25_108.ip
+            if L27_110 then
+              L27_110 = L25_108.ip
+              L27_110 = L27_110 and L25_108.ip
+            elseif L27_110 == L14_97 then
+              L26_109 = L25_108.user
+            end
+          end
+        else
+          L27_110 = _UPVALUE0_
+          L27_110 = L27_110.getenv
+          L28_111 = "HTTP_AUTH_USER"
+          L27_110 = L27_110(L28_111)
+          L28_111 = _UPVALUE0_
+          L28_111 = L28_111.getenv
+          L29_112 = "HTTP_AUTH_PASS"
+          L28_111 = L28_111(L29_112)
+          if L27_110 and L28_111 then
+            L29_112 = luci
+            L29_112 = L29_112.sys
+            L29_112 = L29_112.user
+            L29_112 = L29_112.checkpasswd
+            L30_113 = L27_110
+            L31_114 = L28_111
+            L29_112 = L29_112(L30_113, L31_114)
+            if L29_112 then
+              L29_112 = require
+              L30_113 = "xiaoqiang.XQLog"
+              L29_112 = L29_112(L30_113)
+              L30_113 = L29_112.log
+              L31_114 = 4
+              L30_113(L31_114, "Native Luci: HTTP_AUTH_USER & HTTP_AUTH_PASS")
+            end
+          end
+        end
+        L27_110 = _UPVALUE1_
+        L27_110 = L27_110.contains
+        L28_111 = L23_106
+        L29_112 = L26_109
+        L27_110 = L27_110(L28_111, L29_112)
+        if not L27_110 then
+          if L21_104 then
+            L27_110 = L1_84.urltoken
+            L27_110.stok = nil
+            L27_110 = L21_104
+            L28_111 = nil
+            L29_112 = L23_106
+            L30_113 = L22_105
+            L28_111 = L27_110(L28_111, L29_112, L30_113)
+            if L27_110 then
+              L29_112 = _UPVALUE1_
+              L29_112 = L29_112.contains
+              L30_113 = L23_106
+              L31_114 = L27_110
+              L29_112 = L29_112(L30_113, L31_114)
+            else
+              if not L29_112 then
+                return
+            end
+            else
+              L29_112 = L24_107 or L29_112(L30_113)
+              L30_113 = L28_111 or "2"
+              L31_114 = luci
+              L31_114 = L31_114.sys
+              L31_114 = L31_114.uniqueid
+              L31_114 = L31_114(16)
+              L17_100.reap()
+              L17_100.write(L31_114, {
+                user = L27_110,
+                token = L31_114,
+                ltype = L30_113,
+                ip = L14_97,
+                secret = luci.sys.uniqueid(16)
+              })
+              L1_84.urltoken.stok = L31_114
+              L1_84.authsession = L31_114
+              L1_84.authuser = L27_110
+            end
+          else
+            L27_110 = luci
+            L27_110 = L27_110.http
+            L27_110 = L27_110.status
+            L28_111 = 403
+            L29_112 = "Forbidden"
+            L27_110(L28_111, L29_112)
+            return
+          end
+        else
+          L1_84.authsession = L24_107
+          L1_84.authuser = L26_109
+        end
+      end
+    end
+  end
+  if L17_100 then
+    L18_101 = L7_90.setgroup
+    L17_100(L18_101)
+  end
+  if L17_100 then
+    L18_101 = L7_90.setuser
+    L17_100(L18_101)
+  end
+  if L5_88 then
+    L18_101 = type
+    L19_102 = L5_88.target
+    L18_101 = L18_101(L19_102)
+    if L18_101 == "function" then
+    else
+      L18_101 = type
+      L19_102 = L5_88.target
+      L18_101 = L18_101(L19_102)
+      if L18_101 == "table" then
+        L18_101 = L5_88.target
+      end
+    end
+  end
+  if L5_88 then
+    L18_101 = L5_88.index
+    if not L18_101 then
+      L18_101 = type
+      L19_102 = L17_100
+      L18_101 = L18_101(L19_102)
+    elseif L18_101 == "function" then
+      L1_84.dispatched = L5_88
+      L18_101 = L1_84.requested
+      L18_101 = L18_101 or L1_84.dispatched
+      L1_84.requested = L18_101
+    end
+  end
+  if L5_88 then
+    L18_101 = L5_88.index
+    if L18_101 then
+      L18_101 = require
+      L19_102 = "luci.template"
+      L18_101 = L18_101(L19_102)
+      L19_102 = _UPVALUE1_
+      L19_102 = L19_102.copcall
+      L20_103 = L18_101.render
+      L21_104 = "indexer"
+      L22_105 = {}
+      L19_102 = L19_102(L20_103, L21_104, L22_105)
+      if L19_102 then
+        L19_102 = true
+        return L19_102
+      end
+    end
+  end
+  L18_101 = type
+  L19_102 = L17_100
+  L18_101 = L18_101(L19_102)
+  if L18_101 == "function" then
+    L18_101 = _UPVALUE1_
+    L18_101 = L18_101.copcall
+    function L19_102()
+      local L0_128, L1_129, L2_130
+      L0_128 = getfenv
+      L1_129 = _UPVALUE0_
+      L0_128 = L0_128(L1_129)
+      L1_129 = require
+      L2_130 = _UPVALUE1_
+      L2_130 = L2_130.module
+      L1_129 = L1_129(L2_130)
+      L2_130 = setmetatable
+      L2_130 = L2_130({}, {
+        __index = function(A0_131, A1_132)
+          return rawget(A0_131, A1_132) or _UPVALUE0_[A1_132] or _UPVALUE1_[A1_132]
+        end
+      })
+      setfenv(_UPVALUE0_, L2_130)
+    end
+    L18_101(L19_102)
+    L18_101, L19_102 = nil, nil
+    L20_103 = type
+    L21_104 = L5_88.target
+    L20_103 = L20_103(L21_104)
+    if L20_103 == "table" then
+      L20_103 = _UPVALUE1_
+      L20_103 = L20_103.copcall
+      L21_104 = L17_100
+      L22_105 = L5_88.target
+      L23_106 = unpack
+      L24_107 = L8_91
+      L31_114 = L23_106(L24_107)
+      L21_104 = L20_103(L21_104, L22_105, L23_106, L24_107, L25_108, L26_109, L27_110, L28_111, L29_112, L30_113, L31_114, L23_106(L24_107))
+      L19_102 = L21_104
+      L18_101 = L20_103
+    else
+      L20_103 = _UPVALUE1_
+      L20_103 = L20_103.copcall
+      L21_104 = L17_100
+      L22_105 = unpack
+      L23_106 = L8_91
+      L31_114 = L22_105(L23_106)
+      L21_104 = L20_103(L21_104, L22_105, L23_106, L24_107, L25_108, L26_109, L27_110, L28_111, L29_112, L30_113, L31_114, L22_105(L23_106))
+      L19_102 = L21_104
+      L18_101 = L20_103
+    end
+    L20_103 = assert
+    L21_104 = L18_101
+    L22_105 = "Failed to execute "
+    L23_106 = type
+    L24_107 = L5_88.target
+    L23_106 = L23_106(L24_107)
+    if L23_106 == "function" then
+      L23_106 = "function"
+    elseif not L23_106 then
+      L23_106 = L5_88.target
+      L23_106 = L23_106.type
+      L23_106 = L23_106 or "unknown"
+    end
+    L24_107 = " dispatcher target for entry '/"
+    L25_108 = table
+    L25_108 = L25_108.concat
+    L26_109 = A0_83
+    L27_110 = "/"
+    L25_108 = L25_108(L26_109, L27_110)
+    L26_109 = "'.\n"
+    L27_110 = "The called action terminated with an exception:\n"
+    L28_111 = tostring
+    L29_112 = L19_102 or "(unknown)"
+    L28_111 = L28_111(L29_112)
+    L22_105 = L22_105 .. L23_106 .. L24_107 .. L25_108 .. L26_109 .. L27_110 .. L28_111
+    L20_103(L21_104, L22_105)
+  else
+    L18_101 = node
+    L18_101 = L18_101()
+    if L18_101 then
+      L19_102 = L18_101.target
+    else
+      if not L19_102 then
+        L19_102 = error404
+        L20_103 = "No root node was registered, this usually happens if no module was installed.\n"
+        L21_104 = "Install luci-mod-admin-full and retry. "
+        L22_105 = "If the module is already installed, try removing the /tmp/luci-indexcache file."
+        L20_103 = L20_103 .. L21_104 .. L22_105
+        L19_102(L20_103)
+    end
+    else
+      L19_102 = error404
+      L20_103 = "No page is registered at '/"
+      L21_104 = table
+      L21_104 = L21_104.concat
+      L22_105 = A0_83
+      L23_106 = "/"
+      L21_104 = L21_104(L22_105, L23_106)
+      L22_105 = "'.\n"
+      L23_106 = "If this url belongs to an extension, make sure it is properly installed.\n"
+      L24_107 = "If the extension was recently installed, try removing the /tmp/luci-indexcache file."
+      L20_103 = L20_103 .. L21_104 .. L22_105 .. L23_106 .. L24_107
+      L19_102(L20_103)
+    end
+  end
+end
+function createindex()
+  local L0_133, L1_134
+  L0_133 = luci
+  L0_133 = L0_133.util
+  L0_133 = L0_133.libpath
+  L0_133 = L0_133()
+  L1_134 = "/controller/"
+  L0_133 = L0_133 .. L1_134
+  L1_134 = {".lua", ".lua.gz"}
+  createindex_plain(L0_133, L1_134)
+end
+function createindex_fastindex(A0_135, A1_136)
+  local L2_137, L3_138, L4_139, L5_140, L6_141
+  _UPVALUE0_ = L2_137
+  if not L2_137 then
+    _UPVALUE1_ = L2_137
+    for L5_140, L6_141 in L2_137(L3_138) do
+      _UPVALUE1_.add(A0_135 .. "*" .. L6_141)
+      _UPVALUE1_.add(A0_135 .. "*/*" .. L6_141)
+    end
+  end
+  L2_137()
+  for L5_140, L6_141 in L2_137(L3_138) do
+    _UPVALUE0_[L6_141[2]] = L6_141[1]
+  end
+end
+function createindex_plain(A0_142, A1_143)
+  local L2_144, L3_145, L4_146, L5_147, L6_148, L7_149, L8_150, L9_151, L10_152, L11_153, L12_154, L13_155
+  L2_144 = {}
+  for L6_148, L7_149 in L3_145(L4_146) do
+    L8_150 = _UPVALUE0_
+    L8_150 = L8_150.util
+    L8_150 = L8_150.consume
+    L12_154 = L7_149
+    L8_150(L9_151, L10_152)
+    L8_150 = _UPVALUE0_
+    L8_150 = L8_150.util
+    L8_150 = L8_150.consume
+    L12_154 = L7_149
+    L8_150(L9_151, L10_152)
+  end
+  if L3_145 then
+    if L3_145 then
+      for L8_150, L9_151 in L5_147(L6_148) do
+        L12_154 = "mtime"
+      end
+      if L3_145 > L4_146 then
+        L8_150 = indexcache
+        L6_148 = L6_148 == L7_149 and L6_148 == "rw-------"
+        L5_147(L6_148, L7_149)
+        _UPVALUE3_ = L5_147
+        return L5_147
+      end
+    end
+  end
+  _UPVALUE3_ = L3_145
+  for L6_148, L7_149 in L3_145(L4_146) do
+    L8_150 = "luci.controller."
+    L12_154 = #L7_149
+    L12_154 = "."
+    L8_150 = L8_150 .. L9_151
+    for L12_154, L13_155 in L9_151(L10_152) do
+      L8_150 = L8_150:gsub(L13_155 .. "$", "")
+    end
+    L11_153 = L9_151 ~= true
+    L12_154 = "Invalid controller file found\n"
+    L13_155 = "The file '"
+    L12_154 = L12_154 .. L13_155 .. L7_149 .. "' contains an invalid module line.\n" .. "Please verify whether the module name is set to '" .. L8_150 .. "' - It must correspond to the file path!"
+    L10_152(L11_153, L12_154)
+    L12_154 = type
+    L13_155 = L10_152
+    L12_154 = L12_154(L13_155)
+    L12_154 = L12_154 == "function"
+    L13_155 = "Invalid controller file found\n"
+    L13_155 = L13_155 .. "The file '" .. L7_149 .. "' contains no index() function.\n" .. "Please make sure that the controller contains a valid " .. "index function and verify the spelling!"
+    L11_153(L12_154, L13_155)
+    L11_153[L8_150] = L10_152
+  end
+  if L3_145 then
+    L13_155 = L6_148(L7_149)
+    L4_146(L5_147, L6_148, L7_149, L8_150, L9_151, L10_152, L11_153, L12_154, L13_155, L6_148(L7_149))
+    L4_146(L5_147)
+  end
+end
+function createtree()
+  local L0_156, L1_157, L2_158, L3_159, L4_160, L5_161, L6_162, L7_163, L8_164
+  L0_156 = _UPVALUE0_
+  if not L0_156 then
+    L0_156 = createindex
+    L0_156()
+  end
+  L0_156 = context
+  L1_157 = {}
+  L2_158 = {}
+  L1_157.nodes = L2_158
+  L1_157.inreq = true
+  L2_158 = {}
+  L3_159 = setmetatable
+  L5_161.__mode = "v"
+  L3_159 = L3_159(L4_160, L5_161)
+  L0_156.treecache = L3_159
+  L0_156.tree = L1_157
+  L0_156.modifiers = L2_158
+  L3_159 = require
+  L3_159 = L3_159(L4_160)
+  L3_159 = L3_159.loadc
+  L3_159(L4_160)
+  L3_159 = setmetatable
+  L5_161.__index = L6_162
+  L3_159 = L3_159(L4_160, L5_161)
+  for L7_163, L8_164 in L4_160(L5_161) do
+    L3_159._NAME = L7_163
+    setfenv(L8_164, L3_159)
+    L8_164()
+  end
+  for L8_164, _FORV_9_ in L5_161(L6_162, L7_163) do
+    L3_159._NAME = _FORV_9_.module
+    setfenv(_FORV_9_.func, L3_159)
+    _FORV_9_.func()
+  end
+  return L1_157
+end
+function modifier(A0_165, A1_166)
+  local L2_167, L3_168, L4_169
+  L2_167 = context
+  L2_167 = L2_167.modifiers
+  L3_168 = context
+  L3_168 = L3_168.modifiers
+  L3_168 = #L3_168
+  L3_168 = L3_168 + 1
+  L4_169 = {}
+  L4_169.func = A0_165
+  L4_169.order = A1_166 or 0
+  L4_169.module = getfenv(2)._NAME
+  L2_167[L3_168] = L4_169
+end
+function assign(A0_170, A1_171, A2_172, A3_173, A4_174)
+  local L5_175
+  L5_175 = node
+  L5_175 = L5_175(unpack(A0_170))
+  L5_175.nodes = nil
+  L5_175.module = nil
+  L5_175.title = A2_172
+  L5_175.order = A3_173
+  L5_175.flag = A4_174
+  setmetatable(L5_175, {
+    __index = _create_node(A1_171)
+  })
+  return L5_175
+end
+function entry(A0_176, A1_177, A2_178, A3_179, A4_180)
+  local L5_181
+  L5_181 = node
+  L5_181 = L5_181(unpack(A0_176))
+  L5_181.target = A1_177
+  L5_181.title = A2_178
+  L5_181.order = A3_179
+  L5_181.flag = A4_180
+  L5_181.module = getfenv(2)._NAME
+  return L5_181
+end
+function get(...)
+  return _create_node({
+    ...
+  })
+end
+function node(...)
+  _create_node({
+    ...
+  }).module = getfenv(2)._NAME
+  _create_node({
+    ...
+  }).auto = nil
+  return (_create_node({
+    ...
+  }))
+end
+function _create_node(A0_184)
+  local L1_185, L2_186
+  L1_185 = #A0_184
+  if L1_185 == 0 then
+    L1_185 = context
+    L1_185 = L1_185.tree
+    return L1_185
+  end
+  L1_185 = table
+  L1_185 = L1_185.concat
+  L2_186 = A0_184
+  L1_185 = L1_185(L2_186, ".")
+  L2_186 = context
+  L2_186 = L2_186.treecache
+  L2_186 = L2_186[L1_185]
+  if not L2_186 then
+    L2_186 = {
+      nodes = {},
+      auto = true
+    }
+    if _create_node(A0_184).inreq and context.path[#A0_184 + 1] == table.remove(A0_184) then
+      L2_186.inreq = true
+    end
+    _create_node(A0_184).nodes[table.remove(A0_184)] = L2_186
+    context.treecache[L1_185] = L2_186
+  end
+  return L2_186
+end
+function _firstchild()
+  local L0_187, L1_188, L2_189, L3_190
+  L0_187 = {
+    [4] = L1_188(L2_189)
+  }
+  L1_188 = unpack
+  L2_189 = context
+  L2_189 = L2_189.path
+  L3_190 = L1_188(L2_189)
+  ;({
+    [4] = L1_188(L2_189)
+  })[1] = L1_188
+  ;({
+    [4] = L1_188(L2_189)
+  })[2] = L2_189
+  ;({
+    [4] = L1_188(L2_189)
+  })[3] = L3_190
+  L1_188 = table
+  L1_188 = L1_188.concat
+  L2_189 = L0_187
+  L3_190 = "."
+  L1_188 = L1_188(L2_189, L3_190)
+  L2_189 = context
+  L2_189 = L2_189.treecache
+  L2_189 = L2_189[L1_188]
+  L3_190 = nil
+  if L2_189 and L2_189.nodes and next(L2_189.nodes) then
+    for _FORV_9_, _FORV_10_ in pairs(L2_189.nodes) do
+      if L3_190 then
+      elseif (_FORV_10_.order or 100) < (L2_189.nodes[L3_190].order or 100) then
+        L3_190 = _FORV_9_
+      end
+    end
+  end
+  assert(L3_190 ~= nil, "The requested node contains no childs, unable to redispatch")
+  L0_187[#L0_187 + 1] = L3_190
+  dispatch(L0_187)
+end
+function firstchild()
+  local L0_191
+  L0_191 = {}
+  L0_191.type = "firstchild"
+  L0_191.target = _firstchild
+  return L0_191
+end
+function alias(...)
+  return function(...)
+    for _FORV_4_, _FORV_5_ in ipairs({
+      ...
+    }) do
+      _UPVALUE0_[#_UPVALUE0_ + 1] = _FORV_5_
+    end
+    dispatch(_UPVALUE0_)
+  end
+end
+function rewrite(A0_194, ...)
+  return function(...)
+    local L1_197, L2_198, L3_199, L4_200, L5_201, L6_202
+    L1_197 = _UPVALUE0_
+    L1_197 = L1_197.clone
+    L1_197 = L1_197(L2_198)
+    for L5_201 = 1, _UPVALUE1_ do
+      L6_202 = table
+      L6_202 = L6_202.remove
+      L6_202(L1_197, 1)
+    end
+    for L5_201, L6_202 in L2_198(L3_199) do
+      table.insert(L1_197, L5_201, L6_202)
+    end
+    L6_202 = ...
+    ;({
+      [4] = ...
+    })[1] = L4_200
+    ;({
+      [4] = ...
+    })[2] = L5_201
+    ;({
+      [4] = ...
+    })[3] = L6_202
+    for L5_201, L6_202 in L2_198(L3_199) do
+      L1_197[#L1_197 + 1] = L6_202
+    end
+    L2_198(L3_199)
+  end
+end
+function call(A0_203, ...)
+  local L2_205, L3_206
+  L2_205 = {}
+  L2_205.type = "call"
+  L3_206 = {
+    ...
+  }
+  L2_205.argv = L3_206
+  L2_205.name = A0_203
+  L3_206 = _UPVALUE0_
+  L2_205.target = L3_206
+  return L2_205
+end
+function template(A0_207)
+  local L1_208
+  L1_208 = {}
+  L1_208.type = "template"
+  L1_208.view = A0_207
+  L1_208.target = _UPVALUE0_
+  return L1_208
+end
+function arcombine(A0_209, A1_210)
+  local L2_211
+  L2_211 = {}
+  L2_211.type = "arcombine"
+  L2_211.env = getfenv()
+  L2_211.target = _UPVALUE0_
+  L2_211.targets = {A0_209, A1_210}
+  return L2_211
+end
+translate = i18n.translate
+function _(A0_212)
+  return translate(A0_212)
+end

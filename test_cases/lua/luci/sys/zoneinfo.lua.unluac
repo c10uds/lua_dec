@@ -1,0 +1,27 @@
+local L0_0
+L0_0 = setmetatable
+module("luci.sys.zoneinfo")
+L0_0(_M, {
+  __index = function(A0_1, A1_2)
+    local L2_3
+    if A1_2 == "TZ" then
+      L2_3 = _UPVALUE0_
+      L2_3 = L2_3(A0_1, A1_2)
+      if not L2_3 then
+        L2_3 = _UPVALUE1_
+        L2_3 = L2_3("luci.sys.zoneinfo.tzdata")
+        _UPVALUE2_(A0_1, A1_2, _UPVALUE0_(L2_3, A1_2))
+      end
+    elseif A1_2 == "OFFSET" then
+      L2_3 = _UPVALUE0_
+      L2_3 = L2_3(A0_1, A1_2)
+      if not L2_3 then
+        L2_3 = _UPVALUE1_
+        L2_3 = L2_3("luci.sys.zoneinfo.tzoffset")
+        _UPVALUE2_(A0_1, A1_2, _UPVALUE0_(L2_3, A1_2))
+      end
+    end
+    L2_3 = _UPVALUE0_
+    return L2_3(A0_1, A1_2)
+  end
+})

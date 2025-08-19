@@ -1,0 +1,54 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQController", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function _ubusSend(A0_1)
+  local L1_2, L2_3
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.encode
+  L2_3 = A0_1
+  L1_2 = L1_2(L2_3)
+  L2_3 = "ubus send trafficd \""
+  L2_3 = L2_3 .. _UPVALUE1_._cmdformat(L1_2) .. "\""
+  os.execute(L2_3)
+end
+function permission(A0_4, A1_5, A2_6, A3_7, A4_8)
+  local L5_9
+  L5_9 = _UPVALUE0_
+  L5_9 = L5_9.isStrNil
+  L5_9 = L5_9(A0_4)
+  if L5_9 then
+    return
+  end
+  L5_9 = {}
+  L5_9.api = 1
+  L5_9.mac = A0_4
+  L5_9.lan = A1_5
+  L5_9.wan = A2_6
+  L5_9.admin = A3_7
+  L5_9.pridisk = A4_8
+  _ubusSend(L5_9)
+end
+function wifimacfilter(A0_10, A1_11, A2_12, A3_13)
+  local L4_14
+  L4_14 = {}
+  L4_14.api = 2
+  L4_14.mac = ""
+  L4_14.enable = ""
+  L4_14.model = ""
+  L4_14.option = ""
+  if A0_10 then
+    L4_14.mac = A0_10
+    L4_14.model = A2_12
+    L4_14.option = A3_13
+  else
+    L4_14.mac = nil
+    if A1_11 then
+      L4_14.enable = 1
+    else
+      L4_14.enable = nil
+    end
+    L4_14.model = A2_12
+  end
+end

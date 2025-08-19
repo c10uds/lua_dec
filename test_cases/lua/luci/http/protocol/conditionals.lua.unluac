@@ -1,0 +1,72 @@
+local L0_0
+L0_0 = module
+L0_0("luci.http.protocol.conditionals", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.http.protocol.date")
+function mk_etag(A0_1)
+  if A0_1 ~= nil then
+    return string.format("\"%x-%x-%x\"", A0_1.ino, A0_1.size, A0_1.mtime)
+  end
+end
+function if_match(A0_2, A1_3)
+  local L2_4
+  L2_4 = A0_2.headers
+  if type(L2_4["If-Match"]) == "string" then
+    for _FORV_7_ in L2_4["If-Match"]:gmatch("([^, ]+)") do
+      if (_FORV_7_ == "*" or _FORV_7_ == mk_etag(A1_3)) and A1_3 ~= nil then
+        return true
+      end
+    end
+    return false, 412
+  end
+  return true
+end
+function if_modified_since(A0_5, A1_6)
+  local L2_7
+  L2_7 = A0_5.headers
+  if type(L2_7["If-Modified-Since"]) == "string" then
+    if A1_6 == nil or _UPVALUE0_.to_unix(L2_7["If-Modified-Since"]) < A1_6.mtime then
+      return true
+    end
+    return false, 304, {
+      ["ETag"] = mk_etag(A1_6),
+      ["Date"] = _UPVALUE0_.to_http(os.time()),
+      ["Last-Modified"] = _UPVALUE0_.to_http(A1_6.mtime)
+    }
+  end
+  return true
+end
+function if_none_match(A0_8, A1_9)
+  local L2_10
+  L2_10 = A0_8.headers
+  if type(L2_10["If-None-Match"]) == "string" then
+    for _FORV_8_ in L2_10["If-None-Match"]:gmatch("([^, ]+)") do
+      if (_FORV_8_ == "*" or _FORV_8_ == mk_etag(A1_9)) and A1_9 ~= nil then
+        if (A0_8.env and A0_8.env.REQUEST_METHOD or "GET") == "GET" or (A0_8.env and A0_8.env.REQUEST_METHOD or "GET") == "HEAD" then
+          return false, 304, {
+            ["ETag"] = mk_etag(A1_9),
+            ["Date"] = _UPVALUE0_.to_http(os.time()),
+            ["Last-Modified"] = _UPVALUE0_.to_http(A1_9.mtime)
+          }
+        else
+          return false, 412
+        end
+      end
+    end
+  end
+  return true
+end
+function if_range(A0_11, A1_12)
+  local L2_13, L3_14
+  L2_13 = false
+  L3_14 = 412
+  return L2_13, L3_14
+end
+function if_unmodified_since(A0_15, A1_16)
+  local L2_17
+  L2_17 = A0_15.headers
+  if type(L2_17["If-Unmodified-Since"]) == "string" and A1_16 ~= nil and _UPVALUE0_.to_unix(L2_17["If-Unmodified-Since"]) <= A1_16.mtime then
+    return false, 412
+  end
+  return true
+end

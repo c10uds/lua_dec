@@ -1,0 +1,4 @@
+module("luci.cacheloader")
+if require("luci.config").ccache and require("luci.config").ccache.enable == "1" then
+  require("luci.ccache").cache_ondemand()
+end

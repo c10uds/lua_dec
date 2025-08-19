@@ -1,0 +1,545 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4
+L0_0 = type
+L1_1 = pairs
+L2_2 = ipairs
+L3_3 = table
+L4_4 = luci
+module("luci.model.firewall")
+function _valid_id(A0_5)
+  return A0_5 and #A0_5 > 0 and A0_5:match("^[a-zA-Z0-9_]+$")
+end
+function _get(A0_6, A1_7, A2_8)
+  return _UPVALUE0_:get(A0_6, A1_7, A2_8)
+end
+function _set(A0_9, A1_10, A2_11, A3_12)
+  if A3_12 ~= nil then
+    if _UPVALUE0_(A3_12) == "boolean" then
+      A3_12 = A3_12 and "1" or "0"
+    end
+    return _UPVALUE1_:set(A0_9, A1_10, A2_11, A3_12)
+  else
+    return _UPVALUE1_:delete(A0_9, A1_10, A2_11)
+  end
+end
+function init(A0_13)
+  _UPVALUE0_ = A0_13 or _UPVALUE0_ or _UPVALUE1_.cursor()
+  _UPVALUE2_ = _UPVALUE0_:substate()
+  return _M
+end
+function save(A0_14, ...)
+  local L2_16, L3_17, L4_18
+  L2_16 = _UPVALUE0_
+  L3_17 = L2_16
+  L2_16 = L2_16.save
+  L4_18 = ...
+  L2_16(L3_17, L4_18)
+  L2_16 = _UPVALUE0_
+  L3_17 = L2_16
+  L2_16 = L2_16.load
+  L4_18 = ...
+  L2_16(L3_17, L4_18)
+end
+function commit(A0_19, ...)
+  local L2_21, L3_22, L4_23
+  L2_21 = _UPVALUE0_
+  L3_22 = L2_21
+  L2_21 = L2_21.commit
+  L4_23 = ...
+  L2_21(L3_22, L4_23)
+  L2_21 = _UPVALUE0_
+  L3_22 = L2_21
+  L2_21 = L2_21.load
+  L4_23 = ...
+  L2_21(L3_22, L4_23)
+end
+function get_defaults()
+  return defaults()
+end
+function new_zone(A0_24)
+  local L1_25, L2_26
+  L1_25 = "newzone"
+  L2_26 = 1
+  while A0_24:get_zone(L1_25) do
+    L2_26 = L2_26 + 1
+    L1_25 = "newzone%d" % L2_26
+  end
+  return A0_24:add_zone(L1_25)
+end
+function add_zone(A0_27, A1_28)
+  local L2_29, L3_30
+  L2_29 = _valid_id
+  L3_30 = A1_28
+  L2_29 = L2_29(L3_30)
+  if L2_29 then
+    L3_30 = A0_27
+    L2_29 = A0_27.get_zone
+    L2_29 = L2_29(L3_30, A1_28)
+    if not L2_29 then
+      L2_29 = defaults
+      L2_29 = L2_29()
+      L3_30 = _UPVALUE0_
+      L3_30 = L3_30.section
+      L3_30 = L3_30(L3_30, "firewall", "zone", nil, {
+        name = A1_28,
+        network = " ",
+        input = L2_29:input() or "DROP",
+        forward = L2_29:forward() or "DROP",
+        output = L2_29:output() or "DROP"
+      })
+      return L3_30 and zone(L3_30)
+    end
+  end
+end
+function get_zone(A0_31, A1_32)
+  local L2_33
+  L2_33 = _UPVALUE0_
+  L2_33 = L2_33.get
+  L2_33 = L2_33(L2_33, "firewall", A1_32)
+  if L2_33 == "zone" then
+    L2_33 = zone
+    return L2_33(A1_32)
+  else
+    L2_33 = nil
+    _UPVALUE0_:foreach("firewall", "zone", function(A0_34)
+      local L1_35
+      L1_35 = _UPVALUE0_
+      if L1_35 then
+        L1_35 = A0_34.name
+        if L1_35 == _UPVALUE0_ then
+          L1_35 = A0_34[".name"]
+          _UPVALUE1_ = L1_35
+          L1_35 = false
+          return L1_35
+        end
+      end
+    end)
+    return L2_33 and zone(L2_33)
+  end
+end
+function get_zones(A0_36)
+  local L1_37, L2_38
+  L1_37 = {}
+  L2_38 = {}
+  _UPVALUE0_:foreach("firewall", "zone", function(A0_39)
+    local L1_40
+    L1_40 = A0_39.name
+    if L1_40 then
+      L1_40 = _UPVALUE0_
+      L1_40[A0_39.name] = zone(A0_39[".name"])
+    end
+  end)
+  for _FORV_7_ in _UPVALUE1_.kspairs(L2_38) do
+    L1_37[#L1_37 + 1] = L2_38[_FORV_7_]
+  end
+  return L1_37
+end
+function get_zone_by_network(A0_41, A1_42)
+  local L2_43
+  _UPVALUE0_:foreach("firewall", "zone", function(A0_44)
+    local L1_45
+    L1_45 = A0_44.name
+    if L1_45 then
+      L1_45 = _UPVALUE0_
+      if L1_45 then
+        L1_45 = nil
+        for _FORV_5_ in _UPVALUE1_.imatch(A0_44.network or A0_44.name) do
+          if _FORV_5_ == _UPVALUE0_ then
+            _UPVALUE2_ = A0_44[".name"]
+            return false
+          end
+        end
+      end
+    end
+  end)
+  return L2_43 and zone(L2_43)
+end
+function del_zone(A0_46, A1_47)
+  local L2_48
+  L2_48 = false
+  if _UPVALUE0_:get("firewall", A1_47) == "zone" then
+    A1_47, L2_48 = _UPVALUE0_:get("firewall", A1_47, "name"), _UPVALUE0_:delete("firewall", A1_47)
+  else
+    _UPVALUE0_:foreach("firewall", "zone", function(A0_49)
+      if _UPVALUE0_ and A0_49.name == _UPVALUE0_ then
+        _UPVALUE1_ = _UPVALUE2_:delete("firewall", A0_49[".name"])
+        return false
+      end
+    end)
+  end
+  if L2_48 then
+    _UPVALUE0_:foreach("firewall", "rule", function(A0_50)
+      if A0_50.src == _UPVALUE0_ or A0_50.dest == _UPVALUE0_ then
+        _UPVALUE1_:delete("firewall", A0_50[".name"])
+      end
+    end)
+    _UPVALUE0_:foreach("firewall", "redirect", function(A0_51)
+      if A0_51.src == _UPVALUE0_ or A0_51.dest == _UPVALUE0_ then
+        _UPVALUE1_:delete("firewall", A0_51[".name"])
+      end
+    end)
+    _UPVALUE0_:foreach("firewall", "forwarding", function(A0_52)
+      if A0_52.src == _UPVALUE0_ or A0_52.dest == _UPVALUE0_ then
+        _UPVALUE1_:delete("firewall", A0_52[".name"])
+      end
+    end)
+  end
+  return L2_48
+end
+function rename_zone(A0_53, A1_54, A2_55)
+  local L3_56
+  L3_56 = false
+  if _valid_id(A2_55) and not A0_53:get_zone(A2_55) then
+    _UPVALUE0_:foreach("firewall", "zone", function(A0_57)
+      if _UPVALUE0_ and A0_57.name == _UPVALUE0_ then
+        if not A0_57.network then
+          _UPVALUE1_:set("firewall", A0_57[".name"], "network", _UPVALUE0_)
+        end
+        _UPVALUE1_:set("firewall", A0_57[".name"], "name", _UPVALUE2_)
+        _UPVALUE3_ = true
+        return false
+      end
+    end)
+    if L3_56 then
+      _UPVALUE0_:foreach("firewall", "rule", function(A0_58)
+        if A0_58.src == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_58[".name"], "src", _UPVALUE2_)
+        end
+        if A0_58.dest == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_58[".name"], "dest", _UPVALUE2_)
+        end
+      end)
+      _UPVALUE0_:foreach("firewall", "redirect", function(A0_59)
+        if A0_59.src == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_59[".name"], "src", _UPVALUE2_)
+        end
+        if A0_59.dest == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_59[".name"], "dest", _UPVALUE2_)
+        end
+      end)
+      _UPVALUE0_:foreach("firewall", "forwarding", function(A0_60)
+        if A0_60.src == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_60[".name"], "src", _UPVALUE2_)
+        end
+        if A0_60.dest == _UPVALUE0_ then
+          _UPVALUE1_:set("firewall", A0_60[".name"], "dest", _UPVALUE2_)
+        end
+      end)
+    end
+  end
+  return L3_56
+end
+function del_network(A0_61, A1_62)
+  local L2_63, L3_64
+  if A1_62 then
+    for _FORV_6_, _FORV_7_ in L3_64(A0_61:get_zones()) do
+      _FORV_7_:del_network(A1_62)
+    end
+  end
+end
+defaults = require("luci.util").class()
+function defaults.__init__(A0_65)
+  _UPVALUE0_:foreach("firewall", "defaults", function(A0_66)
+    _UPVALUE0_.sid = A0_66[".name"]
+    return false
+  end)
+  A0_65.sid = A0_65.sid or _UPVALUE0_:section("firewall", "defaults", nil, {})
+end
+function defaults.get(A0_67, A1_68)
+  return _get("firewall", A0_67.sid, A1_68)
+end
+function defaults.set(A0_69, A1_70, A2_71)
+  return _set("firewall", A0_69.sid, A1_70, A2_71)
+end
+function defaults.syn_flood(A0_72)
+  return A0_72:get("syn_flood") == "1"
+end
+function defaults.drop_invalid(A0_73)
+  return A0_73:get("drop_invalid") == "1"
+end
+function defaults.input(A0_74)
+  return A0_74:get("input") or "DROP"
+end
+function defaults.forward(A0_75)
+  return A0_75:get("forward") or "DROP"
+end
+function defaults.output(A0_76)
+  return A0_76:get("output") or "DROP"
+end
+zone = require("luci.util").class()
+function zone.__init__(A0_77, A1_78)
+  if _UPVALUE0_:get("firewall", A1_78) == "zone" then
+    A0_77.sid = A1_78
+    A0_77.data = _UPVALUE0_:get_all("firewall", A1_78)
+  else
+    _UPVALUE0_:foreach("firewall", "zone", function(A0_79)
+      local L1_80, L2_81
+      L1_80 = A0_79.name
+      L2_81 = _UPVALUE0_
+      if L1_80 == L2_81 then
+        L1_80 = _UPVALUE1_
+        L2_81 = A0_79[".name"]
+        L1_80.sid = L2_81
+        L1_80 = _UPVALUE1_
+        L1_80.data = A0_79
+        L1_80 = false
+        return L1_80
+      end
+    end)
+  end
+end
+function zone.get(A0_82, A1_83)
+  return _get("firewall", A0_82.sid, A1_83)
+end
+function zone.set(A0_84, A1_85, A2_86)
+  return _set("firewall", A0_84.sid, A1_85, A2_86)
+end
+function zone.masq(A0_87)
+  return A0_87:get("masq") == "1"
+end
+function zone.name(A0_88)
+  return A0_88:get("name")
+end
+function zone.network(A0_89)
+  return A0_89:get("network")
+end
+function zone.input(A0_90)
+  return A0_90:get("input") or defaults():input() or "DROP"
+end
+function zone.forward(A0_91)
+  return A0_91:get("forward") or defaults():forward() or "DROP"
+end
+function zone.output(A0_92)
+  return A0_92:get("output") or defaults():output() or "DROP"
+end
+function zone.add_network(A0_93, A1_94)
+  local L2_95
+  L2_95 = _UPVALUE0_
+  L2_95 = L2_95.get
+  L2_95 = L2_95(L2_95, "network", A1_94)
+  if L2_95 == "interface" then
+    L2_95 = {}
+    for _FORV_7_ in _UPVALUE1_.imatch(A0_93:get("network") or A0_93:get("name")) do
+      if _FORV_7_ ~= A1_94 then
+        L2_95[#L2_95 + 1] = _FORV_7_
+      end
+    end
+    L2_95[#L2_95 + 1] = A1_94
+    _M:del_network(A1_94)
+    A0_93:set("network", _UPVALUE2_.concat(L2_95, " "))
+  end
+end
+function zone.del_network(A0_96, A1_97)
+  local L2_98, L3_99
+  L2_98 = {}
+  L3_99 = nil
+  for _FORV_7_ in _UPVALUE0_.imatch(A0_96:get("network") or A0_96:get("name")) do
+    if _FORV_7_ ~= A1_97 then
+      L2_98[#L2_98 + 1] = _FORV_7_
+    end
+  end
+  if #L2_98 > 0 then
+    A0_96:set("network", _UPVALUE1_.concat(L2_98, " "))
+  else
+    A0_96:set("network", " ")
+  end
+end
+function zone.get_networks(A0_100)
+  local L1_101, L2_102
+  L1_101 = {}
+  L2_102 = nil
+  for _FORV_6_ in _UPVALUE0_.imatch(A0_100:get("network") or A0_100:get("name")) do
+    L1_101[#L1_101 + 1] = _FORV_6_
+  end
+  return L1_101
+end
+function zone.clear_networks(A0_103)
+  A0_103:set("network", " ")
+end
+function zone.get_forwardings_by(A0_104, A1_105)
+  _UPVALUE0_:foreach("firewall", "forwarding", function(A0_106)
+    local L1_107, L2_108
+    L1_107 = A0_106.src
+    if L1_107 then
+      L1_107 = A0_106.dest
+      if L1_107 then
+        L1_107 = _UPVALUE0_
+        L1_107 = A0_106[L1_107]
+        L2_108 = _UPVALUE1_
+        if L1_107 == L2_108 then
+          L1_107 = _UPVALUE2_
+          L2_108 = _UPVALUE2_
+          L2_108 = #L2_108
+          L2_108 = L2_108 + 1
+          L1_107[L2_108] = forwarding(A0_106[".name"])
+        end
+      end
+    end
+  end)
+  return {}
+end
+function zone.add_forwarding_to(A0_109, A1_110)
+  local L2_111, L3_112, L4_113
+  for _FORV_7_, _FORV_8_ in L4_113(A0_109:get_forwardings_by("src")) do
+    if _FORV_8_:dest() == A1_110 then
+      L2_111 = true
+      break
+    end
+  end
+  if not L2_111 then
+    if A1_110 ~= L4_113 then
+      if L4_113 then
+        return L4_113 and forwarding(L4_113)
+      end
+    end
+  end
+end
+function zone.add_forwarding_from(A0_114, A1_115)
+  local L2_116, L3_117, L4_118
+  for _FORV_7_, _FORV_8_ in L4_118(A0_114:get_forwardings_by("dest")) do
+    if _FORV_8_:src() == A1_115 then
+      L2_116 = true
+      break
+    end
+  end
+  if not L2_116 then
+    if A1_115 ~= L4_118 then
+      if L4_118 then
+        return L4_118 and forwarding(L4_118)
+      end
+    end
+  end
+end
+function zone.del_forwardings_by(A0_119, A1_120)
+  _UPVALUE0_:delete_all("firewall", "forwarding", function(A0_121)
+    local L1_122
+    L1_122 = A0_121.src
+    if L1_122 then
+      L1_122 = A0_121.dest
+      if L1_122 then
+        L1_122 = _UPVALUE0_
+        L1_122 = A0_121[L1_122]
+        L1_122 = L1_122 == _UPVALUE1_
+      end
+    end
+    return L1_122
+  end)
+end
+function zone.add_redirect(A0_123, A1_124)
+  local L2_125
+  if not A1_124 then
+    L2_125 = {}
+    A1_124 = L2_125
+  end
+  L2_125 = A0_123.name
+  L2_125 = L2_125(A0_123)
+  A1_124.src = L2_125
+  L2_125 = _UPVALUE0_
+  L2_125 = L2_125.section
+  L2_125 = L2_125(L2_125, "firewall", "redirect", nil, A1_124)
+  return L2_125 and redirect(L2_125)
+end
+function zone.add_rule(A0_126, A1_127)
+  local L2_128
+  if not A1_127 then
+    L2_128 = {}
+    A1_127 = L2_128
+  end
+  L2_128 = A0_126.name
+  L2_128 = L2_128(A0_126)
+  A1_127.src = L2_128
+  L2_128 = _UPVALUE0_
+  L2_128 = L2_128.section
+  L2_128 = L2_128(L2_128, "firewall", "rule", nil, A1_127)
+  return L2_128 and rule(L2_128)
+end
+function zone.get_color(A0_129)
+  if A0_129 and A0_129:name() == "lan" then
+    return "#90f090"
+  elseif A0_129 and A0_129:name() == "wan" then
+    return "#f09090"
+  elseif A0_129 then
+    _UPVALUE0_.randomseed(_UPVALUE1_.hash(A0_129:name()))
+    if _UPVALUE0_.random(128) + _UPVALUE0_.random(128) < 128 then
+    else
+    end
+    return "#%02x%02x%02x" % {
+      255 - _UPVALUE0_.random(128),
+      255 - _UPVALUE0_.random(128),
+      255 - (128 - _UPVALUE0_.random(128) - _UPVALUE0_.random(128) + _UPVALUE0_.floor(_UPVALUE0_.random() * (255 - _UPVALUE0_.random(128) - _UPVALUE0_.random(128) - (128 - _UPVALUE0_.random(128) - _UPVALUE0_.random(128)))))
+    }
+  else
+    return "#eeeeee"
+  end
+end
+forwarding = require("luci.util").class()
+function forwarding.__init__(A0_130, A1_131)
+  A0_130.sid = A1_131
+end
+function forwarding.src(A0_132)
+  return _UPVALUE0_:get("firewall", A0_132.sid, "src")
+end
+function forwarding.dest(A0_133)
+  return _UPVALUE0_:get("firewall", A0_133.sid, "dest")
+end
+function forwarding.src_zone(A0_134)
+  local L1_135
+  L1_135 = zone
+  return L1_135(A0_134:src())
+end
+function forwarding.dest_zone(A0_136)
+  local L1_137
+  L1_137 = zone
+  return L1_137(A0_136:dest())
+end
+rule = require("luci.util").class()
+function rule.__init__(A0_138, A1_139)
+  A0_138.sid = A1_139
+end
+function rule.get(A0_140, A1_141)
+  return _get("firewall", A0_140.sid, A1_141)
+end
+function rule.set(A0_142, A1_143, A2_144)
+  return _set("firewall", A0_142.sid, A1_143, A2_144)
+end
+function rule.src(A0_145)
+  return _UPVALUE0_:get("firewall", A0_145.sid, "src")
+end
+function rule.dest(A0_146)
+  return _UPVALUE0_:get("firewall", A0_146.sid, "dest")
+end
+function rule.src_zone(A0_147)
+  local L1_148
+  L1_148 = zone
+  return L1_148(A0_147:src())
+end
+function rule.dest_zone(A0_149)
+  local L1_150
+  L1_150 = zone
+  return L1_150(A0_149:dest())
+end
+redirect = require("luci.util").class()
+function redirect.__init__(A0_151, A1_152)
+  A0_151.sid = A1_152
+end
+function redirect.get(A0_153, A1_154)
+  return _get("firewall", A0_153.sid, A1_154)
+end
+function redirect.set(A0_155, A1_156, A2_157)
+  return _set("firewall", A0_155.sid, A1_156, A2_157)
+end
+function redirect.src(A0_158)
+  return _UPVALUE0_:get("firewall", A0_158.sid, "src")
+end
+function redirect.dest(A0_159)
+  return _UPVALUE0_:get("firewall", A0_159.sid, "dest")
+end
+function redirect.src_zone(A0_160)
+  local L1_161
+  L1_161 = zone
+  return L1_161(A0_160:src())
+end
+function redirect.dest_zone(A0_162)
+  local L1_163
+  L1_163 = zone
+  return L1_163(A0_162:dest())
+end

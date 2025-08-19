@@ -1,0 +1,201 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6
+L0_0 = _G
+L1_1 = require
+L2_2 = "string"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "math"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "socket.core"
+L3_3 = L3_3(L4_4)
+L4_4 = L3_3
+function L5_5(A0_7, A1_8, A2_9, A3_10)
+  return _UPVALUE0_.connect(A0_7, A1_8, A2_9, A3_10, "inet")
+end
+L4_4.connect4 = L5_5
+function L5_5(A0_11, A1_12, A2_13, A3_14)
+  return _UPVALUE0_.connect(A0_11, A1_12, A2_13, A3_14, "inet6")
+end
+L4_4.connect6 = L5_5
+function L5_5(A0_15, A1_16, A2_17)
+  local L3_18, L4_19, L5_20, L6_21
+  if A0_15 == "*" then
+    A0_15 = "0.0.0.0"
+  end
+  L3_18 = _UPVALUE0_
+  L3_18 = L3_18.dns
+  L3_18 = L3_18.getaddrinfo
+  L4_19 = A0_15
+  L4_19 = L3_18(L4_19)
+  if not L3_18 then
+    L5_20 = nil
+    L6_21 = L4_19
+    return L5_20, L6_21
+  end
+  L5_20, L6_21 = nil, nil
+  L4_19 = "no info on address"
+  for _FORV_10_, _FORV_11_ in _UPVALUE1_.ipairs(L3_18) do
+    if _FORV_11_.family == "inet" then
+      L5_20, L4_19 = _UPVALUE0_.tcp()
+    else
+      L5_20, L4_19 = _UPVALUE0_.tcp6()
+    end
+    if not L5_20 then
+      return nil, L4_19
+    end
+    L5_20:setoption("reuseaddr", true)
+    L6_21, L4_19 = L5_20:bind(_FORV_11_.addr, A1_16)
+    if not L6_21 then
+      L5_20:close()
+    else
+      L6_21, L4_19 = L5_20:listen(A2_17)
+      if not L6_21 then
+        L5_20:close()
+      else
+        return L5_20
+      end
+    end
+  end
+  return nil, L4_19
+end
+L4_4.bind = L5_5
+L5_5 = L4_4.newtry
+L5_5 = L5_5()
+L4_4.try = L5_5
+function L5_5(A0_22)
+  local L1_23
+  function L1_23(A0_24, A1_25, A2_26)
+    local L3_27
+    L3_27 = _UPVALUE0_
+    L3_27 = L3_27.type
+    L3_27 = L3_27(A0_24)
+    if L3_27 ~= "string" then
+      L3_27 = "default"
+      A1_25, A2_26 = A0_24, A1_25
+      A0_24 = L3_27
+    end
+    L3_27 = _UPVALUE1_
+    L3_27 = L3_27[A0_24 or "nil"]
+    if not L3_27 then
+      _UPVALUE0_.error("unknown key (" .. _UPVALUE0_.tostring(A0_24) .. ")", 3)
+    else
+      return L3_27(A1_25, A2_26)
+    end
+  end
+  return L1_23
+end
+L4_4.choose = L5_5
+L5_5 = {}
+L6_6 = {}
+L4_4.sourcet = L5_5
+L4_4.sinkt = L6_6
+L4_4.BLOCKSIZE = 2048
+L6_6["close-when-done"] = function(A0_28)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function(A0_29, A1_30, A2_31)
+      if not A1_30 then
+        _UPVALUE0_:close()
+        return 1
+      else
+        return _UPVALUE0_:send(A1_30)
+      end
+    end
+  })
+end
+L6_6["keep-open"] = function(A0_32)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function(A0_33, A1_34, A2_35)
+      if A1_34 then
+        return _UPVALUE0_:send(A1_34)
+      else
+        return 1
+      end
+    end
+  })
+end
+L6_6.default = L6_6["keep-open"]
+L4_4.sink = L4_4.choose(L6_6)
+L5_5["by-length"] = function(A0_36, A1_37)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function()
+      local L0_38, L1_39, L2_40
+      L0_38 = _UPVALUE0_
+      if L0_38 <= 0 then
+        L0_38 = nil
+        return L0_38
+      end
+      L0_38 = _UPVALUE1_
+      L0_38 = L0_38.min
+      L1_39 = _UPVALUE2_
+      L1_39 = L1_39.BLOCKSIZE
+      L2_40 = _UPVALUE0_
+      L0_38 = L0_38(L1_39, L2_40)
+      L1_39 = _UPVALUE3_
+      L2_40 = L1_39
+      L1_39 = L1_39.receive
+      L2_40 = L1_39(L2_40, L0_38)
+      if L2_40 then
+        return nil, L2_40
+      end
+      _UPVALUE0_ = _UPVALUE0_ - _UPVALUE4_.len(L1_39)
+      return L1_39
+    end
+  })
+end
+L5_5["until-closed"] = function(A0_41)
+  return _UPVALUE0_.setmetatable({
+    getfd = function()
+      return _UPVALUE0_:getfd()
+    end,
+    dirty = function()
+      return _UPVALUE0_:dirty()
+    end
+  }, {
+    __call = function()
+      local L0_42, L1_43
+      L0_42 = _UPVALUE0_
+      if L0_42 then
+        L0_42 = nil
+        return L0_42
+      end
+      L0_42 = _UPVALUE1_
+      L1_43 = L0_42
+      L0_42 = L0_42.receive
+      L1_43 = L0_42(L1_43, _UPVALUE2_.BLOCKSIZE)
+      if not L1_43 then
+        return L0_42
+      elseif L1_43 == "closed" then
+        _UPVALUE1_:close()
+        _UPVALUE0_ = 1
+        return L0_42(L1_43, _UPVALUE2_.BLOCKSIZE)
+      else
+        return nil, L1_43
+      end
+    end
+  })
+end
+L5_5.default = L5_5["until-closed"]
+L4_4.source = L4_4.choose(L5_5)
+return L4_4

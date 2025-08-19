@@ -1,0 +1,87 @@
+local L0_0
+L0_0 = require
+L0_0("miqos.common")
+L0_0 = "noifb"
+qdisc[L0_0] = {}
+;({}).clean = function(A0_1)
+  local L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8
+  L1_2 = {}
+  for L5_6, L6_7 in L2_3(L3_4) do
+    L7_8 = string
+    L7_8 = L7_8.format
+    L7_8 = L7_8("%s del dev %s root ", const_tc_qdisc, L6_7.dev)
+    table.insert(L1_2, L7_8)
+  end
+  if not L2_3 then
+    L2_3(L3_4, L4_5)
+  end
+  L2_3()
+  L2_3.changed = true
+end
+;({}).changed = function()
+  local L0_9, L1_10
+  L0_9 = true
+  return L0_9
+end
+;({}).read_qos_config = function()
+  if not read_qos_group_config() then
+    logger(3, "read_qos_group_config failed.")
+    return false
+  end
+  if not read_qos_guest_xq_config() then
+    logger(3, "read_qos_guest_xq_config failed.")
+    return false
+  end
+  return true
+end
+;({}).apply = function(A0_11, A1_12, A2_13, A3_14)
+  _UPVALUE0_(A3_14, origin_disc, A2_13, cfg.bands)
+  _UPVALUE1_(A2_13, _UPVALUE2_.child.host.id, _UPVALUE2_.child.guest.id)
+  _UPVALUE3_(cfg.guest.inner)
+  return true
+end
+;({}).update_counters = function(A0_15)
+  local L1_16
+  L1_16 = cfg
+  L1_16 = L1_16.enabled
+  L1_16 = L1_16.flag
+  if L1_16 == "0" then
+    return
+  end
+  L1_16 = {}
+  if QOS_VER == "FIX" or QOS_VER == "NOIFB" then
+    _UPVALUE0_()
+  end
+  for _FORV_5_, _FORV_6_ in pairs(_UPVALUE1_) do
+    if not g_group_def[_FORV_6_.mac] then
+    elseif g_group_def[_FORV_6_.mac].flag then
+    elseif not (tonumber(g_group_def[_FORV_6_.mac].max_grp_uplink or 0) <= 0) then
+    else
+    end
+    L1_16[_FORV_5_] = {
+      MAC = _FORV_6_.mac,
+      UP = {
+        min = 0,
+        min_per = 0,
+        min_cfg = 0,
+        max = 0 .. "Kbit",
+        max_per = _FORV_6_.UP.max_per or 0,
+        max_cfg = 0
+      },
+      DOWN = {
+        min = 0,
+        min_per = 0,
+        min_cfg = 0,
+        max = 0 .. "Kbit",
+        max_per = _FORV_6_.DOWN.max_per or 0,
+        max_cfg = 0
+      },
+      flag = "off"
+    }
+    if _UPVALUE2_[_FORV_5_] then
+      L1_16[_FORV_5_].UP.max = _UPVALUE2_[_FORV_5_].limit.UP or 0 .. "Kbit"
+      L1_16[_FORV_5_].DOWN.max = _UPVALUE2_[_FORV_5_].limit.DOWN or 0 .. "Kbit"
+    end
+  end
+  return L1_16
+end

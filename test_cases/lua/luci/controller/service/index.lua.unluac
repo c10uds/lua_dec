@@ -1,0 +1,9 @@
+module("luci.controller.service.index", package.seeall)
+function index()
+  node("service").target = firstchild()
+  node("service").title = _("")
+  node("service").order = nil
+  node("service").sysauth = "admin"
+  node("service").sysauth_authenticator = "jsonauth"
+  node("service").index = true
+end

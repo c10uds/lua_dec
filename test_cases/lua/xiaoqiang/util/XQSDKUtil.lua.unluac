@@ -1,0 +1,50 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQSDKUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.XQLog")
+CONFIG_MACFILTER = "sdkfilter"
+function _formatMac(A0_1)
+  if _UPVALUE0_.isStrNil(A0_1) then
+    return nil
+  end
+  return A0_1:gsub(":", "")
+end
+function checkPermission(A0_2)
+  if _UPVALUE0_.isStrNil(A0_2) then
+    return false
+  else
+    A0_2 = _UPVALUE0_.macFormat(A0_2)
+  end
+  if _UPVALUE1_.get(_formatMac(A0_2), nil, CONFIG_MACFILTER) then
+    if _UPVALUE1_.get(_formatMac(A0_2), nil, CONFIG_MACFILTER) == "1" then
+      _UPVALUE2_.log(6, "SDK filter. mac:" .. A0_2 .. " OK!")
+      return true
+    else
+      _UPVALUE2_.log(6, "SDK filter. mac:" .. A0_2 .. " not allowed")
+      return false
+    end
+  end
+  return false
+end
+function setPermission(A0_3, A1_4)
+  local L2_5
+  L2_5 = _UPVALUE0_
+  L2_5 = L2_5.isStrNil
+  L2_5 = L2_5(A0_3)
+  if L2_5 then
+    L2_5 = false
+    return L2_5
+  else
+    L2_5 = _UPVALUE0_
+    L2_5 = L2_5.macFormat
+    L2_5 = L2_5(A0_3)
+    A0_3 = L2_5
+  end
+  if A1_4 then
+    L2_5 = "1"
+  else
+    L2_5 = L2_5 or "0"
+  end
+  _UPVALUE1_.set(_formatMac(A0_3), L2_5, CONFIG_MACFILTER)
+end

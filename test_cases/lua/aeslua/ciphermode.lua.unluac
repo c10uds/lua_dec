@@ -1,0 +1,162 @@
+local L0_0
+L0_0 = module
+L0_0("aeslua.ciphermode", package.seeall)
+L0_0 = require
+L0_0 = L0_0("aeslua.aes")
+aeslua.ciphermode = {}
+;({}).encryptString = function(A0_1, A1_2, A2_3)
+  local L3_4, L4_5, L5_6, L6_7, L7_8, L8_9, L9_10, L10_11, L11_12
+  L3_4 = iv
+  if not L3_4 then
+    L3_4 = {
+      L4_5,
+      L5_6,
+      L6_7,
+      L7_8,
+      L8_9,
+      L9_10,
+      L10_11,
+      L11_12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    }
+    L4_5 = 0
+    L5_6 = 0
+    L9_10 = 0
+    L10_11 = 0
+    L11_12 = 0
+  end
+  L4_5 = _UPVALUE0_
+  L4_5 = L4_5.expandEncryptionKey
+  L5_6 = A0_1
+  L4_5 = L4_5(L5_6)
+  L5_6 = _UPVALUE1_
+  L5_6 = L5_6.new
+  L5_6 = L5_6()
+  for L9_10 = 1, L7_8 / 16 do
+    L10_11 = L9_10 - 1
+    L10_11 = L10_11 * 16
+    L10_11 = L10_11 + 1
+    L11_12 = {
+      string.byte(A1_2, L10_11, L10_11 + 15)
+    }
+    A2_3(L4_5, L11_12, L3_4)
+    _UPVALUE1_.addString(L5_6, string.char(unpack(L11_12)))
+  end
+  return L6_7(L7_8)
+end
+;({}).encryptECB = function(A0_13, A1_14, A2_15)
+  _UPVALUE0_.encrypt(A0_13, A1_14, 1, A1_14, 1)
+end
+;({}).encryptCBC = function(A0_16, A1_17, A2_18)
+  _UPVALUE0_.xorIV(A1_17, A2_18)
+  _UPVALUE1_.encrypt(A0_16, A1_17, 1, A1_17, 1)
+  for _FORV_6_ = 1, 16 do
+    A2_18[_FORV_6_] = A1_17[_FORV_6_]
+  end
+end
+;({}).encryptOFB = function(A0_19, A1_20, A2_21)
+  _UPVALUE0_.encrypt(A0_19, A2_21, 1, A2_21, 1)
+  _UPVALUE1_.xorIV(A1_20, A2_21)
+end
+;({}).encryptCFB = function(A0_22, A1_23, A2_24)
+  _UPVALUE0_.encrypt(A0_22, A2_24, 1, A2_24, 1)
+  _UPVALUE1_.xorIV(A1_23, A2_24)
+  for _FORV_6_ = 1, 16 do
+    A2_24[_FORV_6_] = A1_23[_FORV_6_]
+  end
+end
+;({}).decryptString = function(A0_25, A1_26, A2_27)
+  local L3_28, L4_29, L5_30, L6_31, L7_32, L8_33, L9_34, L10_35, L11_36
+  L3_28 = iv
+  if not L3_28 then
+    L3_28 = {
+      L4_29,
+      L5_30,
+      L6_31,
+      L7_32,
+      L8_33,
+      L9_34,
+      L10_35,
+      L11_36,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    }
+    L4_29 = 0
+    L5_30 = 0
+    L9_34 = 0
+    L10_35 = 0
+    L11_36 = 0
+  end
+  L4_29 = nil
+  L5_30 = _UPVALUE0_
+  L5_30 = L5_30.decryptOFB
+  if A2_27 ~= L5_30 then
+    L5_30 = _UPVALUE0_
+    L5_30 = L5_30.decryptCFB
+  else
+    if A2_27 == L5_30 then
+      L5_30 = _UPVALUE1_
+      L5_30 = L5_30.expandEncryptionKey
+      L5_30 = L5_30(L6_31)
+      L4_29 = L5_30
+  end
+  else
+    L5_30 = _UPVALUE1_
+    L5_30 = L5_30.expandDecryptionKey
+    L5_30 = L5_30(L6_31)
+    L4_29 = L5_30
+  end
+  L5_30 = _UPVALUE2_
+  L5_30 = L5_30.new
+  L5_30 = L5_30()
+  for L9_34 = 1, L7_32 / 16 do
+    L10_35 = L9_34 - 1
+    L10_35 = L10_35 * 16
+    L10_35 = L10_35 + 1
+    L11_36 = {
+      string.byte(A1_26, L10_35, L10_35 + 15)
+    }
+    L3_28 = A2_27(L4_29, L11_36, L3_28)
+    _UPVALUE2_.addString(L5_30, string.char(unpack(L11_36)))
+  end
+  return L6_31(L7_32)
+end
+;({}).decryptECB = function(A0_37, A1_38, A2_39)
+  _UPVALUE0_.decrypt(A0_37, A1_38, 1, A1_38, 1)
+  return A2_39
+end
+;({}).decryptCBC = function(A0_40, A1_41, A2_42)
+  for _FORV_7_ = 1, 16 do
+    ({})[_FORV_7_] = A1_41[_FORV_7_]
+  end
+  _FOR_.decrypt(A0_40, A1_41, 1, A1_41, 1)
+  _UPVALUE1_.xorIV(A1_41, A2_42)
+  return {}
+end
+;({}).decryptOFB = function(A0_43, A1_44, A2_45)
+  _UPVALUE0_.encrypt(A0_43, A2_45, 1, A2_45, 1)
+  _UPVALUE1_.xorIV(A1_44, A2_45)
+  return A2_45
+end
+;({}).decryptCFB = function(A0_46, A1_47, A2_48)
+  for _FORV_7_ = 1, 16 do
+    ({})[_FORV_7_] = A1_47[_FORV_7_]
+  end
+  _FOR_.encrypt(A0_46, A2_48, 1, A2_48, 1)
+  _UPVALUE1_.xorIV(A1_47, A2_48)
+  return {}
+end
+return {}

@@ -1,0 +1,376 @@
+local L0_0
+L0_0 = _G
+require("socket").ftp = {}
+require("socket").ftp.TIMEOUT = 60
+require("socket").ftp.PORT = 21
+require("socket").ftp.USER = "ftp"
+require("socket").ftp.PASSWORD = "anonymous@anonymous.org"
+require("socket").ftp.open = function(A0_1, A1_2, A2_3)
+  local L3_4
+  L3_4 = _UPVALUE0_
+  L3_4 = L3_4.try
+  L3_4 = L3_4(_UPVALUE1_.connect(A0_1, A1_2 or _UPVALUE2_.PORT, _UPVALUE2_.TIMEOUT, A2_3))
+  _UPVALUE3_.setmetatable({tp = L3_4}, _UPVALUE4_).try = _UPVALUE0_.newtry(function()
+    _UPVALUE0_:close()
+  end)
+  return (_UPVALUE3_.setmetatable({tp = L3_4}, _UPVALUE4_))
+end
+;({
+  __index = {}
+}).__index.portconnect = function(A0_5)
+  A0_5.try(A0_5.server:settimeout(_UPVALUE0_.TIMEOUT))
+  A0_5.data = A0_5.try(A0_5.server:accept())
+  A0_5.try(A0_5.data:settimeout(_UPVALUE0_.TIMEOUT))
+end
+;({
+  __index = {}
+}).__index.pasvconnect = function(A0_6)
+  A0_6.data = A0_6.try(_UPVALUE0_.tcp())
+  A0_6.try(A0_6.data:settimeout(_UPVALUE1_.TIMEOUT))
+  A0_6.try(A0_6.data:connect(A0_6.pasvt.ip, A0_6.pasvt.port))
+end
+;({
+  __index = {}
+}).__index.login = function(A0_7, A1_8, A2_9)
+  A0_7.try(A0_7.tp:command("user", A1_8 or _UPVALUE0_.USER))
+  if A0_7.try(A0_7.tp:check({"2..", 331})) == 331 then
+    A0_7.try(A0_7.tp:command("pass", A2_9 or _UPVALUE0_.PASSWORD))
+    A0_7.try(A0_7.tp:check("2.."))
+  end
+  return 1
+end
+;({
+  __index = {}
+}).__index.pasv = function(A0_10)
+  local L1_11, L2_12, L3_13, L4_14, L5_15, L6_16, L7_17, L8_18, L9_19
+  L1_11 = A0_10.try
+  L2_12 = A0_10.tp
+  L3_13 = L2_12
+  L2_12 = L2_12.command
+  L4_14 = "pasv"
+  L9_19 = L2_12(L3_13, L4_14)
+  L1_11(L2_12, L3_13, L4_14, L5_15, L6_16, L7_17, L8_18, L9_19, L2_12(L3_13, L4_14))
+  L1_11 = A0_10.try
+  L2_12 = A0_10.tp
+  L3_13 = L2_12
+  L2_12 = L2_12.check
+  L4_14 = "2.."
+  L9_19 = L2_12(L3_13, L4_14)
+  L2_12 = L1_11(L2_12, L3_13, L4_14, L5_15, L6_16, L7_17, L8_18, L9_19, L2_12(L3_13, L4_14))
+  L3_13 = "(%d+)%D(%d+)%D(%d+)%D(%d+)%D(%d+)%D(%d+)"
+  L4_14 = _UPVALUE0_
+  L4_14 = L4_14.skip
+  L5_15 = 2
+  L6_16 = _UPVALUE1_
+  L6_16 = L6_16.find
+  L7_17 = L2_12
+  L8_18 = L3_13
+  L9_19 = L6_16(L7_17, L8_18)
+  L9_19 = L4_14(L5_15, L6_16, L7_17, L8_18, L9_19, L6_16(L7_17, L8_18))
+  A0_10.try(L4_14 and L5_15 and L6_16 and L7_17 and L8_18 and L9_19, L2_12)
+  A0_10.pasvt = {
+    ip = _UPVALUE1_.format("%d.%d.%d.%d", L4_14, L5_15, L6_16, L7_17),
+    port = L8_18 * 256 + L9_19
+  }
+  if A0_10.server then
+    A0_10.server:close()
+    A0_10.server = nil
+  end
+  return A0_10.pasvt.ip, A0_10.pasvt.port
+end
+;({
+  __index = {}
+}).__index.port = function(A0_20, A1_21, A2_22)
+  local L3_23, L4_24, L5_25
+  A0_20.pasvt = nil
+  if not A1_21 then
+    L3_23 = A0_20.try
+    L4_24 = A0_20.tp
+    L5_25 = L4_24
+    L4_24 = L4_24.getcontrol
+    L4_24 = L4_24(L5_25)
+    L5_25 = L4_24
+    L4_24 = L4_24.getsockname
+    L5_25 = L4_24(L5_25)
+    L4_24 = L3_23(L4_24, L5_25, L4_24(L5_25))
+    A2_22 = L4_24
+    A1_21 = L3_23
+    L3_23 = A0_20.try
+    L4_24 = _UPVALUE0_
+    L4_24 = L4_24.bind
+    L5_25 = A1_21
+    L5_25 = L4_24(L5_25, 0)
+    L3_23 = L3_23(L4_24, L5_25, L4_24(L5_25, 0))
+    A0_20.server = L3_23
+    L3_23 = A0_20.try
+    L4_24 = A0_20.server
+    L5_25 = L4_24
+    L4_24 = L4_24.getsockname
+    L5_25 = L4_24(L5_25)
+    L4_24 = L3_23(L4_24, L5_25, L4_24(L5_25))
+    A2_22 = L4_24
+    A1_21 = L3_23
+    L3_23 = A0_20.try
+    L4_24 = A0_20.server
+    L5_25 = L4_24
+    L4_24 = L4_24.settimeout
+    L5_25 = L4_24(L5_25, _UPVALUE1_.TIMEOUT)
+    L3_23(L4_24, L5_25, L4_24(L5_25, _UPVALUE1_.TIMEOUT))
+  end
+  L3_23 = _UPVALUE2_
+  L3_23 = L3_23.mod
+  L4_24 = A2_22
+  L5_25 = 256
+  L3_23 = L3_23(L4_24, L5_25)
+  L4_24 = A2_22 - L3_23
+  L4_24 = L4_24 / 256
+  L5_25 = _UPVALUE3_
+  L5_25 = L5_25.gsub
+  L5_25 = L5_25(_UPVALUE3_.format("%s,%d,%d", A1_21, L4_24, L3_23), "%.", ",")
+  A0_20.try(A0_20.tp:command("port", L5_25))
+  A0_20.try(A0_20.tp:check("2.."))
+  return 1
+end
+;({
+  __index = {}
+}).__index.send = function(A0_26, A1_27)
+  local L2_28, L3_29, L4_30, L5_31, L6_32, L7_33, L8_34, L9_35
+  L2_28 = A0_26.try
+  L3_29 = A0_26.pasvt
+  L3_29 = L3_29 or A0_26.server
+  L4_30 = "need port or pasv first"
+  L2_28(L3_29, L4_30)
+  L2_28 = A0_26.pasvt
+  if L2_28 then
+    L3_29 = A0_26
+    L2_28 = A0_26.pasvconnect
+    L2_28(L3_29)
+  end
+  L2_28 = A1_27.argument
+  if not L2_28 then
+    L2_28 = _UPVALUE0_
+    L2_28 = L2_28.unescape
+    L3_29 = _UPVALUE1_
+    L3_29 = L3_29.gsub
+    L4_30 = A1_27.path
+    L4_30 = L4_30 or ""
+    L5_31 = "^[/\\]"
+    L6_32 = ""
+    L9_35 = L3_29(L4_30, L5_31, L6_32)
+    L2_28 = L2_28(L3_29, L4_30, L5_31, L6_32, L7_33, L8_34, L9_35, L3_29(L4_30, L5_31, L6_32))
+  end
+  if L2_28 == "" then
+    L2_28 = nil
+  end
+  L3_29 = A1_27.command
+  L3_29 = L3_29 or "stor"
+  L4_30 = A0_26.try
+  L5_31 = A0_26.tp
+  L6_32 = L5_31
+  L5_31 = L5_31.command
+  L7_33 = L3_29
+  L8_34 = L2_28
+  L9_35 = L5_31(L6_32, L7_33, L8_34)
+  L4_30(L5_31, L6_32, L7_33, L8_34, L9_35, L5_31(L6_32, L7_33, L8_34))
+  L4_30 = A0_26.try
+  L5_31 = A0_26.tp
+  L6_32 = L5_31
+  L5_31 = L5_31.check
+  L7_33 = {L8_34, L9_35}
+  L8_34 = "2.."
+  L9_35 = "1.."
+  L9_35 = L5_31(L6_32, L7_33)
+  L5_31 = L4_30(L5_31, L6_32, L7_33, L8_34, L9_35, L5_31(L6_32, L7_33))
+  L6_32 = A0_26.pasvt
+  if not L6_32 then
+    L7_33 = A0_26
+    L6_32 = A0_26.portconnect
+    L6_32(L7_33)
+  end
+  L6_32 = A1_27.step
+  if not L6_32 then
+    L6_32 = _UPVALUE2_
+    L6_32 = L6_32.pump
+    L6_32 = L6_32.step
+  end
+  L7_33 = {L8_34}
+  L8_34 = A0_26.tp
+  L8_34 = L8_34.c
+  function L8_34(A0_36, A1_37)
+    if _UPVALUE0_.select(_UPVALUE1_, nil, 0)[_UPVALUE2_] then
+      _UPVALUE3_ = _UPVALUE4_.try(_UPVALUE4_.tp:check("2.."))
+    end
+    return _UPVALUE5_(A0_36, A1_37)
+  end
+  L9_35 = _UPVALUE3_
+  L9_35 = L9_35.sink
+  L9_35 = L9_35("close-when-done", A0_26.data)
+  A0_26.try(_UPVALUE2_.pump.all(A1_27.source, L9_35, L8_34))
+  if _UPVALUE1_.find(L4_30, "1..") then
+    A0_26.try(A0_26.tp:check("2.."))
+  end
+  A0_26.data:close()
+  A0_26.data = nil
+  return (_UPVALUE3_.skip(1, A0_26.data:getstats()))
+end
+;({
+  __index = {}
+}).__index.receive = function(A0_38, A1_39)
+  local L2_40, L3_41, L4_42, L5_43, L6_44, L7_45
+  L2_40 = A0_38.try
+  L3_41 = A0_38.pasvt
+  L3_41 = L3_41 or A0_38.server
+  L4_42 = "need port or pasv first"
+  L2_40(L3_41, L4_42)
+  L2_40 = A0_38.pasvt
+  if L2_40 then
+    L3_41 = A0_38
+    L2_40 = A0_38.pasvconnect
+    L2_40(L3_41)
+  end
+  L2_40 = A1_39.argument
+  if not L2_40 then
+    L2_40 = _UPVALUE0_
+    L2_40 = L2_40.unescape
+    L3_41 = _UPVALUE1_
+    L3_41 = L3_41.gsub
+    L4_42 = A1_39.path
+    L4_42 = L4_42 or ""
+    L5_43 = "^[/\\]"
+    L6_44 = ""
+    L7_45 = L3_41(L4_42, L5_43, L6_44)
+    L2_40 = L2_40(L3_41, L4_42, L5_43, L6_44, L7_45, L3_41(L4_42, L5_43, L6_44))
+  end
+  if L2_40 == "" then
+    L2_40 = nil
+  end
+  L3_41 = A1_39.command
+  L3_41 = L3_41 or "retr"
+  L4_42 = A0_38.try
+  L5_43 = A0_38.tp
+  L6_44 = L5_43
+  L5_43 = L5_43.command
+  L7_45 = L3_41
+  L7_45 = L5_43(L6_44, L7_45, L2_40)
+  L4_42(L5_43, L6_44, L7_45, L5_43(L6_44, L7_45, L2_40))
+  L4_42 = A0_38.try
+  L5_43 = A0_38.tp
+  L6_44 = L5_43
+  L5_43 = L5_43.check
+  L7_45 = {"1..", "2.."}
+  L7_45 = L5_43(L6_44, L7_45)
+  L5_43 = L4_42(L5_43, L6_44, L7_45, L5_43(L6_44, L7_45))
+  if L4_42 >= 200 and L4_42 <= 299 then
+    L6_44 = A1_39.sink
+    L7_45 = L5_43
+    L6_44(L7_45)
+    L6_44 = 1
+    return L6_44
+  end
+  L6_44 = A0_38.pasvt
+  if not L6_44 then
+    L7_45 = A0_38
+    L6_44 = A0_38.portconnect
+    L6_44(L7_45)
+  end
+  L6_44 = _UPVALUE2_
+  L6_44 = L6_44.source
+  L7_45 = "until-closed"
+  L6_44 = L6_44(L7_45, A0_38.data)
+  L7_45 = A1_39.step
+  if not L7_45 then
+    L7_45 = _UPVALUE3_
+    L7_45 = L7_45.pump
+    L7_45 = L7_45.step
+  end
+  A0_38.try(_UPVALUE3_.pump.all(L6_44, A1_39.sink, L7_45))
+  if _UPVALUE1_.find(L4_42, "1..") then
+    A0_38.try(A0_38.tp:check("2.."))
+  end
+  A0_38.data:close()
+  A0_38.data = nil
+  return 1
+end
+;({
+  __index = {}
+}).__index.cwd = function(A0_46, A1_47)
+  local L2_48
+  L2_48 = A0_46.try
+  L2_48(A0_46.tp:command("cwd", A1_47))
+  L2_48 = A0_46.try
+  L2_48(A0_46.tp:check(250))
+  L2_48 = 1
+  return L2_48
+end
+;({
+  __index = {}
+}).__index.type = function(A0_49, A1_50)
+  local L2_51
+  L2_51 = A0_49.try
+  L2_51(A0_49.tp:command("type", A1_50))
+  L2_51 = A0_49.try
+  L2_51(A0_49.tp:check(200))
+  L2_51 = 1
+  return L2_51
+end
+;({
+  __index = {}
+}).__index.greet = function(A0_52)
+  local L1_53
+  L1_53 = A0_52.try
+  L1_53 = L1_53(A0_52.tp:check({"1..", "2.."}))
+  if _UPVALUE0_.find(L1_53, "1..") then
+    A0_52.try(A0_52.tp:check("2.."))
+  end
+  return 1
+end
+;({
+  __index = {}
+}).__index.quit = function(A0_54)
+  local L1_55
+  L1_55 = A0_54.try
+  L1_55(A0_54.tp:command("quit"))
+  L1_55 = A0_54.try
+  L1_55(A0_54.tp:check("2.."))
+  L1_55 = 1
+  return L1_55
+end
+;({
+  __index = {}
+}).__index.close = function(A0_56)
+  if A0_56.data then
+    A0_56.data:close()
+  end
+  if A0_56.server then
+    A0_56.server:close()
+  end
+  return A0_56.tp:close()
+end
+require("socket").ftp.put = require("socket").protect(function(A0_57, A1_58)
+  if _UPVALUE0_.type(A0_57) == "string" then
+    return _UPVALUE1_(A0_57, A1_58)
+  else
+    return _UPVALUE2_(A0_57)
+  end
+end)
+require("socket").ftp.command = require("socket").protect(function(A0_59)
+  A0_59 = _UPVALUE0_(A0_59)
+  _UPVALUE1_.try(A0_59.host, "missing hostname")
+  _UPVALUE1_.try(A0_59.command, "missing command")
+  open(A0_59.host, A0_59.port, A0_59.create):greet()
+  open(A0_59.host, A0_59.port, A0_59.create):login(A0_59.user, A0_59.password)
+  open(A0_59.host, A0_59.port, A0_59.create).try(open(A0_59.host, A0_59.port, A0_59.create).tp:command(A0_59.command, A0_59.argument))
+  if A0_59.check then
+    open(A0_59.host, A0_59.port, A0_59.create).try(open(A0_59.host, A0_59.port, A0_59.create).tp:check(A0_59.check))
+  end
+  open(A0_59.host, A0_59.port, A0_59.create):quit()
+  return open(A0_59.host, A0_59.port, A0_59.create):close()
+end)
+require("socket").ftp.get = require("socket").protect(function(A0_60)
+  if _UPVALUE0_.type(A0_60) == "string" then
+    return _UPVALUE1_(A0_60)
+  else
+    return _UPVALUE2_(A0_60)
+  end
+end)
+return require("socket").ftp

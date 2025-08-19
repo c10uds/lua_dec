@@ -1,0 +1,613 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20, L21_21, L22_22
+L0_0 = require
+L1_1 = "io"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "math"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "table"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "debug"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "luci.debug"
+L4_4 = L4_4(L5_5)
+L5_5 = require
+L6_6 = "string"
+L5_5 = L5_5(L6_6)
+L6_6 = require
+L7_7 = "coroutine"
+L6_6 = L6_6(L7_7)
+L7_7 = require
+L8_8 = "luci.template.parser"
+L7_7 = L7_7(L8_8)
+L8_8 = getmetatable
+L9_9 = setmetatable
+L10_10 = rawget
+L11_11 = rawset
+L12_12 = unpack
+L13_13 = tostring
+L14_14 = type
+L15_15 = assert
+L16_16 = ipairs
+L17_17 = pairs
+L18_18 = next
+L19_19 = loadstring
+L20_20 = require
+L21_21 = pcall
+L22_22 = xpcall
+module("luci.util")
+L8_8("").__mod = function(A0_23, A1_24)
+  if not A1_24 then
+    return A0_23
+  elseif _UPVALUE0_(A1_24) == "table" then
+    for _FORV_5_, _FORV_6_ in _UPVALUE1_(A1_24) do
+      if _UPVALUE0_(A1_24[_FORV_5_]) == "userdata" then
+        A1_24[_FORV_5_] = _UPVALUE2_(A1_24[_FORV_5_])
+      end
+    end
+    return A0_23:format(_UPVALUE3_(A1_24))
+  else
+    if _UPVALUE0_(A1_24) == "userdata" then
+      A1_24 = _UPVALUE2_(A1_24)
+    end
+    return A0_23:format(A1_24)
+  end
+end
+function class(A0_25)
+  return _UPVALUE0_({}, {__call = _UPVALUE1_, __index = A0_25})
+end
+function instanceof(A0_26, A1_27)
+  local L2_28
+  L2_28 = _UPVALUE0_
+  L2_28 = L2_28(A0_26)
+  while L2_28 and L2_28.__index do
+    if L2_28.__index == A1_27 then
+      return true
+    end
+    L2_28 = _UPVALUE0_(L2_28.__index)
+  end
+  return false
+end
+function threadlocal(A0_29)
+  return _UPVALUE0_(A0_29 or {}, _UPVALUE1_)
+end
+function perror(A0_30)
+  return _UPVALUE0_.stderr:write(_UPVALUE1_(A0_30) .. "\n")
+end
+function dumptable(A0_31, A1_32, A2_33, A3_34)
+  local L4_35, L5_36, L6_37, L7_38, L8_39
+  A2_33 = A2_33 or 0
+  if not A3_34 then
+    L6_37.__mode = "k"
+    A3_34 = L4_35
+  end
+  for L7_38, L8_39 in L4_35(L5_36) do
+    perror(_UPVALUE2_.rep("\t", A2_33) .. _UPVALUE3_(L7_38) .. "\t" .. _UPVALUE3_(L8_39))
+    if _UPVALUE4_(L8_39) == "table" and (not A1_32 or A1_32 > A2_33) then
+      if not A3_34[L8_39] then
+        A3_34[L8_39] = true
+        dumptable(L8_39, A1_32, A2_33 + 1, A3_34)
+      else
+        perror(_UPVALUE2_.rep("\t", A2_33) .. "*** RECURSION ***")
+      end
+    end
+  end
+end
+function pcdata(A0_40)
+  return A0_40 and _UPVALUE0_.pcdata(_UPVALUE1_(A0_40))
+end
+function striptags(A0_41)
+  return A0_41 and _UPVALUE0_.striptags(_UPVALUE1_(A0_41))
+end
+function split(A0_42, A1_43, A2_44, A3_45)
+  local L4_46, L5_47
+  A1_43 = A1_43 or "\n"
+  A2_44 = A2_44 or #A0_42
+  L4_46 = {}
+  L5_47 = 1
+  if #A0_42 == 0 then
+    return {""}
+  end
+  if #A1_43 == 0 then
+    return nil
+  end
+  if A2_44 == 0 then
+    return A0_42
+  end
+  repeat
+    A2_44 = A2_44 - 1
+    if A0_42:find(A1_43, L5_47, not A3_45) and A2_44 < 0 then
+      L4_46[#L4_46 + 1] = A0_42:sub(L5_47)
+    else
+      L4_46[#L4_46 + 1] = A0_42:sub(L5_47, A0_42:find(A1_43, L5_47, not A3_45) and A0_42:find(A1_43, L5_47, not A3_45) - 1)
+    end
+    L5_47 = A0_42:find(A1_43, L5_47, not A3_45) and A0_42:find(A1_43, L5_47, not A3_45) + 1 or #A0_42 + 1
+  until not A0_42:find(A1_43, L5_47, not A3_45) or A2_44 < 0
+  return L4_46
+end
+function trim(A0_48)
+  return (A0_48:gsub("^%s*(.-)%s*$", "%1"))
+end
+function cmatch(A0_49, A1_50)
+  for _FORV_6_ in A0_49:gmatch(A1_50) do
+  end
+  return 0 + 1
+end
+function imatch(A0_51)
+  if _UPVALUE0_(A0_51) == "table" then
+    return function()
+      _UPVALUE0_ = _UPVALUE1_(_UPVALUE2_, _UPVALUE0_)
+      return _UPVALUE2_[_UPVALUE0_]
+    end
+  elseif _UPVALUE0_(A0_51) == "number" or _UPVALUE0_(A0_51) == "boolean" then
+    return function()
+      if _UPVALUE0_ then
+        _UPVALUE0_ = false
+        return _UPVALUE1_(_UPVALUE2_)
+      end
+    end
+  elseif _UPVALUE0_(A0_51) == "userdata" or _UPVALUE0_(A0_51) == "string" then
+    return _UPVALUE2_(A0_51):gmatch("%S+")
+  end
+  return function()
+    local L0_52, L1_53
+  end
+end
+function parse_units(A0_54)
+  local L1_55, L2_56
+  L1_55 = 0
+  L2_56 = {}
+  L2_56.y = 31622400
+  L2_56.m = 2678400
+  L2_56.w = 604800
+  L2_56.d = 86400
+  L2_56.h = 3600
+  L2_56.min = 60
+  L2_56.kb = 1024
+  L2_56.mb = 1048576
+  L2_56.gb = 1073741824
+  L2_56.kib = 1000
+  L2_56.mib = 1000000
+  L2_56.gib = 1000000000
+  for _FORV_6_ in A0_54:lower():gmatch("[0-9%.]+[a-zA-Z]*") do
+    if L2_56[_FORV_6_:gsub("^[0-9%.]+", "")] or L2_56[_FORV_6_:gsub("^[0-9%.]+", ""):sub(1, 1)] then
+      L1_55 = L1_55 + _FORV_6_:gsub("[^0-9%.]+$", "") * (L2_56[_FORV_6_:gsub("^[0-9%.]+", "")] or L2_56[_FORV_6_:gsub("^[0-9%.]+", ""):sub(1, 1)])
+    else
+      L1_55 = L1_55 + _FORV_6_:gsub("[^0-9%.]+$", "")
+    end
+  end
+  return L1_55
+end
+L5_5.pcdata = pcdata
+L5_5.striptags = striptags
+L5_5.split = split
+L5_5.trim = trim
+L5_5.cmatch = cmatch
+L5_5.parse_units = parse_units
+function append(A0_57, ...)
+  local L2_59, L3_60, L4_61, L5_62, L6_63
+  L6_63 = ...
+  ;({
+    [4] = ...
+  })[1] = L4_61
+  ;({
+    [4] = ...
+  })[2] = L5_62
+  ;({
+    [4] = ...
+  })[3] = L6_63
+  for L5_62, L6_63 in L2_59(L3_60) do
+    if _UPVALUE1_(L6_63) == "table" then
+      for _FORV_10_, _FORV_11_ in _UPVALUE0_(L6_63) do
+        A0_57[#A0_57 + 1] = _FORV_11_
+      end
+    else
+      A0_57[#A0_57 + 1] = L6_63
+    end
+  end
+  return A0_57
+end
+function combine(...)
+  local L1_65, L2_66, L3_67
+  L1_65 = append
+  L2_66 = {}
+  L3_67 = ...
+  return L1_65(L2_66, L3_67)
+end
+function contains(A0_68, A1_69)
+  for _FORV_5_, _FORV_6_ in _UPVALUE0_(A0_68) do
+    if A1_69 == _FORV_6_ then
+      return _FORV_5_
+    end
+  end
+  return false
+end
+function update(A0_70, A1_71)
+  for _FORV_5_, _FORV_6_ in _UPVALUE0_(A1_71) do
+    A0_70[_FORV_5_] = _FORV_6_
+  end
+end
+function keys(A0_72)
+  local L1_73
+  L1_73 = {}
+  if A0_72 then
+    for _FORV_5_, _FORV_6_ in kspairs(A0_72) do
+      L1_73[#L1_73 + 1] = _FORV_5_
+    end
+  end
+  return L1_73
+end
+function clone(A0_74, A1_75)
+  local L2_76, L3_77, L4_78, L5_79, L6_80, L7_81
+  L2_76 = {}
+  for L6_80, L7_81 in L3_77(L4_78) do
+    if A1_75 and _UPVALUE1_(L7_81) == "table" then
+      L7_81 = clone(L7_81, A1_75)
+    end
+    L2_76[L6_80] = L7_81
+  end
+  L6_80 = A0_74
+  L7_81 = L5_79(L6_80)
+  return L3_77(L4_78, L5_79, L6_80, L7_81, L5_79(L6_80))
+end
+function dtable()
+  return _UPVALUE0_({}, {
+    __index = function(A0_82, A1_83)
+      return _UPVALUE0_(A0_82, A1_83) or _UPVALUE0_(_UPVALUE1_(A0_82, A1_83, dtable()), A1_83)
+    end
+  })
+end
+function _serialize_table(A0_84)
+  local L1_85, L2_86, L3_87, L4_88, L5_89, L6_90, L7_91, L8_92
+  L1_85 = ""
+  L2_86 = ""
+  L3_87 = 0
+  for L7_91, L8_92 in L4_88(L5_89) do
+    if _UPVALUE1_(L7_91) ~= "number" or L7_91 < 1 or _UPVALUE2_.floor(L7_91) ~= L7_91 or L7_91 - #A0_84 > 3 then
+      L7_91 = _serialize_data(L7_91)
+      L8_92 = _serialize_data(L8_92)
+      L1_85 = L1_85 .. (#L1_85 > 0 and ", " or "") .. "[" .. L7_91 .. "] = " .. L8_92
+    elseif L3_87 < L7_91 then
+      L3_87 = L7_91
+    end
+  end
+  for L7_91 = 1, L3_87 do
+    L8_92 = _serialize_data
+    L8_92 = L8_92(A0_84[L7_91])
+    L2_86 = L2_86 .. (#L2_86 > 0 and ", " or "") .. L8_92
+  end
+  if L5_89 > 0 then
+  else
+  end
+  return L4_88
+end
+function serialize_data(A0_93)
+  _UPVALUE0_(not hasRecursion(A0_93), "Recursion detected.")
+  return _serialize_data(A0_93)
+end
+function _serialize_data(A0_94)
+  if A0_94 == nil then
+    return "nil"
+  elseif _UPVALUE0_(A0_94) == "number" then
+    return A0_94
+  elseif _UPVALUE0_(A0_94) == "string" then
+    return "%q" % A0_94
+  elseif _UPVALUE0_(A0_94) == "boolean" then
+    return A0_94 and "true" or "false"
+  elseif _UPVALUE0_(A0_94) == "function" then
+    return "loadstring(%q)" % get_bytecode(A0_94)
+  elseif _UPVALUE0_(A0_94) == "table" then
+    return "{ " .. _serialize_table(A0_94) .. " }"
+  else
+    return "\"[unhandled data type:" .. _UPVALUE0_(A0_94) .. "]\""
+  end
+end
+function hasRecursion(A0_95)
+  local L1_96
+  if A0_95 ~= nil then
+    L1_96 = _UPVALUE0_
+    L1_96 = L1_96(A0_95)
+  elseif L1_96 ~= "table" then
+    L1_96 = false
+    return L1_96
+  end
+  L1_96 = {}
+  L1_96[A0_95] = true
+  return hasR(A0_95, L1_96)
+end
+function hasR(A0_97, A1_98)
+  local L2_99, L3_100, L4_101, L5_102, L6_103
+  for L5_102, L6_103 in L2_99(L3_100) do
+    if _UPVALUE1_(L5_102) == "table" then
+      if A1_98[L5_102] then
+        while true do
+          if A0_97 == L5_102 then
+            return true
+          elseif not A1_98[A0_97] then
+            break
+          end
+        end
+      end
+      A1_98[L5_102] = A0_97
+      if hasR(L5_102, A1_98) then
+        return true
+      end
+    end
+    if _UPVALUE1_(L6_103) == "table" then
+      if A1_98[L6_103] then
+        while true do
+          if A0_97 == L6_103 then
+            return true
+          elseif not A1_98[A0_97] then
+            break
+          end
+        end
+      end
+      A1_98[L6_103] = A0_97
+      if hasR(L6_103, A1_98) then
+        return true
+      end
+    end
+  end
+  return L2_99
+end
+function restore_data(A0_104)
+  return _UPVALUE0_("return " .. A0_104)()
+end
+function get_bytecode(A0_105)
+  local L1_106
+  if _UPVALUE0_(A0_105) == "function" then
+    L1_106 = _UPVALUE1_.dump(A0_105)
+  else
+    L1_106 = _UPVALUE1_.dump(_UPVALUE2_("return " .. serialize_data(A0_105)))
+  end
+  return L1_106
+end
+function strip_bytecode(A0_107)
+  local L1_108, L2_109, L3_110, L4_111, L5_112, L6_113, L7_114, L8_115, L9_116, L10_117
+  L2_109 = A0_107
+  L1_108 = A0_107.byte
+  L3_110 = 5
+  L4_111 = 12
+  L8_115 = L1_108(L2_109, L3_110, L4_111)
+  L9_116 = nil
+  if L3_110 == 1 then
+    function L9_116(A0_118, A1_119, A2_120)
+      local L3_121, L4_122, L6_123, L8_124
+      L3_121 = 0
+      for _FORV_7_ = A2_120, 1, 4294967295 do
+        L3_121 = L3_121 * 256 + A0_118:byte(A1_119 + _FORV_7_ - 1)
+      end
+      return L4_122, L6_123
+    end
+  else
+    function L9_116(A0_125, A1_126, A2_127)
+      local L3_128, L4_129, L6_130, L8_131
+      L3_128 = 0
+      for _FORV_7_ = 1, A2_127 do
+        L3_128 = L3_128 * 256 + A0_125:byte(A1_126 + _FORV_7_ - 1)
+      end
+      return L4_129, L6_130
+    end
+  end
+  function L10_117(A0_132)
+    local L1_133, L2_134, L3_135, L4_136, L5_137, L6_138, L7_139, L8_140, L9_141
+    L1_133 = _UPVALUE0_
+    L2_134 = A0_132
+    L3_135 = 1
+    L4_136 = _UPVALUE1_
+    L2_134 = L1_133(L2_134, L3_135, L4_136)
+    L3_135 = {
+      [7] = L4_136(L5_137, L6_138)
+    }
+    L4_136 = _UPVALUE2_
+    L4_136 = L4_136.rep
+    L9_141 = L4_136(L5_137, L6_138)
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[1] = L4_136
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[2] = L5_137
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[3] = L6_138
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[4] = L7_139
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[5] = L8_140
+    ;({
+      [7] = L4_136(L5_137, L6_138)
+    })[6] = L9_141
+    L4_136 = L2_134 + L1_133
+    L2_134 = L5_137 + 4
+    L8_140 = L2_134
+    L9_141 = _UPVALUE3_
+    L2_134 = L5_137 + L6_138
+    L8_140 = _UPVALUE3_
+    L2_134 = L6_138
+    L1_133 = L5_137
+    for L8_140 = 1, L1_133 do
+      L9_141 = nil
+      L9_141, L2_134 = _UPVALUE0_(A0_132, L2_134, 1)
+      if L9_141 == 1 then
+        L2_134 = L2_134 + 1
+      elseif L9_141 == 4 then
+        L2_134 = L2_134 + _UPVALUE1_ + _UPVALUE0_(A0_132, L2_134, _UPVALUE1_)
+      elseif L9_141 == 3 then
+        L2_134 = L2_134 + _UPVALUE5_
+      elseif L9_141 == 254 or L9_141 == 9 then
+        L2_134 = L2_134 + _UPVALUE6_
+      end
+    end
+    L8_140 = _UPVALUE3_
+    L2_134 = L6_138
+    L1_133 = L5_137
+    L8_140 = L4_136
+    L9_141 = L2_134 - 1
+    L3_135[L5_137] = L6_138
+    for L8_140 = 1, L1_133 do
+      L9_141 = _UPVALUE7_
+      L9_141 = L9_141(A0_132:sub(L2_134, 4294967295))
+      L3_135[#L3_135 + 1] = L9_141
+      L2_134 = L2_134 + L9_141(A0_132:sub(L2_134, 4294967295)) - 1
+    end
+    L8_140 = _UPVALUE3_
+    L2_134 = L5_137 + L6_138
+    L8_140 = _UPVALUE3_
+    L2_134 = L6_138
+    L1_133 = L5_137
+    for L8_140 = 1, L1_133 do
+      L9_141 = _UPVALUE0_
+      L9_141 = L9_141(A0_132, L2_134, _UPVALUE1_)
+      L9_141 = L2_134 + L9_141
+      L9_141 = L9_141 + _UPVALUE1_
+      L2_134 = L9_141 + _UPVALUE3_ * 2
+    end
+    L8_140 = _UPVALUE3_
+    L2_134 = L6_138
+    L1_133 = L5_137
+    for L8_140 = 1, L1_133 do
+      L9_141 = _UPVALUE0_
+      L9_141 = L9_141(A0_132, L2_134, _UPVALUE1_)
+      L9_141 = L2_134 + L9_141
+      L2_134 = L9_141 + _UPVALUE1_
+    end
+    L8_140 = _UPVALUE3_
+    L8_140 = L8_140 * 3
+    L3_135[L5_137] = L6_138
+    return L5_137, L6_138
+  end
+  return A0_107:sub(1, 12) .. L10_117(A0_107:sub(13, 4294967295))
+end
+function _sortiter(A0_142, A1_143)
+  local L2_144, L3_145, L4_146
+  L2_144 = {}
+  L3_145, L4_146 = nil, nil
+  for _FORV_8_, _FORV_9_ in _UPVALUE0_(A0_142) do
+    L2_144[#L2_144 + 1] = _FORV_8_
+  end
+  _UPVALUE1_.sort(L2_144, A1_143)
+  return function()
+    local L0_147, L1_148, L2_149
+    L0_147 = _UPVALUE0_
+    L0_147 = L0_147 + 1
+    _UPVALUE0_ = L0_147
+    L0_147 = _UPVALUE0_
+    L1_148 = _UPVALUE1_
+    L1_148 = #L1_148
+    if L0_147 <= L1_148 then
+      L0_147 = _UPVALUE1_
+      L1_148 = _UPVALUE0_
+      L0_147 = L0_147[L1_148]
+      L1_148 = _UPVALUE2_
+      L2_149 = _UPVALUE1_
+      L2_149 = L2_149[_UPVALUE0_]
+      L1_148 = L1_148[L2_149]
+      L2_149 = _UPVALUE0_
+      return L0_147, L1_148, L2_149
+    end
+  end
+end
+function spairs(A0_150, A1_151)
+  return _sortiter(A0_150, A1_151)
+end
+function kspairs(A0_152)
+  return _sortiter(A0_152)
+end
+function vspairs(A0_153)
+  return _sortiter(A0_153, function(A0_154, A1_155)
+    local L2_156, L3_157
+    L2_156 = _UPVALUE0_
+    L2_156 = L2_156[A0_154]
+    L3_157 = _UPVALUE0_
+    L3_157 = L3_157[A1_155]
+    L2_156 = L2_156 < L3_157
+    return L2_156
+  end)
+end
+function bigendian()
+  return _UPVALUE0_.byte(_UPVALUE0_.dump(function()
+    local L0_158, L1_159
+  end), 7) == 0
+end
+function exec(A0_160)
+  _UPVALUE0_.popen(A0_160):close()
+  return (_UPVALUE0_.popen(A0_160):read("*a"))
+end
+function execi(A0_161)
+-- fail 8
+null
+2
+  return function()
+    if not _UPVALUE0_:read() then
+      _UPVALUE0_:close()
+    end
+    return (_UPVALUE0_:read())
+  end
+end
+function execl(A0_162)
+  local L1_163, L2_164
+  L1_163 = _UPVALUE0_
+  L1_163 = L1_163.popen
+  L2_164 = A0_162
+  L1_163 = L1_163(L2_164)
+  L2_164 = ""
+  while true do
+    L2_164 = L1_163:read()
+    if L2_164 == nil then
+      break
+    end
+    ;({})[#{} + 1] = L2_164
+  end
+  L1_163:close()
+  return {}
+end
+function libpath()
+  return _UPVALUE0_("nixio.fs").dirname(_UPVALUE1_.__file__)
+end
+coxpt = {}
+L9_9(coxpt, {__mode = "kv"})
+function coxpcall(A0_165, A1_166, ...)
+  local L3_168, L4_169, L5_170, L6_171
+  L3_168 = _UPVALUE0_
+  L4_169 = _UPVALUE1_
+  L4_169 = L4_169.create
+  L5_170 = A0_165
+  L4_169 = L3_168(L4_169, L5_170)
+  if not L3_168 then
+    L5_170 = {
+      [2] = ...
+    }
+    L6_171 = ...
+    ;({
+      [2] = ...
+    })[1] = L6_171
+    function L6_171()
+      local L0_172
+      L0_172 = _UPVALUE0_
+      return L0_172(_UPVALUE1_(_UPVALUE2_))
+    end
+    L4_169 = _UPVALUE1_.create(L6_171)
+  end
+  L5_170 = _UPVALUE1_
+  L5_170 = L5_170.running
+  L5_170 = L5_170()
+  L6_171 = coxpt
+  L6_171[L4_169] = coxpt[L5_170] or L5_170 or 0
+  L6_171 = _UPVALUE3_
+  return L6_171(A1_166, L4_169, ...)
+end
+function copcall(A0_173, ...)
+  local L2_175, L3_176, L4_177, L5_178
+  L2_175 = coxpcall
+  L3_176 = A0_173
+  L4_177 = _UPVALUE0_
+  L5_178 = ...
+  return L2_175(L3_176, L4_177, L5_178)
+end

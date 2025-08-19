@@ -1,0 +1,73 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13
+L2_2 = ...
+L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L3_3 = L1_1:taboption("general", Value, "server", translate("VPN Server"))
+L3_3.datatype = "host"
+L4_4 = L1_1:taboption("general", Value, "username", translate("PAP/CHAP username"))
+L5_5 = L1_1:taboption("general", Value, "password", translate("PAP/CHAP password"))
+L5_5.password = true
+L6_6 = L1_1:taboption("advanced", Flag, "defaultroute", translate("Use default gateway"), translate("If unchecked, no default route is configured"))
+L6_6.default = L6_6.enabled
+L7_7 = L1_1:taboption("advanced", Value, "metric", translate("Use gateway metric"))
+L7_7.placeholder = "0"
+L7_7.datatype = "uinteger"
+L7_7:depends("defaultroute", L6_6.enabled)
+L8_8 = L1_1:taboption("advanced", Flag, "peerdns", translate("Use DNS servers advertised by peer"), translate("If unchecked, the advertised DNS server addresses are ignored"))
+L8_8.default = L8_8.enabled
+L9_9 = L1_1:taboption("advanced", DynamicList, "dns", translate("Use custom DNS servers"))
+L9_9:depends("peerdns", "")
+L9_9.datatype = "ipaddr"
+L9_9.cast = "string"
+L10_10 = L1_1:taboption("advanced", Value, "_keepalive_failure", translate("LCP echo failure threshold"), translate("Presume peer to be dead after given amount of LCP echo failures, use 0 to ignore failures"))
+function L10_10.cfgvalue(A0_14, A1_15)
+  local L2_16
+  L2_16 = m
+  L2_16 = L2_16.get
+  L2_16 = L2_16(L2_16, A1_15, "keepalive")
+  if L2_16 and #L2_16 > 0 then
+    return tonumber(L2_16:match("^(%d+)[ ,]+%d+") or L2_16)
+  end
+end
+function L10_10.write()
+  local L0_17, L1_18
+end
+function L10_10.remove()
+  local L0_19, L1_20
+end
+L10_10.placeholder = "0"
+L10_10.datatype = "uinteger"
+L11_11 = L1_1:taboption("advanced", Value, "_keepalive_interval", translate("LCP echo interval"), translate("Send LCP echo requests at the given interval in seconds, only effective in conjunction with failure threshold"))
+function L11_11.cfgvalue(A0_21, A1_22)
+  if m:get(A1_22, "keepalive") and #m:get(A1_22, "keepalive") > 0 then
+    return tonumber(m:get(A1_22, "keepalive"):match("^%d+[ ,]+(%d+)"))
+  end
+end
+function L11_11.write(A0_23, A1_24, A2_25)
+  local L3_26, L4_27
+  L3_26 = tonumber
+  L4_27 = _UPVALUE0_
+  L4_27 = L4_27.formvalue
+  L4_27 = L4_27(L4_27, A1_24)
+  L3_26 = L3_26(L4_27, L4_27(L4_27, A1_24))
+  L3_26 = L3_26 or 0
+  L4_27 = tonumber
+  L4_27 = L4_27(A2_25)
+  L4_27 = L4_27 or 5
+  if L4_27 < 1 then
+    L4_27 = 1
+  end
+  if L3_26 > 0 then
+    m:set(A1_24, "keepalive", "%d %d" % {L3_26, L4_27})
+  else
+    m:del(A1_24, "keepalive")
+  end
+end
+L11_11.remove = L11_11.write
+L11_11.placeholder = "5"
+L11_11.datatype = "min(1)"
+L12_12 = L1_1:taboption("advanced", Value, "demand", translate("Inactivity timeout"), translate("Close inactive connection after the given amount of seconds, use 0 to persist connection"))
+L12_12.placeholder = "0"
+L12_12.datatype = "uinteger"
+L13_13 = L1_1:taboption("advanced", Value, "mtu", translate("Override MTU"))
+L13_13.placeholder = "1500"
+L13_13.datatype = "max(1500)"

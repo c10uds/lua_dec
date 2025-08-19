@@ -1,0 +1,33 @@
+module("xiaoqiang.module.XQPredownload", package.seeall)
+function predownloadInfo()
+  ({}).auto = tonumber(require("luci.model.uci").cursor():get("otapred", "settings", "auto") or 0)
+  ;({}).time = tonumber(require("luci.model.uci").cursor():get("otapred", "settings", "time") or 4)
+  ;({}).priority = tonumber(require("luci.model.uci").cursor():get("otapred", "settings", "priority") or 0)
+  ;({}).plugin = tonumber(require("luci.model.uci").cursor():get("otapred", "settings", "plugin") or 1)
+  return {}
+end
+function setPredownload(A0_0, A1_1, A2_2, A3_3)
+  if tonumber(A0_0) then
+    require("luci.model.uci").cursor():set("otapred", "settings", "priority", A0_0)
+  end
+  if tonumber(A1_1) then
+    require("luci.model.uci").cursor():set("otapred", "settings", "auto", A1_1)
+  end
+  if tonumber(A2_2) and tonumber(A2_2) >= 0 and tonumber(A2_2) < 24 then
+    require("luci.model.uci").cursor():set("otapred", "settings", "time", A2_2)
+  end
+  if tonumber(A3_3) then
+    require("luci.model.uci").cursor():set("otapred", "settings", "plugin", A3_3)
+  end
+  require("luci.model.uci").cursor():commit("otapred")
+end
+function switch(A0_4)
+  if A0_4 then
+    return os.execute("/etc/init.d/predownload-ota start") == 0
+  else
+    return os.execute("/etc/init.d/predownload-ota stop") == 0
+  end
+end
+function reload()
+  os.execute("/etc/init.d/predownload-ota restart")
+end

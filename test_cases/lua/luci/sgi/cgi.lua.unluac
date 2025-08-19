@@ -1,0 +1,87 @@
+local L0_0
+L0_0 = os
+L0_0 = L0_0.clock
+L0_0 = L0_0()
+exectime = L0_0
+L0_0 = module
+L0_0("luci.sgi.cgi", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.ltn12")
+require("nixio.util")
+require("luci.http")
+require("luci.sys")
+require("luci.dispatcher")
+function run()
+  local L0_1, L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8
+  L0_1 = luci
+  L0_1 = L0_1.http
+  L0_1 = L0_1.Request
+  L1_2 = luci
+  L1_2 = L1_2.sys
+  L1_2 = L1_2.getenv
+  L1_2 = L1_2()
+  L2_3 = _UPVALUE0_
+  L3_4 = io
+  L3_4 = L3_4.stdin
+  L4_5 = tonumber
+  L5_6 = luci
+  L5_6 = L5_6.sys
+  L5_6 = L5_6.getenv
+  L6_7 = "CONTENT_LENGTH"
+  L7_8 = L5_6(L6_7)
+  L7_8 = L4_5(L5_6, L6_7, L7_8, L5_6(L6_7))
+  L2_3 = L2_3(L3_4, L4_5, L5_6, L6_7, L7_8, L4_5(L5_6, L6_7, L7_8, L5_6(L6_7)))
+  L3_4 = _UPVALUE1_
+  L3_4 = L3_4.sink
+  L3_4 = L3_4.file
+  L4_5 = io
+  L4_5 = L4_5.stderr
+  L7_8 = L3_4(L4_5)
+  L0_1 = L0_1(L1_2, L2_3, L3_4, L4_5, L5_6, L6_7, L7_8, L3_4(L4_5))
+  L1_2 = coroutine
+  L1_2 = L1_2.create
+  L2_3 = luci
+  L2_3 = L2_3.dispatcher
+  L2_3 = L2_3.httpdispatch
+  L1_2 = L1_2(L2_3)
+  L2_3 = ""
+  L3_4 = true
+  while true do
+    L4_5 = coroutine
+    L4_5 = L4_5.status
+    L5_6 = L1_2
+    L4_5 = L4_5(L5_6)
+    if L4_5 ~= "dead" then
+      L4_5 = coroutine
+      L4_5 = L4_5.resume
+      L5_6 = L1_2
+      L6_7 = L0_1
+      L7_8 = L4_5(L5_6, L6_7)
+      if not L4_5 then
+        print("Status: 500 Internal Server Error")
+        print("Content-Type: text/plain\n")
+        print(L5_6)
+        break
+      end
+    end
+    if L3_4 then
+      if L5_6 == 1 then
+        io.write("Status: " .. tostring(L6_7) .. " " .. L7_8 .. "\r\n")
+      elseif L5_6 == 2 then
+        L2_3 = L2_3 .. L6_7 .. ": " .. L7_8 .. "\r\n"
+      elseif L5_6 == 3 then
+        io.write(L2_3)
+        io.write("\r\n")
+      elseif L5_6 == 4 then
+        io.write(tostring(L6_7 or ""))
+      elseif L5_6 == 5 then
+        io.flush()
+        io.close()
+        L3_4 = false
+      elseif L5_6 == 6 then
+        L6_7:copyz(nixio.stdout, L7_8)
+        L6_7:close()
+      end
+    end
+  end
+end

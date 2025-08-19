@@ -1,0 +1,851 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQQoSUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("luci.model.uci")
+L0_0 = L0_0.cursor
+L0_0 = L0_0()
+function _application()
+  if luci.model.uci.cursor():get_all("app-tc", "config") then
+    ({}).enable = luci.model.uci.cursor():get_all("app-tc", "config").enable
+  end
+  if luci.model.uci.cursor():get_all("app-tc", "xunlei") then
+    ({}).xunlei = luci.model.uci.cursor():get_all("app-tc", "xunlei")
+  end
+  if luci.model.uci.cursor():get_all("app-tc", "kuaipan") then
+    ({}).kuaipan = luci.model.uci.cursor():get_all("app-tc", "kuaipan")
+  end
+  return {}
+end
+function _set(A0_1, A1_2, A2_3)
+  _UPVALUE0_:set("app-tc", A0_1, A1_2, A2_3)
+end
+function _apply()
+  _UPVALUE0_:save("app-tc")
+  _UPVALUE0_:commit("app-tc")
+end
+function _appSpeedlimit(A0_4, A1_5, A2_6)
+  if A1_5 then
+    _set(A0_4, "max_download_speed", tostring(A1_5))
+  end
+  if A2_6 then
+    _set(A0_4, "max_upload_speed", tostring(A2_6))
+  end
+  _apply()
+end
+function appSpeedlimitSwitch(A0_7)
+  local L1_8, L2_9
+  if A0_7 then
+    L1_8 = _UPVALUE0_
+    L1_8 = L1_8.QOS_APPSL_ENABLE
+  elseif not L1_8 then
+    L1_8 = _UPVALUE0_
+    L1_8 = L1_8.QOS_APPSL_DISABLE
+  end
+  if A0_7 then
+    L2_9 = "1"
+  else
+    L2_9 = L2_9 or "0"
+  end
+  _set("config", "enable", L2_9)
+  _apply()
+  return os.execute(L1_8) == 0
+end
+function appInfo()
+  if _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":1}") and _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":1}").code == 0 then
+    ({}).download = tonumber(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":1}").downloadSpeed)
+    ;({}).upload = tonumber(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":1}").uploadSpeed)
+  else
+    ({}).download = 0
+    ;({}).upload = 0
+  end
+  if _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":0}") and _UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":0}").code == 0 then
+    ({}).download = tonumber(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":0}").downloadSpeed)
+    ;({}).upload = tonumber(_UPVALUE0_.thrift_tunnel_to_datacenter("{\"api\":45,\"appCode\":0}").uploadSpeed)
+  else
+    ({}).download = 0
+    ;({}).upload = 0
+  end
+  ;({}).enable = _application().enable
+  ;({}).enable = _application().xunlei.enable
+  ;({}).maxdownload = tonumber(_application().xunlei.max_download_speed)
+  ;({}).maxupload = tonumber(_application().xunlei.max_upload_speed)
+  ;({}).enable = _application().kuaipan.enable
+  ;({}).maxdownload = tonumber(_application().kuaipan.max_download_speed)
+  ;({}).kuaipan, ({}).xunlei, ({}).maxupload = {}, {}, tonumber(_application().kuaipan.max_upload_speed)
+  return {}
+end
+function setXunlei(A0_10, A1_11)
+  _appSpeedlimit("xunlei", A0_10, A1_11)
+end
+function setKuaipan(A0_12, A1_13)
+  _appSpeedlimit("kuaipan", A0_12, A1_13)
+end
+function reload()
+  os.execute(_UPVALUE0_.QOS_APPSL_RELOAD)
+end
+function _bitFormat(A0_14)
+  if _UPVALUE0_.isStrNil(A0_14) then
+    return 0
+  end
+  if type(A0_14) == "number" then
+    return tonumber(string.format("%0.2f", A0_14 / 8192))
+  end
+  if A0_14:match("Gbit") then
+    return tonumber(A0_14:match("(%S+)Gbit")) * 131072
+  elseif A0_14:match("Mbit") then
+    return tonumber(A0_14:match("(%S+)Mbit")) * 128
+  elseif A0_14:match("Kbit") then
+    return tonumber(string.format("%0.2f", tonumber(A0_14:match("(%S+)Kbit")) / 8))
+  elseif A0_14:match("bit") then
+    return tonumber(string.format("%0.2f", tonumber(A0_14:match("(%S+)bit")) / 8192))
+  else
+    return 0
+  end
+end
+function _weightHelper(A0_15)
+  local L1_16
+  if A0_15 == 1 then
+    L1_16 = 2.6339E-319
+    return L1_16
+  elseif A0_15 == 2 then
+    L1_16 = 2.8363E-319
+    return L1_16
+  elseif A0_15 == 3 then
+    L1_16 = 2.93747E-319
+    return L1_16
+  else
+    L1_16 = -1.5423487136675799E-180
+    return L1_16
+  end
+end
+function _levelHelper(A0_17)
+  local L1_18
+  if A0_17 == 0 then
+    L1_18 = 2
+    return L1_18
+  elseif A0_17 > 0 and A0_17 <= 2.6339E-319 then
+    L1_18 = 1
+    return L1_18
+  elseif A0_17 > 2.6339E-319 and A0_17 <= 2.8363E-319 then
+    L1_18 = 2
+    return L1_18
+  elseif A0_17 > 2.8363E-319 then
+    L1_18 = 3
+    return L1_18
+  end
+  L1_18 = 0
+  return L1_18
+end
+function qosSwitch(A0_19)
+  if A0_19 then
+    return os.execute("/etc/init.d/miqos on") == 0
+  else
+    return os.execute("/etc/init.d/miqos off") == 0
+  end
+end
+function setQoSMode(A0_20)
+  if tonumber(A0_20) then
+    if tonumber(A0_20) == 0 then
+      return os.execute("/etc/init.d/miqos set_type auto") == 0
+    elseif tonumber(A0_20) == 1 then
+      return os.execute("/etc/init.d/miqos set_type min") == 0
+    elseif tonumber(A0_20) == 2 then
+      return os.execute("/etc/init.d/miqos set_type max") == 0
+    elseif tonumber(A0_20) == 3 then
+      return os.execute("/etc/init.d/miqos set_type service && /etc/init.d/miqos set_seq auto") == 0
+    elseif tonumber(A0_20) == 4 then
+      return os.execute("/etc/init.d/miqos set_type service && /etc/init.d/miqos set_seq game") == 0
+    elseif tonumber(A0_20) == 5 then
+      return os.execute("/etc/init.d/miqos set_type service && /etc/init.d/miqos set_seq web") == 0
+    elseif tonumber(A0_20) == 6 then
+      return os.execute("/etc/init.d/miqos set_type service && /etc/init.d/miqos set_seq video") == 0
+    end
+  end
+  return false
+end
+function qosRestart()
+  return os.execute("/etc/init.d/miqos restart")
+end
+function qosStatus()
+  if os.execute("/etc/init.d/miqos status") == 0 then
+    ({}).on = 1
+    ;({}).mode = 0
+    if require("miqos").cmd("show_limit") and require("miqos").cmd("show_limit").status == 0 and require("miqos").cmd("show_limit").mode then
+      if require("miqos").cmd("show_limit").mode == "auto" then
+        ({}).mode = 0
+      elseif require("miqos").cmd("show_limit").mode == "min" then
+        ({}).mode = 1
+      elseif require("miqos").cmd("show_limit").mode == "max" then
+        ({}).mode = 2
+      elseif require("miqos").cmd("show_limit").mode == "service" or require("miqos").cmd("show_limit").mode == "noifb" then
+        if require("miqos").cmd("get_seq").status == 0 then
+          ({}).mode = ({
+            auto = 3,
+            game = 4,
+            web = 5,
+            video = 6
+          })[require("miqos").cmd("get_seq").data.seq_prio] or ({
+            auto = 3,
+            game = 4,
+            web = 5,
+            video = 6
+          }).auto
+        else
+          ({}).mode = ({
+            auto = 3,
+            game = 4,
+            web = 5,
+            video = 6
+          }).auto
+        end
+      else
+        ({}).mode = ({
+          auto = 3,
+          game = 4,
+          web = 5,
+          video = 6
+        }).auto
+      end
+    end
+  else
+    ({}).on = 0
+    ;({}).mode = 0
+  end
+  return {}
+end
+function qosBand()
+  if require("miqos").cmd("show_band") and require("miqos").cmd("show_band").status == 0 and require("miqos").cmd("show_band").data then
+    ({download = 0, upload = 0}).download = tonumber(string.format("%0.2f", require("miqos").cmd("show_band").data.downlink / 1024))
+    ;({download = 0, upload = 0}).upload = tonumber(string.format("%0.2f", require("miqos").cmd("show_band").data.uplink / 1024))
+  end
+  return {download = 0, upload = 0}
+end
+function wangzheInfo()
+  if require("miqos").cmd("show_wangzhe") and require("miqos").cmd("show_wangzhe").status == 0 and require("miqos").cmd("show_wangzhe").data then
+    ({switch = 0}).switch = require("miqos").cmd("show_wangzhe").data.switch
+  end
+  return {switch = 0}
+end
+function setQosBand(A0_21, A1_22)
+  local L2_23, L3_24, L4_25
+  L2_23 = require
+  L3_24 = "miqos"
+  L2_23 = L2_23(L3_24)
+  if A0_21 and A1_22 then
+    L3_24 = tostring
+    L4_25 = math
+    L4_25 = L4_25.floor
+    L4_25 = L4_25(1024 * A0_21)
+    L3_24 = L3_24(L4_25, L4_25(1024 * A0_21))
+    L4_25 = tostring
+    L4_25 = L4_25(math.floor(1024 * A1_22))
+    if L2_23.cmd(string.format("change_band %s %s", L3_24, L4_25)) and L2_23.cmd(string.format("change_band %s %s", L3_24, L4_25)).status == 0 then
+      return true
+    end
+  end
+  L3_24 = false
+  return L3_24
+end
+function qosList()
+  local L0_26, L1_27, L2_28, L3_29, L4_30, L5_31, L6_32, L7_33, L8_34, L9_35, L10_36, L11_37, L12_38, L13_39, L14_40, L15_41, L16_42
+  L0_26 = require
+  L1_27 = "luci.util"
+  L0_26 = L0_26(L1_27)
+  L1_27 = require
+  L2_28 = "miqos"
+  L1_27 = L1_27(L2_28)
+  L2_28 = require
+  L3_29 = "xiaoqiang.util.XQDeviceUtil"
+  L2_28 = L2_28(L3_29)
+  L3_29 = {}
+  L4_30 = {}
+  L5_31 = L2_28.getDeviceList
+  L6_32 = true
+  L7_33 = true
+  L5_31 = L5_31(L6_32, L7_33)
+  L6_32 = L1_27.cmd
+  L7_33 = "show_limit"
+  L6_32 = L6_32(L7_33)
+  L7_33 = qosBand
+  L7_33 = L7_33()
+  if L5_31 then
+    if L8_34 == "table" then
+      if L8_34 > 0 then
+        for L11_37, L12_38 in L8_34(L9_35) do
+          L13_39 = L12_38.ip
+          L4_30[L13_39] = L12_38
+        end
+      end
+    end
+  end
+  if L4_30 and L6_32 then
+    if L8_34 == 0 then
+      if L8_34 then
+        for L11_37, L12_38 in L8_34(L9_35) do
+          L13_39 = L4_30[L11_37]
+          if L13_39 then
+            L14_40 = L0_26.clone
+            L15_41 = L13_39
+            L16_42 = true
+            L14_40 = L14_40(L15_41, L16_42)
+            L13_39 = L14_40
+            L13_39.ip = L11_37
+            L14_40 = {}
+            L15_41 = tonumber
+            L16_42 = L12_38.DOWN
+            L16_42 = L16_42.max_per
+            L15_41 = L15_41(L16_42)
+            L15_41 = L15_41 / 8
+            L14_40.downmax = L15_41
+            L15_41 = tonumber
+            L16_42 = L12_38.DOWN
+            L16_42 = L16_42.min_per
+            L15_41 = L15_41(L16_42)
+            L15_41 = L15_41 / 8
+            L14_40.downmin = L15_41
+            L15_41, L16_42 = nil, nil
+            if 0 < L7_33.download then
+              L15_41 = 100 * (tonumber(L12_38.DOWN.max_per) or 1)
+              L16_42 = _levelHelper(tonumber(L12_38.DOWN.min_per) or 0)
+            else
+              L16_42 = 2
+              L15_41 = 100
+            end
+            L14_40.maxdownper = L15_41
+            L14_40.upmax = tonumber(L12_38.UP.max_per) / 8
+            L14_40.upmin = tonumber(L12_38.UP.min_per) / 8
+            if 0 < L7_33.upload then
+            else
+            end
+            L14_40.upmaxper, L14_40.level = 100, L16_42
+            L13_39.qos = L14_40
+            if L13_39.isap == 0 then
+              table.insert(L3_29, L13_39)
+            end
+          end
+        end
+      end
+    end
+  end
+  return L3_29
+end
+function macQosInfo(A0_43)
+  if require("miqos").cmd("show_cfg").status ~= 0 then
+    return nil
+  end
+  if require("miqos").cmd("show_cfg").data and require("miqos").cmd("show_cfg").data[A0_43] then
+    ({
+      upmax = 0,
+      downmax = 0,
+      flag = "off"
+    }).upmax = tonumber(require("miqos").cmd("show_cfg").data[A0_43].max_grp_uplink) / 8
+    ;({
+      upmax = 0,
+      downmax = 0,
+      flag = "off"
+    }).downmax = tonumber(require("miqos").cmd("show_cfg").data[A0_43].max_grp_downlink) / 8
+    ;({
+      upmax = 0,
+      downmax = 0,
+      flag = "off"
+    }).flag = require("miqos").cmd("show_cfg").data[A0_43].flag
+    if not require("miqos").cmd("show_cfg").data[A0_43].flag then
+      if 0 < ({
+        upmax = 0,
+        downmax = 0,
+        flag = "off"
+      }).upmax or 0 < ({
+        upmax = 0,
+        downmax = 0,
+        flag = "off"
+      }).downmax then
+        ({
+          upmax = 0,
+          downmax = 0,
+          flag = "off"
+        }).flag = "on"
+      else
+        ({
+          upmax = 0,
+          downmax = 0,
+          flag = "off"
+        }).flag = "off"
+      end
+    end
+  end
+  return {
+    upmax = 0,
+    downmax = 0,
+    flag = "off"
+  }
+end
+function setMacQosInfo(A0_44, A1_45, A2_46)
+  if not _UPVALUE0_.isStrNil(A0_44) then
+    A0_44 = _UPVALUE0_.macFormat(A0_44)
+    if tonumber(A1_45) and tonumber(A2_46) and require("miqos").cmd(string.format("on_limit max %s %s %s", _UPVALUE0_.macFormat(A0_44), tostring(8 * tonumber(A1_45)), tostring(8 * tonumber(A2_46)))).status == 0 then
+      return true
+    end
+  end
+  return false
+end
+function qosOnLimit(A0_47, A1_48, A2_49, A3_50)
+  local L4_51, L5_52, L6_53, L7_54, L8_55, L9_56
+  L4_51 = require
+  L5_52 = "miqos"
+  L4_51 = L4_51(L5_52)
+  L5_52 = _UPVALUE0_
+  L5_52 = L5_52.isStrNil
+  L6_53 = A0_47
+  L5_52 = L5_52(L6_53)
+  if not L5_52 then
+    L5_52 = tonumber
+    L6_53 = A1_48
+    L5_52 = L5_52(L6_53)
+    if L5_52 then
+      L5_52 = _UPVALUE0_
+      L5_52 = L5_52.macFormat
+      L6_53 = A0_47
+      L5_52 = L5_52(L6_53)
+      L6_53 = tonumber
+      L7_54 = A1_48
+      L6_53 = L6_53(L7_54)
+      L7_54 = qosStatus
+      L7_54 = L7_54()
+      if L7_54 then
+        L8_55 = L7_54.mode
+        if L8_55 ~= L6_53 then
+          L8_55 = setQoSMode
+          L9_56 = L6_53
+          L8_55 = L8_55(L9_56)
+          if not L8_55 then
+            L8_55 = false
+            return L8_55
+          end
+        end
+      end
+      if L6_53 == 1 then
+        L8_55 = _weightHelper
+        L9_56 = tonumber
+        L9_56 = L9_56(A2_49)
+        L8_55 = L8_55(L9_56, L9_56(A2_49))
+        L9_56 = _weightHelper
+        L9_56 = L9_56(tonumber(A3_50))
+        if L8_55 and L9_56 then
+          os.execute(string.format("/etc/init.d/miqos on_limit min \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L5_52), tostring(L8_55), tostring(L9_56)))
+          return true
+        end
+      else
+        L8_55 = tonumber
+        L9_56 = A2_49
+        L8_55 = L8_55(L9_56)
+        if L8_55 then
+          L8_55 = tonumber
+          L9_56 = A3_50
+          L8_55 = L8_55(L9_56)
+          if L8_55 then
+            L8_55 = os
+            L8_55 = L8_55.execute
+            L9_56 = string
+            L9_56 = L9_56.format
+            L9_56 = L9_56("/etc/init.d/miqos on_limit max \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L5_52), tostring(8 * tonumber(A2_49)), tostring(8 * tonumber(A3_50)))
+            L8_55(L9_56, L9_56("/etc/init.d/miqos on_limit max \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L5_52), tostring(8 * tonumber(A2_49)), tostring(8 * tonumber(A3_50))))
+            L8_55 = true
+            return L8_55
+          end
+        end
+      end
+    end
+  end
+  L5_52 = false
+  return L5_52
+end
+function qosLimitFlag(A0_57, A1_58)
+  local L2_59, L3_60
+  L2_59 = require
+  L3_60 = "miqos"
+  L2_59 = L2_59(L3_60)
+  L3_60 = _UPVALUE0_
+  L3_60 = L3_60.isStrNil
+  L3_60 = L3_60(A0_57)
+  if not L3_60 and (A1_58 == "on" or A1_58 == "off") then
+    L3_60 = _UPVALUE0_
+    L3_60 = L3_60.macFormat
+    L3_60 = L3_60(A0_57)
+    if L2_59.cmd("limit_flag " .. L3_60 .. " " .. A1_58).status == 0 then
+      return true
+    else
+      return false
+    end
+  else
+    L3_60 = false
+    return L3_60
+  end
+end
+function qosOnLimits(A0_61, A1_62)
+  local L2_63, L3_64, L4_65, L5_66, L6_67, L7_68, L8_69, L9_70, L10_71, L11_72, L12_73, L13_74
+  if A1_62 then
+    L2_63 = type
+    L2_63 = L2_63(L3_64)
+    if L2_63 == "table" then
+      L2_63 = #A1_62
+    end
+  elseif L2_63 <= 0 then
+    L2_63 = false
+    return L2_63
+  end
+  L2_63 = require
+  L2_63 = L2_63(L3_64)
+  if A0_61 then
+    if L3_64 then
+      if L3_64 then
+        if L4_65 ~= A0_61 then
+          if not L4_65 then
+            return L4_65
+          end
+        end
+      end
+      for L7_68, L8_69 in L4_65(L5_66) do
+        L9_70 = _UPVALUE0_
+        L9_70 = L9_70.macFormat
+        L10_71 = L8_69.mac
+        L9_70 = L9_70(L10_71)
+        L10_71 = tonumber
+        L11_72 = L8_69.maxup
+        L10_71 = L10_71(L11_72)
+        L11_72 = tonumber
+        L12_73 = L8_69.maxdown
+        L11_72 = L11_72(L12_73)
+        if A0_61 == 1 then
+          L12_73 = _weightHelper
+          L13_74 = tonumber
+          L13_74 = L13_74(L8_69.maxup)
+          L12_73 = L12_73(L13_74, L13_74(L8_69.maxup))
+          L13_74 = _weightHelper
+          L13_74 = L13_74(tonumber(L8_69.maxdown))
+          if L12_73 and L13_74 then
+            os.execute(string.format("/etc/init.d/miqos set_limit min \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L9_70), tostring(L12_73), tostring(L13_74)))
+          end
+        else
+          L12_73 = tonumber
+          L13_74 = L10_71
+          L12_73 = L12_73(L13_74)
+          if L12_73 then
+            L12_73 = tonumber
+            L13_74 = L11_72
+            L12_73 = L12_73(L13_74)
+            if L12_73 then
+              L12_73 = os
+              L12_73 = L12_73.execute
+              L13_74 = string
+              L13_74 = L13_74.format
+              L13_74 = L13_74("/etc/init.d/miqos on_limit max \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L9_70), tostring(8 * tonumber(L10_71)), tostring(8 * tonumber(L11_72)))
+              L12_73(L13_74, L13_74("/etc/init.d/miqos on_limit max \"%s\" \"%s\" \"%s\"", _UPVALUE0_.macFormat(L9_70), tostring(8 * tonumber(L10_71)), tostring(8 * tonumber(L11_72))))
+            end
+          end
+        end
+      end
+      L4_65(L5_66)
+      return L4_65
+    end
+  else
+    for L6_67, L7_68 in L3_64(L4_65) do
+      L8_69 = _UPVALUE0_
+      L8_69 = L8_69.macFormat
+      L9_70 = L7_68.mac
+      L8_69 = L8_69(L9_70)
+      L9_70 = tonumber
+      L10_71 = L7_68.maxup
+      L9_70 = L9_70(L10_71)
+      L10_71 = tonumber
+      L11_72 = L7_68.maxdown
+      L10_71 = L10_71(L11_72)
+      L11_72 = tonumber
+      L12_73 = L9_70
+      L11_72 = L11_72(L12_73)
+      if L11_72 then
+        L11_72 = tonumber
+        L12_73 = L10_71
+        L11_72 = L11_72(L12_73)
+        if L11_72 then
+          L11_72 = os
+          L11_72 = L11_72.execute
+          L12_73 = string
+          L12_73 = L12_73.format
+          L13_74 = "/etc/init.d/miqos set_limit max \"%s\" \"%s\" \"%s\""
+          L13_74 = L12_73(L13_74, _UPVALUE0_.paramFormat(L8_69), tostring(8 * tonumber(L9_70)), tostring(8 * tonumber(L10_71)))
+          L11_72(L12_73, L13_74, L12_73(L13_74, _UPVALUE0_.paramFormat(L8_69), tostring(8 * tonumber(L9_70)), tostring(8 * tonumber(L10_71))))
+        end
+      end
+    end
+    L3_64(L4_65)
+    return L3_64
+  end
+  return L3_64
+end
+function qosOffLimit(A0_75)
+  local L1_76, L2_77
+  L1_76 = require
+  L2_77 = "miqos"
+  L1_76 = L1_76(L2_77)
+  L2_77 = nil
+  if not _UPVALUE0_.isStrNil(A0_75) then
+    L2_77 = L1_76.cmd(string.format("off_limit %s", _UPVALUE0_.macFormat(A0_75)))
+  else
+    L2_77 = L1_76.cmd(string.format("off_limit"))
+  end
+  if L2_77 and L2_77.status == 0 then
+    return true
+  else
+    return false
+  end
+end
+function qosHistory(A0_78)
+  local L1_79, L2_80, L3_81, L4_82, L5_83, L6_84, L7_85, L8_86, L9_87, L10_88, L11_89
+  L1_79 = require
+  L2_80 = "luci.util"
+  L1_79 = L1_79(L2_80)
+  L2_80 = require
+  L3_81 = "miqos"
+  L2_80 = L2_80(L3_81)
+  L3_81 = {}
+  L4_82 = {}
+  L4_82.on = 0
+  L4_82.mode = 0
+  L3_81.status = L4_82
+  L4_82 = {}
+  L4_82.upload = 0
+  L4_82.download = 0
+  L3_81.band = L4_82
+  L4_82 = qosStatus
+  L4_82 = L4_82()
+  L3_81.status = L4_82
+  L5_83 = qosBand
+  L5_83 = L5_83()
+  L3_81.band = L5_83
+  L5_83 = L2_80.cmd
+  L6_84 = "show_cfg"
+  L5_83 = L5_83(L6_84)
+  if L5_83 then
+    L6_84 = L5_83.status
+    if L6_84 == 0 then
+      L6_84 = L4_82.mode
+      if L6_84 ~= 0 then
+        L6_84 = {}
+        if A0_78 then
+          if L7_85 == "table" then
+            if L7_85 > 0 then
+              for L10_88, L11_89 in L7_85(L8_86) do
+                ({}).mac = _UPVALUE0_.macFormat(L11_89)
+                if L5_83.data[({}).mac] then
+                  if L4_82.mode == 1 then
+                    ({}).level = _levelHelper(tonumber(L5_83.data[({}).mac].min_grp_downlink))
+                  else
+                    ({}).upmax = tonumber(L5_83.data[({}).mac].max_grp_uplink) / 8
+                    ;({}).downmax = tonumber(L5_83.data[({}).mac].max_grp_downlink) / 8
+                  end
+                  if not L5_83.data[({}).mac].flag then
+                    if ({}).upmax and 0 < ({}).upmax or ({}).downmax and 0 < ({}).downmax then
+                      ({}).flag = "on"
+                    else
+                      ({}).flag = "off"
+                    end
+                  elseif L5_83.data[({}).mac].flag == "on" then
+                    ({}).flag = "on"
+                  else
+                    ({}).flag = "off"
+                  end
+                else
+                  if L4_82.mode == 1 then
+                    ({}).level = 2
+                  else
+                    ({}).upmax = 0
+                    ;({}).downmax = 0
+                  end
+                  ;({}).flag = "off"
+                end
+                L6_84[L11_89] = {}
+              end
+            end
+          end
+        else
+          for L10_88, L11_89 in L7_85(L8_86) do
+            if L4_82.mode == 1 then
+              ({}).mac = L10_88
+              ;({}).level = _levelHelper(tonumber(L11_89.min_grp_downlink))
+            else
+              ({}).mac = L10_88
+              ;({}).upmax = tonumber(L11_89.max_grp_uplink) / 8
+              ;({}).downmax = tonumber(L11_89.max_grp_downlink) / 8
+            end
+            if not L11_89.flag then
+              if ({}).upmax and 0 < ({}).upmax or ({}).downmax and 0 < ({}).downmax then
+                ({}).flag = "on"
+              else
+                ({}).flag = "off"
+              end
+            elseif L11_89.flag == "on" then
+              ({}).flag = "on"
+            else
+              ({}).flag = "off"
+            end
+            L6_84[L10_88] = {}
+          end
+        end
+        L3_81.dict = L6_84
+      end
+    end
+  end
+  return L3_81
+end
+function guestQoSInfo()
+  if require("miqos").cmd("show_guest") and require("miqos").cmd("show_guest").data and require("miqos").cmd("show_guest").data.inner then
+    ({
+      up = 0,
+      down = 0,
+      percent = 4.667261458434778E-62,
+      percent_up = 4.667261458434778E-62
+    }).up = tonumber(require("miqos").cmd("show_guest").data.UP)
+    ;({
+      up = 0,
+      down = 0,
+      percent = 4.667261458434778E-62,
+      percent_up = 4.667261458434778E-62
+    }).down = tonumber(require("miqos").cmd("show_guest").data.DOWN)
+    ;({
+      up = 0,
+      down = 0,
+      percent = 4.667261458434778E-62,
+      percent_up = 4.667261458434778E-62
+    }).percent = tonumber(require("miqos").cmd("show_guest").data.inner.DOWN)
+    ;({
+      up = 0,
+      down = 0,
+      percent = 4.667261458434778E-62,
+      percent_up = 4.667261458434778E-62
+    }).percent_up = tonumber(require("miqos").cmd("show_guest").data.inner.UP)
+  end
+  return {
+    up = 0,
+    down = 0,
+    percent = 4.667261458434778E-62,
+    percent_up = 4.667261458434778E-62
+  }
+end
+function xqQoSInfo()
+  if require("miqos").cmd("show_xq") and require("miqos").cmd("show_xq").data and require("miqos").cmd("show_xq").data.inner then
+    ({
+      up = 0,
+      down = 0,
+      percent = -6.065988000114918E66,
+      percent_up = -6.065988000114918E66
+    }).up = tonumber(require("miqos").cmd("show_xq").data.UP)
+    ;({
+      up = 0,
+      down = 0,
+      percent = -6.065988000114918E66,
+      percent_up = -6.065988000114918E66
+    }).down = tonumber(require("miqos").cmd("show_xq").data.DOWN)
+    ;({
+      up = 0,
+      down = 0,
+      percent = -6.065988000114918E66,
+      percent_up = -6.065988000114918E66
+    }).percent = tonumber(require("miqos").cmd("show_xq").data.inner.DOWN)
+    ;({
+      up = 0,
+      down = 0,
+      percent = -6.065988000114918E66,
+      percent_up = -6.065988000114918E66
+    }).percent_up = tonumber(require("miqos").cmd("show_xq").data.inner.UP)
+  end
+  return {
+    up = 0,
+    down = 0,
+    percent = -6.065988000114918E66,
+    percent_up = -6.065988000114918E66
+  }
+end
+function setQosGuestAndXQ(A0_90, A1_91, A2_92)
+  local L3_93, L4_94
+  L3_93 = require
+  L4_94 = "miqos"
+  L3_93 = L3_93(L4_94)
+  L4_94 = nil
+  if A1_91 and tonumber(A1_91) and tonumber(A1_91) >= 0 and tonumber(A1_91) <= 1 then
+    if not A2_92 or tonumber(A2_92) < 0 and tonumber(A2_92) > 1 then
+      A2_92 = A1_91
+    end
+    if A0_90 == "guest" then
+      L4_94 = "on_guest "
+    elseif A0_90 == "xq" then
+      L4_94 = "on_xq "
+    else
+      return false
+    end
+    L4_94 = L4_94 .. tostring(A2_92) .. " " .. tostring(A1_91)
+    L3_93.cmd(L4_94)
+    return true
+  else
+    return false
+  end
+end
+function qosGuest(A0_95, A1_96)
+  return setQosGuestAndXQ("guest", A0_95, A1_96)
+end
+function qosXQ(A0_97, A1_98)
+  return setQosGuestAndXQ("xq", A0_97, A1_98)
+end
+function qos_app(A0_99, A1_100, A2_101, A3_102, A4_103)
+  local L5_104, L6_105
+  L5_104 = require
+  L6_105 = "xqcrypto"
+  L5_104 = L5_104(L6_105)
+  if not A0_99 or not A4_103 then
+    L6_105 = 4294967295
+    return L6_105
+  end
+  L6_105 = L5_104.app_opt
+  L6_105 = L6_105(tostring(A0_99), "+")
+  if L6_105 >= 0 then
+    if A4_103 == 0 then
+      if L5_104.lan_opt(tostring(L6_105), "+", A1_100 or "0.0.0.0") == 0 then
+        if A2_101 or A3_102 then
+          if L5_104.remote_opt(tostring(L6_105), "+", tostring(A2_101 or "0.0.0.0"), tostring(A3_102 or 0)) == 0 then
+            return 0
+          else
+            return 4294967292
+          end
+        end
+      else
+        return 4294967293
+      end
+    elseif A4_103 == 1 then
+      if not A1_100 then
+        if 0 <= L5_104.app_opt(tostring(A0_99), "-") then
+          return 0
+        else
+          return 4294967294
+        end
+      else
+        if L5_104.lan_opt(tostring(L6_105), "-", A1_100) == 0 then
+          return 0
+        else
+          return 4294967293
+        end
+        if A2_101 or A3_102 then
+          if L5_104.remote_opt(tostring(L6_105), "-", tostring(A2_101 or "0.0.0.0"), tostring(A3_102 or 0)) == 0 then
+            return 0
+          else
+            return 4294967292
+          end
+        end
+        return 0
+      end
+    else
+      return 4294967295
+    end
+  else
+    return 4294967294
+  end
+end

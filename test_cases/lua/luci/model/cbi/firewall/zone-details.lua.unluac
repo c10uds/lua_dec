@@ -1,0 +1,180 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18
+L0_0 = require
+L1_1 = "luci.model.network"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "luci.model.firewall"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.dispatcher"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "luci.util"
+L3_3 = L3_3(L4_4)
+L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18 = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+L4_4 = Map("firewall", translate("Firewall - Zone Settings"))
+L4_4.redirect = luci.dispatcher.build_url("admin/network/firewall/zones")
+L1_1.init(L4_4.uci)
+L0_0.init(L4_4.uci)
+if not L1_1:get_zone(arg[1]) then
+  luci.http.redirect(dsp.build_url("admin/network/firewall/zones"))
+  return
+else
+  L4_4.title = "%s - %s" % {
+    translate("Firewall - Zone Settings"),
+    translatef("Zone %q", L1_1:get_zone(arg[1]):name() or "?")
+  }
+end
+L8_8 = L4_4:section(NamedSection, L1_1:get_zone(arg[1]).sid, "zone", translatef("Zone %q", L1_1:get_zone(arg[1]):name()), translatef([[
+This section defines common properties of %q. 
+		The <em>input</em> and <em>output</em> options set the default 
+		policies for traffic entering and leaving this zone while the 
+		<em>forward</em> option describes the policy for forwarded traffic 
+		between different networks within the zone. 
+		<em>Covered networks</em> specifies which available networks are 
+		member of this zone.]], L1_1:get_zone(arg[1]):name()))
+L8_8.anonymous = true
+L8_8.addremove = false
+function L4_4.on_commit(A0_19)
+  if _UPVALUE0_:get_zone(arg[1]) then
+    _UPVALUE1_.section = _UPVALUE0_:get_zone(arg[1]).sid
+    _UPVALUE2_.section = _UPVALUE0_:get_zone(arg[1]).sid
+  end
+end
+L8_8:tab("general", translate("General Settings"))
+L8_8:tab("advanced", translate("Advanced Settings"))
+L9_9 = L8_8:taboption("general", Value, "name", translate("Name"))
+L9_9.optional = false
+L9_9.forcewrite = true
+L9_9.datatype = "uciname"
+function L9_9.write(A0_20, A1_21, A2_22)
+  if _UPVALUE0_:name() ~= A2_22 then
+    _UPVALUE1_:rename_zone(_UPVALUE0_:name(), A2_22)
+    _UPVALUE2_.exclude = A2_22
+    _UPVALUE3_.exclude = A2_22
+  end
+  _UPVALUE4_.redirect = _UPVALUE5_.build_url("admin/network/firewall/zones", A2_22)
+  _UPVALUE4_.title = "%s - %s" % {
+    translate("Firewall - Zone Settings"),
+    translatef("Zone %q", A2_22 or "?")
+  }
+end
+L5_5 = {
+  L8_8:taboption("general", ListValue, "input", translate("Input")),
+  L8_8:taboption("general", ListValue, "output", translate("Output")),
+  L8_8:taboption("general", ListValue, "forward", translate("Forward"))
+}
+for _FORV_23_, _FORV_24_ in ipairs(L5_5) do
+  _FORV_24_:value("REJECT", translate("reject"))
+  _FORV_24_:value("DROP", translate("drop"))
+  _FORV_24_:value("ACCEPT", translate("accept"))
+end
+L8_8:taboption("general", Flag, "masq", translate("Masquerading"))
+L8_8:taboption("general", Flag, "mtu_fix", translate("MSS clamping"))
+L10_10 = L8_8:taboption("general", Value, "network", translate("Covered networks"))
+L10_10.template = "cbi/network_netlist"
+L10_10.widget = "checkbox"
+L10_10.cast = "string"
+function L10_10.formvalue(A0_23, A1_24)
+  return Value.formvalue(A0_23, A1_24) or "-"
+end
+function L10_10.cfgvalue(A0_25, A1_26)
+  return Value.cfgvalue(A0_25, A1_26) or _UPVALUE0_:cfgvalue(A1_26)
+end
+function L10_10.write(A0_27, A1_28, A2_29)
+  local L3_30, L4_31, L5_32, L6_33, L7_34
+  L3_30 = _UPVALUE0_
+  L3_30 = L3_30.clear_networks
+  L3_30(L4_31)
+  L3_30 = nil
+  for L7_34 in L4_31(L5_32) do
+    _UPVALUE0_:add_network(L7_34)
+  end
+end
+L11_11 = L8_8:taboption("advanced", ListValue, "family", translate("Restrict to address family"))
+L11_11.rmempty = true
+L11_11:value("", translate("IPv4 and IPv6"))
+L11_11:value("ipv4", translate("IPv4 only"))
+L11_11:value("ipv6", translate("IPv6 only"))
+L12_12 = L8_8:taboption("advanced", DynamicList, "masq_src", translate("Restrict Masquerading to given source subnets"))
+L12_12.optional = true
+L12_12.datatype = "list(neg(or(uciname,hostname,ip4addr)))"
+L12_12.placeholder = "0.0.0.0/0"
+L12_12:depends("family", "")
+L12_12:depends("family", "ipv4")
+L13_13 = L8_8:taboption("advanced", DynamicList, "masq_dest", translate("Restrict Masquerading to given destination subnets"))
+L13_13.optional = true
+L13_13.datatype = "list(neg(or(uciname,hostname,ip4addr)))"
+L13_13.placeholder = "0.0.0.0/0"
+L13_13:depends("family", "")
+L13_13:depends("family", "ipv4")
+L8_8:taboption("advanced", Flag, "conntrack", translate("Force connection tracking"))
+L14_14 = L8_8:taboption("advanced", Flag, "log", translate("Enable logging on this zone"))
+L14_14.rmempty = true
+L14_14.enabled = "1"
+L15_15 = L8_8:taboption("advanced", Value, "log_limit", translate("Limit log messages"))
+L15_15.placeholder = "10/minute"
+L15_15:depends("log", "1")
+L16_16 = L4_4:section(NamedSection, L1_1:get_zone(arg[1]).sid, "fwd_out", translate("Inter-Zone Forwarding"), translatef([[
+The options below control the forwarding policies between 
+		this zone (%s) and other zones. <em>Destination zones</em> cover 
+		forwarded traffic <strong>originating from %q</strong>. 
+		<em>Source zones</em> match forwarded traffic from other zones 
+		<strong>targeted at %q</strong>. The forwarding rule is 
+		<em>unidirectional</em>, e.g. a forward from lan to wan does 
+		<em>not</em> imply a permission to forward from wan to lan as well.]], L1_1:get_zone(arg[1]):name(), L1_1:get_zone(arg[1]):name(), L1_1:get_zone(arg[1]):name()))
+L17_17 = L16_16:option(Value, "out", translate("Allow forward to <em>destination zones</em>:"))
+L17_17.nocreate = true
+L17_17.widget = "checkbox"
+L17_17.exclude = L1_1:get_zone(arg[1]):name()
+L17_17.template = "cbi/firewall_zonelist"
+L18_18 = L16_16:option(Value, "in", translate("Allow forward from <em>source zones</em>:"))
+L18_18.nocreate = true
+L18_18.widget = "checkbox"
+L18_18.exclude = L1_1:get_zone(arg[1]):name()
+L18_18.template = "cbi/firewall_zonelist"
+function L17_17.cfgvalue(A0_35, A1_36)
+  local L2_37, L3_38
+  L2_37 = {}
+  L3_38 = nil
+  for _FORV_7_, _FORV_8_ in ipairs(_UPVALUE0_:get_forwardings_by("src")) do
+    L2_37[#L2_37 + 1] = _FORV_8_:dest()
+  end
+  return table.concat(L2_37, " ")
+end
+function L18_18.cfgvalue(A0_39, A1_40)
+  local L2_41, L3_42, L4_43
+  L2_41 = {}
+  L3_42 = nil
+  for _FORV_7_, _FORV_8_ in L4_43(_UPVALUE0_:get_forwardings_by("dest")) do
+    L2_41[#L2_41 + 1] = _FORV_8_:src()
+  end
+  return L2_41
+end
+function L17_17.formvalue(A0_44, A1_45)
+  return Value.formvalue(A0_44, A1_45) or "-"
+end
+function L18_18.formvalue(A0_46, A1_47)
+  return Value.formvalue(A0_46, A1_47) or "-"
+end
+function L17_17.write(A0_48, A1_49, A2_50)
+  local L3_51, L4_52, L5_53, L6_54, L7_55
+  L3_51 = _UPVALUE0_
+  L3_51 = L3_51.del_forwardings_by
+  L3_51(L4_52, L5_53)
+  L3_51 = nil
+  for L7_55 in L4_52(L5_53) do
+    _UPVALUE0_:add_forwarding_to(L7_55)
+  end
+end
+function L18_18.write(A0_56, A1_57, A2_58)
+  local L3_59, L4_60, L5_61, L6_62, L7_63
+  L3_59 = _UPVALUE0_
+  L3_59 = L3_59.del_forwardings_by
+  L3_59(L4_60, L5_61)
+  L3_59 = nil
+  for L7_63 in L4_60(L5_61) do
+    _UPVALUE0_:add_forwarding_from(L7_63)
+  end
+end
+return L4_4

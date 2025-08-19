@@ -1,0 +1,482 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQSecureUtil", package.seeall)
+L0_0 = require
+L0_0("luci.util")
+L0_0 = require
+L0_0("luci.sys")
+L0_0 = require
+L0_0 = L0_0("bit")
+require("nixio.util")
+function checkid(A0_1)
+  return A0_1 and #A0_1 == 40 and not not A0_1:match("^[a-fA-F0-9]+$")
+end
+function prepare()
+  _UPVALUE0_.mkdir(_UPVALUE1_, 700)
+  if not sane() then
+    error("Security Exception: Nonce path is not sane!")
+  end
+end
+function sane(A0_2)
+  return luci.sys.process.info("uid") == _UPVALUE0_.stat(A0_2 or _UPVALUE1_, "uid") and luci.sys.process.info("uid")
+end
+function readNonce(A0_3)
+  local L1_4, L2_5, L3_6
+  if A0_3 then
+    L1_4 = checkid
+    L2_5 = A0_3
+    L1_4 = L1_4(L2_5)
+  elseif not L1_4 then
+    L1_4 = nil
+    return L1_4
+  end
+  L1_4 = sane
+  L2_5 = _UPVALUE0_
+  L3_6 = "/"
+  L2_5 = L2_5 .. L3_6 .. A0_3
+  L1_4 = L1_4(L2_5)
+  if not L1_4 then
+    L1_4 = nil
+    return L1_4
+  end
+  L1_4 = _UPVALUE1_
+  L1_4 = L1_4.readfile
+  L2_5 = _UPVALUE0_
+  L3_6 = "/"
+  L2_5 = L2_5 .. L3_6 .. A0_3
+  L1_4 = L1_4(L2_5)
+  L2_5 = loadstring
+  L3_6 = L1_4
+  L2_5 = L2_5(L3_6)
+  L3_6 = setfenv
+  L3_6(L2_5, {})
+  L3_6 = L2_5
+  L3_6 = L3_6()
+  if type(L3_6) ~= "table" then
+    return nil
+  end
+  return L3_6
+end
+function writeNonce(A0_7, A1_8)
+  if not sane() then
+    prepare()
+  end
+  if not checkid(A0_7) or type(A1_8) ~= "table" then
+    return
+  end
+  A1_8 = luci.util.get_bytecode(A1_8)
+  _UPVALUE0_.open(_UPVALUE1_ .. "/" .. A0_7, "w", 600):writeall(A1_8)
+  _UPVALUE0_.open(_UPVALUE1_ .. "/" .. A0_7, "w", 600):close()
+end
+function xssCheck(A0_9)
+  if _UPVALUE0_.isStrNil(A0_9) then
+    return A0_9
+  end
+  if type(A0_9) == "string" then
+    if _UPVALUE1_:filter(A0_9) then
+      return _UPVALUE1_:filter(A0_9)
+    else
+      require("xiaoqiang.XQLog").log(4, "XSS Warning:" .. A0_9)
+      return nil
+    end
+  else
+    return A0_9
+  end
+end
+function generateRedirectKey(A0_10)
+  local L1_11, L2_12, L3_13, L4_14
+  L1_11 = require
+  L2_12 = "luci.sys"
+  L1_11 = L1_11(L2_12)
+  L2_12 = require
+  L3_13 = "luci.sauth"
+  L2_12 = L2_12(L3_13)
+  L3_13 = {}
+  L4_14 = L1_11.uniqueid
+  L4_14 = L4_14(16)
+  L3_13.type = tostring(A0_10)
+  L2_12.write(L4_14, L3_13)
+  return L4_14
+end
+function checkRedirectKey(A0_15)
+  local L1_16, L2_17, L3_18
+  L1_16 = _UPVALUE0_
+  L1_16 = L1_16.isStrNil
+  L2_17 = A0_15
+  L1_16 = L1_16(L2_17)
+  if L1_16 then
+    L1_16 = false
+    return L1_16
+  end
+  L1_16 = require
+  L2_17 = "luci.sys"
+  L1_16 = L1_16(L2_17)
+  L2_17 = require
+  L3_18 = "luci.sauth"
+  L2_17 = L2_17(L3_18)
+  L3_18 = L2_17.read
+  L3_18 = L3_18(A0_15)
+  if L3_18 and type(L3_18) == "table" then
+    L2_17.kill(A0_15)
+    if L1_16.uptime() - L3_18.atime > 10 then
+      return false
+    else
+      return tostring(L3_18.type)
+    end
+  end
+  return false
+end
+function ciphertextFormat(A0_19)
+  local L1_20, L2_21
+  L1_20 = _UPVALUE0_
+  L1_20 = L1_20.isStrNil
+  L2_21 = A0_19
+  L1_20 = L1_20(L2_21)
+  if L1_20 then
+    L1_20 = ""
+    return L1_20
+  end
+  L1_20 = math
+  L1_20 = L1_20.ceil
+  L2_21 = #A0_19
+  L2_21 = L2_21 / 64
+  L1_20 = L1_20(L2_21)
+  L2_21 = {}
+  for _FORV_6_ = 1, L1_20 do
+    if _FORV_6_ ~= L1_20 then
+      table.insert(L2_21, string.sub(A0_19, 1 + (_FORV_6_ - 1) * 64, 64 * _FORV_6_))
+    else
+      table.insert(L2_21, string.sub(A0_19, 1 + (_FORV_6_ - 1) * 64, 4294967295))
+    end
+  end
+  return _FOR_.concat(L2_21, "\\n")
+end
+function decCiphertext(A0_22, A1_23)
+  local L2_24, L3_25, L4_26
+  L2_24 = _UPVALUE0_
+  L2_24 = L2_24.isStrNil
+  L3_25 = A1_23
+  L2_24 = L2_24(L3_25)
+  if not L2_24 then
+    L3_25 = A1_23
+    L2_24 = A1_23.match
+    L4_26 = "\""
+    L2_24 = L2_24(L3_25, L4_26)
+    if not L2_24 then
+      L3_25 = A1_23
+      L2_24 = A1_23.match
+      L4_26 = " "
+      L2_24 = L2_24(L3_25, L4_26)
+      if not L2_24 then
+        L3_25 = A1_23
+        L2_24 = A1_23.match
+        L4_26 = "'"
+        L2_24 = L2_24(L3_25, L4_26)
+      end
+    end
+  elseif L2_24 then
+    L2_24 = nil
+    return L2_24
+  end
+  L2_24 = _UPVALUE1_
+  L2_24 = L2_24.get
+  L3_25 = A0_22
+  L4_26 = ""
+  L2_24 = L2_24(L3_25, L4_26, "account")
+  L3_25 = string
+  L3_25 = L3_25.format
+  L4_26 = _UPVALUE2_
+  L3_25 = L3_25(L4_26, ciphertextFormat(A1_23), L2_24)
+  L4_26 = string
+  L4_26 = L4_26.format
+  L4_26 = L4_26(_UPVALUE3_, A1_23, L2_24)
+  if os.execute(L3_25) == 0 then
+    return luci.util.trim(luci.util.exec(L3_25))
+  elseif os.execute(L4_26) == 0 then
+    return luci.util.trim(luci.util.exec(L4_26))
+  end
+  return nil
+end
+function savePlaintextPwd(A0_27, A1_28)
+  local L2_29
+  L2_29 = _UPVALUE0_
+  L2_29 = L2_29.isStrNil
+  L2_29 = L2_29(A0_27)
+  if not L2_29 then
+    L2_29 = _UPVALUE0_
+    L2_29 = L2_29.isStrNil
+    L2_29 = L2_29(A1_28)
+  elseif L2_29 then
+    L2_29 = false
+    return L2_29
+  end
+  L2_29 = _UPVALUE1_
+  L2_29 = L2_29.sha1
+  L2_29 = L2_29(A1_28 .. _UPVALUE2_)
+  _UPVALUE3_.set(A0_27, L2_29, "account")
+  _UPVALUE0_.nvramSet("nv_sys_pwd", L2_29)
+  _UPVALUE0_.nvramCommit()
+  return true
+end
+function saveCiphertextPwd(A0_30, A1_31)
+  local L2_32
+  L2_32 = _UPVALUE0_
+  L2_32 = L2_32.isStrNil
+  L2_32 = L2_32(A0_30)
+  if not L2_32 then
+    L2_32 = _UPVALUE0_
+    L2_32 = L2_32.isStrNil
+    L2_32 = L2_32(A1_31)
+  elseif L2_32 then
+    L2_32 = false
+    return L2_32
+  end
+  L2_32 = decCiphertext
+  L2_32 = L2_32(A0_30, A1_31)
+  if L2_32 then
+    _UPVALUE1_.set(A0_30, L2_32, "account")
+    _UPVALUE0_.nvramSet("nv_sys_pwd", L2_32)
+    _UPVALUE0_.nvramCommit()
+    return true
+  end
+  return false
+end
+function checkPlaintextPwd(A0_33, A1_34)
+  if _UPVALUE0_.isStrNil(A0_33) or _UPVALUE0_.isStrNil(A1_34) then
+    return false
+  end
+  if _UPVALUE1_.get(A0_33, "", "account") == _UPVALUE2_.sha1(A1_34 .. _UPVALUE3_) then
+    return true
+  else
+    return false
+  end
+end
+function checkUser(A0_35, A1_36, A2_37)
+  local L3_38
+  L3_38 = _UPVALUE0_
+  L3_38 = L3_38.get
+  L3_38 = L3_38(A0_35, nil, "account")
+  if L3_38 and not _UPVALUE1_.isStrNil(A2_37) and not _UPVALUE1_.isStrNil(A1_36) and _UPVALUE2_.sha1(A1_36 .. L3_38) == A2_37 then
+    return true
+  end
+  _UPVALUE3_.log(4, (luci.http.getenv("REMOTE_ADDR") or "") .. " Authentication failed", A1_36, L3_38, A2_37)
+  return false
+end
+function checkNonce(A0_39, A1_40)
+  local L2_41, L3_42, L4_43, L5_44, L6_45, L7_46, L8_47, L9_48, L10_49
+  L2_41 = require
+  L3_42 = "luci.util"
+  L2_41 = L2_41(L3_42)
+  L3_42 = require
+  L4_43 = "luci.sys"
+  L3_42 = L3_42(L4_43)
+  L4_43 = require
+  L5_44 = "xiaoqiang.util.XQCryptoUtil"
+  L4_43 = L4_43(L5_44)
+  if A0_39 and A1_40 then
+    L5_44 = _UPVALUE0_
+    L5_44 = L5_44.macFormat
+    L6_45 = A1_40
+    L5_44 = L5_44(L6_45)
+    A1_40 = L5_44
+    L5_44 = L2_41.split
+    L6_45 = A0_39
+    L7_46 = "_"
+    L5_44 = L5_44(L6_45, L7_46)
+    L6_45 = #L5_44
+    if L6_45 ~= 4 then
+      L6_45 = _UPVALUE1_
+      L6_45 = L6_45.log
+      L7_46 = 6
+      L8_47 = "Nonce check failed!: Illegal"
+      L9_48 = A0_39
+      L10_49 = " remote MAC address:"
+      L8_47 = L8_47 .. L9_48 .. L10_49 .. A1_40
+      L6_45(L7_46, L8_47)
+      L6_45 = false
+      return L6_45
+    end
+    L6_45 = tonumber
+    L7_46 = L5_44[1]
+    L6_45 = L6_45(L7_46)
+    L7_46 = tostring
+    L8_47 = L5_44[2]
+    L7_46 = L7_46(L8_47)
+    L8_47 = tonumber
+    L9_48 = L5_44[3]
+    L8_47 = L8_47(L9_48)
+    if L6_45 and L7_46 then
+      L9_48 = L4_43.sha1
+      L10_49 = L6_45
+      L10_49 = L10_49 .. L7_46
+      L9_48 = L9_48(L10_49)
+      if L6_45 > 4 then
+        L10_49 = _UPVALUE1_
+        L10_49 = L10_49.log
+        L10_49(6, "Nonce check failed! Type error:" .. A0_39 .. " remote MAC address:" .. A1_40)
+        L10_49 = false
+        return L10_49
+      end
+      L10_49 = readNonce
+      L10_49 = L10_49(L9_48)
+      if L10_49 and type(L10_49) == "table" then
+        if L8_47 > tonumber(L10_49.mark) then
+          if A1_40 ~= L10_49.mac then
+            _UPVALUE1_.log(6, "Mac address changed: " .. L10_49.mac .. " --> " .. A1_40, L10_49, A0_39)
+          end
+          L10_49.mark = tostring(L8_47)
+          writeNonce(L9_48, L10_49)
+          return true
+        else
+          _UPVALUE1_.log(6, "Nonce check failed!: Not match" .. A0_39 .. " remote MAC address:" .. A1_40, L10_49)
+        end
+      else
+        L10_49 = {}
+        L10_49.mark = tostring(L8_47)
+        L10_49.mac = A1_40
+        writeNonce(L9_48, L10_49)
+        return true
+      end
+    end
+  end
+  L5_44 = false
+  return L5_44
+end
+function passportLoginUrl()
+  local L0_50, L1_51, L2_52, L3_53, L4_54, L5_55, L6_56
+  L0_50 = require
+  L1_51 = "luci.http.protocol"
+  L0_50 = L0_50(L1_51)
+  L1_51 = require
+  L2_52 = "xiaoqiang.common.XQConfigs"
+  L1_51 = L1_51(L2_52)
+  L2_52 = require
+  L3_53 = "xiaoqiang.util.XQCryptoUtil"
+  L2_52 = L2_52(L3_53)
+  L3_53 = nil
+  L4_54 = "http://miwifi.com/cgi-bin/luci/web/xmaccount"
+  L5_55 = "followup="
+  L6_56 = L4_54
+  L5_55 = L5_55 .. L6_56
+  L6_56 = L2_52.binaryBase64Enc
+  L6_56 = L6_56(L2_52.sha1Binary(L5_55))
+  if L1_51.SERVER_CONFIG == 0 then
+    L3_53 = L1_51.PASSPORT_CONFIG_ONLINE_URL .. "?callback=" .. L0_50.urlencode(L1_51.XQ_SERVER_ONLINE_STS_URL .. "?sign=" .. L6_56 .. "&followup=" .. L4_54) .. "&sid=" .. _UPVALUE0_
+  elseif L1_51.SERVER_CONFIG == 1 then
+    L3_53 = L1_51.PASSPORT_CONFIG_PREVIEW_URL .. "?callback=" .. L0_50.urlencode(L1_51.XQ_SERVER_STAGING_STS_URL .. "?sign=" .. L6_56 .. "&followup=" .. L4_54) .. "&sid=" .. _UPVALUE0_
+  end
+  return L3_53
+end
+function passportLogoutUrl()
+  local L0_57, L1_58, L2_59, L3_60, L4_61, L5_62
+  L0_57 = require
+  L1_58 = "xiaoqiang.util.XQSysUtil"
+  L0_57 = L0_57(L1_58)
+  L1_58 = require
+  L2_59 = "luci.http.protocol"
+  L1_58 = L1_58(L2_59)
+  L2_59 = require
+  L3_60 = "xiaoqiang.common.XQConfigs"
+  L2_59 = L2_59(L3_60)
+  L3_60 = nil
+  L4_61 = L0_57.getPassportBindInfo
+  L4_61 = L4_61()
+  L5_62 = _UPVALUE0_
+  L5_62 = L5_62.isStrNil
+  L5_62 = L5_62(L4_61)
+  if L5_62 then
+    L5_62 = ""
+    return L5_62
+  end
+  L5_62 = "http://miwifi.com/cgi-bin/luci/web/home"
+  if L2_59.SERVER_CONFIG == 0 then
+    L3_60 = L2_59.PASSPORT_LOGOUT_ONLINE_URL .. "?callback=" .. L1_58.urlencode(L5_62) .. "&sid=" .. _UPVALUE1_ .. "&userId=" .. L4_61
+  elseif L2_59.SERVER_CONFIG == 1 then
+    L3_60 = L2_59.PASSPORT_LOGOUT_PREVIEW_URL .. "?callback=" .. L1_58.urlencode(L5_62) .. "&sid=" .. _UPVALUE1_ .. "&userId=" .. L4_61
+  end
+  return L3_60
+end
+function checkStrong(A0_63)
+  local L1_64, L2_65
+  L1_64 = 0
+  L2_65 = {}
+  L2_65.l = 2.8363E-319
+  if _UPVALUE0_.isStrNil(A0_63) then
+    return 1
+  end
+  if #A0_63 < 6 then
+    return 1
+  else
+    L1_64 = L1_64 + 1
+  end
+  if A0_63:match("%d") then
+    L1_64 = L1_64 + 1
+  end
+  if A0_63:match("%l") then
+    L1_64 = L1_64 + 1
+  end
+  if A0_63:match("%u") then
+    L1_64 = L1_64 + 1
+  end
+  if A0_63:match("%W") then
+    L1_64 = L1_64 + 1
+  end
+  if L1_64 < 2 then
+    return 1
+  elseif L1_64 < 3 then
+    return 2
+  else
+    return 3
+  end
+end
+KEY_WORDS = {
+  "'",
+  ";",
+  "nvram",
+  "dropbear",
+  "bdata"
+}
+function _keyWordsFilter(A0_66)
+  local L1_67, L2_68, L3_69, L4_70, L5_71
+  if L1_67 then
+    return L1_67
+  else
+    A0_66 = L1_67
+  end
+  for L4_70, L5_71 in L1_67(L2_68) do
+    if A0_66:match(L5_71) then
+      require("xiaoqiang.XQLog").log(6, "Keyword Warning:" .. A0_66)
+      return false
+    end
+  end
+  return L1_67
+end
+function cmdSafeCheck(A0_72)
+  return _keyWordsFilter(A0_72)
+end
+function hackCheck(A0_73, A1_74)
+  do return A1_74 end
+  if not A0_73 or not A1_74 then
+    return A1_74
+  end
+  if _UPVALUE0_[A0_73] then
+    return A1_74
+  end
+  if string.find(A1_74, _UPVALUE1_) then
+    return ""
+  end
+  return A1_74
+end
+function hackCharsCheck(A0_75)
+  if string.find(A0_75, _UPVALUE0_) then
+    return ""
+  end
+  return A0_75
+end
+function parseCmdline(A0_76)
+  if _UPVALUE0_.isStrNil(A0_76) then
+    return ""
+  else
+    return A0_76:gsub("\\", "\\\\"):gsub("`", "\\`"):gsub("\"", "\\\""):gsub("%$", "\\$"):gsub("%&", "\\&"):gsub("%|", "\\|"):gsub("%;", "\\;")
+  end
+end

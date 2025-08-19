@@ -1,0 +1,16 @@
+module("xiaoqiang.XQPreference", package.seeall)
+function get(A0_0, A1_1, A2_2)
+  require("luci.model.uci")
+  A2_2 = A2_2 or "xiaoqiang"
+  return luci.model.uci.cursor():get(A2_2, "common", A0_0) or A1_1
+end
+function set(A0_3, A1_4, A2_5)
+  require("luci.model.uci")
+  A2_5 = A2_5 or "xiaoqiang"
+  if A1_4 == nil then
+    A1_4 = ""
+  end
+  luci.model.uci.cursor():set(A2_5, "common", A0_3, A1_4)
+  luci.model.uci.cursor():save(A2_5)
+  return luci.model.uci.cursor():commit(A2_5)
+end

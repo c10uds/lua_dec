@@ -1,0 +1,172 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8
+L0_0 = require
+L1_1 = "ssl.core"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "ssl.context"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "ssl.x509"
+L2_2 = L2_2(L3_3)
+L3_3 = table
+L3_3 = L3_3.unpack
+L3_3 = L3_3 or unpack
+L4_4 = setmetatable
+L5_5 = {}
+L6_6 = {}
+L6_6.__mode = "k"
+L4_4 = L4_4(L5_5, L6_6)
+function L5_5(A0_9, A1_10, A2_11)
+  if A1_10 then
+    if type(A1_10) == "table" then
+      return A0_9(A2_11, _UPVALUE0_(A1_10))
+    else
+      return A0_9(A2_11, A1_10)
+    end
+  end
+  return true
+end
+function L6_6(A0_12)
+  local L1_13, L2_14, L3_15
+  L3_15, L2_14 = _UPVALUE0_.create(A0_12.protocol)
+  if not L3_15 then
+    return nil, L2_14
+  end
+  L1_13, L2_14 = _UPVALUE0_.setmode(L3_15, A0_12.mode)
+  if not L1_13 then
+    return nil, L2_14
+  end
+  if A0_12.key then
+    if A0_12.password and type(A0_12.password) ~= "function" and type(A0_12.password) ~= "string" then
+      return nil, "invalid password type"
+    end
+    L1_13, L2_14 = _UPVALUE0_.loadkey(L3_15, A0_12.key, A0_12.password)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  if A0_12.certificate then
+    L1_13, L2_14 = _UPVALUE0_.loadcert(L3_15, A0_12.certificate)
+    if not L1_13 then
+      return nil, L2_14
+    end
+    if A0_12.key and _UPVALUE0_.checkkey then
+      L1_13 = _UPVALUE0_.checkkey(L3_15)
+      if not L1_13 then
+        return nil, "private key does not match public key"
+      end
+    end
+  end
+  if A0_12.cafile or A0_12.capath then
+    L1_13, L2_14 = _UPVALUE0_.locations(L3_15, A0_12.cafile, A0_12.capath)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  if A0_12.ciphers then
+    L1_13, L2_14 = _UPVALUE0_.setcipher(L3_15, A0_12.ciphers)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  L1_13, L2_14 = _UPVALUE1_(_UPVALUE0_.setverify, A0_12.verify, L3_15)
+  if not L1_13 then
+    return nil, L2_14
+  end
+  L1_13, L2_14 = _UPVALUE1_(_UPVALUE0_.setoptions, A0_12.options, L3_15)
+  if not L1_13 then
+    return nil, L2_14
+  end
+  if A0_12.depth then
+    L1_13, L2_14 = _UPVALUE0_.setdepth(L3_15, A0_12.depth)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  if A0_12.dhparam then
+    if type(A0_12.dhparam) ~= "function" then
+      return nil, "invalid DH parameter type"
+    end
+    _UPVALUE0_.setdhparam(L3_15, A0_12.dhparam)
+  end
+  if A0_12.curve then
+    L1_13, L2_14 = _UPVALUE0_.setcurve(L3_15, A0_12.curve)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  if A0_12.verifyext and L3_15.setverifyext then
+    L1_13, L2_14 = _UPVALUE1_(L3_15.setverifyext, A0_12.verifyext, L3_15)
+    if not L1_13 then
+      return nil, L2_14
+    end
+  end
+  return L3_15
+end
+function L7_7(A0_16, A1_17)
+  local L2_18, L3_19, L4_20, L5_21
+  L4_20 = type
+  L5_21 = A1_17
+  L4_20 = L4_20(L5_21)
+  if L4_20 == "table" then
+    L4_20 = _UPVALUE0_
+    L5_21 = A1_17
+    L5_21 = L4_20(L5_21)
+    L3_19 = L5_21
+    L2_18 = L4_20
+    if not L2_18 then
+      L4_20 = nil
+      L5_21 = L3_19
+      return L4_20, L5_21
+    end
+  else
+    L2_18 = A1_17
+  end
+  L4_20 = _UPVALUE1_
+  L4_20 = L4_20.create
+  L5_21 = L2_18
+  L5_21 = L4_20(L5_21)
+  if L4_20 then
+    _UPVALUE1_.setfd(L4_20, A0_16:getfd())
+    A0_16:setfd(4294967295)
+    _UPVALUE2_[L4_20] = L2_18
+    return L4_20
+  end
+  return nil, L5_21
+end
+function L8_8(A0_22, A1_23)
+  local L2_24, L3_25, L4_26, L5_27, L6_28
+  L6_28 = _UPVALUE0_
+  L6_28 = L6_28.compression
+  L4_26, L6_28 = A0_22, L6_28(A0_22)
+  L3_25 = L6_28
+  if L4_26 then
+    L6_28 = L3_25
+    return L6_28, L4_26
+  end
+  if A1_23 == "compression" then
+    return L3_25
+  end
+  L6_28 = {}
+  L6_28.compression = L3_25
+  L2_24, L6_28.bits, L6_28.algbits, L5_27 = _UPVALUE0_.info(A0_22)
+  if L2_24 then
+    L6_28.cipher, L6_28.protocol, L6_28.key, L6_28.authentication, L6_28.encryption, L6_28.mac = string.match(L2_24, "^(%S+)%s+(%S+)%s+Kx=(%S+)%s+Au=(%S+)%s+Enc=(%S+)%s+Mac=(%S+)")
+    L6_28.export = string.match(L2_24, "%sexport%s*$") ~= nil
+  end
+  if L5_27 then
+    L6_28.protocol = L5_27
+  end
+  if A1_23 then
+    return L6_28[A1_23]
+  end
+  return next(L6_28) and L6_28
+end
+L0_0.setmethod("info", L8_8)
+return {
+  _VERSION = "0.6",
+  _COPYRIGHT = L0_0.copyright(),
+  loadcertificate = L2_2.load,
+  newcontext = L6_6,
+  wrap = L7_7
+}

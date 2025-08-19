@@ -1,0 +1,21 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("luci.util")
+module("luci.config", function(A0_1)
+  if pcall(require, "luci.model.uci") then
+    setmetatable(A0_1, {
+      __index = function(A0_2, A1_3)
+        local L2_4
+        L2_4 = _UPVALUE0_
+        L2_4 = L2_4[A1_3]
+        if not L2_4 then
+          L2_4 = _UPVALUE0_
+          L2_4[A1_3] = luci.model.uci.cursor():get_all("luci", A1_3)
+        end
+        L2_4 = _UPVALUE0_
+        L2_4 = L2_4[A1_3]
+        return L2_4
+      end
+    })
+  end
+end)

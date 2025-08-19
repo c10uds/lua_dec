@@ -1,0 +1,11 @@
+digraph Dependencies {
+  rankdir=LR;
+  node [shape=box];
+
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/main.lua.unluac" [label="main"];
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/http.lua.unluac" [label="luci.http."];
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/nixio/fs.lua.unluac" [label="nixio.fs."];
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/controller/api/xqnetwork.lua.unluac" [label="luci.controller.api.xqnetwork."];
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/util.lua.unluac" [label="luci.util."];
+  "/Users/c10uds/WorkSpace/实习/lua_dec/lua_decoder/test_cases/lua/luci/jsonc.lua.unluac" [label="luci.jsonc."];
+}

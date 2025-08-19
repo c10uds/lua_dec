@@ -1,0 +1,476 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQVASModule", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function _rule_merge(A0_1, A1_2)
+  local L2_3, L3_4, L4_5, L5_6, L6_7, L7_8
+  L2_3 = {}
+  for L6_7, L7_8 in L3_4(L4_5) do
+    if A1_2[L6_7] then
+      L2_3[L6_7] = _UPVALUE0_.band(L7_8, A1_2[L6_7])
+    else
+      L2_3[L6_7] = L7_8
+    end
+  end
+  return L2_3
+end
+function _country_code_rule()
+  local L0_9, L1_10, L2_11
+  L0_9 = require
+  L1_10 = "xiaoqiang.XQCountryCode"
+  L0_9 = L0_9(L1_10)
+  L1_10 = _UPVALUE0_
+  L2_11 = L1_10
+  L1_10 = L1_10.get_all
+  L1_10 = L1_10(L2_11, "vas", "countrycode")
+  L2_11 = L0_9.getBDataCountryCode
+  L2_11 = L2_11()
+  if L1_10 then
+    for _FORV_7_, _FORV_8_ in pairs(L1_10) do
+      if not _FORV_7_:match("^%.") then
+        if not ({})[_FORV_7_] and _FORV_8_:match(L2_11) then
+          ({})[_FORV_7_] = 1
+        else
+          ({})[_FORV_7_] = 0
+        end
+      end
+    end
+  end
+  return {}
+end
+FUNCTIONS = {countrycode = _country_code_rule}
+function vas_info(A0_12, A1_13)
+  local L2_14, L3_15, L4_16, L5_17, L6_18, L7_19, L8_20, L9_21, L10_22
+  L2_14 = {}
+  if A0_12 ~= "vas" and A0_12 ~= "vas_user" then
+    return L2_14
+  end
+  L3_15 = _UPVALUE0_
+  L3_15 = L3_15.get_all
+  L3_15 = L3_15(L4_16, L5_17, L6_18)
+  if L3_15 then
+    for L7_19, L8_20 in L4_16(L5_17) do
+      L10_22 = L7_19
+      L9_21 = L7_19.match
+      L9_21 = L9_21(L10_22, "^%.")
+      if not L9_21 then
+        L9_21 = tonumber
+        L10_22 = L8_20
+        L9_21 = L9_21(L10_22)
+        L8_20 = L9_21
+        if L8_20 and L8_20 == 4294967295 then
+          L9_21 = _UPVALUE0_
+          L10_22 = L9_21
+          L9_21 = L9_21.get
+          L9_21 = L9_21(L10_22, "vas", L7_19, "status")
+          L10_22 = _UPVALUE1_
+          L10_22 = L10_22.isStrNil
+          L10_22 = L10_22(L9_21)
+          if L10_22 then
+            L8_20 = 1
+          else
+            L10_22 = _UPVALUE2_
+            L10_22 = L10_22.exec
+            L10_22 = L10_22(L9_21)
+            if L10_22 then
+              L10_22 = _UPVALUE2_.trim(L10_22)
+              L8_20 = tonumber(L10_22) or 1
+            else
+              L8_20 = 0
+            end
+          end
+        end
+        if L8_20 and L8_20 ~= 4294967294 and L8_20 ~= 4294967293 and L8_20 ~= 4294967292 and L8_20 ~= 4294967290 then
+          L2_14[L7_19] = L8_20
+        end
+        if A1_13 and (L8_20 == 4294967292 or L8_20 == 4294967290) then
+          L2_14[L7_19] = 0
+        end
+      end
+    end
+  end
+  return L2_14
+end
+function _hot_fix()
+  local L0_23, L1_24, L2_25, L3_26, L4_27
+  L0_23 = _UPVALUE0_
+  L1_24 = L0_23
+  L0_23 = L0_23.get
+  L2_25 = "vas"
+  L3_26 = "services"
+  L4_27 = "security_page"
+  L0_23 = L0_23(L1_24, L2_25, L3_26, L4_27)
+  L1_24 = _UPVALUE0_
+  L2_25 = L1_24
+  L1_24 = L1_24.get
+  L3_26 = "vas_user"
+  L4_27 = "services"
+  L1_24 = L1_24(L2_25, L3_26, L4_27, "security_page")
+  L2_25 = _UPVALUE0_
+  L3_26 = L2_25
+  L2_25 = L2_25.get
+  L4_27 = "security"
+  L2_25 = L2_25(L3_26, L4_27, "common", "malicious_url_firewall")
+  L3_26 = _UPVALUE0_
+  L4_27 = L3_26
+  L3_26 = L3_26.get
+  L3_26 = L3_26(L4_27, "vas", "security_page", "on")
+  L3_26 = L3_26 or ""
+  L4_27 = _UPVALUE0_
+  L4_27 = L4_27.get
+  L4_27 = L4_27(L4_27, "vas", "security_page", "off")
+  L4_27 = L4_27 or ""
+  if L0_23 and L1_24 and L2_25 then
+    L0_23 = tonumber(L0_23)
+    L1_24 = tonumber(L1_24)
+    L2_25 = tonumber(L2_25)
+    if L0_23 == 4294967290 and L2_25 ~= 1 then
+      _UPVALUE1_.forkExec(L3_26)
+    elseif L0_23 ~= 4294967290 and L2_25 ~= L1_24 then
+      _UPVALUE1_.forkExec(L1_24 == 1 and L3_26 or L4_27)
+    end
+  end
+end
+function get_new_vas()
+  local L0_28, L1_29
+  L0_28 = {}
+  L1_29 = vas_info
+  L1_29 = L1_29("vas")
+  _hot_fix()
+  if not L1_29 then
+    return L0_28
+  end
+  _UPVALUE0_:foreach("vas", "rule", function(A0_30)
+    local L1_31
+    L1_31 = FUNCTIONS
+    L1_31 = L1_31[A0_30[".name"]]
+    if L1_31 and type(L1_31) == "function" then
+      if _UPVALUE0_ then
+        _UPVALUE0_ = _rule_merge(_UPVALUE0_, L1_31())
+      else
+        _UPVALUE0_ = L1_31()
+      end
+    end
+  end)
+  for _FORV_7_, _FORV_8_ in pairs(L1_29) do
+    if _FORV_8_ and not vas_info("vas_user")[_FORV_7_] and (not nil or nil and (nil)[_FORV_7_] == 1) then
+      L0_28[_FORV_7_] = _FORV_8_
+    end
+  end
+  return L0_28
+end
+function get_vas()
+  local L0_32, L1_33, L2_34, L3_35, L4_36, L5_37
+  L0_32 = {}
+  L1_33 = vas_info
+  L2_34 = "vas"
+  L3_35 = true
+  L1_33 = L1_33(L2_34, L3_35)
+  L2_34 = vas_info
+  L3_35 = "vas_user"
+  L2_34 = L2_34(L3_35)
+  if not L1_33 then
+    return L0_32
+  end
+  L3_35 = nil
+  L4_36(L5_37, "vas", "rule", function(A0_38)
+    local L1_39
+    L1_39 = FUNCTIONS
+    L1_39 = L1_39[A0_38[".name"]]
+    if L1_39 and type(L1_39) == "function" then
+      if _UPVALUE0_ then
+        _UPVALUE0_ = _rule_merge(_UPVALUE0_, L1_39())
+      else
+        _UPVALUE0_ = L1_39()
+      end
+    end
+  end)
+  for _FORV_7_, _FORV_8_ in L4_36(L5_37) do
+    if not L3_35 or L3_35 and L3_35[_FORV_7_] == 1 then
+      if _FORV_8_ and not L2_34[_FORV_7_] then
+        L0_32[_FORV_7_] = _FORV_8_
+      else
+        L0_32[_FORV_7_] = L2_34[_FORV_7_]
+      end
+    end
+  end
+  if L4_36 and L4_36 ~= 4294967293 then
+    if not L5_37 then
+      if L3_35 then
+      elseif L5_37 == 1 then
+        L0_32.invalid_page = tonumber(L5_37)
+      end
+    end
+  end
+  return L0_32
+end
+function get_vas_kv_info()
+  local L0_40, L1_41
+  L0_40 = {}
+  L0_40.invalid_page_status = "off"
+  L0_40.security_page_status = "off"
+  L0_40.gouwudang_status = "off"
+  L0_40.baidu_video_bar = "off"
+  L1_41 = vas_info
+  L1_41 = L1_41("vas_user")
+  for _FORV_5_, _FORV_6_ in pairs(L1_41) do
+    if _FORV_5_ == "invalid_page" then
+      if tonumber(L1_41.invalid_page) == 1 then
+        L0_40.invalid_page_status = "on"
+      end
+    elseif _FORV_5_ == "security_page" then
+      if tonumber(L1_41.security_page) == 1 then
+        L0_40.security_page_status = "on"
+      end
+    elseif _FORV_5_ == "shopping_bar" then
+      if tonumber(L1_41.shopping_bar) == 1 then
+        L0_40.gouwudang_status = "on"
+      end
+    elseif _FORV_5_ == "baidu_video_bar" then
+      if tonumber(L1_41.baidu_video_bar) == 1 then
+        L0_40.baidu_video_bar = "on"
+      end
+    elseif tonumber(L1_41[_FORV_5_]) == 1 then
+      L0_40[_FORV_5_] = "on"
+    else
+      L0_40[_FORV_5_] = "off"
+    end
+  end
+  return L0_40
+end
+function set_vas(A0_42)
+  local L1_43, L2_44, L3_45, L4_46, L5_47, L6_48, L7_49, L8_50, L9_51
+  if A0_42 then
+    L1_43 = type
+    L2_44 = A0_42
+    L1_43 = L1_43(L2_44)
+  elseif L1_43 ~= "table" then
+    L1_43 = false
+    return L1_43
+  end
+  L1_43 = {}
+  L2_44 = vas_info
+  L2_44 = L2_44(L3_45)
+  for L6_48, L7_49 in L3_45(L4_46) do
+    L2_44[L6_48] = L7_49
+    L8_50 = nil
+    L9_51 = _UPVALUE0_
+    L9_51 = L9_51.get
+    L9_51 = L9_51(L9_51, "vas", "services", L6_48)
+    L9_51 = L9_51 or 0
+    if L9_51 and tonumber(L9_51) ~= 4294967290 then
+      if L7_49 == 1 then
+        L8_50 = _UPVALUE0_:get("vas", L6_48, "on")
+      else
+        L8_50 = _UPVALUE0_:get("vas", L6_48, "off")
+      end
+      if L8_50 then
+        table.insert(L1_43, L8_50)
+      end
+    end
+  end
+  L6_48 = "settings"
+  L7_49 = "services"
+  L8_50 = L2_44
+  L3_45(L4_46, L5_47, L6_48, L7_49, L8_50)
+  L3_45(L4_46, L5_47)
+  for L6_48, L7_49 in L3_45(L4_46) do
+    L8_50 = _UPVALUE1_
+    L8_50 = L8_50.forkExec
+    L9_51 = L7_49
+    L8_50(L9_51)
+  end
+end
+function updateVasConf(A0_52)
+  local L1_53, L2_54, L3_55, L4_56, L5_57, L6_58, L7_59, L8_60, L9_61, L10_62
+  if A0_52 then
+  elseif L1_53 ~= "table" then
+    return L1_53
+  end
+  for L4_56, L5_57 in L1_53(L2_54) do
+    if L5_57 then
+      if L6_58 == "table" then
+        if L6_58 then
+          L9_61 = "vas"
+          L10_62 = "services"
+          if L6_58 == 4294967290 then
+            if L7_59 ~= 4294967290 then
+              L9_61 = "vas_user"
+              L10_62 = "services"
+              if L7_59 then
+                L9_61 = L7_59
+                if L8_60 == 0 then
+                  L9_61 = L5_57.service
+                  L9_61 = L9_61.off
+                  L8_60(L9_61)
+                else
+                  L9_61 = L7_59
+                  if L8_60 == 1 then
+                    L9_61 = L5_57.service
+                    L9_61 = L9_61.on
+                    L8_60(L9_61)
+                  end
+                end
+              end
+            end
+          elseif L6_58 ~= 4294967290 then
+            if L7_59 == 4294967290 then
+              L7_59(L8_60)
+            end
+          end
+          L9_61 = "vas"
+          L10_62 = "services"
+          L7_59(L8_60, L9_61, L10_62, L4_56, L5_57.status)
+          if L7_59 == 4294967293 then
+            if L7_59 then
+              if L7_59 then
+                L7_59(L8_60)
+              end
+            end
+          end
+          if L6_58 == 4294967293 then
+            if L7_59 ~= 4294967293 then
+              if L7_59 ~= 4294967290 then
+                L9_61 = L8_60
+                L10_62 = "vas_user"
+                if L7_59 then
+                  if L7_59 == 1 then
+                    L9_61 = L5_57.service
+                    L9_61 = L9_61.on
+                    L8_60(L9_61)
+                  else
+                    L9_61 = L5_57.service
+                    L9_61 = L9_61.off
+                    L8_60(L9_61)
+                  end
+                end
+              end
+            end
+          end
+        end
+        if L6_58 then
+          if L6_58 == "table" then
+            for L9_61, L10_62 in L6_58(L7_59) do
+              if not _UPVALUE0_:get_all("vas", L9_61) then
+                _UPVALUE0_:section("vas", "rule", L9_61, {
+                  [L4_56] = L10_62
+                })
+              else
+                _UPVALUE0_:set("vas", L9_61, L4_56, L10_62)
+              end
+            end
+          end
+        end
+        if L6_58 then
+          if L6_58 == "table" then
+            L9_61 = "service"
+            L10_62 = L4_56
+            L6_58(L7_59, L8_60, L9_61, L10_62, L5_57.service)
+          end
+        end
+      end
+    end
+  end
+  L1_53(L2_54, L3_55)
+  return L1_53
+end
+function get_vas_info()
+  return vas_info("vas_user")
+end
+function do_query(A0_63)
+  local L1_64, L2_65, L3_66
+  if not A0_63 then
+    L1_64 = nil
+    return L1_64
+  end
+  L1_64 = require
+  L2_65 = "xiaoqiang.util.XQHttpUtil"
+  L1_64 = L1_64(L2_65)
+  L2_65 = _UPVALUE0_
+  L2_65 = L2_65.trim
+  L3_66 = _UPVALUE0_
+  L3_66 = L3_66.exec
+  L3_66 = L3_66(_UPVALUE1_.SERVER_CONFIG_ONLINE_URL)
+  L2_65 = L2_65(L3_66, L3_66(_UPVALUE1_.SERVER_CONFIG_ONLINE_URL))
+  L3_66 = "http://"
+  L3_66 = L3_66 .. L2_65 .. "/data/new_feature_switch/" .. A0_63
+  if tonumber(L1_64.httpGetRequest(L3_66).code) == 200 and L1_64.httpGetRequest(L3_66).res and pcall(_UPVALUE2_.decode, L1_64.httpGetRequest(L3_66).res) and pcall(_UPVALUE2_.decode, L1_64.httpGetRequest(L3_66).res) then
+    return pcall(_UPVALUE2_.decode, L1_64.httpGetRequest(L3_66).res)
+  end
+  return nil
+end
+function get_server_vas_details()
+  local L0_67, L1_68, L2_69, L3_70, L4_71, L5_72, L6_73
+  L0_67 = "/tmp/vas_details"
+  L1_68 = require
+  L2_69 = "nixio.fs"
+  L1_68 = L1_68(L2_69)
+  L2_69 = require
+  L3_70 = "xiaoqiang.XQCountryCode"
+  L2_69 = L2_69(L3_70)
+  L3_70 = L2_69.getCurrentJLan
+  L3_70 = L3_70()
+  L4_71 = os
+  L4_71 = L4_71.time
+  L4_71 = L4_71()
+  L5_72 = L1_68.access
+  L6_73 = L0_67
+  L5_72 = L5_72(L6_73)
+  if L5_72 then
+    L5_72 = L1_68.readfile
+    L6_73 = L0_67
+    L5_72 = L5_72(L6_73)
+    L6_73 = pcall
+    L6_73 = L6_73(_UPVALUE0_.decode, L5_72)
+    if L6_73 and L6_73(_UPVALUE0_.decode, L5_72) and L6_73(_UPVALUE0_.decode, L5_72).res and L6_73(_UPVALUE0_.decode, L5_72).lan == L3_70 and L6_73(_UPVALUE0_.decode, L5_72).timestamp and tonumber(L4_71) - tonumber(L6_73(_UPVALUE0_.decode, L5_72).timestamp) < 300 then
+      return L6_73(_UPVALUE0_.decode, L5_72).res
+    end
+  end
+  L5_72 = do_query
+  L6_73 = L3_70
+  L5_72 = L5_72(L6_73)
+  if L5_72 then
+    L6_73 = {}
+    L6_73.res = L5_72
+    L6_73.lan = L3_70
+    L6_73.timestamp = L4_71
+    L1_68.writefile(L0_67, _UPVALUE0_.encode(L6_73))
+    return L5_72
+  end
+  L6_73 = nil
+  return L6_73
+end
+function get_vas_details(A0_74)
+  local L1_75, L2_76, L3_77, L4_78, L5_79, L6_80, L7_81, L8_82
+  L1_75 = require
+  L2_76 = "nixio.fs"
+  L1_75 = L1_75(L2_76)
+  L2_76 = {}
+  if A0_74 then
+    L3_77 = type
+    L3_77 = L3_77(L4_78)
+    if L3_77 == "table" then
+      L3_77 = get_server_vas_details
+      L3_77 = L3_77()
+      for L7_81, L8_82 in L4_78(L5_79) do
+        if L1_75.access("/www/vas/" .. L8_82 .. ".png") then
+          ({}).icon = L8_82 .. ".png"
+        else
+          ({}).icon = "vas_default.png"
+        end
+        if L3_77 and L3_77[L8_82] then
+          ({}).title = L3_77[L8_82].title
+          ;({}).desc = L3_77[L8_82].desc
+        elseif _UPVALUE0_[L8_82] then
+          ({}).title = _UPVALUE0_[L8_82].title
+          ;({}).desc = _UPVALUE0_[L8_82].desc
+        end
+        if ({}).title and ({}).desc then
+          L2_76[L8_82] = {}
+        end
+      end
+    end
+  end
+  return L2_76
+end

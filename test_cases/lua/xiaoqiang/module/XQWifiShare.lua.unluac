@@ -1,0 +1,525 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQWifiShare", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function wifi_share_needset(A0_1)
+  local L1_2
+  L1_2 = 1
+  if not A0_1 or type(A0_1) ~= "table" then
+    return 1
+  end
+  if not A0_1.guest or not A0_1.share or not A0_1.active then
+    return 1
+  end
+  if A0_1.guest ~= 1 or A0_1.share ~= 1 then
+    return 1
+  end
+  for _FORV_5_, _FORV_6_ in ipairs(A0_1.active) do
+    if _FORV_6_ ~= "user" then
+      return 1
+    end
+  end
+  for _FORV_5_, _FORV_6_ in ipairs(A0_1.sns) do
+    if _FORV_6_ == "wifirent_wechat_pay" then
+      return 0
+    end
+  end
+  return 1
+end
+function wifi_share_info()
+  local L0_3, L1_4, L2_5, L3_6, L4_7
+  L0_3 = require
+  L1_4 = "luci.model.uci"
+  L0_3 = L0_3(L1_4)
+  L0_3 = L0_3.cursor
+  L0_3 = L0_3()
+  L1_4 = require
+  L2_5 = "xiaoqiang.util.XQWifiUtil"
+  L1_4 = L1_4(L2_5)
+  L2_5 = {}
+  L2_5.guest = 0
+  L2_5.share = 0
+  L3_6 = {}
+  L2_5.sns = L3_6
+  L3_6 = L1_4.getGuestWifi
+  L4_7 = 1
+  L3_6 = L3_6(L4_7)
+  L4_7 = tonumber
+  L4_7 = L4_7(L3_6.status)
+  L2_5.guest = L4_7
+  L4_7 = {}
+  L4_7.ssid = L3_6.ssid
+  L4_7.encryption = L3_6.encryption
+  L4_7.password = L3_6.password
+  L2_5.data = L4_7
+  L4_7 = L0_3.get
+  L4_7 = L4_7(L0_3, "wifishare", "global", "disabled")
+  L4_7 = L4_7 or 1
+  if L4_7 then
+    L2_5.share = tonumber(L4_7) == 0 and 1 or 0
+  end
+  if not L0_3:get("wifishare", "global", "mark") and L2_5.guest == 0 then
+    L2_5.share = 1
+  end
+  L2_5.active = L0_3:get_list("wifishare", "global", "active") or {}
+  L2_5.sns = L0_3:get_list("wifishare", "global", "sns") or {}
+  L2_5.need = wifi_share_needset(L2_5)
+  return L2_5
+end
+function wifi_share_info_web()
+  local L0_8
+  L0_8 = {}
+  L0_8.need = 1
+  info = wifi_share_info()
+  L0_8.need = wifi_share_needset(info)
+  return L0_8
+end
+function wifi_share_switch(A0_9)
+  require("luci.model.uci").cursor():set("wifishare", "global", "disabled", A0_9 == 1 and "0" or "1")
+  require("luci.model.uci").cursor():commit("wifishare")
+  if A0_9 == 1 then
+    _UPVALUE0_.forkExec("sleep 4; /usr/sbin/wifishare.sh on")
+  else
+    _UPVALUE0_.forkExec("sleep 4; /usr/sbin/wifishare.sh off")
+  end
+end
+function set_wifi_share(A0_10)
+  local L1_11, L2_12, L3_13, L4_14, L5_15, L6_16, L7_17, L8_18
+  if A0_10 then
+    L1_11 = type
+    L2_12 = A0_10
+    L1_11 = L1_11(L2_12)
+  elseif L1_11 ~= "table" then
+    L1_11 = false
+    return L1_11
+  end
+  L1_11 = require
+  L2_12 = "luci.model.uci"
+  L1_11 = L1_11(L2_12)
+  L1_11 = L1_11.cursor
+  L1_11 = L1_11()
+  L2_12 = require
+  L3_13 = "xiaoqiang.module.XQGuestWifi"
+  L2_12 = L2_12(L3_13)
+  L3_13 = A0_10.guest
+  if L3_13 then
+    L3_13 = A0_10.share
+    if L3_13 then
+      L3_13 = "/usr/sbin/wifishare.sh off; /usr/sbin/wifishare.sh on"
+      L4_14 = A0_10.guest
+      if L4_14 == 0 then
+        L3_13 = "/usr/sbin/wifishare.sh off"
+      end
+      L4_14 = _UPVALUE0_
+      L4_14 = L4_14.log
+      L4_14(L5_15, L6_16)
+      L4_14 = _UPVALUE0_
+      L4_14 = L4_14.log
+      L4_14(L5_15, L6_16)
+      L4_14 = "XIAOMI_ROUTER_GUEST"
+      if L5_15 == 1 then
+        if L5_15 == 1 then
+          if L5_15 then
+            if L5_15 == "user" then
+              L4_14 = "XIAOMI_ROUTER_GUEST_WX"
+            end
+          elseif L5_15 then
+            if L5_15 == "business" then
+              if L5_15 then
+                if L5_15 == "table" then
+                  if L5_15 > 0 then
+                    for L8_18, _FORV_9_ in L5_15(L6_16) do
+                      if _FORV_9_ == "dianping" then
+                        L4_14 = "XIAOMI_ROUTER_GUEST_DP"
+                      elseif _FORV_9_ == "meituan" then
+                        L4_14 = "XIAOMI_ROUTER_GUEST_MT"
+                      elseif _FORV_9_ == "nuomi" then
+                        L4_14 = "XIAOMI_ROUTER_GUEST_NM"
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+      if L5_15 == 0 or L4_14 == "XIAOMI_ROUTER_GUEST" then
+      elseif L4_14 == "XIAOMI_ROUTER_GUEST_WX" then
+        L3_13 = L5_15 .. L6_16
+      else
+        L3_13 = L5_15 .. L6_16
+      end
+      if L6_16 then
+        if L6_16 == "table" then
+          if L6_16 > 0 then
+            L8_18 = "wifishare"
+            L6_16(L7_17, L8_18, "global", "sns", A0_10.sns)
+          end
+        end
+      end
+      if L6_16 then
+        if L6_16 == "table" then
+          if L6_16 > 0 then
+            L8_18 = "wifishare"
+            L6_16(L7_17, L8_18, "global", "business", A0_10.business)
+          end
+        end
+      end
+      if L6_16 then
+        L8_18 = "wifishare"
+        L6_16(L7_17, L8_18, "global", "active", A0_10.type)
+      end
+      L8_18 = "wifishare"
+      L6_16(L7_17, L8_18, "global", "mark", "1")
+      L8_18 = "wifishare"
+      L6_16(L7_17, L8_18, "global", "disabled", A0_10.share == 1 and "0" or "1")
+      L8_18 = "wifishare"
+      L6_16(L7_17, L8_18)
+      L8_18 = nil
+      if A0_10.data and type(A0_10.data) == "table" then
+        L8_18 = A0_10.data.password
+      end
+      _UPVALUE0_.log(6, "ssid " .. L6_16)
+      _UPVALUE0_.log(6, "encryption " .. L7_17)
+      _UPVALUE0_.log(6, "key " .. L8_18)
+      if A0_10.share == 0 and A0_10.guest == 1 and L7_17 == "none" then
+        L8_18 = "12345678"
+        _UPVALUE0_.log(6, "set guest not share, key = " .. L8_18)
+      end
+      if A0_10.share == 1 and A0_10.guest == 1 then
+        L8_18 = nil
+        _UPVALUE0_.log(6, "set guest and share, key = nil")
+      end
+      if A0_10.share == 1 and A0_10.guest == 0 then
+        L8_18 = nil
+        _UPVALUE0_.log(6, "off guest and share, key = nil")
+      end
+      L2_12.setGuestWifi(1, L6_16, L7_17, L8_18, 1, A0_10.guest, L4_14, L5_15)
+    end
+  end
+  L3_13 = true
+  return L3_13
+end
+function wifi_access(A0_19, A1_20, A2_21, A3_22, A4_23, A5_24)
+  local L6_25, L7_26, L8_27, L9_28
+  L6_25 = require
+  L7_26 = "luci.model.uci"
+  L6_25 = L6_25(L7_26)
+  L6_25 = L6_25.cursor
+  L6_25 = L6_25()
+  L7_26 = _UPVALUE0_
+  L7_26 = L7_26.isStrNil
+  L8_27 = A0_19
+  L7_26 = L7_26(L8_27)
+  if L7_26 then
+    L7_26 = false
+    return L7_26
+  end
+  L7_26 = _UPVALUE0_
+  L7_26 = L7_26.macFormat
+  L8_27 = A0_19
+  L7_26 = L7_26(L8_27)
+  L9_28 = L7_26
+  L8_27 = L7_26.gsub
+  L8_27 = L8_27(L9_28, ":", "")
+  L9_28 = L6_25.get_all
+  L9_28 = L9_28(L6_25, "wifishare", L8_27)
+  if L9_28 then
+    L9_28.mac = L7_26
+    if not _UPVALUE0_.isStrNil(A1_20) then
+      L9_28.sns = A1_20
+    end
+    if not _UPVALUE0_.isStrNil(A3_22) then
+      L9_28.guest_user_id = A3_22
+    end
+    if not _UPVALUE0_.isStrNil(A5_24) then
+      L9_28.extra_payload = A5_24
+    end
+    if A4_23 then
+      if A4_23 == 0 then
+        L9_28.disabled = "1"
+      elseif A4_23 == 1 then
+        L9_28.disabled = "0"
+      end
+    end
+  else
+    if _UPVALUE0_.isStrNil(A1_20) or _UPVALUE0_.isStrNil(A3_22) or not A4_23 then
+      return false
+    end
+    L9_28 = {
+      mac = L7_26,
+      state = "auth",
+      sns = A1_20,
+      guest_user_id = A3_22,
+      extra_payload = A5_24,
+      disabled = A4_23 == 1 and "0" or "1"
+    }
+  end
+  L6_25:section("wifishare", "device", L8_27, L9_28)
+  L6_25:commit("wifishare")
+  if A4_23 then
+    if A4_23 == 0 then
+      if A1_20 ~= "direct_request" then
+        os.execute("/usr/sbin/wifishare.sh deny '" .. L7_26 .. "'")
+      end
+    elseif A4_23 == 1 then
+      _UPVALUE0_.forkExec("/usr/sbin/wifishare.sh allow '" .. L7_26 .. "' '" .. A1_20 .. "' '" .. A2_21 .. "'")
+    end
+  end
+  return true
+end
+function wifi_share_clearall(A0_29)
+  os.execute("/usr/sbin/wifishare.sh clean")
+end
+function sns_list(A0_30)
+  if _UPVALUE0_.isStrNil(A0_30) then
+    return {}
+  end
+  require("luci.model.uci").cursor():foreach("wifishare", "device", function(A0_31)
+    if A0_31.sns and A0_31.sns == _UPVALUE0_ and (not A0_31.disabled or tonumber(A0_31.disabled) == 0) then
+      table.insert(_UPVALUE1_, A0_31.guest_user_id)
+    end
+  end)
+  return {}
+end
+function wifi_share_prepare(A0_32, A1_33)
+  local L2_34, L3_35, L4_36, L5_37, L6_38, L7_39, L8_40, L9_41
+  L2_34 = require
+  L3_35 = "luci.model.uci"
+  L2_34 = L2_34(L3_35)
+  L2_34 = L2_34.cursor
+  L2_34 = L2_34()
+  L3_35 = true
+  L5_37 = A0_32
+  L4_36 = A0_32.gsub
+  L6_38 = ":"
+  L7_39 = ""
+  L4_36 = L4_36(L5_37, L6_38, L7_39)
+  L5_37 = "_RECORD"
+  L6_38 = A1_33
+  L4_36 = L4_36 .. L5_37 .. L6_38
+  L6_38 = L2_34
+  L5_37 = L2_34.get_all
+  L7_39 = "wifishare"
+  L8_40 = L4_36
+  L5_37 = L5_37(L6_38, L7_39, L8_40)
+  L6_38 = tonumber
+  L7_39 = os
+  L7_39 = L7_39.time
+  L9_41 = L7_39()
+  L6_38 = L6_38(L7_39, L8_40, L9_41, L7_39())
+  L7_39 = 90
+  L8_40 = 3
+  L9_41 = 1800
+  if A1_33 < 0 or A1_33 > 3 then
+    L3_35 = false
+    return L3_35
+  end
+  L7_39 = ({
+    1800,
+    86400,
+    3600
+  })[A1_33]
+  L8_40 = ({
+    3,
+    3,
+    3
+  })[A1_33]
+  L9_41 = ({
+    90,
+    600,
+    180
+  })[A1_33]
+  if L5_37 then
+    if L7_39 <= L6_38 - tonumber(L5_37.timestamp) or 0 > L6_38 - tonumber(L5_37.timestamp) then
+      L5_37.timestamp = L6_38
+      L5_37.count = 1
+    else
+      if L8_40 < tonumber(L5_37.count) + 1 then
+        if L8_40 >= tonumber(L5_37.count) then
+          L5_37.timestamp = L6_38
+        end
+        L3_35 = false
+      end
+      L5_37.count = tonumber(L5_37.count) + 1
+    end
+  else
+    L5_37 = {
+      mac = A0_32,
+      timestamp = os.time(),
+      count = 1
+    }
+  end
+  L2_34:section("wifishare", "record", L4_36, L5_37)
+  L2_34:commit("wifishare")
+  if L3_35 then
+    _UPVALUE0_.forkExec("/usr/sbin/wifishare.sh prepare " .. A0_32 .. " " .. L9_41)
+  end
+  return L3_35
+end
+function wifi_share_prepare_status(A0_42)
+  return io.popen("/usr/sbin/wifishare.sh pstatus " .. A0_42):read("*l")
+end
+function wifi_share_blacklist()
+  return require("luci.model.uci").cursor():get_all("wifishare", "blacklist").mac
+end
+function merge(A0_43, A1_44, A2_45)
+  local L3_46, L4_47, L5_48, L6_49, L7_50, L8_51, L9_52
+  if not A0_43 and not A1_44 then
+    L3_46 = nil
+    return L3_46
+  end
+  if A2_45 == "+" then
+    if A0_43 then
+      if not A1_44 then
+        return A0_43
+      end
+      L3_46 = {}
+      for L7_50, L8_51 in L4_47(L5_48) do
+        L3_46[L8_51] = true
+      end
+      for L7_50, L8_51 in L4_47(L5_48) do
+        L9_52 = L3_46[L8_51]
+        if not L9_52 then
+          L9_52 = table
+          L9_52 = L9_52.insert
+          L9_52(A0_43, L8_51)
+        end
+      end
+      return A0_43
+    elseif not A1_44 then
+      L3_46 = nil
+      return L3_46
+    else
+      return A1_44
+    end
+  elseif A2_45 == "-" and A0_43 then
+    if not A1_44 then
+      return A0_43
+    end
+    L3_46 = {}
+    for L8_51, L9_52 in L5_48(L6_49) do
+      L4_47[L9_52] = true
+    end
+    for L8_51, L9_52 in L5_48(L6_49) do
+      if not L4_47[L9_52] then
+        table.insert(L3_46, L9_52)
+      end
+    end
+    return L3_46
+  end
+  L3_46 = nil
+  return L3_46
+end
+function wifi_share_blacklist_edit(A0_53, A1_54)
+  local L2_55, L3_56, L4_57
+  L2_55 = require
+  L3_56 = "luci.model.uci"
+  L2_55 = L2_55(L3_56)
+  L2_55 = L2_55.cursor
+  L2_55 = L2_55()
+  L4_57 = L2_55
+  L3_56 = L2_55.get_all
+  L3_56 = L3_56(L4_57, "wifishare", "blacklist")
+  L4_57 = nil
+  if L3_56 then
+    L4_57 = L3_56.mac
+  end
+  if L3_56 then
+    if merge(L4_57, A0_53, A1_54) and #merge(L4_57, A0_53, A1_54) > 0 then
+      L3_56.mac = merge(L4_57, A0_53, A1_54)
+      L2_55:section("wifishare", "block", "blacklist", L3_56)
+    else
+      L2_55:delete("wifishare", "blacklist", "mac")
+    end
+    L2_55:commit("wifishare")
+  elseif merge(L4_57, A0_53, A1_54) and #merge(L4_57, A0_53, A1_54) > 0 then
+    L2_55:section("wifishare", "block", "blacklist", {
+      mac = merge(L4_57, A0_53, A1_54)
+    })
+    L2_55:commit("wifishare")
+  end
+  if _UPVALUE0_:match("^R1C") then
+    _UPVALUE1_.forkExec("sleep 2; /usr/sbin/wifishare.sh block_apply")
+  else
+    os.execute("/usr/sbin/wifishare.sh block_apply")
+  end
+end
+function authorization_status(A0_58)
+  local L1_59, L2_60, L3_61, L4_62, L5_63
+  L1_59 = 0
+  if not A0_58 then
+    return L1_59
+  end
+  L2_60 = require
+  L3_61 = "luci.model.uci"
+  L2_60 = L2_60(L3_61)
+  L2_60 = L2_60.cursor
+  L2_60 = L2_60()
+  L4_62 = A0_58
+  L3_61 = A0_58.gsub
+  L5_63 = ":"
+  L3_61 = L3_61(L4_62, L5_63, "")
+  L5_63 = L2_60
+  L4_62 = L2_60.get_all
+  L4_62 = L4_62(L5_63, "wifishare", L3_61)
+  if L4_62 then
+    L5_63 = L4_62.sns
+    if L5_63 then
+      L5_63 = L4_62.sns
+      if L5_63 == "direct_request" then
+        L5_63 = L4_62.disabled
+        if L5_63 then
+          L5_63 = tonumber
+          L5_63 = L5_63(L4_62.disabled)
+          if L5_63 == 1 then
+            L1_59 = 2
+          end
+        else
+          L1_59 = 1
+        end
+      end
+    end
+  else
+    L5_63 = L2_60.get_list
+    L5_63 = L5_63(L2_60, "wifishare", "blacklist", "mac")
+    if L5_63 and type(L5_63) == "table" then
+      for _FORV_9_, _FORV_10_ in ipairs(L5_63) do
+        if A0_58 == _FORV_10_ then
+          L1_59 = 2
+          break
+        end
+      end
+    end
+  end
+  return L1_59
+end
+function check_repeat_request(A0_64)
+  local L1_65, L2_66
+  L1_65 = require
+  L2_66 = "luci.model.uci"
+  L1_65 = L1_65(L2_66)
+  L1_65 = L1_65.cursor
+  L1_65 = L1_65()
+  if not A0_64 then
+    L2_66 = false
+    return L2_66
+  end
+  L2_66 = A0_64.gsub
+  L2_66 = L2_66(A0_64, ":", "")
+  if L1_65:get_all("wifishare", L2_66) then
+    if L1_65:get_all("wifishare", L2_66).datestop then
+      if tostring(os.date("%Y-%m-%d")) .. "T" .. tostring(os.date("%X")) <= L1_65:get_all("wifishare", L2_66).datestop then
+        return true
+      else
+        return false
+      end
+    else
+      return true
+    end
+  else
+    return false
+  end
+end

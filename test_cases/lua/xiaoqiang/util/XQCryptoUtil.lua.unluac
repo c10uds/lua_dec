@@ -1,0 +1,95 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.util.XQCryptoUtil", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function binaryBase64Enc(A0_1)
+  return (A0_1:gsub(".", function(A0_2)
+    local L1_3
+    L1_3 = ""
+    for _FORV_6_ = 8, 1, 4294967295 do
+      L1_3 = L1_3 .. (A0_2:byte() % 2 ^ _FORV_6_ - A0_2:byte() % 2 ^ (_FORV_6_ - 1) > 0 and "1" or "0")
+    end
+    return L1_3
+  end) .. "0000"):gsub("%d%d%d?%d?%d?%d?", function(A0_4)
+    local L1_5, L2_6, L3_7, L4_8, L5_9
+    L1_5 = #A0_4
+    if L1_5 < 6 then
+      L1_5 = ""
+      return L1_5
+    end
+    L1_5 = 0
+    for L5_9 = 1, 6 do
+      L1_5 = L1_5 + (A0_4:sub(L5_9, L5_9) == "1" and 2 ^ (6 - L5_9) or 0)
+    end
+    L5_9 = L1_5 + 1
+    return L2_6(L3_7, L4_8, L5_9)
+  end) .. ({
+    "",
+    "==",
+    "="
+  })[#A0_1 % 3 + 1]
+end
+function binaryBase64Dec(A0_10)
+  A0_10 = string.gsub(A0_10, "[^" .. _UPVALUE0_ .. "=]", "")
+  return (A0_10:gsub(".", function(A0_11)
+    local L1_12
+    if A0_11 == "=" then
+      L1_12 = ""
+      return L1_12
+    end
+    L1_12 = ""
+    for _FORV_6_ = 6, 1, 4294967295 do
+      L1_12 = L1_12 .. ((_UPVALUE0_:find(A0_11) - 1) % 2 ^ _FORV_6_ - (_UPVALUE0_:find(A0_11) - 1) % 2 ^ (_FORV_6_ - 1) > 0 and "1" or "0")
+    end
+    return L1_12
+  end):gsub("%d%d%d?%d?%d?%d?%d?%d?", function(A0_13)
+    local L1_14, L2_15, L3_16, L4_17, L5_18
+    L1_14 = #A0_13
+    if L1_14 ~= 8 then
+      L1_14 = ""
+      return L1_14
+    end
+    L1_14 = 0
+    for L5_18 = 1, 8 do
+      L1_14 = L1_14 + (A0_13:sub(L5_18, L5_18) == "1" and 2 ^ (8 - L5_18) or 0)
+    end
+    return L2_15(L3_16)
+  end))
+end
+function md5File(A0_19)
+  return require("luci.util").trim(require("luci.util").exec("/usr/bin/md5sum \"%s\"|/usr/bin/cut -d' ' -f1" % _UPVALUE0_._cmdformat(A0_19)))
+end
+function md5Str(A0_20)
+  return require("luci.util").trim(require("luci.util").exec("/bin/echo -n \"%s\"|/usr/bin/md5sum|/usr/bin/cut -d' ' -f1" % _UPVALUE0_._cmdformat(A0_20)))
+end
+function sha256Str(A0_21)
+  return require("luci.util").trim(require("luci.util").exec("/bin/echo -n \"%s\"|/usr/bin/sha256sum|/usr/bin/cut -d' ' -f1" % _UPVALUE0_._cmdformat(A0_21)))
+end
+function md5Base64Str(A0_22)
+  return md5Str(require("mime").b64(A0_22))
+end
+function sha1(A0_23)
+  return require("sha1").sha1(A0_23)
+end
+function sha1Binary(A0_24)
+  return require("sha1").sha1_binary(A0_24)
+end
+function hash4SHA1(A0_25)
+  local L1_26
+  L1_26 = binaryBase64Enc
+  return L1_26(sha1Binary(A0_25))
+end
+function binToHex(A0_27)
+  return (A0_27:gsub("(.)", function(A0_28)
+    local L2_29
+    L2_29 = string
+    L2_29 = L2_29.format
+    return L2_29("%02x", string.byte(A0_28))
+  end))
+end
+function hextobin(A0_30)
+  return (A0_30:gsub("(%x%x)", function(A0_31)
+    return string.char(tonumber(A0_31, 16))
+  end))
+end

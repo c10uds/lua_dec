@@ -1,0 +1,338 @@
+local L0_0, L1_1, L2_2, L3_3
+L0_0 = module
+L1_1 = "xiaoqiang.module.XQDMZModule"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "xiaoqiang.common.XQFunction"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.common.XQConfigs"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.model.uci"
+L2_2 = L2_2(L3_3)
+L2_2 = L2_2.cursor
+L2_2 = L2_2()
+L3_3 = L2_2.get
+L3_3 = L3_3(L2_2, "misc", "hardware", "model")
+L3_3 = L3_3 or ""
+L3_3 = L3_3 and string.lower(L3_3)
+DMZ_NVRAM = {
+  vlan1hwname = "et0",
+  vlan2hwname = "et0",
+  vlan3hwname = "et0",
+  vlan1ports = "2 5*",
+  vlan2ports = "4 5",
+  vlan3ports = "0 5*"
+}
+DMZ_NETWORK_CONFIGS = {
+  eth0_1 = {
+    device = "eth0",
+    vlan = 1,
+    ports = "2 5*"
+  },
+  eth0_3 = {
+    device = "eth0",
+    vlan = 3,
+    ports = "0 5*"
+  },
+  dmz = {
+    ifname = "eth0.3",
+    proto = "static",
+    ipaddr = "",
+    netmask = "255.255.255.0"
+  }
+}
+DMZ_FIREWALL_CONFIGS = {
+  zonedmz = {
+    name = "dmz",
+    network = "dmz",
+    input = "REJECT",
+    output = "ACCEPT",
+    forward = "REJECT"
+  },
+  dmzdns = {
+    src = "dmz",
+    proto = "tcpudp",
+    dest_port = 53,
+    target = "ACCEPT"
+  },
+  dmzdhcp = {
+    src = "dmz",
+    proto = "udp",
+    dest_port = 67,
+    target = "ACCEPT"
+  },
+  dmztowan = {src = "dmz", dest = "wan"},
+  lantodmz = {src = "lan", dest = "dmz"},
+  dmz = {
+    src = "wan",
+    proto = "tcp",
+    target = "DNAT",
+    dest = "lan",
+    dest_ip = ""
+  },
+  dmzudp = {
+    src = "wan",
+    proto = "udp",
+    target = "DNAT",
+    dest = "lan",
+    src_port = "!67",
+    dest_ip = ""
+  }
+}
+DMZ_DHCP_CONFIGS = {
+  dmz = {
+    interface = "dmz",
+    start = 100,
+    limit = 150,
+    leasetime = "12h",
+    force = 1
+  }
+}
+function hookLanIPChangeEvent(A0_4)
+  local L1_5, L2_6, L3_7
+  L1_5 = _UPVALUE0_
+  L1_5 = L1_5.isStrNil
+  L2_6 = A0_4
+  L1_5 = L1_5(L2_6)
+  if L1_5 then
+    return
+  end
+  L1_5 = require
+  L2_6 = "luci.model.uci"
+  L1_5 = L1_5(L2_6)
+  L1_5 = L1_5.cursor
+  L1_5 = L1_5()
+  L3_7 = A0_4
+  L2_6 = A0_4.gsub
+  L2_6 = L2_6(L3_7, ".%d+$", "")
+  L3_7 = L1_5.get
+  L3_7 = L3_7(L1_5, "firewall", "dmz", "dest_ip")
+  if not _UPVALUE0_.isStrNil(L3_7) then
+    L3_7 = L2_6 .. "." .. L3_7:match(".(%d+)$")
+    L1_5:set("firewall", "dmz", "dest_ip", L3_7)
+    L1_5:set("firewall", "dmzudp", "dest_ip", L3_7)
+    L1_5:commit("firewall")
+  end
+end
+function unsetDMZ(A0_8)
+  if A0_8 == 1 then
+    require("luci.model.uci").cursor():delete("firewall", "zonedmz")
+    require("luci.model.uci").cursor():delete("firewall", "dmzdns")
+    require("luci.model.uci").cursor():delete("firewall", "dmzdhcp")
+    require("luci.model.uci").cursor():delete("firewall", "dmztowan")
+    require("luci.model.uci").cursor():delete("firewall", "lantodmz")
+    require("luci.model.uci").cursor():delete("firewall", "dmz")
+    require("luci.model.uci").cursor():commit("firewall")
+    require("luci.model.uci").cursor():delete("dhcp", "dmz")
+    require("luci.model.uci").cursor():commit("dhcp")
+    require("luci.model.uci").cursor():delete("network", "dmz")
+    require("luci.model.uci").cursor():delete("network", "eth0_3")
+    require("luci.model.uci").cursor():commit("network")
+    _UPVALUE0_.nvramSet("vlan3hwname", nil)
+    _UPVALUE0_.nvramSet("vlan3ports", nil)
+    _UPVALUE0_.nvramSet("vlan2ports", "4 5")
+    _UPVALUE0_.nvramSet("vlan1ports", "0 2 5*")
+    if _UPVALUE1_:match("^d01") == nil then
+      _UPVALUE0_.setNetMode(nil)
+    end
+    _UPVALUE0_.nvramCommit()
+  elseif A0_8 == 0 then
+    require("luci.model.uci").cursor():delete("firewall", "dmz")
+    require("luci.model.uci").cursor():delete("firewall", "dmzudp")
+    require("luci.model.uci").cursor():commit("firewall")
+    if _UPVALUE1_:match("^d01") == nil then
+      _UPVALUE0_.setNetMode(nil)
+    end
+    _UPVALUE0_.nvramCommit()
+  end
+end
+function _setSimpleDMZ(A0_9, A1_10)
+  local L2_11, L3_12, L4_13
+  L2_11 = require
+  L3_12 = "luci.model.uci"
+  L2_11 = L2_11(L3_12)
+  L2_11 = L2_11.cursor
+  L2_11 = L2_11()
+  L3_12 = DMZ_FIREWALL_CONFIGS
+  L3_12 = L3_12.dmz
+  L4_13 = DMZ_FIREWALL_CONFIGS
+  L4_13 = L4_13.dmzudp
+  if L2_11:get("network", "lan", "ipaddr"):gsub(".%d+$", "") ~= A0_9:gsub(".%d+$", "") or L2_11:get("network", "lan", "ipaddr") == A0_9 then
+    return 2
+  end
+  L3_12.dest_ip = A0_9
+  L4_13.dest_ip = A0_9
+  L2_11:section("firewall", "redirect", "dmz", L3_12)
+  L2_11:section("firewall", "redirect", "dmzudp", L4_13)
+  L2_11:commit("firewall")
+  if not _UPVALUE0_.isStrNil(A1_10) then
+    if require("xiaoqiang.util.XQLanWanUtil").addBind(A1_10, A0_9) == 0 then
+      require("xiaoqiang.util.XQLanWanUtil").saveBindInfo()
+    else
+      return (require("xiaoqiang.util.XQLanWanUtil").addBind(A1_10, A0_9))
+    end
+  end
+  return 0
+end
+function _setComplexDMZ(A0_14, A1_15)
+  local L2_16, L3_17, L4_18, L5_19, L6_20, L7_21, L8_22, L9_23, L10_24, L11_25, L12_26, L13_27, L14_28, L15_29, L16_30, L17_31
+  L2_16 = require
+  L3_17 = "luci.model.uci"
+  L2_16 = L2_16(L3_17)
+  L2_16 = L2_16.cursor
+  L2_16 = L2_16()
+  L3_17 = require
+  L4_18 = "luci.util"
+  L3_17 = L3_17(L4_18)
+  L5_19 = L2_16
+  L4_18 = L2_16.get
+  L6_20 = "network"
+  L7_21 = "lan"
+  L4_18 = L4_18(L5_19, L6_20, L7_21, L8_22)
+  L5_19 = L3_17.split
+  L6_20 = A0_14
+  L7_21 = "."
+  L5_19 = L5_19(L6_20, L7_21)
+  L5_19[4] = 1
+  L6_20 = table
+  L6_20 = L6_20.concat
+  L7_21 = L5_19
+  L6_20 = L6_20(L7_21, L8_22)
+  L5_19 = L6_20
+  L7_21 = L4_18
+  L6_20 = L4_18.gsub
+  L6_20 = L6_20(L7_21, L8_22, L9_23)
+  L7_21 = A0_14.gsub
+  L7_21 = L7_21(L8_22, L9_23, L10_24)
+  if L6_20 == L7_21 or L4_18 == A0_14 then
+    return L8_22
+  end
+  for L11_25, L12_26 in L8_22(L9_23) do
+    L13_27 = _UPVALUE0_
+    L13_27 = L13_27.nvramSet
+    L14_28 = L11_25
+    L15_29 = L12_26
+    L13_27(L14_28, L15_29)
+  end
+  L8_22()
+  L10_24.ipaddr = L5_19
+  L12_26 = L2_16
+  L11_25 = L2_16.section
+  L13_27 = "network"
+  L14_28 = "switch_vlan"
+  L15_29 = "eth0_1"
+  L16_30 = L8_22
+  L11_25(L12_26, L13_27, L14_28, L15_29, L16_30)
+  L12_26 = L2_16
+  L11_25 = L2_16.section
+  L13_27 = "network"
+  L14_28 = "switch_vlan"
+  L15_29 = "eth0_3"
+  L16_30 = L9_23
+  L11_25(L12_26, L13_27, L14_28, L15_29, L16_30)
+  L12_26 = L2_16
+  L11_25 = L2_16.section
+  L13_27 = "network"
+  L14_28 = "interface"
+  L15_29 = "dmz"
+  L16_30 = L10_24
+  L11_25(L12_26, L13_27, L14_28, L15_29, L16_30)
+  L12_26 = L2_16
+  L11_25 = L2_16.commit
+  L13_27 = "network"
+  L11_25(L12_26, L13_27)
+  L11_25 = DMZ_FIREWALL_CONFIGS
+  L11_25 = L11_25.zonedmz
+  L12_26 = DMZ_FIREWALL_CONFIGS
+  L12_26 = L12_26.dmzdns
+  L13_27 = DMZ_FIREWALL_CONFIGS
+  L13_27 = L13_27.dmzdhcp
+  L14_28 = DMZ_FIREWALL_CONFIGS
+  L14_28 = L14_28.dmztowan
+  L15_29 = DMZ_FIREWALL_CONFIGS
+  L15_29 = L15_29.lantodmz
+  L16_30 = DMZ_FIREWALL_CONFIGS
+  L16_30 = L16_30.dmz
+  L16_30.dest_ip = A0_14
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "zone", "zonedmz", L11_25)
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "rule", "dmzdns", L12_26)
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "rule", "dmzdhcp", L13_27)
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "forwarding", "dmztowan", L14_28)
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "forwarding", "lantodmz", L15_29)
+  L17_31 = L2_16.section
+  L17_31(L2_16, "firewall", "redirect", "dmz", L16_30)
+  L17_31 = L2_16.commit
+  L17_31(L2_16, "firewall")
+  L17_31 = DMZ_DHCP_CONFIGS
+  L17_31 = L17_31.dmz
+  L2_16:section("dhcp", "dhcp", "dmz", L17_31)
+  if not _UPVALUE0_.isStrNil(A1_15) then
+    if require("xiaoqiang.util.XQLanWanUtil").addBind(A1_15, A0_14) == 0 then
+      require("xiaoqiang.util.XQLanWanUtil").saveBindInfo()
+    else
+      return (require("xiaoqiang.util.XQLanWanUtil").addBind(A1_15, A0_14))
+    end
+  end
+  return 0
+end
+function moduleOn()
+  if require("luci.model.uci").cursor():get("firewall", "dmz", "dest_ip") then
+    return true
+  else
+    return false
+  end
+end
+function getDMZInfo()
+  if require("xiaoqiang.module.XQPortForward").moduleOn() then
+    ({}).status = 2
+  else
+    ({}).status = moduleOn() and 1 or 0
+    if ({}).status == 1 then
+      ({}).ip = require("luci.model.uci").cursor():get("firewall", "dmz", "dest_ip") or ""
+    end
+  end
+  ;({}).lanip = require("luci.model.uci").cursor():get("network", "lan", "ipaddr") or ""
+  return {}
+end
+function setDMZ(A0_32, A1_33, A2_34)
+  if _UPVALUE0_.isStrNil(A1_33) then
+    return 2
+  end
+  if require("xiaoqiang.module.XQPortForward").moduleOn() then
+    return 4
+  end
+  if A0_32 == 0 then
+    if _UPVALUE1_:match("^d01") == nil then
+      _UPVALUE0_.setNetMode("dmzsimple")
+    end
+    return _setSimpleDMZ(A1_33, A2_34)
+  elseif A0_32 == 1 then
+    if _UPVALUE1_:match("^d01") == nil then
+      _UPVALUE0_.setNetMode("dmzmode")
+    end
+    return _setComplexDMZ(A1_33, A2_34)
+  else
+    return 3
+  end
+end
+function dmzReload(A0_35)
+  if A0_35 == 0 then
+    os.execute("/etc/init.d/firewall restart")
+    if _UPVALUE0_:get("upnpd", "config", "enable_upnp") or 0 then
+      os.execute(_UPVALUE1_.UPNP_DISABLE)
+      os.execute(_UPVALUE1_.UPNP_ENABLE)
+    end
+    _UPVALUE2_.forkRestartDnsmasq()
+  elseif A0_35 == 1 then
+    _UPVALUE2_.forkReboot()
+  end
+end

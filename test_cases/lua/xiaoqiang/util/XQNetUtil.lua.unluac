@@ -1,0 +1,1377 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5, L6_6, L7_7, L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20, L21_21, L22_22, L23_23
+L0_0 = module
+L1_1 = "xiaoqiang.util.XQNetUtil"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "xiaoqiang.common.XQFunction"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.common.XQConfigs"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "luci.http.protocol"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "xiaoqiang.util.XQHttpUtil"
+L3_3 = L3_3(L4_4)
+L4_4 = require
+L5_5 = "xiaoqiang.util.XQSysUtil"
+L4_4 = L4_4(L5_5)
+L5_5 = "8007236f-a2d6-4847-ac83-c49395ad6d65"
+L6_6 = nil
+function L7_7()
+  local L0_24, L1_25
+  L0_24 = _UPVALUE0_
+  return L0_24
+end
+getToken = L7_7
+function L7_7()
+  return require("xiaoqiang.util.XQLanWanUtil").getDefaultMacAddress()
+end
+getMacAddr = L7_7
+function L7_7()
+  local L0_26, L1_27
+  L0_26 = require
+  L1_27 = "luci.util"
+  L0_26 = L0_26(L1_27)
+  L1_27 = L0_26.exec
+  L1_27 = L1_27(_UPVALUE0_.GET_NVRAM_SN)
+  if _UPVALUE1_.isStrNil(L1_27) then
+    return nil
+  else
+    L1_27 = L0_26.trim(L1_27)
+  end
+  return L1_27
+end
+getSN = L7_7
+function L7_7()
+  local L0_28
+  L0_28 = getSN
+  L0_28 = L0_28()
+  L0_28 = L0_28 or ""
+  return "miwifi-" .. L0_28
+end
+getUserAgent = L7_7
+function L7_7(A0_29, A1_30, A2_31, A3_32)
+  local L4_33, L5_34, L6_35, L7_36, L8_37
+  L4_33 = require
+  L5_34 = "xiaoqiang.util.XQCryptoUtil"
+  L4_33 = L4_33(L5_34)
+  if A0_29 == nil or A2_31 == nil then
+    L5_34 = nil
+    return L5_34
+  end
+  L5_34 = _UPVALUE0_
+  L5_34 = L5_34.getTime
+  L5_34 = L5_34()
+  L6_35 = table
+  L6_35 = L6_35.insert
+  L7_36 = A2_31
+  L8_37 = {"time", L5_34}
+  L6_35(L7_36, L8_37)
+  L6_35 = table
+  L6_35 = L6_35.sort
+  L7_36 = A2_31
+  function L8_37(A0_38, A1_39)
+    return A0_38[1] < A1_39[1]
+  end
+  L6_35(L7_36, L8_37)
+  L6_35 = ""
+  L7_36 = table
+  L7_36 = L7_36.foreach
+  L8_37 = A2_31
+  L7_36(L8_37, function(A0_40, A1_41)
+    _UPVALUE0_ = _UPVALUE0_ .. A1_41[1] .. "=" .. A1_41[2] .. "&"
+  end)
+  if A3_32 ~= nil and A3_32 ~= "" then
+    L7_36 = L6_35
+    L8_37 = A3_32
+    L6_35 = L7_36 .. L8_37
+  end
+  L7_36 = L4_33.md5Base64Str
+  L8_37 = L6_35
+  L7_36 = L7_36(L8_37)
+  L8_37 = getToken
+  L8_37 = L8_37()
+  if _UPVALUE0_.isStrNil(L8_37) or string.find(A0_29 .. A1_30, "/v2/") ~= nil or string.find(A0_29 .. A1_30, "/rs/") ~= nil then
+    L8_37 = _UPVALUE1_
+  end
+  if string.find(A0_29 .. A1_30, "?") == nil then
+  else
+  end
+  return A0_29 .. A1_30 .. "&s=" .. L7_36 .. "&time=" .. L5_34 .. "&token=" .. _UPVALUE2_.urlencode(L8_37)
+end
+cryptUrl = L7_7
+L7_7 = luci
+L7_7 = L7_7.util
+L7_7 = L7_7.trim
+L8_8 = luci
+L8_8 = L8_8.util
+L8_8 = L8_8.exec
+L9_9 = "uci get /etc/config/miwifi.server.LOG"
+L23_23 = L8_8(L9_9)
+L7_7 = L7_7(L8_8, L9_9, L10_10, L11_11, L12_12, L13_13, L14_14, L15_15, L16_16, L17_17, L18_18, L19_19, L20_20, L21_21, L22_22, L23_23, L8_8(L9_9))
+L8_8 = "https://"
+L9_9 = L7_7
+L10_10 = "/xiaoqiang_log/"
+L8_8 = L8_8 .. L9_9 .. L10_10
+L9_9 = "https://"
+L10_10 = L7_7
+L11_11 = "/xiaoqiang_config/"
+L9_9 = L9_9 .. L10_10 .. L11_11
+L10_10 = "false-row-key"
+L11_11 = "curl -k -i -f -X PUT %s%s -H \"Content-Type: application/json\" --data @%s 2>/dev/null"
+L12_12 = "Qzo="
+L13_13 = {}
+L13_13.M = "TTo="
+L13_13.B = "Qjo="
+L13_13.X = "WDo="
+L13_13.Y = "WTo="
+L13_13.Z = "Wjo="
+function L14_14()
+  local L0_42, L1_43
+  L0_42 = getMacAddr
+  L0_42 = L0_42()
+  L1_43 = string
+  L1_43 = L1_43.format
+  L1_43 = L1_43("%012d", os.time())
+  return L0_42 .. "-" .. L1_43
+end
+generateLogKey = L14_14
+function L14_14(A0_44, A1_45, A2_46)
+  local L3_47, L4_48, L5_49, L6_50, L7_51, L8_52, L9_53, L10_54, L11_55, L12_56, L13_57, L14_58, L15_59
+  L3_47 = require
+  L4_48 = "json"
+  L3_47 = L3_47(L4_48)
+  L4_48 = _UPVALUE0_
+  L4_48 = L4_48[A1_45]
+  L5_49 = _UPVALUE1_
+  L5_49 = L5_49.isStrNil
+  L6_50 = L4_48
+  L5_49 = L5_49(L6_50)
+  if L5_49 then
+    L5_49 = false
+    return L5_49
+  end
+  L5_49 = require
+  L6_50 = "mime"
+  L5_49 = L5_49(L6_50)
+  L6_50 = L5_49.b64
+  L7_51 = A2_46
+  L6_50 = L6_50(L7_51)
+  if not L6_50 then
+    L6_50 = L5_49.b64
+    L7_51 = generateLogKey
+    L15_59 = L7_51()
+    L6_50 = L6_50(L7_51, L8_52, L9_53, L10_54, L11_55, L12_56, L13_57, L14_58, L15_59, L7_51())
+  end
+  L7_51 = luci
+  L7_51 = L7_51.util
+  L7_51 = L7_51.exec
+  L8_52 = "/usr/bin/base64 "
+  L9_53 = A0_44
+  L8_52 = L8_52 .. L9_53
+  L7_51 = L7_51(L8_52)
+  L8_52 = {}
+  L8_52.column = L4_48
+  L9_53 = string
+  L9_53 = L9_53.gsub
+  L10_54 = L7_51
+  L11_55 = "\n"
+  L12_56 = ""
+  L9_53 = L9_53(L10_54, L11_55, L12_56)
+  L8_52["$"] = L9_53
+  L9_53 = {L10_54}
+  L10_54 = L8_52
+  L10_54 = {}
+  L10_54.key = L6_50
+  L10_54.Cell = L9_53
+  L11_55 = {}
+  L11_55.Row = L10_54
+  L12_56 = L3_47.encode
+  L13_57 = L11_55
+  L12_56 = L12_56(L13_57)
+  L13_57 = io
+  L13_57 = L13_57.open
+  L14_58 = _UPVALUE2_
+  L14_58 = L14_58.XQ_LOG_JSON_FILEPATH
+  L15_59 = "w"
+  L13_57 = L13_57(L14_58, L15_59)
+  if L13_57 then
+    L15_59 = L13_57
+    L14_58 = L13_57.write
+    L14_58(L15_59, L12_56)
+    L15_59 = L13_57
+    L14_58 = L13_57.close
+    L14_58(L15_59)
+  end
+  L14_58 = string
+  L14_58 = L14_58.format
+  L15_59 = _UPVALUE3_
+  L14_58 = L14_58(L15_59, _UPVALUE4_, _UPVALUE5_, _UPVALUE2_.XQ_LOG_JSON_FILEPATH)
+  L15_59 = luci
+  L15_59 = L15_59.util
+  L15_59 = L15_59.exec
+  L15_59 = L15_59(L14_58)
+  if L15_59 == nil or L15_59 == "" then
+    return false
+  elseif string.find(L15_59, "OK") ~= nil then
+    return true
+  else
+    return false
+  end
+end
+uploadLogFile = L14_14
+function L14_14(A0_60)
+  local L1_61, L2_62, L3_63, L4_64, L5_65, L6_66, L7_67, L8_68, L9_69, L10_70, L11_71, L12_72, L13_73
+  L1_61 = require
+  L2_62 = "mime"
+  L1_61 = L1_61(L2_62)
+  L2_62 = require
+  L3_63 = "json"
+  L2_62 = L2_62(L3_63)
+  L3_63 = getMacAddr
+  L3_63 = L3_63()
+  if L3_63 == nil then
+    L4_64 = false
+    return L4_64
+  end
+  L4_64 = luci
+  L4_64 = L4_64.util
+  L4_64 = L4_64.exec
+  L5_65 = "/usr/bin/base64 "
+  L6_66 = A0_60
+  L5_65 = L5_65 .. L6_66
+  L4_64 = L4_64(L5_65)
+  L5_65 = L1_61.b64
+  L6_66 = L3_63
+  L5_65 = L5_65(L6_66)
+  L6_66 = {}
+  L7_67 = _UPVALUE0_
+  L6_66.column = L7_67
+  L7_67 = string
+  L7_67 = L7_67.gsub
+  L8_68 = L4_64
+  L9_69 = "\n"
+  L10_70 = ""
+  L7_67 = L7_67(L8_68, L9_69, L10_70)
+  L6_66["$"] = L7_67
+  L7_67 = {L8_68}
+  L8_68 = L6_66
+  L8_68 = {}
+  L8_68.key = L5_65
+  L8_68.Cell = L7_67
+  L9_69 = {}
+  L9_69.Row = L8_68
+  L10_70 = L2_62.encode
+  L11_71 = L9_69
+  L10_70 = L10_70(L11_71)
+  L11_71 = io
+  L11_71 = L11_71.open
+  L12_72 = _UPVALUE1_
+  L12_72 = L12_72.XQ_CONFIG_JSON_FILEPATH
+  L13_73 = "w"
+  L11_71 = L11_71(L12_72, L13_73)
+  if L11_71 then
+    L13_73 = L11_71
+    L12_72 = L11_71.write
+    L12_72(L13_73, L10_70)
+    L13_73 = L11_71
+    L12_72 = L11_71.close
+    L12_72(L13_73)
+  end
+  L12_72 = string
+  L12_72 = L12_72.format
+  L13_73 = _UPVALUE2_
+  L12_72 = L12_72(L13_73, _UPVALUE3_, _UPVALUE4_, _UPVALUE1_.XQ_CONFIG_JSON_FILEPATH)
+  L13_73 = luci
+  L13_73 = L13_73.util
+  L13_73 = L13_73.exec
+  L13_73 = L13_73(L12_72)
+  if L13_73 == nil or L13_73 == "" then
+    return false
+  elseif string.find(L13_73, "OK") ~= nil then
+    return true
+  else
+    return false
+  end
+end
+uploadConfigFile = L14_14
+L14_14 = L1_1.LOG_ZIP_FILEPATH
+L15_15 = "tar.gz"
+L16_16 = "https://"
+L17_17 = L7_7
+L18_18 = "/log/lite/common/%s"
+L16_16 = L16_16 .. L17_17 .. L18_18
+L17_17 = "curl -k -i -X POST -F 'id=%s' -F '_n=%s' -F '_t=%s' -F 'extra_data={\"version\":\"%s\", \"sn\":\"%s\", \"suffix\":\""
+L18_18 = L15_15
+L19_19 = "\"}' -F 'mode=%s' -F 'key=%s' -F 'payload=@"
+L20_20 = L14_14
+L21_21 = "' %s"
+L17_17 = L17_17 .. L18_18 .. L19_19 .. L20_20 .. L21_21
+function L18_18()
+  local L0_74, L1_75, L2_76
+  L0_74 = getDeviceId
+  L0_74 = L0_74()
+  L0_74 = L0_74 or ""
+  L1_75 = _UPVALUE0_
+  L1_75 = L1_75.getHardware
+  L1_75 = L1_75()
+  L1_75 = L1_75 or ""
+  L2_76 = os
+  L2_76 = L2_76.time
+  L2_76 = L2_76()
+  return "common-" .. L1_75 .. "-" .. L0_74 .. "-" .. L2_76
+end
+generateLogKeyV2 = L18_18
+function L18_18(A0_77)
+  local L1_78, L2_79, L3_80, L4_81, L5_82, L6_83, L7_84, L8_85, L9_86, L10_87, L11_88
+  L1_78 = require
+  L2_79 = "luci.sys"
+  L1_78 = L1_78(L2_79)
+  L2_79 = getDeviceId
+  L2_79 = L2_79()
+  L2_79 = L2_79 or ""
+  L3_80 = L1_78.uniqueid
+  L4_81 = 10
+  L3_80 = L3_80(L4_81)
+  L4_81 = os
+  L4_81 = L4_81.time
+  L4_81 = L4_81()
+  L5_82 = _UPVALUE0_
+  L5_82 = L5_82.getRomVersion
+  L5_82 = L5_82()
+  L6_83 = getSN
+  L6_83 = L6_83()
+  L6_83 = L6_83 or ""
+  L7_84 = _UPVALUE0_
+  L7_84 = L7_84.getHardware
+  L7_84 = L7_84()
+  L7_84 = L7_84 or ""
+  L8_85 = string
+  L8_85 = L8_85.format
+  L9_86 = _UPVALUE1_
+  L10_87 = L7_84
+  L8_85 = L8_85(L9_86, L10_87)
+  L9_86 = ""
+  if A0_77 then
+    L9_86 = "useRomTime"
+    L11_88 = A0_77
+    L10_87 = A0_77.match
+    L10_87 = L10_87(L11_88, "%-(%d+)$")
+    L4_81 = L10_87
+  else
+    A0_77 = ""
+  end
+  L10_87 = string
+  L10_87 = L10_87.format
+  L11_88 = _UPVALUE2_
+  L10_87 = L10_87(L11_88, L2_79, L3_80, L4_81, L5_82, L6_83, L9_86, A0_77, L8_85)
+  L11_88 = luci
+  L11_88 = L11_88.util
+  L11_88 = L11_88.exec
+  L11_88 = L11_88(L10_87)
+  if L11_88 == nil or L11_88 == "" then
+    return false
+  elseif string.find(L11_88, "\"code\":0") ~= nil then
+    return true
+  else
+    return false
+  end
+end
+uploadLogV2 = L18_18
+L18_18 = "https://account.xiaomi.com/"
+L19_19 = "http://account.preview.n.xiaomi.net/"
+L20_20 = "pass/serviceLoginAuth"
+L21_21 = "pass/serviceLogin?sid=xiaoqiang"
+function L22_22(A0_89, A1_90)
+  local L2_91, L3_92, L4_93, L5_94, L6_95, L7_96, L8_97, L9_98, L10_99, L11_100, L12_101, L13_102, L14_103, L15_104, L16_105, L17_106, L18_107, L19_108, L20_109, L21_110, L22_111, L23_112, L24_113, L25_114, L26_115, L27_116
+  L2_91 = require
+  L3_92 = "json"
+  L2_91 = L2_91(L3_92)
+  L3_92 = require
+  L4_93 = "xiaoqiang.XQLog"
+  L3_92 = L3_92(L4_93)
+  L4_93 = require
+  L5_94 = "xiaoqiang.util.XQDBUtil"
+  L4_93 = L4_93(L5_94)
+  L5_94 = require
+  L6_95 = "xiaoqiang.util.XQSysUtil"
+  L5_94 = L5_94(L6_95)
+  L6_95 = require
+  L7_96 = "xiaoqiang.util.XQCryptoUtil"
+  L6_95 = L6_95(L7_96)
+  L7_96, L8_97, L9_98, L10_99, L11_100, L12_101, L13_102 = nil, nil, nil, nil, nil, nil, nil
+  L14_103 = {
+    L15_104,
+    L16_105,
+    L17_106,
+    L18_107
+  }
+  L15_104 = {L16_105, L17_106}
+  L16_105 = "user"
+  L17_106 = A0_89
+  L16_105 = {
+    L17_106,
+    [12] = L18_107(L19_108)
+  }
+  L17_106 = "hash"
+  L18_107 = string
+  L18_107 = L18_107.upper
+  L19_108 = A1_90
+  L27_116 = L18_107(L19_108)
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[2] = L18_107
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[3] = L19_108
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[4] = L20_109
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[5] = L21_110
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[6] = L22_111
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[7] = L23_112
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[8] = L24_113
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[9] = L25_114
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[10] = L26_115
+  ;({
+    L17_106,
+    [12] = L18_107(L19_108)
+  })[11] = L27_116
+  L17_106 = {L18_107, L19_108}
+  L18_107 = "sid"
+  L19_108 = "xiaoqiang"
+  L18_107 = {L19_108, L20_109}
+  L19_108 = "deviceId"
+  L20_109 = getSN
+  L20_109 = L20_109()
+  L20_109 = L20_109 or ""
+  L15_104 = nil
+  L16_105 = _UPVALUE0_
+  L16_105 = L16_105.SERVER_CONFIG
+  if L16_105 == 1 then
+    L16_105 = _UPVALUE1_
+    L17_106 = _UPVALUE2_
+    L15_104 = L16_105 .. L17_106
+  else
+    L16_105 = _UPVALUE3_
+    L17_106 = _UPVALUE2_
+    L15_104 = L16_105 .. L17_106
+  end
+  L16_105 = ""
+  L17_106 = table
+  L17_106 = L17_106.foreach
+  L18_107 = L14_103
+  function L19_108(A0_117, A1_118)
+    _UPVALUE0_ = _UPVALUE0_ .. A1_118[1] .. "=" .. A1_118[2] .. "&"
+  end
+  L17_106(L18_107, L19_108)
+  L17_106 = _UPVALUE4_
+  L17_106 = L17_106.httpGetRequest
+  L18_107 = L15_104
+  L19_108 = string
+  L19_108 = L19_108.sub
+  L20_109 = L16_105
+  L21_110 = 1
+  L22_111 = 4294967294
+  L27_116 = L19_108(L20_109, L21_110, L22_111)
+  L17_106 = L17_106(L18_107, L19_108, L20_109, L21_110, L22_111, L23_112, L24_113, L25_114, L26_115, L27_116, L19_108(L20_109, L21_110, L22_111))
+  L18_107 = L17_106.code
+  if L18_107 == 302 then
+    L18_107 = L17_106.headers
+    L18_107 = L18_107["extension-pragma"]
+    L19_108 = L17_106.headers
+    L19_108 = L19_108["set-cookie"]
+    L20_109 = L2_91.decode
+    L21_110 = L18_107
+    L20_109 = L20_109(L21_110)
+    L21_110 = L17_106.headers
+    L12_101 = L21_110.location
+    L22_111 = L19_108
+    L21_110 = L19_108.match
+    L23_112 = "userId=(%d+);"
+    L21_110 = L21_110(L22_111, L23_112)
+    L7_96 = L21_110
+    L22_111 = L19_108
+    L21_110 = L19_108.match
+    L23_112 = "passToken=(%S+);"
+    L21_110 = L21_110(L22_111, L23_112)
+    L9_98 = L21_110
+    L22_111 = L19_108
+    L21_110 = L19_108.match
+    L23_112 = "domain=(%S+);"
+    L21_110 = L21_110(L22_111, L23_112)
+    L13_102 = L21_110
+    L22_111 = L18_107
+    L21_110 = L18_107.match
+    L23_112 = "%S+\"nonce\":(%d+),%S+"
+    L21_110 = L21_110(L22_111, L23_112)
+    L8_97 = L21_110
+    L10_99 = L20_109.ssecurity
+    L11_100 = L20_109.psecurity
+    L21_110 = L3_92.log
+    L22_111 = 7
+    L23_112 = "XiaomiLogin Step1 Succeed:"
+    L24_113 = L17_106
+    L21_110(L22_111, L23_112, L24_113)
+    L21_110 = "nonce="
+    L22_111 = L8_97
+    L23_112 = "&"
+    L24_113 = L10_99
+    L21_110 = L21_110 .. L22_111 .. L23_112 .. L24_113
+    L22_111 = L6_95.binaryBase64Enc
+    L23_112 = L6_95.sha1Binary
+    L24_113 = L21_110
+    L27_116 = L23_112(L24_113)
+    L22_111 = L22_111(L23_112, L24_113, L25_114, L26_115, L27_116, L23_112(L24_113))
+    L23_112 = _UPVALUE5_
+    L23_112 = L23_112.xq_urlencode_params
+    L24_113 = {}
+    L24_113.uuid = L7_96
+    L24_113.clientSign = L22_111
+    L23_112 = L23_112(L24_113)
+    L24_113 = L12_101
+    L25_114 = "&"
+    L26_115 = L23_112
+    L24_113 = L24_113 .. L25_114 .. L26_115
+    L25_114 = _UPVALUE4_
+    L25_114 = L25_114.httpGetRequest
+    L26_115 = L24_113
+    L25_114 = L25_114(L26_115)
+    L26_115 = nil
+    L27_116 = L25_114.code
+    if L27_116 == 200 then
+      L27_116 = type
+      L27_116 = L27_116(L25_114.headers)
+      if L27_116 == "table" then
+        L27_116 = L25_114.headers
+        L27_116 = L27_116["set-cookie"]
+        if L27_116 then
+          L26_115 = L27_116:match("serviceToken=(%S+);")
+        end
+      end
+    else
+      L27_116 = L25_114.code
+      if L27_116 == 401 then
+        L27_116 = L3_92.log
+        L27_116(3, "XiaomiLogin Step2 401 Failed:", L24_113, L25_114)
+        L27_116 = {}
+        L27_116.code = 2
+        return L27_116
+      end
+    end
+    L27_116 = L10_99
+    if not _UPVALUE6_.isStrNil(L7_96) and not _UPVALUE6_.isStrNil(L9_98) and not _UPVALUE6_.isStrNil(L26_115) and not _UPVALUE6_.isStrNil(L27_116) and not _UPVALUE6_.isStrNil(L10_99) then
+      L3_92.log(7, "XiaomiLogin Step2 succeed:" .. L7_96)
+      L4_93.savePassport(L7_96, L9_98, L26_115, L27_116, L10_99)
+      return {
+        code = 0,
+        uuid = L7_96,
+        token = L9_98,
+        stoken = L26_115,
+        sid = L27_116,
+        ssecurity = L10_99
+      }
+    else
+      L3_92.log(3, "XiaomiLogin Step2 Failed:", {
+        step2url = L24_113,
+        userId = L7_96 or "",
+        passToken = L9_98 or "",
+        ssecurity = L10_99 or ""
+      })
+      return {code = 2}
+    end
+  else
+    L18_107 = L17_106.code
+    if L18_107 == 200 then
+      L18_107 = L3_92.log
+      L19_108 = 3
+      L20_109 = "XiaomiLogin Step1 Username/Password Error:"
+      L21_110 = L14_103
+      L22_111 = L17_106
+      L18_107(L19_108, L20_109, L21_110, L22_111)
+      L18_107 = {}
+      L18_107.code = 1
+      return L18_107
+    else
+      L18_107 = L3_92.log
+      L19_108 = 3
+      L20_109 = "XiaomiLogin Step1 Service Unreachable:"
+      L21_110 = L14_103
+      L22_111 = L17_106
+      L18_107(L19_108, L20_109, L21_110, L22_111)
+      L18_107 = {}
+      L18_107.code = 3
+      return L18_107
+    end
+  end
+end
+xiaomiLogin = L22_22
+function L22_22(A0_119)
+  if _UPVALUE0_.isStrNil(A0_119) then
+    A0_119 = require("xiaoqiang.util.XQSysUtil").getBindUUID()
+  end
+  if _UPVALUE0_.isStrNil(A0_119) then
+    return false
+  end
+  if not require("xiaoqiang.util.XQDBUtil").fetchPassport(A0_119)[1] then
+    return false
+  end
+  if _UPVALUE0_.isStrNil(require("xiaoqiang.util.XQDBUtil").fetchPassport(A0_119)[1].token) then
+    return false
+  end
+  _UPVALUE1_ = require("xiaoqiang.util.XQDBUtil").fetchPassport(A0_119)[1].token
+  return require("xiaoqiang.util.XQDBUtil").fetchPassport(A0_119)[1]
+end
+getPassport = L22_22
+function L22_22(A0_120)
+  if _UPVALUE0_.isStrNil(A0_120) then
+    return ""
+  else
+    return string.gsub(A0_120, ".jpg", "_150.jpg")
+  end
+end
+generateOrigIconUrl = L22_22
+L22_22 = "http://api.account.xiaomi.com/pass/usersCard?ids="
+function L23_23(A0_121)
+  local L1_122, L2_123, L3_124, L4_125, L5_126, L6_127
+  L1_122 = require
+  L2_123 = "json"
+  L1_122 = L1_122(L2_123)
+  L2_123 = require
+  L3_124 = "xiaoqiang.util.XQSysUtil"
+  L2_123 = L2_123(L3_124)
+  L3_124 = _UPVALUE0_
+  L3_124 = L3_124.isStrNil
+  L4_125 = A0_121
+  L3_124 = L3_124(L4_125)
+  if L3_124 then
+    L3_124 = L2_123.getBindUUID
+    L3_124 = L3_124()
+    A0_121 = L3_124
+    L3_124 = _UPVALUE0_
+    L3_124 = L3_124.isStrNil
+    L4_125 = A0_121
+    L3_124 = L3_124(L4_125)
+    if L3_124 then
+      L3_124 = false
+      return L3_124
+    end
+  end
+  L3_124 = _UPVALUE1_
+  L3_124 = L3_124.httpGetRequest
+  L4_125 = _UPVALUE2_
+  L5_126 = A0_121
+  L4_125 = L4_125 .. L5_126
+  L3_124 = L3_124(L4_125)
+  L4_125 = L3_124.code
+  if L4_125 ~= 200 then
+    L4_125 = false
+    return L4_125
+  end
+  L4_125 = L1_122.decode
+  L5_126 = L3_124.res
+  L4_125 = L4_125(L5_126)
+  if L4_125 then
+    L5_126 = string
+    L5_126 = L5_126.upper
+    L6_127 = L4_125.result
+    L5_126 = L5_126(L6_127)
+    if L5_126 == "OK" then
+      L5_126 = L4_125.data
+      L5_126 = L5_126.list
+      L6_127 = L5_126[1]
+      if L6_127 then
+        L6_127 = {}
+        L6_127.aliasNick = L5_126[1].aliasNick or ""
+        L6_127.miliaoNick = L5_126[1].miliaoNick or ""
+        L6_127.userId = L5_126[1].userId or ""
+        L6_127.miliaoIcon = L5_126[1].miliaoIcon or ""
+        L6_127.miliaoIconOrig = generateOrigIconUrl(L6_127.miliaoIcon)
+        L2_123.setBindUserInfo(L6_127)
+        return L6_127
+      end
+    end
+  end
+  L5_126 = false
+  return L5_126
+end
+getUserInfo = L23_23
+L23_23 = luci
+L23_23 = L23_23.util
+L23_23 = L23_23.trim
+L23_23 = L23_23(luci.util.exec(L1_1.SERVER_CONFIG_ONLINE_URL))
+if L1_1.SERVER_CONFIG == 1 then
+else
+end
+function getDeviceId()
+  local L0_128, L1_129
+  L0_128 = require
+  L1_129 = "luci.util"
+  L0_128 = L0_128(L1_129)
+  L1_129 = L0_128.exec
+  L1_129 = L1_129(_UPVALUE0_.XQ_DEVICE_ID)
+  if _UPVALUE1_.isStrNil(L1_129) then
+    L1_129 = ""
+  end
+  return L0_128.trim(L1_129)
+end
+function checkEcosUpgrade(A0_130, A1_131, A2_132, A3_133)
+  local L4_134, L5_135, L6_136, L7_137, L8_138, L9_139, L10_140, L11_141, L12_142
+  L4_134 = require
+  L5_135 = "json"
+  L4_134 = L4_134(L5_135)
+  L5_135 = {
+    L6_136,
+    L7_137,
+    L8_138,
+    L9_139,
+    L10_140
+  }
+  L6_136 = {L7_137, L8_138}
+  L7_137 = "version"
+  L8_138 = A0_130
+  L7_137 = {L8_138, L9_139}
+  L8_138 = "hardware"
+  L9_139 = "r01"
+  L8_138 = {L9_139, L10_140}
+  L9_139 = "channel"
+  L10_140 = A1_131
+  L9_139 = {L10_140, L11_141}
+  L10_140 = "filterID"
+  L11_141 = A2_132
+  L10_140 = {L11_141, L12_142}
+  L11_141 = "countryCode"
+  L12_142 = A3_133
+  L6_136 = {}
+  L7_137 = table
+  L7_137 = L7_137.foreach
+  L8_138 = L5_135
+  function L9_139(A0_143, A1_144)
+    _UPVALUE0_[A1_144[1]] = A1_144[2]
+  end
+  L7_137(L8_138, L9_139)
+  L7_137 = _UPVALUE0_
+  L7_137 = L7_137.urlencode_params
+  L8_138 = L6_136
+  L7_137 = L7_137(L8_138)
+  L8_138 = _UPVALUE1_
+  L9_139 = "?"
+  L10_140 = L7_137
+  L8_138 = L8_138 .. L9_139 .. L10_140
+  L9_139 = cryptUrl
+  L10_140 = _UPVALUE2_
+  L11_141 = L8_138
+  L12_142 = L5_135
+  L9_139 = L9_139(L10_140, L11_141, L12_142, _UPVALUE3_)
+  L10_140 = _UPVALUE4_
+  L10_140 = L10_140.httpGetRequest
+  L11_141 = L9_139
+  L10_140 = L10_140(L11_141)
+  L11_141 = L10_140.code
+  if L11_141 ~= 200 then
+    L11_141 = false
+    return L11_141
+  end
+  L11_141 = nil
+  function L12_142(A0_145)
+    _UPVALUE0_ = _UPVALUE1_.decode(A0_145)
+  end
+  if not pcall(L12_142, L10_140.res) then
+    return false
+  end
+  if not L11_141 then
+    return false
+  end
+  if tonumber(L11_141.code) == 0 then
+    if L11_141.data and L11_141.data.upgradeInfo and L11_141.data.upgradeInfo.link then
+      ({}).needUpdate = 1
+      ;({}).downloadUrl = L11_141.data.upgradeInfo.link
+      ;({}).fullHash = L11_141.data.upgradeInfo.hash
+      ;({}).fileSize = L11_141.data.upgradeInfo.size
+      ;({}).version = L11_141.data.upgradeInfo.toVersion
+      ;({}).description = L11_141.data.upgradeInfo.description
+    else
+      ({}).needUpdate = 0
+    end
+    return {}
+  else
+    return false
+  end
+end
+function checkUpgrade()
+  local L0_146, L1_147, L2_148, L3_149, L4_150, L5_151, L6_152, L7_153, L8_154, L9_155, L10_156, L11_157, L12_158, L13_159, L14_160, L15_161, L16_162, L17_163
+  L0_146 = require
+  L1_147 = "json"
+  L0_146 = L0_146(L1_147)
+  L1_147 = require
+  L2_148 = "xiaoqiang.util.XQSysUtil"
+  L1_147 = L1_147(L2_148)
+  L2_148 = require
+  L3_149 = "xiaoqiang.XQPreference"
+  L2_148 = L2_148(L3_149)
+  L3_149 = require
+  L4_150 = "xiaoqiang.util.XQCryptoUtil"
+  L3_149 = L3_149(L4_150)
+  L4_150 = require
+  L5_151 = "xiaoqiang.XQCountryCode"
+  L4_150 = L4_150(L5_151)
+  L5_151 = L1_147.getMiscHardwareInfo
+  L5_151 = L5_151()
+  L6_152 = L5_151.recovery
+  if L6_152 == 1 then
+    L6_152 = true
+  else
+    L6_152 = L6_152 or false
+  end
+  L7_153 = {}
+  if L6_152 then
+    L8_154 = L1_147.getNvramConfigs
+    L8_154 = L8_154()
+    L9_155 = {
+      L10_156,
+      L11_157,
+      L12_158,
+      L13_159,
+      L14_160,
+      L15_161,
+      L16_162,
+      L17_163,
+      {
+        "channel",
+        L8_154.rom_channel
+      },
+      {
+        "serialNumber",
+        _UPVALUE0_.nvramGet("SN", "")
+      },
+      {
+        "ispCode",
+        L1_147.getISPCode()
+      }
+    }
+    L10_156 = {L11_157, L12_158}
+    L11_157 = "deviceID"
+    L12_158 = ""
+    L11_157 = {L12_158, L13_159}
+    L12_158 = "rom"
+    L13_159 = L8_154.rom_ver
+    L12_158 = {
+      L13_159,
+      [6] = L14_160()
+    }
+    L13_159 = "hardware"
+    L14_160 = L1_147.getHardware
+    L17_163 = L14_160()
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[2] = L14_160
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[3] = L15_161
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[4] = L16_162
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[5] = L17_163
+    L13_159 = {L14_160, L15_161}
+    L14_160 = "cfe"
+    L15_161 = L8_154.uboot
+    L14_160 = {L15_161, L16_162}
+    L15_161 = "linux"
+    L16_162 = L8_154.linux
+    L15_161 = {L16_162, L17_163}
+    L16_162 = "ramfs"
+    L17_163 = L8_154.ramfs
+    L16_162 = {
+      L17_163,
+      L8_154.sqafs
+    }
+    L17_163 = "sqafs"
+    L17_163 = {
+      "rootfs",
+      L8_154.rootfs
+    }
+    L7_153 = L9_155
+  else
+    L8_154 = {
+      L9_155,
+      L10_156,
+      L11_157,
+      L12_158,
+      L13_159,
+      L14_160,
+      L15_161,
+      L16_162,
+      L17_163,
+      {
+        "countryCode",
+        L4_150.getCurrentCountryCode()
+      },
+      {
+        "locale",
+        L4_150.getCurrentJLan()
+      },
+      {
+        "serialNumber",
+        getSN() or ""
+      },
+      {
+        "ispCode",
+        L1_147.getISPCode()
+      }
+    }
+    L9_155 = {
+      L10_156,
+      [9] = L11_157()
+    }
+    L10_156 = "deviceID"
+    L11_157 = getDeviceId
+    L17_163 = L11_157()
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[2] = L11_157
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[3] = L12_158
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[4] = L13_159
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[5] = L14_160
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[6] = L15_161
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[7] = L16_162
+    ;({
+      L10_156,
+      [9] = L11_157()
+    })[8] = L17_163
+    L10_156 = {
+      L11_157,
+      [8] = L12_158()
+    }
+    L11_157 = "rom"
+    L12_158 = L1_147.getRomVersion
+    L17_163 = L12_158()
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[2] = L12_158
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[3] = L13_159
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[4] = L14_160
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[5] = L15_161
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[6] = L16_162
+    ;({
+      L11_157,
+      [8] = L12_158()
+    })[7] = L17_163
+    L11_157 = {
+      L12_158,
+      [7] = L13_159()
+    }
+    L12_158 = "hardware"
+    L13_159 = L1_147.getHardware
+    L17_163 = L13_159()
+    ;({
+      L12_158,
+      [7] = L13_159()
+    })[2] = L13_159
+    ;({
+      L12_158,
+      [7] = L13_159()
+    })[3] = L14_160
+    ;({
+      L12_158,
+      [7] = L13_159()
+    })[4] = L15_161
+    ;({
+      L12_158,
+      [7] = L13_159()
+    })[5] = L16_162
+    ;({
+      L12_158,
+      [7] = L13_159()
+    })[6] = L17_163
+    L12_158 = {
+      L13_159,
+      [6] = L14_160()
+    }
+    L13_159 = "cfe"
+    L14_160 = L1_147.getCFEVersion
+    L17_163 = L14_160()
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[2] = L14_160
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[3] = L15_161
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[4] = L16_162
+    ;({
+      L13_159,
+      [6] = L14_160()
+    })[5] = L17_163
+    L13_159 = {
+      L14_160,
+      [5] = L15_161()
+    }
+    L14_160 = "linux"
+    L15_161 = L1_147.getKernelVersion
+    L17_163 = L15_161()
+    ;({
+      L14_160,
+      [5] = L15_161()
+    })[2] = L15_161
+    ;({
+      L14_160,
+      [5] = L15_161()
+    })[3] = L16_162
+    ;({
+      L14_160,
+      [5] = L15_161()
+    })[4] = L17_163
+    L14_160 = {
+      L15_161,
+      [4] = L16_162()
+    }
+    L15_161 = "ramfs"
+    L16_162 = L1_147.getRamFsVersion
+    L17_163 = L16_162()
+    ;({
+      L15_161,
+      [4] = L16_162()
+    })[2] = L16_162
+    ;({
+      L15_161,
+      [4] = L16_162()
+    })[3] = L17_163
+    L15_161 = {
+      L16_162,
+      [3] = L17_163()
+    }
+    L16_162 = "sqafs"
+    L17_163 = L1_147.getSqaFsVersion
+    L17_163 = L17_163()
+    ;({
+      L16_162,
+      [3] = L17_163()
+    })[2] = L17_163
+    L16_162 = {
+      L17_163,
+      L1_147.getRootFsVersion()
+    }
+    L17_163 = "rootfs"
+    L17_163 = {
+      "channel",
+      L1_147.getChannel()
+    }
+    L7_153 = L8_154
+  end
+  L8_154 = {}
+  L9_155 = table
+  L9_155 = L9_155.foreach
+  L10_156 = L7_153
+  function L11_157(A0_164, A1_165)
+    _UPVALUE0_[A1_165[1]] = A1_165[2]
+  end
+  L9_155(L10_156, L11_157)
+  L9_155 = _UPVALUE1_
+  L9_155 = L9_155.urlencode_params
+  L10_156 = L8_154
+  L9_155 = L9_155(L10_156)
+  if L6_152 then
+    L10_156 = _UPVALUE2_
+  else
+    L10_156 = L10_156 or _UPVALUE3_
+  end
+  L11_157 = "?"
+  L12_158 = L9_155
+  L10_156 = L10_156 .. L11_157 .. L12_158
+  L11_157 = cryptUrl
+  L12_158 = _UPVALUE4_
+  L13_159 = L10_156
+  L14_160 = L7_153
+  L15_161 = _UPVALUE5_
+  L11_157 = L11_157(L12_158, L13_159, L14_160, L15_161)
+  L12_158 = _UPVALUE6_
+  L12_158 = L12_158.httpGetRequest
+  L13_159 = L11_157
+  L12_158 = L12_158(L13_159)
+  L13_159 = L12_158.code
+  if L13_159 ~= 200 then
+    L13_159 = false
+    return L13_159
+  end
+  L13_159 = nil
+  function L14_160(A0_166)
+    _UPVALUE0_ = _UPVALUE1_.decode(A0_166)
+  end
+  L15_161 = pcall
+  L16_162 = L14_160
+  L17_163 = L12_158.res
+  L15_161 = L15_161(L16_162, L17_163)
+  if not L15_161 then
+    L15_161 = false
+    return L15_161
+  end
+  if not L13_159 then
+    L15_161 = false
+    return L15_161
+  end
+  L15_161 = tonumber
+  L16_162 = L13_159.code
+  L15_161 = L15_161(L16_162)
+  if L15_161 == 0 then
+    L15_161 = {}
+    L16_162 = L13_159.data
+    if L16_162 then
+      L16_162 = L13_159.data
+      L16_162 = L16_162.link
+      if L16_162 then
+        L16_162 = _UPVALUE0_
+        L16_162 = L16_162.parseEnter2br
+        L17_163 = luci
+        L17_163 = L17_163.util
+        L17_163 = L17_163.trim
+        L17_163 = L17_163(L13_159.data.description)
+        L16_162 = L16_162(L17_163, L17_163(L13_159.data.description))
+        L17_163 = tonumber
+        L17_163 = L17_163(L13_159.data.weight)
+        L15_161.needUpdate = 1
+        L15_161.downloadUrl = L13_159.data.link
+        L15_161.fullHash = L13_159.data.hash
+        L15_161.fileSize = L13_159.data.size
+        L15_161.version = L13_159.data.toVersion
+        L15_161.weight = L17_163 or 1
+        L15_161.changelogUrl = L13_159.data.changelogUrl
+        L15_161.changeLog = L16_162
+      end
+    else
+      L16_162 = require
+      L17_163 = "xiaoqiang.module.XQMessageBox"
+      L16_162 = L16_162(L17_163)
+      L17_163 = L16_162.removeMessage
+      L17_163(1)
+      L17_163 = ""
+      if L13_159.data and L13_159.data.description then
+        L17_163 = _UPVALUE0_.parseEnter2br(luci.util.trim(L13_159.data.description))
+      end
+      L15_161.needUpdate = 0
+      L15_161.version = L1_147.getRomVersion()
+      L15_161.changeLog = L17_163
+    end
+    return L15_161
+  else
+    L15_161 = false
+    return L15_161
+  end
+end
+function generateSignature(A0_167, A1_168, A2_169, A3_170)
+  local L4_171, L5_172
+  L4_171 = require
+  L5_172 = "xiaoqiang.util.XQCryptoUtil"
+  L4_171 = L4_171(L5_172)
+  L5_172 = ""
+  if A2_169 and #A2_169 > 0 then
+    table.sort(A2_169, function(A0_173, A1_174)
+      return A0_173[1] < A1_174[1]
+    end)
+    table.foreach(A2_169, function(A0_175, A1_176)
+      _UPVALUE0_ = _UPVALUE0_ .. A1_176[1] .. "=" .. A1_176[2] .. "&"
+    end)
+  end
+  L5_172 = L5_172 .. A3_170
+  if not _UPVALUE0_.isStrNil(A1_168) then
+    L5_172 = A1_168 .. "&" .. L5_172
+  end
+  if not _UPVALUE0_.isStrNil(A0_167) then
+    L5_172 = string.upper(A0_167) .. "&" .. L5_172
+  end
+  return L4_171.hash4SHA1(L5_172)
+end
+function doRequest(A0_177, A1_178, A2_179, A3_180)
+  local L4_181, L5_182, L6_183, L7_184, L8_185, L9_186, L10_187, L11_188, L12_189, L13_190, L14_191, L15_192, L16_193, L17_194, L18_195, L19_196, L20_197, L21_198, L22_199, L23_200, L24_201, L25_202
+  L4_181 = require
+  L5_182 = "json"
+  L4_181 = L4_181(L5_182)
+  L5_182 = require
+  L6_183 = "xqcrypto"
+  L5_182 = L5_182(L6_183)
+  L6_183 = require
+  L7_184 = "luci.util"
+  L6_183 = L6_183(L7_184)
+  L7_184 = require
+  L8_185 = "xiaoqiang.XQLog"
+  L7_184 = L7_184(L8_185)
+  L8_185 = require
+  L9_186 = "xiaoqiang.util.XQCryptoUtil"
+  L8_185 = L8_185(L9_186)
+  L9_186 = getPassport
+  L10_187 = A3_180
+  L9_186 = L9_186(L10_187)
+  L10_187 = string
+  L10_187 = L10_187.upper
+  L11_188 = A0_177
+  L10_187 = L10_187(L11_188)
+  A0_177 = L10_187
+  if not L9_186 then
+    L10_187 = L7_184.log
+    L11_188 = 3
+    L12_189 = "XQRequest: Passport missing "
+    L13_190 = A1_178
+    L12_189 = L12_189 .. L13_190
+    L10_187(L11_188, L12_189)
+    L10_187 = false
+    return L10_187
+  end
+  L10_187 = L5_182.generateNonce
+  L10_187 = L10_187()
+  L11_188 = {}
+  L12_189 = {}
+  L13_190 = {}
+  L14_191 = {}
+  L15_192 = L9_186.uuid
+  L11_188.userId = L15_192
+  L15_192 = L9_186.stoken
+  L11_188.serviceToken = L15_192
+  L15_192 = L5_182.generateSessionSecurity
+  L16_193 = L10_187
+  L15_192 = L15_192(L16_193, L17_194)
+  L16_193 = ""
+  if A2_179 then
+    if L17_194 == "table" then
+      L17_194(L18_195, L19_196)
+      for L20_197, L21_198 in L17_194(L18_195) do
+        L22_199(L23_200, L24_201)
+      end
+    end
+  else
+    A2_179 = L17_194
+  end
+  L18_195(L19_196, L20_197)
+  L18_195(L19_196, L20_197)
+  for L21_198, L22_199 in L18_195(L19_196) do
+    L25_202 = ";;"
+    L16_193 = L23_200 .. L24_201 .. L25_202
+  end
+  L25_202 = L20_197(L21_198, L22_199, L23_200)
+  if L19_196 then
+    if L20_197 > 0 then
+      for L23_200, L24_201 in L20_197(L21_198) do
+        L25_202 = table
+        L25_202 = L25_202.insert
+        L25_202(L12_189, {
+          L24_201[1],
+          L19_196[L23_200]
+        })
+        L25_202 = table
+        L25_202 = L25_202.insert
+        L25_202(L14_191, {
+          L24_201[1],
+          L19_196[L23_200]
+        })
+      end
+    end
+  end
+  L25_202 = L15_192
+  for L25_202, _FORV_26_ in L22_199(L23_200) do
+  end
+  L25_202 = "signature"
+  L22_199(L23_200, L24_201)
+  L25_202 = "_nonce"
+  L22_199(L23_200, L24_201)
+  L25_202 = "rc4_hash__"
+  L22_199(L23_200, L24_201)
+  function L25_202(A0_203, A1_204)
+    _UPVALUE0_[A1_204[1]] = A1_204[2]
+  end
+  L23_200(L24_201, L25_202)
+  if A0_177 == "GET" then
+    L25_202 = _UPVALUE1_
+    L25_202 = L25_202.httpGetRequest
+    L25_202 = L25_202(_UPVALUE2_ .. A1_178, L23_200, L11_188)
+  elseif A0_177 == "POST" then
+    L25_202 = _UPVALUE1_
+    L25_202 = L25_202.httpPostRequest
+    L25_202 = L25_202(_UPVALUE2_ .. A1_178, L23_200, L11_188)
+  end
+  L25_202 = L24_201.code
+  if L25_202 == 200 then
+    L25_202 = L5_182.decryptResult
+    L25_202 = L25_202(L15_192, L24_201.res)
+    if not _UPVALUE3_.isStrNil(L25_202) then
+      L25_202 = string.gsub(L25_202, "u201c", "\"")
+      L25_202 = string.gsub(L25_202, "u201d", "\"")
+      L7_184.log(7, "XQRequest succeed:" .. L25_202)
+      return L4_181.decode(L25_202)
+    end
+  else
+    L25_202 = L24_201.code
+    if L25_202 == 401 then
+      L25_202 = L7_184.log
+      L25_202(3, "XQRequest 401:" .. _UPVALUE2_ .. A1_178, "QueryString:" .. L23_200, L14_191)
+      L25_202 = {}
+      L25_202.code = 401
+      return L25_202
+    end
+  end
+  L25_202 = L7_184.log
+  L25_202(3, "XQRequest Failed:" .. _UPVALUE2_ .. A1_178, "QueryString:" .. L23_200, L14_191)
+  L25_202 = false
+  return L25_202
+end

@@ -1,0 +1,227 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4, L5_5
+L0_0 = require
+L1_1 = "string"
+L0_0 = L0_0(L1_1)
+L1_1 = _G
+L2_2 = require
+L3_3 = "table"
+L2_2 = L2_2(L3_3)
+L3_3 = require
+L4_4 = "socket"
+L3_3 = L3_3(L4_4)
+L4_4 = {}
+L3_3.url = L4_4
+L4_4 = L3_3.url
+L4_4._VERSION = "URL 1.0.3"
+function L5_5(A0_6)
+  return (_UPVALUE0_.gsub(A0_6, "([^A-Za-z0-9_])", function(A0_7)
+    local L2_8
+    L2_8 = _UPVALUE0_
+    L2_8 = L2_8.format
+    return L2_8("%%%02x", _UPVALUE0_.byte(A0_7))
+  end))
+end
+L4_4.escape = L5_5
+function L5_5(A0_9)
+  for _FORV_5_, _FORV_6_ in _UPVALUE0_.ipairs(A0_9) do
+    ({})[A0_9[_FORV_5_]] = 1
+  end
+  return {}
+end
+function L4_4.unescape(A0_10)
+  return (_UPVALUE0_.gsub(A0_10, "%%(%x%x)", function(A0_11)
+    return _UPVALUE0_.char(_UPVALUE1_.tonumber(A0_11, 16))
+  end))
+end
+function L4_4.parse(A0_12, A1_13)
+  local L2_14, L3_15, L4_16
+  L2_14 = {}
+  L4_16 = A1_13 or L2_14
+  for _FORV_6_, _FORV_7_ in L3_15(L4_16) do
+    L2_14[_FORV_6_] = _FORV_7_
+  end
+  if not A0_12 or A0_12 == "" then
+    return L3_15, L4_16
+  end
+  A0_12 = L3_15
+  A0_12 = L3_15
+  A0_12 = L3_15
+  A0_12 = L3_15
+  A0_12 = L3_15
+  if A0_12 ~= "" then
+    L2_14.path = A0_12
+  end
+  if not L3_15 then
+    return L2_14
+  end
+  if L3_15 ~= "" then
+    L2_14.host = L4_16
+  end
+  if not L4_16 then
+    return L2_14
+  end
+  L2_14.user = L4_16
+  return L2_14
+end
+function L4_4.build(A0_17)
+  local L1_18, L2_19, L3_20, L4_21
+  L1_18 = _UPVALUE0_
+  L1_18 = L1_18.parse_path
+  L2_19 = A0_17.path
+  L2_19 = L2_19 or ""
+  L1_18 = L1_18(L2_19)
+  L2_19 = _UPVALUE0_
+  L2_19 = L2_19.build_path
+  L3_20 = L1_18
+  L2_19 = L2_19(L3_20)
+  L3_20 = A0_17.params
+  if L3_20 then
+    L3_20 = L2_19
+    L4_21 = ";"
+    L2_19 = L3_20 .. L4_21 .. A0_17.params
+  end
+  L3_20 = A0_17.query
+  if L3_20 then
+    L3_20 = L2_19
+    L4_21 = "?"
+    L2_19 = L3_20 .. L4_21 .. A0_17.query
+  end
+  L3_20 = A0_17.authority
+  L4_21 = A0_17.host
+  if L4_21 then
+    L3_20 = A0_17.host
+    L4_21 = _UPVALUE1_
+    L4_21 = L4_21.find
+    L4_21 = L4_21(L3_20, ":")
+    if L4_21 then
+      L4_21 = "["
+      L3_20 = L4_21 .. L3_20 .. "]"
+    end
+    L4_21 = A0_17.port
+    if L4_21 then
+      L4_21 = L3_20
+      L3_20 = L4_21 .. ":" .. A0_17.port
+    end
+    L4_21 = A0_17.userinfo
+    if A0_17.user then
+      L4_21 = A0_17.user
+      if A0_17.password then
+        L4_21 = L4_21 .. ":" .. A0_17.password
+      end
+    end
+    if L4_21 then
+      L3_20 = L4_21 .. "@" .. L3_20
+    end
+  end
+  if L3_20 then
+    L4_21 = "//"
+    L2_19 = L4_21 .. L3_20 .. L2_19
+  end
+  L4_21 = A0_17.scheme
+  if L4_21 then
+    L4_21 = A0_17.scheme
+    L2_19 = L4_21 .. ":" .. L2_19
+  end
+  L4_21 = A0_17.fragment
+  if L4_21 then
+    L4_21 = L2_19
+    L2_19 = L4_21 .. "#" .. A0_17.fragment
+  end
+  return L2_19
+end
+function L4_4.absolute(A0_22, A1_23)
+  local L2_24
+  L2_24 = _UPVALUE0_
+  L2_24 = L2_24.type
+  L2_24 = L2_24(A0_22)
+  if L2_24 == "table" then
+    base_parsed = A0_22
+    L2_24 = _UPVALUE1_
+    L2_24 = L2_24.build
+    L2_24 = L2_24(base_parsed)
+    A0_22 = L2_24
+  else
+    L2_24 = _UPVALUE1_
+    L2_24 = L2_24.parse
+    L2_24 = L2_24(A0_22)
+    base_parsed = L2_24
+  end
+  L2_24 = _UPVALUE1_
+  L2_24 = L2_24.parse
+  L2_24 = L2_24(A1_23)
+  if not base_parsed then
+    return A1_23
+  elseif not L2_24 then
+    return A0_22
+  elseif L2_24.scheme then
+    return A1_23
+  else
+    L2_24.scheme = base_parsed.scheme
+    if not L2_24.authority then
+      L2_24.authority = base_parsed.authority
+      if not L2_24.path then
+        L2_24.path = base_parsed.path
+        if not L2_24.params then
+          L2_24.params = base_parsed.params
+          if not L2_24.query then
+            L2_24.query = base_parsed.query
+          end
+        end
+      else
+        L2_24.path = _UPVALUE2_(base_parsed.path or "", L2_24.path)
+      end
+    end
+    return _UPVALUE1_.build(L2_24)
+  end
+end
+function L4_4.parse_path(A0_25)
+  local L1_26
+  L1_26 = {}
+  A0_25 = A0_25 or ""
+  _UPVALUE0_.gsub(A0_25, "([^/]+)", function(A0_27)
+    _UPVALUE0_.insert(_UPVALUE1_, A0_27)
+  end)
+  for _FORV_5_ = 1, #L1_26 do
+    L1_26[_FORV_5_] = _UPVALUE2_.unescape(L1_26[_FORV_5_])
+  end
+  if _FOR_.sub(A0_25, 1, 1) == "/" then
+    L1_26.is_absolute = 1
+  end
+  if _UPVALUE0_.sub(A0_25, 4294967295, 4294967295) == "/" then
+    L1_26.is_directory = 1
+  end
+  return L1_26
+end
+function L4_4.build_path(A0_28, A1_29)
+  local L2_30, L3_31
+  L2_30 = ""
+  L3_31 = #A0_28
+  if A1_29 then
+    for _FORV_7_ = 1, L3_31 - 1 do
+      L2_30 = L2_30 .. A0_28[_FORV_7_]
+      L2_30 = L2_30 .. "/"
+    end
+    if L3_31 > 0 then
+      L2_30 = L2_30 .. A0_28[L3_31]
+      if A0_28.is_directory then
+        L2_30 = L2_30 .. "/"
+      end
+    end
+  else
+    for _FORV_7_ = 1, L3_31 - 1 do
+      L2_30 = L2_30 .. _UPVALUE0_(A0_28[_FORV_7_])
+      L2_30 = L2_30 .. "/"
+    end
+    if L3_31 > 0 then
+      L2_30 = L2_30 .. _UPVALUE0_(A0_28[L3_31])
+      if A0_28.is_directory then
+        L2_30 = L2_30 .. "/"
+      end
+    end
+  end
+  if A0_28.is_absolute then
+    L2_30 = "/" .. L2_30
+  end
+  return L2_30
+end
+return L4_4

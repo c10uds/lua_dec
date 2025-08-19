@@ -1,0 +1,492 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQAntiRubNetwork", package.seeall)
+L0_0 = require
+L0_0 = L0_0("nixio")
+function _sane(A0_1)
+  return _UPVALUE0_.process.info("uid") == _UPVALUE1_.stat(A0_1 or _UPVALUE2_, "uid") and _UPVALUE0_.process.info("uid")
+end
+function _prepare()
+  _UPVALUE0_.mkdir(_UPVALUE1_, 700)
+  if not _sane() then
+    return false
+  end
+end
+function _read(A0_2)
+  return (_UPVALUE0_.readfile(_UPVALUE1_ .. "/" .. A0_2))
+end
+function read(A0_3, A1_4)
+  local L2_5, L3_6, L4_7, L5_8
+  if A0_3 then
+    L2_5 = #A0_3
+  elseif L2_5 == 0 then
+    L2_5 = nil
+    return L2_5
+  end
+  L2_5 = A1_4
+  if not L2_5 then
+    L3_6 = _UPVALUE0_
+    L2_5 = L3_6.interval
+  end
+  L3_6 = _sane
+  L4_7 = _UPVALUE1_
+  L5_8 = "/"
+  L4_7 = L4_7 .. L5_8 .. A0_3
+  L3_6 = L3_6(L4_7)
+  if not L3_6 then
+    L3_6 = nil
+    return L3_6
+  end
+  L3_6 = _read
+  L4_7 = A0_3
+  L3_6 = L3_6(L4_7)
+  L4_7 = loadstring
+  L5_8 = L3_6
+  L4_7 = L4_7(L5_8)
+  L5_8 = setfenv
+  L5_8(L4_7, {})
+  L5_8 = L4_7
+  L5_8 = L5_8()
+  if type(L5_8) ~= "table" then
+    return nil
+  end
+  if L2_5 < (_UPVALUE2_.uptime() - L5_8.atime or 0) and (_UPVALUE2_.uptime() - L5_8.atime or 0) < L2_5 * 2 then
+    L5_8.expired = true
+    L5_8.old = false
+    kill(A0_3)
+  elseif (_UPVALUE2_.uptime() - L5_8.atime or 0) > L2_5 * 2 then
+    L5_8.expired = true
+    L5_8.old = true
+    kill(A0_3)
+  else
+    L5_8.expired = false
+    L5_8.old = false
+  end
+  return L5_8
+end
+function _write(A0_9, A1_10)
+  local L2_11, L3_12, L4_13
+  L2_11 = _UPVALUE0_
+  L2_11 = L2_11.uniqueid
+  L3_12 = 16
+  L2_11 = L2_11(L3_12)
+  L3_12 = _UPVALUE1_
+  L4_13 = "/"
+  L3_12 = L3_12 .. L4_13 .. L2_11
+  L4_13 = _UPVALUE1_
+  L4_13 = L4_13 .. "/" .. A0_9
+  _UPVALUE2_.open(L3_12, "w", 600):writeall(A1_10)
+  _UPVALUE2_.open(L3_12, "w", 600):close()
+  _UPVALUE3_.rename(L3_12, L4_13)
+end
+function write(A0_14, A1_15)
+  if not _sane() then
+    _prepare()
+  end
+  if type(A1_15) ~= "table" then
+    return
+  end
+  _write(A0_14, luci.util.get_bytecode(A1_15))
+end
+function kill(A0_16)
+  if A0_16 then
+    _UPVALUE0_.unlink(_UPVALUE1_ .. "/" .. A0_16)
+  end
+end
+function reap()
+  local L0_17, L1_18, L2_19, L3_20, L4_21
+  L0_17 = _sane
+  L0_17 = L0_17()
+  if L0_17 then
+    L0_17 = nil
+    for L4_21 in L1_18(L2_19) do
+      read(L4_21)
+    end
+  end
+end
+function isIgnored(A0_22, A1_23)
+  local L2_24, L3_25
+  L2_24 = _UPVALUE0_
+  L2_24 = L2_24.isStrNil
+  L3_25 = A0_22
+  L2_24 = L2_24(L3_25)
+  if not L2_24 then
+    L2_24 = _UPVALUE0_
+    L2_24 = L2_24.isStrNil
+    L3_25 = A1_23
+    L2_24 = L2_24(L3_25)
+  else
+    if L2_24 then
+      return
+  end
+  else
+    L2_24 = _UPVALUE0_
+    L2_24 = L2_24.macFormat
+    L3_25 = A0_22
+    L2_24 = L2_24(L3_25)
+    A0_22 = L2_24
+  end
+  L2_24 = require
+  L3_25 = "luci.model.uci"
+  L2_24 = L2_24(L3_25)
+  L2_24 = L2_24.cursor
+  L2_24 = L2_24()
+  L3_25 = A0_22.gsub
+  L3_25 = L3_25(A0_22, ":", "")
+  if A1_23 == "login" then
+    if not L2_24:get_all("devicelist", "login_ignore") then
+      L2_24:section("devicelist", "record", "login_ignore", {})
+      L2_24:commit("devicelist")
+      return false
+    elseif L2_24:get("devicelist", "login_ignore", L3_25) then
+      return true
+    else
+      return false
+    end
+  elseif A1_23 == "wifi" then
+    if not L2_24:get_all("devicelist", "wifi_ignore") then
+      L2_24:section("devicelist", "record", "wifi_ignore", {})
+      L2_24:commit("devicelist")
+      return false
+    elseif L2_24:get("devicelist", "wifi_ignore", L3_25) then
+      return true
+    else
+      return false
+    end
+  end
+end
+function ignoreDevice(A0_26, A1_27)
+  local L2_28, L3_29
+  L2_28 = _UPVALUE0_
+  L2_28 = L2_28.isStrNil
+  L3_29 = A0_26
+  L2_28 = L2_28(L3_29)
+  if not L2_28 then
+    L2_28 = _UPVALUE0_
+    L2_28 = L2_28.isStrNil
+    L3_29 = A1_27
+    L2_28 = L2_28(L3_29)
+  else
+    if L2_28 then
+      return
+  end
+  else
+    L2_28 = _UPVALUE0_
+    L2_28 = L2_28.macFormat
+    L3_29 = A0_26
+    L2_28 = L2_28(L3_29)
+    A0_26 = L2_28
+  end
+  L2_28 = require
+  L3_29 = "luci.model.uci"
+  L2_28 = L2_28(L3_29)
+  L2_28 = L2_28.cursor
+  L2_28 = L2_28()
+  L3_29 = A0_26.gsub
+  L3_29 = L3_29(A0_26, ":", "")
+  if A1_27 == "login" then
+    if not L2_28:get_all("devicelist", "login_ignore") then
+      L2_28:section("devicelist", "record", "login_ignore", {
+        [L3_29] = "1"
+      })
+      L2_28:commit("devicelist")
+    else
+      L2_28:set("devicelist", "login_ignore", L3_29, "1")
+      L2_28:commit("devicelist")
+    end
+  elseif A1_27 == "wifi" then
+    if not L2_28:get_all("devicelist", "wifi_ignore") then
+      L2_28:section("devicelist", "record", "wifi_ignore", {
+        [L3_29] = "1"
+      })
+      L2_28:commit("devicelist")
+    else
+      L2_28:set("devicelist", "wifi_ignore", L3_29, "1")
+      L2_28:commit("devicelist")
+    end
+  end
+end
+function setWifiAuthenFailedCache(A0_30)
+  local L1_31, L2_32
+  L1_31 = _UPVALUE0_
+  L1_31 = L1_31.isStrNil
+  L2_32 = A0_30
+  L1_31 = L1_31(L2_32)
+  if L1_31 then
+    L1_31 = false
+    return L1_31
+  end
+  L1_31 = "WIFI-"
+  L2_32 = A0_30.gsub
+  L2_32 = L2_32(A0_30, ":", "")
+  L1_31 = L1_31 .. L2_32
+  L2_32 = {}
+  L2_32.mac = A0_30
+  L2_32.count = 1
+  L2_32.warning = false
+  L2_32.atime = _UPVALUE1_.uptime()
+  write(L1_31, L2_32)
+end
+function getWifiAuthenFailedCache(A0_33)
+  local L1_34, L2_35
+  L1_34 = _UPVALUE0_
+  L1_34 = L1_34.isStrNil
+  L2_35 = A0_33
+  L1_34 = L1_34(L2_35)
+  if L1_34 then
+    L1_34 = nil
+    return L1_34
+  end
+  L1_34 = "WIFI-"
+  L2_35 = A0_33.gsub
+  L2_35 = L2_35(A0_33, ":", "")
+  L1_34 = L1_34 .. L2_35
+  L2_35 = read
+  L2_35 = L2_35(L1_34)
+  if L2_35 then
+    L2_35.count = L2_35.count + 1
+    if not L2_35.expired then
+      write(L1_34, L2_35)
+    end
+  end
+  if L2_35 and not L2_35.old and L2_35.count >= _UPVALUE1_.wifi then
+    L2_35.warning = true
+  end
+  return L2_35
+end
+function wifiAuthenFailedAction(A0_36)
+  local L1_37, L2_38, L3_39, L4_40, L5_41, L6_42
+  L1_37 = require
+  L2_38 = "xiaoqiang.util.XQPushUtil"
+  L1_37 = L1_37(L2_38)
+  L2_38 = _UPVALUE0_
+  L2_38 = L2_38.isStrNil
+  L3_39 = A0_36
+  L2_38 = L2_38(L3_39)
+  if L2_38 then
+    L2_38 = nil
+    return L2_38
+  else
+    L2_38 = _UPVALUE0_
+    L2_38 = L2_38.macFormat
+    L3_39 = A0_36
+    L2_38 = L2_38(L3_39)
+    A0_36 = L2_38
+  end
+  L2_38 = isIgnored
+  L3_39 = A0_36
+  L4_40 = "wifi"
+  L2_38 = L2_38(L3_39, L4_40)
+  if L2_38 then
+    L2_38 = nil
+    return L2_38
+  end
+  L2_38 = L1_37.pushSettings
+  L2_38 = L2_38()
+  L3_39 = L1_37.getAuthenFailedTimes
+  L4_40 = A0_36
+  L3_39 = L3_39(L4_40)
+  L4_40 = "WIFI-"
+  L6_42 = A0_36
+  L5_41 = A0_36.gsub
+  L5_41 = L5_41(L6_42, ":", "")
+  L4_40 = L4_40 .. L5_41
+  L5_41 = L2_38.auth
+  if L5_41 then
+    L5_41 = getWifiAuthenFailedCache
+    L6_42 = A0_36
+    L5_41 = L5_41(L6_42)
+    if not L5_41 then
+      L6_42 = setWifiAuthenFailedCache
+      L6_42(A0_36)
+    else
+      L6_42 = math
+      L6_42 = L6_42.floor
+      L6_42 = L6_42(L5_41.count / 9)
+      if L5_41.warning then
+        L1_37.setAuthenFailedTimes(A0_36, L3_39 + L6_42)
+        L1_37.setWifiAuthenFailedFrequency(A0_36, L6_42)
+        L1_37.setwifiauthfailedserialtimes(A0_36, L1_37.getwifiauthfailedserialtimes(A0_36) + 1)
+        kill(L4_40)
+        return L6_42
+      elseif L5_41.expired then
+        L1_37.setAuthenFailedTimes(A0_36, L3_39 + L6_42)
+        L1_37.setwifiauthfailedserialtimes(A0_36, 0)
+      end
+    end
+  end
+  L5_41 = nil
+  return L5_41
+end
+function setWifiBlacklistedCache(A0_43)
+  local L1_44, L2_45
+  L1_44 = _UPVALUE0_
+  L1_44 = L1_44.isStrNil
+  L2_45 = A0_43
+  L1_44 = L1_44(L2_45)
+  if L1_44 then
+    L1_44 = false
+    return L1_44
+  end
+  L1_44 = "BLACKLISTED-"
+  L2_45 = A0_43.gsub
+  L2_45 = L2_45(A0_43, ":", "")
+  L1_44 = L1_44 .. L2_45
+  L2_45 = {}
+  L2_45.mac = A0_43
+  L2_45.count = 1
+  L2_45.warning = false
+  L2_45.old = false
+  L2_45.atime = _UPVALUE1_.uptime()
+  write(L1_44, L2_45)
+end
+function getWifiBlacklistedCache(A0_46)
+  local L1_47, L2_48
+  L1_47 = _UPVALUE0_
+  L1_47 = L1_47.isStrNil
+  L2_48 = A0_46
+  L1_47 = L1_47(L2_48)
+  if L1_47 then
+    L1_47 = nil
+    return L1_47
+  end
+  L1_47 = "BLACKLISTED-"
+  L2_48 = A0_46.gsub
+  L2_48 = L2_48(A0_46, ":", "")
+  L1_47 = L1_47 .. L2_48
+  L2_48 = read
+  L2_48 = L2_48(L1_47, 30)
+  if L2_48 then
+    L2_48.count = L2_48.count + 1
+    if not L2_48.expired then
+      write(L1_47, L2_48)
+    end
+  end
+  if L2_48 and not L2_48.old and L2_48.count >= _UPVALUE1_.wifib then
+    L2_48.warning = true
+  end
+  return L2_48
+end
+function wifiBlacklistedAction(A0_49)
+  local L1_50, L2_51, L3_52, L4_53
+  L1_50 = require
+  L2_51 = "xiaoqiang.util.XQPushUtil"
+  L1_50 = L1_50(L2_51)
+  L2_51 = _UPVALUE0_
+  L2_51 = L2_51.isStrNil
+  L3_52 = A0_49
+  L2_51 = L2_51(L3_52)
+  if L2_51 then
+    L2_51 = nil
+    return L2_51
+  else
+    L2_51 = _UPVALUE0_
+    L2_51 = L2_51.macFormat
+    L3_52 = A0_49
+    L2_51 = L2_51(L3_52)
+    A0_49 = L2_51
+  end
+  L2_51 = isIgnored
+  L3_52 = A0_49
+  L4_53 = "wifi"
+  L2_51 = L2_51(L3_52, L4_53)
+  if L2_51 then
+    L2_51 = nil
+    return L2_51
+  end
+  L2_51 = L1_50.pushSettings
+  L2_51 = L2_51()
+  L3_52 = L1_50.getAuthenFailedTimes
+  L4_53 = A0_49
+  L3_52 = L3_52(L4_53)
+  L4_53 = "BLACKLISTED-"
+  L4_53 = L4_53 .. A0_49:gsub(":", "")
+  if L2_51.auth then
+    if not getWifiBlacklistedCache(A0_49) then
+      setWifiBlacklistedCache(A0_49)
+    elseif getWifiBlacklistedCache(A0_49).warning then
+      L1_50.setAuthenFailedTimes(A0_49, L3_52 + math.floor(getWifiBlacklistedCache(A0_49).count / 4))
+      kill(L4_53)
+      return (math.floor(getWifiBlacklistedCache(A0_49).count / 4))
+    end
+  end
+  return nil
+end
+function setLoginAuthenFailedCache(A0_54)
+  local L1_55, L2_56
+  L1_55 = _UPVALUE0_
+  L1_55 = L1_55.isStrNil
+  L2_56 = A0_54
+  L1_55 = L1_55(L2_56)
+  if L1_55 then
+    L1_55 = false
+    return L1_55
+  end
+  L1_55 = "LOGIN-"
+  L2_56 = A0_54.gsub
+  L2_56 = L2_56(A0_54, ":", "")
+  L1_55 = L1_55 .. L2_56
+  L2_56 = {}
+  L2_56.mac = A0_54
+  L2_56.count = 1
+  L2_56.warning = false
+  L2_56.atime = _UPVALUE1_.uptime()
+  write(L1_55, L2_56)
+end
+function getLoginAuthenFailedCache(A0_57)
+  local L1_58, L2_59, L3_60, L4_61
+  L1_58 = _UPVALUE0_
+  L1_58 = L1_58.isStrNil
+  L2_59 = A0_57
+  L1_58 = L1_58(L2_59)
+  if L1_58 then
+    L1_58, L2_59 = nil, nil
+    return L1_58, L2_59
+  end
+  L1_58 = require
+  L2_59 = "xiaoqiang.util.XQPushUtil"
+  L1_58 = L1_58(L2_59)
+  L2_59 = tonumber
+  L3_60 = L1_58.pushSettings
+  L3_60 = L3_60()
+  L3_60 = L3_60.level
+  L2_59 = L2_59(L3_60)
+  L3_60 = "LOGIN-"
+  L4_61 = A0_57.gsub
+  L4_61 = L4_61(A0_57, ":", "")
+  L3_60 = L3_60 .. L4_61
+  L4_61 = read
+  L4_61 = L4_61(L3_60)
+  if L4_61 and not L4_61.expired then
+    L4_61.count = L4_61.count + 1
+    write(L3_60, L4_61)
+  end
+  if L4_61 and L4_61.count >= _UPVALUE1_.llogin and not L4_61.expired then
+    L4_61.warning = true
+    return L4_61
+  end
+  if L4_61 and L4_61.expired and not L4_61.old and (L2_59 == 2 and L4_61.count >= _UPVALUE1_.llogin or L2_59 == 3 and L4_61.count >= _UPVALUE1_.hlogin) then
+    L4_61.warning = true
+  end
+  return L4_61
+end
+function LoginAuthenFailedAction(A0_62)
+  if _UPVALUE0_.isStrNil(A0_62) then
+    return nil
+  else
+    A0_62 = _UPVALUE0_.macFormat(A0_62)
+  end
+  if isIgnored(A0_62, "login") then
+    return nil
+  end
+  if not getLoginAuthenFailedCache(A0_62) then
+    setLoginAuthenFailedCache(A0_62)
+  elseif getLoginAuthenFailedCache(A0_62).warning then
+    require("xiaoqiang.util.XQPushUtil").setLoginAuthenFailedTimes(A0_62, require("xiaoqiang.util.XQPushUtil").getLoginAuthenFailedTimes(A0_62) + getLoginAuthenFailedCache(A0_62).count)
+    require("xiaoqiang.util.XQPushUtil").setLoginAuthenFailedFrequency(A0_62, getLoginAuthenFailedCache(A0_62).count)
+    return getLoginAuthenFailedCache(A0_62).count
+  elseif getLoginAuthenFailedCache(A0_62).expired and not getLoginAuthenFailedCache(A0_62).warning then
+    require("xiaoqiang.util.XQPushUtil").setLoginAuthenFailedTimes(A0_62, require("xiaoqiang.util.XQPushUtil").getLoginAuthenFailedTimes(A0_62) + getLoginAuthenFailedCache(A0_62).count)
+  end
+  return nil
+end

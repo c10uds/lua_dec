@@ -1,0 +1,240 @@
+local L0_0
+L0_0 = module
+L0_0("xiaoqiang.module.XQDisk", package.seeall)
+L0_0 = require
+L0_0 = L0_0("xiaoqiang.common.XQFunction")
+function iostatus()
+  local L0_1, L1_2
+  L0_1 = {}
+  L0_1.rrate = 0
+  L0_1.wrate = 0
+  L0_1.read = 0
+  L0_1.write = 0
+  L1_2 = _UPVALUE0_
+  L1_2 = L1_2.exec
+  L1_2 = L1_2(_UPVALUE1_)
+  if not _UPVALUE2_.isStrNil(L1_2) then
+    L1_2 = _UPVALUE0_.split(_UPVALUE0_.trim(L1_2), " ")
+    L0_1.rrate = L1_2[1] * 512
+    L0_1.wrate = L1_2[2] * 512
+    L0_1.read = L1_2[3] * 512
+    L0_1.write = L1_2[4] * 512
+  end
+  return L0_1
+end
+function diskInfo()
+  local L0_3, L1_4, L2_5, L3_6, L4_7, L5_8, L6_9
+  L0_3 = {}
+  L0_3.model = ""
+  L0_3.serial = ""
+  L0_3.size = ""
+  L0_3.factor = ""
+  L0_3.rorate = ""
+  L0_3.filesys = ""
+  L0_3.sata = ""
+  L1_4 = _UPVALUE0_
+  L1_4 = L1_4.execl
+  L1_4 = L1_4(L2_5)
+  if L1_4 then
+    for L5_8, L6_9 in L2_5(L3_6) do
+      if not _UPVALUE2_.isStrNil(L6_9) then
+        if L6_9:match("Model Number:") then
+          L0_3.model = _UPVALUE0_.trim(L6_9:match("Model Number:%s+(.+)"))
+        elseif L6_9:match("Serial Number:") then
+          L0_3.serial = _UPVALUE0_.trim(L6_9:match("Serial Number:%s+(.+)"))
+        elseif L6_9:match("device size with M = 1000%*1000:") then
+          L0_3.size = L6_9:match("device size with M = 1000%*1000:%s+(%d+)")
+        elseif L6_9:match("Form Factor:") then
+          L0_3.factor = L6_9:match("Form Factor:%s+(%S+)")
+        elseif L6_9:match("Nominal Media Rotation Rate:") then
+          L0_3.rorate = L6_9:match("Nominal Media Rotation Rate:%s+(%d+)")
+        elseif L6_9:match("Gen1 signaling speed") then
+          L0_3.sata = "SATAI"
+        elseif L6_9:match("Gen2 signaling speed") then
+          L0_3.sata = "SATAII"
+        elseif L6_9:match("Gen3 signaling speed") then
+          L0_3.sata = "SATAIII"
+        end
+      end
+    end
+  end
+  L0_3.filesys = "EXT4"
+  return L0_3
+end
+function smartctl()
+  local L0_10, L1_11, L2_12, L3_13, L4_14, L5_15, L6_16, L7_17
+  L0_10 = {}
+  L0_10.sectorcount = ""
+  L0_10.poweronhours = ""
+  L0_10.spinretry = ""
+  L0_10.temperature = ""
+  L0_10.reventcount = ""
+  L0_10.pendingsector = ""
+  L0_10.uncorrectable = ""
+  L0_10.filesystem = ""
+  L1_11 = _UPVALUE0_
+  L1_11 = L1_11.execl
+  L2_12 = _UPVALUE1_
+  L1_11 = L1_11(L2_12)
+  L2_12 = get_diskstatus
+  L2_12 = L2_12()
+  if L2_12 == 2 or L2_12 == 0 then
+    L0_10.filesystem = "0"
+  else
+    L0_10.filesystem = "1"
+  end
+  if L1_11 then
+    for L6_16, L7_17 in L3_13(L4_14) do
+      if not _UPVALUE2_.isStrNil(L7_17) then
+        if L7_17:match("Reallocated_Sector_Ct") then
+          L0_10.sectorcount = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        elseif L7_17:match("Power_On_Hours") then
+          L0_10.poweronhours = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        elseif L7_17:match("Spin_Retry_Count") then
+          L0_10.spinretry = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        elseif L7_17:match("Temperature_Celsius") then
+          L0_10.temperature = {
+            current = "0",
+            min = "0",
+            max = "0",
+            max = _UPVALUE0_.trim(L7_17:sub(88, #L7_17)):match("(%d+)%s%S+%s+(%d+)/(%d+)")
+          }
+        elseif L7_17:match("Reallocated_Event_Count") then
+          L0_10.reventcount = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        elseif L7_17:match("Current_Pending_Sector") then
+          L0_10.pendingsector = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        elseif L7_17:match("Offline_Uncorrectable") then
+          L0_10.uncorrectable = tostring(_UPVALUE0_.trim(L7_17:sub(88, #L7_17)))
+        end
+      end
+    end
+  end
+  return L0_10
+end
+function get_diskstatus()
+  if not tonumber(require("xiaoqiang.XQPreference").get("DISK_STATUS_NEW")) then
+    if hdd_status() == 0 then
+    elseif hdd_status() == 1 then
+    elseif hdd_status() == 2 then
+    elseif hdd_status() == 99 then
+    else
+    end
+  end
+  return 8
+end
+function get_diskmstatus()
+  local L0_18, L1_19
+  L0_18 = require
+  L1_19 = "luci.model.uci"
+  L0_18 = L0_18(L1_19)
+  L0_18 = L0_18.cursor
+  L0_18 = L0_18()
+  L1_19 = L0_18.get
+  L1_19 = L1_19(L0_18, "disk", "primary", "status")
+  L1_19 = L1_19 or 1
+  return tonumber(L1_19)
+end
+function get_repairstatus()
+  return tonumber(require("xiaoqiang.XQPreference").get("DISK_REPAIR_STATUS")) or 0
+end
+function get_formatstatus()
+  return tonumber(require("xiaoqiang.XQPreference").get("DISK_FORMAT_STATUS")) or 0
+end
+function disk_check(A0_20)
+  if A0_20 then
+    _UPVALUE0_.forkExec("lua /usr/sbin/disk_helper.lua check notify")
+  else
+    _UPVALUE0_.forkExec("lua /usr/sbin/disk_helper.lua check")
+  end
+  return true
+end
+function disk_repair(A0_21)
+  if A0_21 then
+    _UPVALUE0_.forkExec("lua /usr/sbin/disk_helper.lua repair notify")
+  else
+    _UPVALUE0_.forkExec("lua /usr/sbin/disk_helper.lua repair")
+  end
+  return true
+end
+function save_diskstatus(A0_22)
+  require("xiaoqiang.XQPreference").set("DISK_STATUS_NEW", tostring(A0_22))
+end
+function save_diskrstatus(A0_23)
+  require("xiaoqiang.XQPreference").set("DISK_REPAIR_STATUS", tostring(A0_23))
+end
+function save_diskfstatus(A0_24)
+  require("xiaoqiang.XQPreference").set("DISK_FORMAT_STATUS", tostring(A0_24))
+end
+function hdd_status()
+  return tonumber(_UPVALUE0_.trim(_UPVALUE0_.exec("/usr/sbin/hddstatus; echo $?") or "")) or 0
+end
+function diskchk_prepare()
+  return os.execute("/usr/sbin/diskchk prepare") == 0
+end
+function diskchk_probe()
+  return os.execute("/usr/sbin/diskchk probe") == 0
+end
+function diskchk_restore()
+  return os.execute("/usr/sbin/diskchk restore") == 0
+end
+function diskchk_fix()
+  local L0_25
+  L0_25 = tonumber
+  L0_25 = L0_25(_UPVALUE0_.trim(_UPVALUE0_.exec("/usr/sbin/diskchk fix; echo $?") or ""))
+  L0_25 = L0_25 or 0
+  return L0_25 <= 2
+end
+function disk_init()
+  _UPVALUE0_.forkExec("/usr/sbin/format_userdisk part >/dev/null 2>/dev/null")
+end
+function disk_format()
+  return tonumber(os.execute("/usr/sbin/format_userdisk fs >/dev/null 2>/dev/null")) == 0
+end
+function disk_format_async()
+  _UPVALUE0_.forkExec("lua /usr/sbin/disk_helper.lua format >/dev/null 2>/dev/null")
+end
+function disk_status_v2()
+  return hdd_status()
+end
+function smartctl_info_v2()
+  local L0_26, L1_27, L2_28, L3_29, L4_30, L5_31, L6_32, L7_33, L8_34, L9_35, L10_36, L11_37, L12_38, L13_39, L14_40, L15_41, L16_42
+  L0_26 = {}
+  L1_27 = _UPVALUE0_
+  L1_27 = L1_27.execl
+  L1_27 = L1_27(L2_28)
+  if L1_27 then
+    for L5_31, L6_32 in L2_28(L3_29) do
+      L7_33 = _UPVALUE2_
+      L7_33 = L7_33.isStrNil
+      L8_34 = L6_32
+      L7_33 = L7_33(L8_34)
+      if not L7_33 then
+        L8_34 = L6_32
+        L7_33 = L6_32.match
+        L9_35 = "(%d+)%s(%S+)%s+(%S+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)"
+        L16_42 = L7_33(L8_34, L9_35)
+        if L7_33 and L8_34 and L9_35 and L10_36 and L11_37 and L12_38 and L13_39 and L14_40 and L15_41 and L16_42 then
+          if string.lower(L8_34) == "raw_read_error_rate" or string.lower(L8_34) == "temperature_celsius" or string.lower(L8_34) == "airflow_temperature_cel" or string.lower(L8_34) == "spin_up_time" then
+            L15_41 = "-"
+          end
+          if string.lower(L8_34) == "current_pending_sector" and tonumber(L16_42) > 10 then
+            L15_41 = "FAILING_NOW"
+          end
+          table.insert(L0_26, {
+            ID = L7_33,
+            ATTRIBUTE_NAME = L8_34,
+            FLAG = L9_35,
+            VALUE = L10_36,
+            WORST = L11_37,
+            THRESH = L12_38,
+            TYPE = L13_39,
+            UPDATED = L14_40,
+            WHEN_FAILED = L15_41,
+            RAW_VALUE = L16_42
+          })
+        end
+      end
+    end
+  end
+  return L0_26
+end

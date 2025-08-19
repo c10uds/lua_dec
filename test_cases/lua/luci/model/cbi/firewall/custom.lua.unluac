@@ -1,0 +1,33 @@
+local L0_0
+L0_0 = require
+L0_0 = L0_0("nixio.fs")
+SimpleForm("firewall", translate("Firewall - Custom Rules"), translate([[
+Custom rules allow you to execute arbritary iptables commands 
+		which are not otherwise covered by the firewall framework. 
+		The commands are executed after each firewall restart, right after 
+		the default ruleset has been loaded.]])):field(Value, "_custom").template = "cbi/tvalue"
+SimpleForm("firewall", translate("Firewall - Custom Rules"), translate([[
+Custom rules allow you to execute arbritary iptables commands 
+		which are not otherwise covered by the firewall framework. 
+		The commands are executed after each firewall restart, right after 
+		the default ruleset has been loaded.]])):field(Value, "_custom").rows = 20
+SimpleForm("firewall", translate("Firewall - Custom Rules"), translate([[
+Custom rules allow you to execute arbritary iptables commands 
+		which are not otherwise covered by the firewall framework. 
+		The commands are executed after each firewall restart, right after 
+		the default ruleset has been loaded.]])):field(Value, "_custom").cfgvalue = function(A0_1, A1_2)
+  return _UPVALUE0_.readfile("/etc/firewall.user")
+end
+SimpleForm("firewall", translate("Firewall - Custom Rules"), translate([[
+Custom rules allow you to execute arbritary iptables commands 
+		which are not otherwise covered by the firewall framework. 
+		The commands are executed after each firewall restart, right after 
+		the default ruleset has been loaded.]])):field(Value, "_custom").write = function(A0_3, A1_4, A2_5)
+  A2_5 = A2_5:gsub("\r\n?", "\n")
+  _UPVALUE0_.writefile("/etc/firewall.user", A2_5)
+end
+return (SimpleForm("firewall", translate("Firewall - Custom Rules"), translate([[
+Custom rules allow you to execute arbritary iptables commands 
+		which are not otherwise covered by the firewall framework. 
+		The commands are executed after each firewall restart, right after 
+		the default ruleset has been loaded.]])))

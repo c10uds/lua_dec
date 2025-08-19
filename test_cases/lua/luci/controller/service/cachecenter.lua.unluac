@@ -1,0 +1,70 @@
+local L0_0
+L0_0 = module
+L0_0("luci.controller.service.cachecenter", package.seeall)
+function L0_0()
+  node("service", "cachecenter").target = firstchild()
+  node("service", "cachecenter").title = ""
+  node("service", "cachecenter").order = nil
+  node("service", "cachecenter").sysauth = "admin"
+  node("service", "cachecenter").sysauth_authenticator = "jsonauth"
+  node("service", "cachecenter").index = true
+  entry({
+    "service",
+    "cachecenter",
+    "report_key"
+  }, call("reportKey"), _(""), nil, 1)
+end
+index = L0_0
+L0_0 = require
+L0_0 = L0_0("luci.http")
+function tunnelRequestCachecenter(A0_1)
+  local L1_2, L2_3, L3_4, L4_5
+  L1_2 = require
+  L2_3 = "cjson"
+  L1_2 = L1_2(L2_3)
+  L2_3 = require
+  L3_4 = "luci.util"
+  L2_3 = L2_3(L3_4)
+  L3_4 = require
+  L4_5 = "xiaoqiang.util.XQCryptoUtil"
+  L3_4 = L3_4(L4_5)
+  L4_5 = L1_2.encode
+  L4_5 = L4_5(A0_1)
+  A0_1 = L4_5
+  L4_5 = L3_4.binaryBase64Enc
+  L4_5 = L4_5(A0_1)
+  A0_1 = L4_5
+  L4_5 = _UPVALUE0_
+  L4_5 = L4_5.THRIFT_TUNNEL_TO_CACHECENTER
+  L4_5 = L4_5 % A0_1
+  _UPVALUE1_.write(L2_3.exec(L4_5))
+end
+function requestCachecenter(A0_6)
+  local L1_7, L2_8, L3_9, L4_10
+  L1_7 = require
+  L2_8 = "cjson"
+  L1_7 = L1_7(L2_8)
+  L2_8 = require
+  L3_9 = "luci.util"
+  L2_8 = L2_8(L3_9)
+  L3_9 = require
+  L4_10 = "xiaoqiang.util.XQCryptoUtil"
+  L3_9 = L3_9(L4_10)
+  L4_10 = L1_7.encode
+  L4_10 = L4_10(A0_6)
+  A0_6 = L4_10
+  L4_10 = L3_9.binaryBase64Enc
+  L4_10 = L4_10(A0_6)
+  A0_6 = L4_10
+  L4_10 = _UPVALUE0_
+  L4_10 = L4_10.THRIFT_TUNNEL_TO_CACHECENTER
+  L4_10 = L4_10 % A0_6
+  return L2_8.exec(L4_10)
+end
+function reportKey()
+  local L0_11
+  L0_11 = {}
+  L0_11.api = 1
+  L0_11.key = _UPVALUE0_.formvalue("key")
+  tunnelRequestCachecenter(L0_11)
+end

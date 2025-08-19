@@ -1,0 +1,320 @@
+local L0_0, L1_1, L2_2, L3_3, L4_4
+L0_0 = module
+L1_1 = "xiaoqiang.util.XQSynchrodata"
+L2_2 = package
+L2_2 = L2_2.seeall
+L0_0(L1_1, L2_2)
+L0_0 = require
+L1_1 = "json"
+L0_0 = L0_0(L1_1)
+L1_1 = require
+L2_2 = "xiaoqiang.common.XQFunction"
+L1_1 = L1_1(L2_2)
+L2_2 = require
+L3_3 = "xiaoqiang.common.XQConfigs"
+L2_2 = L2_2(L3_3)
+L3_3 = pcall
+L4_4 = require
+L4_4 = L3_3(L4_4, "messageclient")
+if not L3_3 then
+  L4_4 = {
+    send = function(A0_5, A1_6)
+      if not _UPVALUE0_.isStrNil(A0_5) and not _UPVALUE0_.isStrNil(A1_6) then
+        os.execute(string.format("matool --method setKVB64 --params \"%s\" \"%s\"", A0_5, require("xiaoqiang.util.XQCryptoUtil").binaryBase64Enc(A1_6)))
+      end
+    end
+  }
+end
+function syncRouterName(A0_7)
+  if not _UPVALUE0_.isStrNil(A0_7) then
+    _UPVALUE1_.send("router_name", A0_7)
+  end
+end
+function syncRouterLocale(A0_8)
+  local L1_9
+  L1_9 = tostring
+  L1_9 = L1_9(A0_8)
+  if not _UPVALUE0_.isStrNil(L1_9) then
+    _UPVALUE1_.send("router_locale", L1_9)
+  end
+end
+function syncWiFiSSID(A0_10, A1_11)
+  if A0_10 then
+    _UPVALUE0_.send("ssid_24G", A0_10)
+  end
+  if A1_11 then
+    _UPVALUE0_.send("ssid_5G", A1_11)
+  end
+end
+function uploadConf(A0_12)
+  if A0_12 and type(A0_12) == "table" then
+    _UPVALUE0_.forkExec(string.format("matool --method api_call_post --params /device/router_conf/upload \"%s\"", _UPVALUE0_._cmdformat(require("json").encode(A0_12))))
+  end
+end
+function syncWorkMode(A0_13)
+  local L2_14
+  if A0_13 then
+    L2_14 = _UPVALUE0_
+    L2_14 = L2_14.send
+    L2_14("work_mode", tostring(A0_13))
+  end
+end
+function syncActiveApcliMode(A0_15)
+  local L2_16
+  if A0_15 then
+    L2_16 = _UPVALUE0_
+    L2_16 = L2_16.send
+    L2_16("active_apcli_mode", tostring(A0_15))
+  end
+end
+function syncApLanIp(A0_17)
+  local L2_18
+  if A0_17 then
+    L2_18 = _UPVALUE0_
+    L2_18 = L2_18.send
+    L2_18("ap_lan_ip", tostring(A0_17))
+  end
+end
+function syncProtectionStatus(A0_19, A1_20)
+  local L2_21, L3_22
+  if A0_19 then
+    L2_21 = _UPVALUE0_
+    L2_21 = L2_21.send
+    L3_22 = "protection_enabled"
+    L2_21(L3_22, tostring(A0_19))
+    L2_21 = _UPVALUE0_
+    L2_21 = L2_21.send
+    L3_22 = "protection_mode"
+    L2_21(L3_22, tostring(A1_20))
+  end
+end
+function syncQosInfo()
+  local L0_23, L1_24, L2_25
+  L0_23 = require
+  L1_24 = "xiaoqiang.util.XQQoSUtil"
+  L0_23 = L0_23(L1_24)
+  L1_24 = require
+  L2_25 = "xiaoqiang.util.XQDeviceUtil"
+  L1_24 = L1_24(L2_25)
+  L2_25 = L0_23.qosHistory
+  L2_25 = L2_25(L1_24.getDeviceMacsFromDB())
+  L2_25.guest = L0_23.guestQoSInfo()
+  L2_25["local"] = L0_23.xqQoSInfo()
+  _UPVALUE0_.send("qos_info", _UPVALUE1_.encode(L2_25))
+end
+function syncOTAInfo()
+  _UPVALUE0_.send("auto_ota_rom", tostring(require("xiaoqiang.module.XQPredownload").predownloadInfo().auto))
+  _UPVALUE0_.send("auto_ota_plugin", tostring(require("xiaoqiang.module.XQPredownload").predownloadInfo().plugin))
+end
+function syncDeviceInfo(A0_26)
+  local L1_27, L2_28, L3_29, L4_30, L5_31, L6_32, L7_33, L8_34, L9_35, L10_36, L11_37, L12_38, L13_39, L14_40, L15_41, L16_42
+  L1_27 = require
+  L2_28 = "xiaoqiang.util.XQWifiUtil"
+  L1_27 = L1_27(L2_28)
+  L2_28 = require
+  L3_29 = "xiaoqiang.util.XQPushUtil"
+  L2_28 = L2_28(L3_29)
+  L3_29 = require
+  L4_30 = "xiaoqiang.util.XQDeviceUtil"
+  L3_29 = L3_29(L4_30)
+  L4_30 = require
+  L5_31 = "xiaoqiang.module.XQParentControl"
+  L4_30 = L4_30(L5_31)
+  if A0_26 then
+    L5_31 = A0_26.mac
+    if L5_31 then
+      L5_31 = L4_30.parentctl_rules
+      L6_32 = {}
+      L7_33 = A0_26.mac
+      L6_32[L7_33] = 1
+      L5_31 = L5_31(L6_32)
+      L6_32 = L4_30.netacctl_status
+      L7_33 = {}
+      L8_34 = A0_26.mac
+      L7_33[L8_34] = 1
+      L6_32 = L6_32(L7_33)
+      L7_33 = L4_30.get_urlfilter_info
+      L8_34 = {}
+      L9_35 = A0_26.mac
+      L8_34[L9_35] = 1
+      L7_33 = L7_33(L8_34)
+      L8_34 = {}
+      L9_35 = A0_26.mac
+      L8_34.mac = L9_35
+      L8_34.lan = 1
+      L8_34.wan = 1
+      L8_34.admin = 1
+      L8_34.limited = 0
+      L8_34.nickname = ""
+      L8_34.pridisk = 0
+      L8_34.owner = ""
+      L8_34.device = ""
+      L8_34.push = 0
+      L9_35 = A0_26.mac
+      L9_35 = L5_31[L9_35]
+      L8_34.pcontrol = L9_35
+      L9_35 = A0_26.mac
+      L9_35 = L6_32[L9_35]
+      L8_34.netacctl = L9_35
+      L9_35 = A0_26.mac
+      L9_35 = L7_33[L9_35]
+      L8_34.urlfilter = L9_35
+      L9_35 = {}
+      L9_35.api = 70
+      L10_36 = {L11_37}
+      L11_37 = A0_26.mac
+      L9_35.macs = L10_36
+      L10_36 = {}
+      L11_37 = L3_29.getMacfilterInfoDict
+      L11_37 = L11_37()
+      L12_38 = L3_29.fetchDeviceInfoFromConfig
+      L13_39 = A0_26.mac
+      L12_38 = L12_38(L13_39)
+      L13_39 = _UPVALUE0_
+      L13_39 = L13_39.thrift_tunnel_to_datacenter
+      L14_40 = _UPVALUE1_
+      L14_40 = L14_40.encode
+      L15_41 = L9_35
+      L16_42 = L14_40(L15_41)
+      L13_39 = L13_39(L14_40, L15_41, L16_42, L14_40(L15_41))
+      if L13_39 then
+        L14_40 = L13_39.code
+        if L14_40 == 0 then
+          L10_36 = L13_39.canAccessAllDisk
+        end
+      end
+      L14_40 = A0_26.mac
+      L14_40 = L11_37[L14_40]
+      L15_41 = L1_27.getWiFiMacfilterModel
+      L15_41 = L15_41()
+      if L15_41 == 1 then
+        L16_42 = L1_27.getCurrentMacfilterList
+        L16_42 = L16_42()
+        if L16_42 then
+          for _FORV_20_, _FORV_21_ in ipairs(L16_42) do
+            if _FORV_21_ == A0_26.mac then
+              L8_34.limited = 1
+              break
+            end
+          end
+        end
+      end
+      L16_42 = A0_26.push
+      if L16_42 then
+        L16_42 = A0_26.push
+        L8_34.push = L16_42
+      else
+        L16_42 = L2_28.specialNotify
+        L16_42 = L16_42(A0_26.mac)
+        L8_34.push = L16_42 and 1 or 0
+      end
+      if L14_40 then
+        L16_42 = L14_40.wan
+        if L16_42 then
+          L16_42 = 1
+        else
+          L16_42 = L16_42 or 0
+        end
+        L8_34.wan = L16_42
+        L16_42 = L14_40.lan
+        if L16_42 then
+          L16_42 = 1
+        else
+          L16_42 = L16_42 or 0
+        end
+        L8_34.lan = L16_42
+        L16_42 = L14_40.admin
+        if L16_42 then
+          L16_42 = 1
+        else
+          L16_42 = L16_42 or 0
+        end
+        L8_34.admin = L16_42
+        L16_42 = L14_40.pridisk
+        if L16_42 then
+          L16_42 = 1
+        else
+          L16_42 = L16_42 or 0
+        end
+        L8_34.pridisk = L16_42
+      else
+        L8_34.wan = 1
+        L8_34.lan = 1
+        L8_34.admin = 1
+        L8_34.pridisk = 0
+      end
+      L16_42 = A0_26.mac
+      L16_42 = L10_36[L16_42]
+      if L16_42 ~= nil then
+        L16_42 = A0_26.mac
+        L16_42 = L10_36[L16_42]
+        if L16_42 then
+          L16_42 = 1
+        else
+          L16_42 = L16_42 or 0
+        end
+        L8_34.lan = L16_42
+      end
+      if L12_38 then
+        L16_42 = L12_38.owner
+        L8_34.owner = L16_42
+        L16_42 = L12_38.device
+        L8_34.device = L16_42
+      end
+      L16_42 = A0_26.nickname
+      if L16_42 then
+        L16_42 = A0_26.nickname
+        L8_34.nickname = L16_42
+      else
+        L16_42 = require
+        L16_42 = L16_42("xiaoqiang.util.XQDBUtil")
+        if not _UPVALUE0_.isStrNil(L16_42.fetchDeviceInfo(A0_26.mac).nickname) then
+          L8_34.nickname = L16_42.fetchDeviceInfo(A0_26.mac).nickname
+        end
+      end
+      L16_42 = A0_26.lan
+      if L16_42 then
+        L16_42 = A0_26.lan
+        L8_34.lan = L16_42
+      end
+      L16_42 = A0_26.wan
+      if L16_42 then
+        L16_42 = A0_26.wan
+        L8_34.wan = L16_42
+      end
+      L16_42 = A0_26.admin
+      if L16_42 then
+        L16_42 = A0_26.admin
+        L8_34.admin = L16_42
+      end
+      L16_42 = A0_26.pridisk
+      if L16_42 then
+        L16_42 = A0_26.pridisk
+        L8_34.pridisk = L16_42
+      end
+      L16_42 = A0_26.owner
+      if L16_42 then
+        L16_42 = A0_26.pridisk
+        L8_34.owner = L16_42
+      end
+      L16_42 = A0_26.device
+      if L16_42 then
+        L16_42 = A0_26.device
+        L8_34.device = L16_42
+      end
+      L16_42 = A0_26.limited
+      if L16_42 then
+        L16_42 = A0_26.limited
+        L8_34.limited = L16_42
+      end
+      L16_42 = A0_26.pcontrol
+      if L16_42 then
+        L16_42 = A0_26.pcontrol
+        L8_34.pcontrol = L16_42
+      end
+      L16_42 = _UPVALUE2_
+      L16_42 = L16_42.send
+      L16_42("device/" .. A0_26.mac, _UPVALUE1_.encode(L8_34))
+    end
+  end
+end
